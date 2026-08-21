@@ -1,0 +1,10 @@
+#game-world {
+  position: relative;
+  overflow: hidden;
+}
+
+#projectile-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
