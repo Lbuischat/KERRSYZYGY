@@ -1,27 +1,12 @@
-<div class="relative min-h-screen w-full overflow-hidden bg-green-900">
+<div id="game-world" class="relative min-h-screen w-full overflow-hidden bg-green-900">
 
-  <div
-    id="player"
-    class="absolute left-0 top-0"
-  >
+  <!-- Player -->
+  <app-player (shoot)="shootProjectile($event)" (attack)="playerAttack()"></app-player>
 
-    <!-- Stamina -->
-    <div
-      id="stamina-container"
-      class="absolute bottom-full left-1/2 mb-1 hidden h-2 w-10 -translate-x-1/2 overflow-hidden rounded-full bg-black/50"
-    >
-      <div
-        id="stamina-bar"
-        class="h-full bg-yellow-400"
-      ></div>
-    </div>
+  <!-- Projectiles -->
+  <div id="projectile-layer" class="pointer-events-none absolute inset-0"></div>
 
-    <!-- Player -->
-    <div
-      id="player-character"
-      class="h-10 w-10 rounded bg-red-500"
-    ></div>
-
-  </div>
+  <!-- Enemy -->
+  <app-enemy></app-enemy>
 
 </div>
