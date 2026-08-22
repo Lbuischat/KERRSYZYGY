@@ -1,6 +1,6 @@
 #attack-btn {
   position: fixed;
-  background: red;
+  background: rgba(0, 0, 0, 0.5);
   border-radius: 999%;
   height: 200px;
   width: 200px;
@@ -10,7 +10,7 @@
 
 #skill1-btn {
   position: fixed;
-  background: rgb(214, 0, 0);
+  background: rgba(0, 0, 0, 0.4);
   border-radius: 999%;
   height: 150px;
   width: 150px;
@@ -20,7 +20,7 @@
 
 #skill2-btn {
   position: fixed;
-  background: rgb(168, 0, 0);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 999%;
   height: 125px;
   width: 125px;
@@ -30,7 +30,7 @@
 
 #skill3-btn {
   position: fixed;
-  background: rgb(148, 0, 0);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 999%;
   height: 100px;
   width: 100px;
@@ -49,6 +49,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   display: block;
+  opacity: 0.6;
 
 }
 
@@ -82,4 +83,35 @@
   right: 25px;
   bottom: 15px;
   color: antiquewhite;
+}
+
+
+
+#attack-btn,
+#skill1-btn,
+#skill2-btn,
+#skill3-btn {
+  transition:
+    filter 0.1s ease,
+    transform 0.1s ease;
+}
+
+#attack-btn.active {
+  background: yellow;
+  transform: scale(0.95);
+}
+
+#skill1-btn.active {
+  background: teal;
+  transform: scale(0.95);
+}
+
+#skill2-btn.active {
+  background: purple;
+  transform: scale(1.05);
+}
+
+#skill3-btn.active {
+  background: whitesmoke;
+  transform: scale(1.05);
 }

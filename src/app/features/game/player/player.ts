@@ -241,17 +241,24 @@ export class Player {
         // LEFT MOUSE — NORMAL ATTACK
         if (event.button === 0) {
             this.isHoldingAttack = true;
+
+            this.setButtonActive('attack-btn');
+
             this.changePlayerColor(
                 'yellow'
             );
+
             console.log('PLAYER EMITTING ATTACK');
+
             this.attack.emit();
+
             this.holdTimer =
                 setTimeout(() => {
                     if (this.isHoldingAttack) {
                         this.useSkill1();
                     }
                 }, 2000);
+
             return;
         }
 
@@ -279,6 +286,9 @@ export class Player {
 
         this.isHoldingAttack = false;
 
+        this.setButtonInactive('attack-btn');
+        this.setButtonInactive('skill1-btn');
+
         if (this.holdTimer) {
 
             clearTimeout(
@@ -299,6 +309,8 @@ export class Player {
 
     private useSkill1(): void {
 
+        this.setButtonActive('skill1-btn');
+
         this.changePlayerColor(
             'turquoise'
         );
@@ -311,11 +323,15 @@ export class Player {
 
     private useSkill2(): void {
 
+        this.setButtonActive('skill2-btn');
+
         this.changePlayerColor(
             'purple'
         );
 
         setTimeout(() => {
+
+            this.setButtonInactive('skill2-btn');
 
             if (!this.isHoldingAttack) {
 
@@ -335,11 +351,15 @@ export class Player {
 
     private useSkill3(): void {
 
+        this.setButtonActive('skill3-btn');
+
         this.changePlayerColor(
             'white'
         );
 
         setTimeout(() => {
+
+            this.setButtonInactive('skill3-btn');
 
             if (!this.isHoldingAttack) {
 
@@ -643,6 +663,28 @@ export class Player {
         playerCharacter.style.backgroundColor =
             color;
 
+    }
+
+    private setButtonActive(
+        buttonId: string
+    ): void {
+        const button =
+            document.getElementById(buttonId);
+
+        if (button) {
+            button.classList.add('active');
+        }
+    }
+
+    private setButtonInactive(
+        buttonId: string
+    ): void {
+        const button =
+            document.getElementById(buttonId);
+
+        if (button) {
+            button.classList.remove('active');
+        }
     }
 
 }
