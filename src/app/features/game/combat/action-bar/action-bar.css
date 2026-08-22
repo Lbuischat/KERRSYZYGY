@@ -1,0 +1,85 @@
+#attack-btn {
+  position: fixed;
+  background: red;
+  border-radius: 999%;
+  height: 200px;
+  width: 200px;
+  right: 30px;
+  bottom: 30px;
+}
+
+#skill1-btn {
+  position: fixed;
+  background: rgb(214, 0, 0);
+  border-radius: 999%;
+  height: 150px;
+  width: 150px;
+  right: 30px;
+  bottom: 250px;
+}
+
+#skill2-btn {
+  position: fixed;
+  background: rgb(168, 0, 0);
+  border-radius: 999%;
+  height: 125px;
+  width: 125px;
+  right: 200px;
+  bottom: 195px;
+}
+
+#skill3-btn {
+  position: fixed;
+  background: rgb(148, 0, 0);
+  border-radius: 999%;
+  height: 100px;
+  width: 100px;
+  right: 265px;
+  bottom: 50px;
+}
+
+
+/* Center the stars independently of the text */
+#attack-btn img,
+#skill1-btn img,
+#skill2-btn img,
+#skill3-btn img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+
+}
+
+
+/* Text can be positioned independently */
+#attack-btn span {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: antiquewhite;
+}
+
+#skill1-btn span {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: antiquewhite;
+}
+
+#skill2-btn span {
+  position: absolute;
+  right: 35px;
+  bottom: 15px;
+  color: antiquewhite;
+}
+
+#skill3-btn span {
+  position: absolute;
+  right: 25px;
+  bottom: 15px;
+  color: antiquewhite;
+}
