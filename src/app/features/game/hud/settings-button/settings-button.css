@@ -1,0 +1,6 @@
+.Settings-btn {
+    background: red;
+}
+.Settings-btn :hover {
+    background: white;
+}
