@@ -1,4 +1,11 @@
 <div class="relative min-h-screen w-full">
+
   <app-game-world />
-  <app-hud />
+
+  <app-hud (settingsOpen)="openSettings()" />
+
+  @if (settingsOpen) {
+  <app-settings />
+  }
+
 </div>
