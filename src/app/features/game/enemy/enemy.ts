@@ -8,13 +8,26 @@ import { Component, Input } from '@angular/core';
 })
 export class Enemy {
 
+  private static nextId = 1;
+  private id = Enemy.nextId++;
+
   constructor() {
-    if (typeof document !== 'undefined') {
-      requestAnimationFrame(() => {
-        this.updateVisualPosition();
-      });
-    }
+
+  console.log(
+    `🟢 CREATED ENEMY #${this.id}`,
+    'document:',
+    typeof document,
+    'window:',
+    typeof window
+  );
+
+  if (typeof document !== 'undefined') {
+    requestAnimationFrame(() => {
+      this.updateVisualPosition();
+    });
   }
+
+}
 
   @Input() x = 600;
   @Input() y = 400;
@@ -55,7 +68,7 @@ export class Enemy {
     }
 
     console.log(
-      'Enemy HP:',
+      `Enemy #${this.id} HP:`,
       this.health
     );
 
