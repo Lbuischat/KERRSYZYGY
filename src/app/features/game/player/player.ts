@@ -54,6 +54,7 @@ export class Player {
     }
 
     public takeDamage(amount: number): void {
+        console.log('⚠️ PLAYER TAKE DAMAGE CALLED', amount);
         this.health -= amount;
         if (this.health < 0) {
             this.health = 0;
@@ -146,16 +147,6 @@ export class Player {
         );
 
         window.addEventListener(
-            'mousedown',
-            this.handleMouseDown
-        );
-
-        window.addEventListener(
-            'mouseup',
-            this.handleMouseUp
-        );
-
-        window.addEventListener(
             'contextmenu',
             this.preventContextMenu
         );
@@ -234,7 +225,7 @@ export class Player {
     // MOUSE / ATTACK
     // =========================
 
-    private handleMouseDown = (
+    handleMouseDown = (
         event: MouseEvent
     ): void => {
 
@@ -276,7 +267,7 @@ export class Player {
         }
     };
 
-    private handleMouseUp = (
+    handleMouseUp = (
         event: MouseEvent
     ): void => {
 
