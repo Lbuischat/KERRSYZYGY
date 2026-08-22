@@ -1,9 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  imports: [],
   selector: 'app-settings-button',
-  styleUrl: './settings-button.css',
+  imports: [],
   templateUrl: './settings-button.html',
+  styleUrl: './settings-button.css',
 })
-export class SettingsButton {}
+export class SettingsButton {
+
+  @Output() settingsClicked = new EventEmitter<void>();
+
+  openSettings(): void {
+    console.log('⚙️ SETTINGS BUTTON CLICKED');
+
+    this.settingsClicked.emit();
+  }
+
+}
