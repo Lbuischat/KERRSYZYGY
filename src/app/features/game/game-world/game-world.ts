@@ -30,6 +30,23 @@ export class GameWorld {
   private projectileElements = new Map<number, HTMLElement>();
   private enemyAttackCooldown = 0;
 
+  handleMouseDown(event: MouseEvent): void {
+    if (event.button === 0) {
+      this.player.handleMouseDown(event);
+    }
+
+    if (event.button === 2) {
+      event.preventDefault();
+      this.player.handleMouseDown(event);
+    }
+  }
+
+  handleMouseUp(event: MouseEvent): void {
+    if (event.button === 0) {
+      this.player.handleMouseUp(event);
+    }
+  }
+
   constructor(
     @Inject(PLATFORM_ID)
     private platformId: object,
@@ -311,6 +328,11 @@ export class GameWorld {
       playerSize / 2 +
       enemySize / 2;
     if (distance <= collisionDistance) {
+      console.log(
+        '🚨 ENEMY ATTACKING',
+        'isDead:', this.enemy.isDead,
+        'health:', this.enemy.health
+      );
       this.player.takeDamage(10);
       this.enemyAttackCooldown = 0.75;
       console.log(
