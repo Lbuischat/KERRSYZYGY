@@ -16,14 +16,12 @@ export class GameShell {
 
   openSettings(): void {
     this.settingsOpen = true;
-
     console.log('⚙️ SETTINGS OPEN:', this.settingsOpen);
   }
 
   closeSettings(): void {
     this.settingsOpen = false;
-
-    console.log('⚙️ SETTINGS OPEN:', this.settingsOpen);
+    console.log('⚙️ SETTINGS CLOSED');
   }
 
 }
