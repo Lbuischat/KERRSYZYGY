@@ -5,7 +5,7 @@
   <app-hud (settingsOpen)="openSettings()" />
 
   @if (settingsOpen) {
-  <app-settings />
+  <app-settings (closeSettings)="closeSettings()" />
   }
 
 </div>
