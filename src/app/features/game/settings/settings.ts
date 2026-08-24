@@ -1,4 +1,5 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { GameSettingsService } from './settings.service';
 
 @Component({
   imports: [],
@@ -8,47 +9,28 @@ import { Component, Output, EventEmitter } from '@angular/core';
 })
 export class Settings {
 
-  activeTab = 'gpt';
-
   @Output() closeSettings = new EventEmitter<void>();
+
+  constructor(public settings: GameSettingsService) {}
+
+  activeTab = 'gpt';
 
   selectTab(tab: string): void {
     this.activeTab = tab;
   }
 
-  getBackToGame(): void {
-    console.log('⚙️ GET BACK TO GAME CLICKED');
-    this.closeSettings.emit();
-  }
+  updateSliderProgress(event: Event): void {
+    const slider = event.target as HTMLInputElement;
 
-  showDamageNumbers = true;
-  showTutorials = true;
-  hints = true;
-  enemyHealthBars = true;
-  autoEquip = true;
-  autoSave = true;
+    const min = Number(slider.min);
+    const max = Number(slider.max);
+    const value = Number(slider.value);
 
-  toggleDamageNumbers(): void {
-    this.showDamageNumbers = !this.showDamageNumbers;
-  }
-  toggleTutorials(): void {
-    this.showTutorials = !this.showTutorials;
-  }
+    const progress = ((value - min) / (max - min)) * 100;
 
-  toggleHints(): void {
-    this.hints = !this.hints;
+    slider.style.setProperty(
+      '--slider-progress',
+      `${progress}%`
+    );
   }
-
-  toggleEnemyHealthBars(): void {
-    this.enemyHealthBars = !this.enemyHealthBars;
-  }
-
-  toggleAutoEquip(): void {
-    this.autoEquip = !this.autoEquip;
-  }
-
-  toggleAutoSave(): void {
-    this.autoSave = !this.autoSave;
-  }
-
 }
