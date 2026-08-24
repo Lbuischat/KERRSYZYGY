@@ -1,0 +1,82 @@
+1. World Palette 🌿
+Deep forest: #28352F, #3D5147, #5A6958
+Grass: #65745B, #7F8B68, #9A9C72
+Earth: #4D4037, #6B5748, #8A715A
+Stone: #45474A, #626366, #85847E
+Style: Muted, earthy, low-saturation. The default colors of the world.
+
+2. Sky / Water / Atmosphere 🌌
+Sky: #344B5A, #4D6875, #718793
+Water: #456B73, #5F8587, #7FA19A
+Mist / clouds: #A9B1A9, #C4C4B7, #D7D3C3
+Style: Cool, soft, slightly desaturated. Spacious and magical without being overly bright.
+
+3. Character Palette 🧑
+Style: Slightly more saturated than the environment so characters remain readable.
+Clothing and accessories can use muted versions of almost any hue.
+Characters should generally have medium saturation while still fitting naturally into the world.
+Important characters can receive a stronger signature color to make them recognizable.
+Rule: Characters should stand out from the environment without looking neon or overly colorful.
+
+4. Supernatural / "Wrong" Palette 🌀
+Sickly yellow-green: #A4A65A, #626A42
+Unnatural violet-blue: #66658A
+Style: Strange colors that don't normally occur in the surrounding environment.
+Use for corrupted animals, impossible creatures, supernatural effects, poisonous auras, abnormal phenomena, etc.
+Rule: Stronger saturation is allowed here, but use it sparingly so the player learns that unusual colors mean "something is wrong."
+
+5. Progress / Achievement Palette ⭐
+Celestial gold: #D3B978
+Soft lavender: #BFA6D8
+Style: Warm, gentle, distinctive, and rewarding without being overwhelmingly bright.
+Use for: completed real-life tasks, character progression, important discoveries, level-ups, major achievements, and other forms of meaningful progress.
+Rule: This color should feel special and should not be casually used elsewhere.
+
+6. UI / Star Palette ✦
+#D3B978
+#ffdf8f
+#8d724e
+#8d724e
+
+UI darkest	#28352F	Primary dark panels, navigation
+
+UI dark	#34413B	Cards, secondary surfaces
+
+UI medium	#4D554E	Borders, inactive elements
+
+UI stone	#626366	Disabled/inactive text
+
+UI light	#A9B1A9	Secondary text
+
+UI parchment	#D7D3C3	Main light surface
+
+UI cream	#E3DFCF	High-priority light surface
+
+UI near-white	#EEEBDD	Rarely used for important text
+
+
+Background #28352F
+
+Main surface #34413B
+
+Elevated surface #3D5147
+
+Subtle surface #45474A
+
+Border #5A6958
+
+
+Muted text #85847E
+
+16-point star → small UI elements, confirmations, checkmarks
+More complex stars → rare, legendary, or story-important things
+UI should primarily use muted world colors, with the Progress color used for important feedback.
+Rule: Don't replace the star motif. Make it a deliberate part of the game's identity.
+
+7. Accessibility / Visual Intensity Palette 👁️
+Style: Avoid extremely bright colors, pure white flashes, and large areas of maximum saturation.
+Keep most colors moderately saturated and use contrast through value, shape, outlines, and icons, not color alone.
+Strong colors should appear in small areas and have a specific purpose.
+Avoid making important information depend exclusively on red/green or another color distinction.
+Flashing effects should be optional/disableable.
+Rule: The game should remain visually magical without becoming exhausting to look at for long periods.
