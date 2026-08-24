@@ -5,7 +5,10 @@
   <app-hud (settingsOpen)="openSettings()" />
 
   @if (settingsOpen) {
-  <app-settings (closeSettings)="closeSettings()" />
+    <app-settings
+      [class]="'settings-host' + (settingsClosing ? ' settings-closing' : '')"
+      (closeSettings)="closeSettings()"
+    />
   }
 
 </div>
