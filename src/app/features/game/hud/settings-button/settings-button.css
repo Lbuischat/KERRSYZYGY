@@ -1,6 +1,11 @@
 .Settings-btn {
-    background: red;
+  background: rgba(0, 0, 0, 0.589);
+  border-radius: 50%;
+  transition: background 180ms ease, transform 180ms ease;
 }
-.Settings-btn :hover {
-    background: white;
+
+.Settings-btn:hover {
+  background: rgba(255, 255, 255, 0.432);
+  border-radius: 50%;
+  transform: scale(1.1);
 }
