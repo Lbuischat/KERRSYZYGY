@@ -1,278 +1,728 @@
-<div id="settings-tabs" [class.gpt-active]="activeTab === 'gpt'" [class.at-active]="activeTab === 'at'"
-    [class.acbt-active]="activeTab === 'acbt'">
+<!-- =========================================================
+     Settings Tabs
+     ========================================================= -->
 
-    <button id="gpt" class="settings-tab" [class.active]="activeTab === 'gpt'" (click)="selectTab('gpt')">
+<div
+    id="settings-tabs"
+    [class.gpt-active]="activeTab === 'gpt'"
+    [class.at-active]="activeTab === 'at'"
+    [class.acbt-active]="activeTab === 'acbt'"
+>
+
+    <!-- =====================================================
+         Gameplay Tab
+         ===================================================== -->
+
+    <button
+        id="gpt"
+        class="settings-tab"
+        [class.active]="activeTab === 'gpt'"
+        (click)="selectTab('gpt')"
+    >
         <span>Gameplay</span>
     </button>
 
-    <button id="at" class="settings-tab" [class.active]="activeTab === 'at'" (click)="selectTab('at')">
+
+    <!-- =====================================================
+         Audio Tab
+         ===================================================== -->
+
+    <button
+        id="at"
+        class="settings-tab"
+        [class.active]="activeTab === 'at'"
+        (click)="selectTab('at')"
+    >
         <span>Audio</span>
     </button>
 
-    <button id="acbt" class="settings-tab" [class.active]="activeTab === 'acbt'" (click)="selectTab('acbt')">
+
+    <!-- =====================================================
+         Accessibility Tab
+         ===================================================== -->
+
+    <button
+        id="acbt"
+        class="settings-tab"
+        [class.active]="activeTab === 'acbt'"
+        (click)="selectTab('acbt')"
+    >
         <span>Accessibility</span>
     </button>
 
+
+    <!-- =====================================================
+         Settings Panel
+         ===================================================== -->
+
     <div id="sgt">
-        <div id="sgt">
 
-            @if (activeTab === 'gpt') {
 
-            <div id="gameplay-settings">
+        <!-- =================================================
+             Gameplay Settings
+             ================================================= -->
 
-                <!-- Show Damage Numbers -->
-                <div class="setting-row">
-                    <span>Show Damage Numbers</span>
+        @if (activeTab === 'gpt') {
 
-                    <button class="toggle-button" [class.off]="!showDamageNumbers" (click)="toggleDamageNumbers()">
-                        {{ showDamageNumbers ? 'On' : 'Off' }}
-                    </button>
-                </div>
+        <div id="gameplay-settings" class="settings-section">
 
-                <!-- Tutorials -->
-                <div class="setting-row">
-                    <span>Show Tutorials</span>
 
-                    <button class="toggle-button" [class.off]="!showTutorials" (click)="toggleTutorials()">
-                        {{ showTutorials ? 'On' : 'Off' }}
-                    </button>
-                </div>
+            <!-- Show Damage Numbers -->
 
-                <!-- Hints -->
-                <div class="setting-row">
-                    <span>Hints</span>
+            <div class="setting-row">
 
-                    <button class="toggle-button" [class.off]="!hints" (click)="toggleHints()">
-                        {{ hints ? 'On' : 'Off' }}
-                    </button>
-                </div>
+                <span>Show Damage Numbers</span>
 
-                <!-- Difficulty -->
-                <div class="setting-row">
-                    <span>Difficulty</span>
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.showDamageNumbers"
+                    (click)="settings.toggleDamageNumbers()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
 
-                    <div class="difficulty-setting">
-                        <span>Easy</span>
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
 
-                        <input type="range" min="0" max="2" value="0" step="1" />
+            </div>
 
-                        <span>Hard</span>
+
+            <!-- Tutorials -->
+
+            <div class="setting-row">
+
+                <span>Show Tutorials</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.showTutorials"
+                    (click)="settings.toggleTutorials()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Hints -->
+
+            <div class="setting-row">
+
+                <span>Hints</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.hints"
+                    (click)="settings.toggleHints()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Difficulty -->
+
+            <div class="setting-row">
+
+                <span>Difficulty</span>
+
+                <div class="slider-setting">
+
+                    <span>Easy</span>
+
+                    <div class="slider-wrapper">
+
+                        <input
+                            type="range"
+                            min="0"
+                            max="2"
+                            value="0"
+                            step="1"
+                            class="custom-slider"
+                            style="--slider-progress: 0%"
+                            (input)="updateSliderProgress($event)"
+                        >
+
                     </div>
-                </div>
 
-                <!-- Enemy Health Bars -->
-                <div class="setting-row">
-                    <span>Enemy Health Bars</span>
-
-                    <button class="toggle-button" [class.off]="!enemyHealthBars" (click)="toggleEnemyHealthBars()">
-                        {{ enemyHealthBars ? 'On' : 'Off' }}
-                    </button>
-                </div>
-
-                <!-- Auto Equip -->
-                <div class="setting-row">
-                    <span>Auto Equip</span>
-
-                    <button class="toggle-button" [class.off]="!autoEquip" (click)="toggleAutoEquip()">
-                        {{ autoEquip ? 'On' : 'Off' }}
-                    </button>
-                </div>
-
-                <!-- Auto Save -->
-                <div class="setting-row">
-                    <span>Auto Save</span>
-
-                    <button class="toggle-button" [class.off]="!autoSave" (click)="toggleAutoSave()">
-                        {{ autoSave ? 'On' : 'Off' }}
-                    </button>
-                </div>
-
-
-                <!-- Special Modes -->
-                <div class="special-modes">
-
-                    <!-- Speedrun Mode -->
-                    <label class="mode-option">
-                        <input type="checkbox" id="speedrun-mode" />
-
-                        <span>Speedrun Mode</span>
-                    </label>
-
-                    <!-- Hardcore Mode -->
-                    <label class="mode-option">
-                        <span>Hardcore Mode</span>
-
-
-                        <input type="checkbox" id="hardcore-mode" />
-                    </label>
+                    <span>Hard</span>
 
                 </div>
 
             </div>
 
-            } @else if (activeTab === 'at') {
 
-            <div id="audio-settings">
-                <h2>Audio Settings</h2>
+            <!-- Enemy Health Bars -->
 
-                <div id="audio-settings">
+            <div class="setting-row">
 
-                    <!-- Master Volume -->
-                    <div class="setting-row">
-                        <span>Master Volume</span>
+                <span>Enemy Health Bars</span>
 
-                        <input type="range" min="0" max="100" value="100" />
-                    </div>
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.enemyHealthBars"
+                    (click)="settings.toggleEnemyHealthBars()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
 
-                    <!-- Music Volume -->
-                    <div class="setting-row">
-                        <span>Music Volume</span>
-
-                        <input type="range" min="0" max="100" value="100" />
-                    </div>
-
-                    <!-- SFX Volume -->
-                    <div class="setting-row">
-                        <span>SFX Volume</span>
-
-                        <input type="range" min="0" max="100" value="100" />
-                    </div>
-
-                    <!-- Environment Volume -->
-                    <div class="setting-row">
-                        <span>Environment</span>
-
-                        <input type="range" min="0" max="100" value="100" />
-                    </div>
-
-                    <!-- Monsters Volume -->
-                    <div class="setting-row">
-                        <span>Monsters</span>
-
-                        <input type="range" min="0" max="100" value="100" />
-                    </div>
-
-                    <!-- Nature Volume -->
-                    <div class="setting-row">
-                        <span>Nature</span>
-
-                        <input type="range" min="0" max="100" value="100" />
-                    </div>
-
-
-                    <!-- Audio Options -->
-                    <div class="audio-options">
-
-                        <!-- Subtitles -->
-                        <label class="mode-option">
-                            <input type="checkbox" id="subtitles" />
-
-                            <span>Subtitles</span>
-                        </label>
-
-                        <!-- Mute All -->
-                        <label class="mode-option">
-                            <input type="checkbox" id="mute-all" />
-
-                            <span>Mute All</span>
-                        </label>
-
-                    </div>
-
-                </div>
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
 
             </div>
 
-            } @else if (activeTab === 'acbt') {
 
-            <div id="accessibility-settings">
-                <h2>Accessibility Settings</h2>
+            <!-- Auto Equip -->
 
-                <div id="accessibility-settings">
+            <div class="setting-row">
 
-                    <!-- Reduce Flashes -->
-                    <div class="setting-row">
-                        <span>Reduce Flashes</span>
+                <span>Auto Equip</span>
 
-                        <button class="toggle-button">
-                            ON
-                        </button>
-                    </div>
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.autoEquip"
+                    (click)="settings.toggleAutoEquip()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
 
-                    <!-- Screen Shake -->
-                    <div class="setting-row">
-                        <span>Screen Shake</span>
-
-                        <button class="toggle-button">
-                            ON
-                        </button>
-                    </div>
-
-                    <!-- Motion Blur -->
-                    <div class="setting-row">
-                        <span>Motion Blur</span>
-
-                        <button class="toggle-button">
-                            ON
-                        </button>
-                    </div>
-
-                    <!-- Color Blind Mode -->
-                    <div class="setting-row">
-                        <span>Color Blind Mode</span>
-
-                        <button class="toggle-button">
-                            ON
-                        </button>
-                    </div>
-
-                    <!-- UI Scale -->
-                    <div class="setting-row">
-                        <span>UI Scale</span>
-
-                        <div class="ui-scale-setting">
-                            <span>Small</span>
-
-                            <input type="range" min="0" max="2" value="1" step="1" />
-
-                            <span>Large</span>
-                        </div>
-                    </div>
-
-                    <!-- Auto Pickup -->
-                    <div class="setting-row">
-                        <span>Auto Pickup</span>
-
-                        <button class="toggle-button">
-                            ON
-                        </button>
-                    </div>
-
-                    <!-- Reduced Keybinds -->
-                    <div class="setting-row">
-                        <span>Reduced Keybinds</span>
-
-                        <button class="toggle-button">
-                            ON
-                        </button>
-                    </div>
-
-                    <!-- Click to Walk -->
-                    <div class="setting-row">
-                        <span>Click to Walk</span>
-
-                        <button class="toggle-button">
-                            ON
-                        </button>
-                    </div>
-
-                </div>
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
 
             </div>
 
-            }
+
+            <!-- Auto Save -->
+
+            <div class="setting-row">
+
+                <span>Auto Save</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.autoSave"
+                    (click)="settings.toggleAutoSave()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Special Modes -->
+
+            <div class="special-modes">
+
+                <!-- Speedrun Mode -->
+
+                <label class="mode-option">
+
+                    <input
+                        type="checkbox"
+                        id="speedrun-mode"
+                    >
+
+                    <span>Speedrun Mode</span>
+
+                </label>
+
+
+                <!-- Hardcore Mode -->
+
+                <label class="mode-option">
+
+                    <span>Hardcore Mode</span>
+
+                    <input
+                        type="checkbox"
+                        id="hardcore-mode"
+                    >
+
+                </label>
+
+            </div>
 
         </div>
+
+
+        <!-- =================================================
+             Audio Settings
+             ================================================= -->
+
+        } @else if (activeTab === 'at') {
+
+        <div id="audio-settings" class="settings-section">
+
+
+            <!-- Master Volume -->
+
+            <div class="setting-row">
+
+                <span>Master Volume</span>
+
+                <div class="slider-wrapper">
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="100"
+                        class="custom-slider"
+                        style="--slider-progress: 100%"
+                        (input)="updateSliderProgress($event)"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Music Volume -->
+
+            <div class="setting-row">
+
+                <span>Music Volume</span>
+
+                <div class="slider-wrapper">
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="100"
+                        class="custom-slider"
+                        style="--slider-progress: 100%"
+                        (input)="updateSliderProgress($event)"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- SFX Volume -->
+
+            <div class="setting-row">
+
+                <span>SFX Volume</span>
+
+                <div class="slider-wrapper">
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="100"
+                        class="custom-slider"
+                        style="--slider-progress: 100%"
+                        (input)="updateSliderProgress($event)"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Environment Volume -->
+
+            <div class="setting-row">
+
+                <span>Environment</span>
+
+                <div class="slider-wrapper">
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="100"
+                        class="custom-slider"
+                        style="--slider-progress: 100%"
+                        (input)="updateSliderProgress($event)"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Monsters Volume -->
+
+            <div class="setting-row">
+
+                <span>Monsters</span>
+
+                <div class="slider-wrapper">
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="100"
+                        class="custom-slider"
+                        style="--slider-progress: 100%"
+                        (input)="updateSliderProgress($event)"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Nature Volume -->
+
+            <div class="setting-row">
+
+                <span>Nature</span>
+
+                <div class="slider-wrapper">
+
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="100"
+                        class="custom-slider"
+                        style="--slider-progress: 100%"
+                        (input)="updateSliderProgress($event)"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Audio Options -->
+
+            <div class="audio-options">
+
+                <!-- Subtitles -->
+
+                <label class="mode-option">
+
+                    <input
+                        type="checkbox"
+                        id="subtitles"
+                    >
+
+                    <span>Subtitles</span>
+
+                </label>
+
+
+                <!-- Mute All -->
+
+                <label class="mode-option">
+
+                    <span>Mute All</span>
+
+                    <input
+                        type="checkbox"
+                        id="mute-all"
+                    >
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             Accessibility Settings
+             ================================================= -->
+
+        } @else if (activeTab === 'acbt') {
+
+        <div
+            id="accessibility-settings"
+            class="settings-section"
+        >
+
+
+            <!-- Reduce Flashes -->
+
+            <div class="setting-row">
+
+                <span>Reduce Flashes</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.reduceFlashes"
+                    (click)="settings.toggleReduceFlashes()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Screen Shake -->
+
+            <div class="setting-row">
+
+                <span>Screen Shake</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.screenShake"
+                    (click)="settings.toggleScreenShake()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Motion Blur -->
+
+            <div class="setting-row">
+
+                <span>Motion Blur</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.motionBlur"
+                    (click)="settings.toggleMotionBlur()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Color Blind Mode -->
+
+            <div class="setting-row">
+
+                <span>Color Blind Mode</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.colorBlindMode"
+                    (click)="settings.toggleColorBlindMode()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- UI Scale -->
+
+            <div class="setting-row">
+
+                <span>UI Scale</span>
+
+                <div class="slider-setting">
+
+                    <span>Small</span>
+
+                    <div class="slider-wrapper">
+
+                        <input
+                            type="range"
+                            min="0"
+                            max="2"
+                            value="1"
+                            step="1"
+                            class="custom-slider"
+                            style="--slider-progress: 50%"
+                            (input)="updateSliderProgress($event)"
+                        >
+
+                    </div>
+
+                    <span>Large</span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Auto Pickup -->
+
+            <div class="setting-row">
+
+                <span>Auto Pickup</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.autoPickup"
+                    (click)="settings.toggleAutoPickup()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Reduced Keybinds -->
+
+            <div class="setting-row">
+
+                <span>Reduced Keybinds</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.reducedKeybinds"
+                    (click)="settings.toggleReducedKeybinds()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+
+            <!-- Click to Walk -->
+
+            <div class="setting-row">
+
+                <span>Click to Walk</span>
+
+                <button
+                    class="toggle-button"
+                    [class.off]="!settings.clickToWalk"
+                    (click)="settings.toggleClickToWalk()"
+                >
+                    <img
+                        class="toggle-on"
+                        src="icons/toggle.svg"
+                        alt=""
+                    >
+
+                    <img
+                        class="toggle-off"
+                        src="icons/toggle-off.svg"
+                        alt=""
+                    >
+                </button>
+
+            </div>
+
+        </div>
+
+        }
+
     </div>
 
 </div>
+
+
+<!-- =========================================================
+     Background Overlay
+     ========================================================= -->
+
+<div class="overlay"></div>
