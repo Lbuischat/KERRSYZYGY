@@ -1,23 +1,104 @@
 /* =========================================================
+   Settings Component / Transition
+   ========================================================= */
+
+:host {
+  display: block;
+  position: fixed;
+  inset: 0;
+
+  /* Keep the settings above the game */
+  z-index: 1000;
+
+  /* Fade/scale when opening */
+  animation: settings-fade-in 180ms ease-out both;
+}
+
+:host(.settings-closing) {
+  animation: settings-fade-out 180ms ease-in both;
+
+  /* Don't allow interaction while closing */
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   Settings Fade Animations
+   ========================================================= */
+
+@keyframes settings-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes settings-fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+
+/* =========================================================
+   Overlay
+   ========================================================= */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.582);
+
+  /*
+    Overlay is behind the settings panel,
+    but still above the game.
+  */
+  z-index: 0;
+}
+
+
+/* =========================================================
    Settings Tabs
    ========================================================= */
 
 #settings-tabs {
-    /* Positioning */
-    position: absolute;
-    top: 70px;
-    left: 50%;
-    transform: translate(-50%, 10%);
+  position: absolute;
 
-    /* Layout */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: max-content;
+  top: 70px;
+  left: 50%;
 
-    /* Interaction */
-    user-select: none;
+  transform: translate(-50%, 10%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: max-content;
+
+  user-select: none;
+
+  /*
+    The settings UI needs to be above the overlay.
+  */
+  z-index: 1;
 }
+
+
+/* =========================================================
+   Individual Tabs
+   ========================================================= */
 
 .settings-tab {
     /* Size */
@@ -56,7 +137,7 @@
 }
 
 .settings-tab.active {
-    background: white;
+    background: #fffbea;
 }
 
 
@@ -64,9 +145,9 @@
    Tab Active-State Styling
    ========================================================= */
 
-/* GPT is active → darken the other tabs */
+/* Gameplay is active */
 #settings-tabs.gpt-active #at {
-    background: #555;
+    background: #b1b0a9;
 }
 
 #settings-tabs.gpt-active #at span {
@@ -74,7 +155,7 @@
 }
 
 #settings-tabs.gpt-active #acbt {
-    background: #333;
+    background: #666666;
 }
 
 #settings-tabs.gpt-active #acbt span {
@@ -82,10 +163,10 @@
 }
 
 
-/* Audio is active → darken the other tabs */
+/* Audio is active */
 #settings-tabs.at-active #gpt,
 #settings-tabs.at-active #acbt {
-    background: #555;
+    background: #b1b0a9;
 }
 
 #settings-tabs.at-active #gpt span,
@@ -94,9 +175,9 @@
 }
 
 
-/* Accessibility is active → darken the other tabs */
+/* Accessibility is active */
 #settings-tabs.acbt-active #gpt {
-    background: #333;
+    background: #666666;
 }
 
 #settings-tabs.acbt-active #gpt span {
@@ -104,7 +185,7 @@
 }
 
 #settings-tabs.acbt-active #at {
-    background: #555;
+    background: #b1b0a9;
 }
 
 #settings-tabs.acbt-active #at span {
@@ -119,7 +200,7 @@
 #sgt {
     /* Size */
     width: min(1020px, 90vw);
-    height: min(715px, calc(100vh - 65px));
+    height: min(740px, calc(100vh - 65px));
 
     /* Positioning */
     position: absolute;
@@ -128,16 +209,35 @@
     transform: translateX(-50%);
 
     /* Appearance */
-    background: white;
+    background: #fffbea;
     border-radius: 55px;
+
+    /*
+       The settings content has:
+
+       60px left padding
+       95px right padding
+
+       Therefore:
+
+       1020px - 60px - 95px = 865px
+
+       Your original slider width was 630px.
+
+       630 / 865 = 72.83%
+
+       This keeps the original 630px desktop width while
+       scaling down with the settings panel.
+    */
+    --slider-width: min(630px, calc((100% - 155px) * 0.7283));
 }
 
 
 /* =========================================================
-   Gameplay Settings
+   Shared Settings Section
    ========================================================= */
 
-#gameplay-settings {
+.settings-section {
     /* Size */
     width: 100%;
     height: 100%;
@@ -152,8 +252,11 @@
 }
 
 
-/* Individual setting rows */
-#gameplay-settings .setting-row {
+/* =========================================================
+   Shared Setting Rows
+   ========================================================= */
+
+.setting-row {
     width: 100%;
     min-height: 70px;
 
@@ -162,53 +265,200 @@
     justify-content: space-between;
 }
 
-#gameplay-settings .setting-row > span {
+.setting-row>span {
     font-size: 32px;
 }
 
 
 /* =========================================================
-   Gameplay Toggles
+   Shared Toggle Buttons
    ========================================================= */
 
-#gameplay-settings .toggle-button {
+.toggle-button {
+    position: relative;
+
     width: 150px;
     height: 50px;
 
     border: none;
-    border-radius: 99px;
+    padding: 0;
 
-    background: #4caf50;
-    color: black;
+    background: none;
 
     cursor: pointer;
 
-    font-size: 24px;
-    font-weight: 400;
-}
-
-#gameplay-settings .toggle-button.off {
-    background: #d9534f;
+    overflow: hidden;
 }
 
 
 /* =========================================================
-   Difficulty
+   Toggle SVGs
    ========================================================= */
 
-#gameplay-settings .difficulty-setting {
-    width: 630px;
+.toggle-button img {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    transition: opacity 0.25s ease-in-out;
+}
+
+
+/* ON SVG */
+.toggle-button .toggle-on {
+    opacity: 1;
+}
+
+
+/* OFF SVG */
+.toggle-button .toggle-off {
+    opacity: 0;
+}
+
+
+/* When button is OFF */
+.toggle-button.off .toggle-on {
+    opacity: 0;
+}
+
+.toggle-button.off .toggle-off {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   Toggle Text
+   ========================================================= */
+
+.toggle-button span {
+    position: relative;
+    z-index: 2;
+
+    font-size: 24px;
+    font-weight: 400;
+
+    color: #5b3d0000;
+}
+
+
+/* Text becomes black when OFF */
+.toggle-button.off span {
+
+    position: relative;
+    z-index: 2;
+
+    font-size: 24px;
+    font-weight: 400;
+
+    color: #ffdf8f00;
+}
+
+
+/* =========================================================
+   Slider Wrapper
+   ========================================================= */
+
+/*
+   THIS is important.
+
+   Audio uses:
+
+       .slider-wrapper
+           └── .custom-slider
+
+   So the wrapper itself needs a real width.
+
+   Gameplay/accessibility also use this wrapper, so giving
+   it the responsive slider width keeps all three slider
+   types consistent.
+*/
+
+.slider-wrapper {
+    width: var(--slider-width);
+    flex: 0 1 var(--slider-width);
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+}
+
+
+/* =========================================================
+   Shared Slider Settings
+   ========================================================= */
+
+.slider-setting {
+    /*
+       The complete slider control contains:
+
+       [ Small ] [ slider ] [ Large ]
+
+       Keep the overall control at the original 630px
+       slider width plus its labels.
+    */
+    width: calc(var(--slider-width) + 24px + 2 * 40px);
+
     height: 25px;
 
     display: flex;
     align-items: center;
+
     gap: 15px;
 
     font-size: 24px;
+
+    /*
+       Prevent the control from forcing the row wider
+       than the available panel.
+    */
+    max-width: 100%;
+    min-width: 0;
 }
 
-#gameplay-settings .difficulty-setting input[type="range"] {
-    width: 630px;
+.slider-setting .slider-wrapper {
+    /*
+       The slider itself gets the responsive width.
+    */
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+}
+
+.slider-setting input[type="range"] {
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   Audio Volume Sliders
+   ========================================================= */
+
+/*
+   Audio has:
+
+       [label]              [slider-wrapper]
+                              └── input
+
+   The wrapper gets the responsive width so the input
+   doesn't collapse.
+*/
+
+#audio-settings .setting-row .slider-wrapper {
+    width: var(--slider-width);
+    flex: 0 1 var(--slider-width);
+
+    min-width: 0;
+}
+
+#audio-settings .setting-row .custom-slider {
+    width: 100%;
+    min-width: 0;
 }
 
 
@@ -216,7 +466,7 @@
    Special Modes
    ========================================================= */
 
-#gameplay-settings .special-modes {
+.special-modes {
     width: 100%;
 
     margin-top: auto;
@@ -226,7 +476,27 @@
     justify-content: space-between;
 }
 
-#gameplay-settings .mode-option {
+
+/* =========================================================
+   Audio Options
+   ========================================================= */
+
+.audio-options {
+    width: 100%;
+
+    margin-top: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* =========================================================
+   Shared Checkbox Options
+   ========================================================= */
+
+.mode-option {
     display: flex;
     align-items: center;
 
@@ -234,12 +504,7 @@
     cursor: pointer;
 }
 
-
-/* =========================================================
-   Special Mode Checkboxes
-   ========================================================= */
-
-#gameplay-settings .mode-option input[type="checkbox"] {
+.mode-option input[type="checkbox"] {
     appearance: none;
 
     width: 40px;
@@ -247,23 +512,182 @@
 
     margin: 0 15px 0 0;
 
-    background-color: #888;
+    background-color: #C2942C;
     border-radius: 50%;
 
     cursor: pointer;
 }
 
-/* Hardcore checkbox: text comes first, so spacing goes on the left */
-#gameplay-settings .mode-option:last-child input[type="checkbox"] {
+
+/* =========================================================
+   Hardcore Mode Checkbox
+   ========================================================= */
+
+/*
+   Hardcore Mode places the text before the checkbox,
+   so the checkbox needs its spacing on the left.
+*/
+
+.special-modes .mode-option:last-child input[type="checkbox"] {
     margin: 0 0 0 15px;
 }
 
-/* Checked state */
-#gameplay-settings .mode-option input[type="checkbox"]:checked {
+
+/* =========================================================
+   Checked Checkboxes
+   ========================================================= */
+
+.mode-option input[type="checkbox"]:checked {
     box-shadow: none;
 
     background-image: url('/icons/checkmark.svg');
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 70%;
+    background-size: 100%;
+}
+
+
+/* =========================================================
+   Custom Settings Sliders
+   ========================================================= */
+
+.custom-slider {
+    /* Remove browser styling */
+    appearance: none;
+    -webkit-appearance: none;
+
+    /*
+       Width comes from the .slider-wrapper.
+    */
+    width: 100%;
+    min-width: 0;
+
+    height: 22px;
+
+    /* Background is handled by the track */
+    background: transparent;
+
+    /* Interaction */
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   Slider Track
+   ========================================================= */
+
+/* Chrome / Edge / Safari */
+
+.custom-slider::-webkit-slider-runnable-track {
+    height: 22px;
+
+    border-radius: 99px;
+
+    background: linear-gradient(to right,
+            #E8B84B 0%,
+            #FFDF8F var(--slider-progress),
+            #8d724e var(--slider-progress),
+            #a78435 100%);
+}
+
+
+/* Firefox */
+
+.custom-slider::-moz-range-track {
+    height: 22px;
+
+    border-radius: 99px;
+
+    background: linear-gradient(to right,
+            #e4c780 0%,
+            #ffdf8f var(--slider-progress),
+            #8d724e var(--slider-progress),
+            #8d724e 100%);
+}
+
+
+/* =========================================================
+   Slider Thumb
+   ========================================================= */
+
+/*
+   The thumb is a four-point star SVG.
+*/
+
+
+/* Chrome / Edge / Safari */
+
+.custom-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+
+    /* Size */
+    width: 45px;
+    height: 45px;
+
+    /* Center the star on the 22px track */
+    margin-top: -12px;
+
+    /* Appearance */
+    border: none;
+    border-radius: 0;
+
+    background-color: transparent;
+    background-image: url('/icons/startthumb.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    /* Soft celestial shadow */
+    filter: drop-shadow(0 2px 3px rgba(40, 53, 47, 0.35));
+
+    /* Interaction */
+    cursor: grab;
+}
+
+.custom-slider::-webkit-slider-thumb:active {
+    cursor: grabbing;
+
+    filter: drop-shadow(0 2px 4px rgba(40, 53, 47, 0.45));
+}
+
+
+/* Firefox */
+
+.custom-slider::-moz-range-thumb {
+    width: 46px;
+    height: 46px;
+
+    border: none;
+    border-radius: 0;
+
+    background-color: transparent;
+    background-image: url('/icons/startthumb.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    filter: drop-shadow(0 2px 3px rgba(40, 53, 47, 0.35));
+
+    cursor: grab;
+}
+
+.custom-slider::-moz-range-thumb:active {
+    cursor: grabbing;
+
+    filter: drop-shadow(0 2px 4px rgba(40, 53, 47, 0.45));
+}
+
+
+/* =========================================================
+   Slider Interaction
+   ========================================================= */
+
+.custom-slider:focus {
+    outline: none;
+}
+
+.custom-slider:focus-visible {
+    outline: 3px solid #ffc1da;
+    outline-offset: 4px;
 }
