@@ -1,8 +1,4 @@
-import {
-  Component,
-  Output,
-  EventEmitter
-} from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 
 import { PlayerInfo } from './player-info/player-info';
 import { CurrencyDisplay } from './currency-display/currency-display';
@@ -14,18 +10,29 @@ import { SettingsButton } from './settings-button/settings-button';
 
 @Component({
   selector: 'app-hud',
-  imports: [PlayerInfo, CurrencyDisplay, TaskPanel, MiniMap, ActionBar, InventoryButton, SettingsButton],
+  imports: [
+    PlayerInfo,
+    CurrencyDisplay,
+    TaskPanel,
+    MiniMap,
+    ActionBar,
+    InventoryButton,
+    SettingsButton,
+  ],
   templateUrl: './hud.html',
   styleUrl: './hud.css',
 })
 export class Hud {
-
   @Output() settingsOpen = new EventEmitter<void>();
+  @Output() inventoryOpen = new EventEmitter<void>();
 
   openSettings(): void {
     console.log('⚙️ HUD RECEIVED SETTINGS CLICK');
-
     this.settingsOpen.emit();
   }
 
+  toggleInventory(): void {
+    console.log('🎒 HUD RECEIVED INVENTORY CLICK');
+    this.inventoryOpen.emit();
+  }
 }
