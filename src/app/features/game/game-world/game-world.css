@@ -8,3 +8,10 @@
   inset: 0;
   pointer-events: none;
 }
+
+app-player,
+app-enemy,
+#projectile-layer {
+  position: relative;
+  z-index: 10;
+}

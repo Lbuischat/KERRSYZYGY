@@ -46,7 +46,7 @@ export class ProjectileService {
       damage: 10,
 
       size: 8,
-      color: 'blue',
+      color: 'white',
 
       lifetime: 3,
       age: 0

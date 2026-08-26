@@ -1,21 +1,206 @@
-:host {
+/* =========================================================
+   Overlay
+   ========================================================= */
+
+.overlay {
   position: fixed;
   inset: 0;
+
+  background: rgba(0, 0, 0, 0.582);
+
+  /*
+    Overlay is behind the settings panel,
+    but still above the game.
+  */
+  z-index: 0;
+}
+
+/* =========================================================
+   Settings Component / Transition
+   ========================================================= */
+
+:host {
+  display: block;
+  position: fixed;
+  inset: 0;
+
+  /* Keep the settings above the game */
   z-index: 1000;
+
+  /* Fade/scale when opening */
+  animation: settings-fade-in 180ms ease-out both;
+}
+
+:host(.settings-closing) {
+  animation: settings-fade-out 180ms ease-in both;
+
+  /* Don't allow interaction while closing */
+  pointer-events: none;
 }
 
 .inventory {
+  z-index: 999999;
+
+  /* Size */
+  width: min(1020px, 90vw);
+  height: min(900px, calc(100vh - 65px));
+
+  /* Positioning */
   position: absolute;
+  transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
 
-  width: 600px;
-  height: 400px;
+  /* Appearance */
+  background: #fffbea;
+  border-radius: 55px;
+}
 
-  background: rgba(20, 20, 20, 0.95);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+/* =========================================================
+   Settings Fade Animations
+   ========================================================= */
+
+@keyframes settings-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes settings-fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* =========================================================
+   Inventory Filters
+   ========================================================= */
+
+.filters {
+  position: absolute;
+
+  left: 0;
+  top: 90px;
+  bottom: 100px;
+
+  width: 165px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* =========================================================
+   Filter Buttons
+   ========================================================= */
+
+.filters button {
+  width: 100px;
+  height: 45px;
+
+  border: none;
   border-radius: 12px;
 
-  color: white;
+  cursor: pointer;
+
+  background: #b7b2a9;
+  color: #000;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.filters button:hover {
+  background: #cbc3bc;
+}
+
+.filters button.active {
+  background: #d8d2b8;
+  transform: scale(1.05);
+}
+
+/* =========================================================
+   Inventory Grid
+   ========================================================= */
+
+.inventory-grid {
+  position: absolute;
+
+  left: 165px;
+
+  top: 55px;
+
+  display: grid;
+
+  grid-template-columns: repeat(5, 120px);
+  grid-template-rows: repeat(6, 120px);
+
+  gap: 12px;
+}
+
+/* =========================================================
+   Inventory Slot
+   ========================================================= */
+
+.inventory-item {
+  width: 120px;
+  height: 120px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 15px;
+
+  background: #d8d2b8;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.inventory-item:hover {
+  background: #c8c1a5;
+  transform: scale(1.03);
+}
+
+/* =========================================================
+   Inventory Selected Screen
+   ========================================================= */
+
+.inventory-selected {
+  position: absolute;
+
+  top: 55px;
+  right: 55px;
+
+  width: 300px;
+  height: 780px;
+
+  background: #d8d2b8;
+
+  border-color: #fffbea;
+  border-width: 12px;
+
+  border-radius: 25px;
+
+  box-sizing: border-box;
 }

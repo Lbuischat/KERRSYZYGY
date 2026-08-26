@@ -1,0 +1,24 @@
+.terrain {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 2560px;
+  height: 5120px;
+
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+.terrain-tile {
+  position: absolute;
+
+  width: 128px;
+  height: 128px;
+
+  display: block;
+
+  user-select: none;
+  pointer-events: none;
+}

@@ -1,0 +1,20 @@
+<div class="terrain">
+
+  @for (row of tiles; track $index; let y = $index) {
+
+    @for (tile of row; track $index; let x = $index) {
+
+      <img
+        class="terrain-tile"
+        [src]="getTilePath(tile)"
+        [style.left.px]="x * tileSize"
+        [style.top.px]="getTileTop(tile, y)"
+        [style.z-index]="getTileZIndex(tile)"
+        draggable="false"
+      >
+
+    }
+
+  }
+
+</div>
