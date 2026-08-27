@@ -1,0 +1,11 @@
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "username": "TestPlayer",
+  "email": "test@dopaminedungeon.com"
+}
+
+###
+
+GET http://localhost:3000/users?email=test@dopaminedungeon.com
