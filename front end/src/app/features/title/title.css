@@ -1,0 +1,106 @@
+:host {
+    background: black;
+    user-select: none;
+}
+
+.title-screen {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: black;
+
+    overflow: hidden;
+}
+
+/* Logo */
+
+.game-logo {
+    width: 300px;
+    height: auto;
+
+    opacity: 0;
+
+    animation: logo-intro 2s ease-out forwards;
+}
+
+/* Title + button */
+
+.title-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    opacity: 0;
+    color: aliceblue;
+
+    animation: content-intro 0.8s ease-out 2s forwards;
+}
+
+h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 7vw, 100px);
+    margin: 0;
+    cursor: default;
+}
+
+button {
+    margin-top: 40px;
+    cursor: pointer;
+    font-family: 'IM FELL English', serif;
+    color: grey;
+}
+
+button:hover {
+    scale: 1.2;
+    color: aliceblue;
+}
+
+/* Logo moves upward */
+
+@keyframes logo-intro {
+
+    /* Fade in */
+    0% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Stay completely still at full opacity */
+    55% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* THEN move upward */
+    100% {
+        opacity: 1;
+        transform: translateY(-100px);
+    }
+
+}
+
+/* Title and button fade in */
+
+@keyframes content-intro {
+
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
