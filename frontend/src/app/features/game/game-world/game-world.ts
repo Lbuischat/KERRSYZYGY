@@ -23,6 +23,11 @@ export class GameWorld {
   private animationFrameId = 0;
   private projectileElements = new Map<number, HTMLElement>();
   private enemyAttackCooldown = 0;
+  cameraX = 0;
+  cameraY = 0;
+
+  private readonly worldWidth = 20 * 128;
+  private readonly worldHeight = 20 * 128;
 
   handleMouseDown(event: MouseEvent): void {
     if (event.button === 0) {
@@ -59,6 +64,9 @@ export class GameWorld {
       const deltaTime = (currentTime - lastTime) / 1000;
 
       lastTime = currentTime;
+      // Update camera
+
+      this.updateCamera();
 
       // Update projectile physics
       this.projectileService.update(deltaTime);
@@ -87,14 +95,20 @@ export class GameWorld {
   }
 
   shootProjectile(event: { mouseX: number; mouseY: number }): void {
+
     const position = this.player.getPosition();
+
+    // Mouse position is relative to the screen.
+    // Convert it into world coordinates using the camera.
+    const worldMouseX = event.mouseX + this.cameraX;
+    const worldMouseY = event.mouseY + this.cameraY;
 
     this.projectileService.spawnProjectile(
       'player',
       position.x,
       position.y,
-      event.mouseX,
-      event.mouseY,
+      worldMouseX,
+      worldMouseY,
     );
   }
 
@@ -298,4 +312,69 @@ export class GameWorld {
       }
     }
   }
+
+  private updateCamera(): void {
+
+    if (!this.player || !isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const playerPosition = this.player.getPosition();
+    const playerSize = this.player.getSize();
+
+    const playerCenterX =
+      playerPosition.x + playerSize / 2;
+
+    const playerCenterY =
+      playerPosition.y + playerSize / 2;
+
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    let targetCameraX =
+      playerCenterX - screenWidth / 2;
+
+    let targetCameraY =
+      playerCenterY - screenHeight / 2;
+
+    // Keep camera inside the world
+
+    const maxCameraX =
+      Math.max(0, this.worldWidth - screenWidth);
+
+    const maxCameraY =
+      Math.max(0, this.worldHeight - screenHeight);
+
+    targetCameraX = Math.max(
+      0,
+      Math.min(targetCameraX, maxCameraX)
+    );
+
+    targetCameraY = Math.max(
+      0,
+      Math.min(targetCameraY, maxCameraY)
+    );
+
+    this.cameraX = targetCameraX;
+    this.cameraY = targetCameraY;
+
+
+    // =========================================================
+    // DIRECTLY MOVE THE WORLD
+    // =========================================================
+
+    const worldLayer =
+      document.getElementById('world-layer');
+
+    if (!worldLayer) {
+      return;
+    }
+
+    worldLayer.style.transform =
+      `translate(
+      ${-this.cameraX}px,
+      ${-this.cameraY}px
+    )`;
+  }
+
 }

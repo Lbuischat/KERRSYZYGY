@@ -20,11 +20,11 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 5898, hash: 'd33938f102098235034d3380de8cc095a0684a9c50ceeede42ca3b55b753d8ed', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 953, hash: '7b8607a36c1edc852f26b861cd5187c2ee8be04662bebba8e71c88fa63ef8571', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'login/index.html': {size: 6363, hash: 'b535bdfc1a3d2cc53ed3a4ee1652d22a55ca79b02ef37dd6be00b0a373a85119', text: () => import('./assets-chunks/login_index_html.mjs').then(m => m.default)},
-    'index.html': {size: 8936, hash: 'aa2867f667799ece24939445cd4efbba81d62828411a808d93147820873ed1fb', text: () => import('./assets-chunks/index_html.mjs').then(m => m.default)},
-    'game/index.html': {size: 141502, hash: '4d1b912bb57dcd0b7f03ee3a5f58b99349caf552fd820a090742e6a79604aa69', text: () => import('./assets-chunks/game_index_html.mjs').then(m => m.default)},
-    'styles-IF2VDQQH.css': {size: 14484, hash: 'fZdZgoFpI/4', text: () => import('./assets-chunks/styles-IF2VDQQH_css.mjs').then(m => m.default)}
+    'index.csr.html': {size: 6118, hash: 'be0fad8f0cf8854feceef311424bb8277cd1bb345b3465dc70118858becd07ad', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 1036, hash: 'd77901f0a0bfc010f9d8db33eb0a93dbbe8d477a1f833ba2307534113b58851d', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'login/index.html': {size: 6594, hash: '69283830cdbe41e0ea9ccdc45c968eb7e41e4ebfccda656323dafd9d6d31a16d', text: () => import('./assets-chunks/login_index_html.mjs').then(m => m.default)},
+    'index.html': {size: 9157, hash: 'b42262d0098d5061a0817f49a66879a69263b7e09fd5e337af7fd77df1ceecf8', text: () => import('./assets-chunks/index_html.mjs').then(m => m.default)},
+    'game/index.html': {size: 174047, hash: '700169a2ac6798a791506ce2bab39c0d4662868674be6cc783f3c7e8b594e6b3', text: () => import('./assets-chunks/game_index_html.mjs').then(m => m.default)},
+    'styles-JKOLBG4O.css': {size: 15045, hash: 'ntM3fZOAZiE', text: () => import('./assets-chunks/styles-JKOLBG4O_css.mjs').then(m => m.default)}
   },
 };

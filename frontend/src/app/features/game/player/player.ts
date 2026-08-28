@@ -503,6 +503,28 @@ export class Player {
                 vertical *
                 currentSpeed;
 
+
+            // Keep player inside the world
+
+            const worldWidth = 20 * 128;
+            const worldHeight = 20 * 128;
+
+            this.playerX = Math.max(
+                0,
+                Math.min(
+                    this.playerX,
+                    worldWidth - this.getSize()
+                )
+            );
+
+            this.playerY = Math.max(
+                0,
+                Math.min(
+                    this.playerY,
+                    worldHeight - this.getSize()
+                )
+            );
+
             this.updatePlayerPosition();
 
             this.animationFrameId =

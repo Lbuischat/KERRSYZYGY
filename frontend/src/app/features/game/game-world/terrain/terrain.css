@@ -1,10 +1,12 @@
 .terrain {
+
   position: absolute;
+
   top: 0;
   left: 0;
 
   width: 2560px;
-  height: 5120px;
+  height: 2560px;
 
   pointer-events: none;
 
@@ -12,13 +14,40 @@
 }
 
 .terrain-tile {
+
   position: absolute;
 
   width: 128px;
   height: 128px;
 
-  display: block;
+  background-repeat: no-repeat;
+  background-size: 384px 384px;
 
   user-select: none;
   pointer-events: none;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 0, 0, 0.35);
+}
+
+.debug-info {
+
+  position: absolute;
+
+  top: 4px;
+  left: 4px;
+
+  padding: 4px 6px;
+
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 15px;
+
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+
+  pointer-events: none;
+
+  z-index: 100;
 }
