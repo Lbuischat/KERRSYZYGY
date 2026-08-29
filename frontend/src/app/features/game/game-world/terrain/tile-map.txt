@@ -1,114 +1,97 @@
-GRASS SHEET
-===========
+private generateMap(): void {
 
-0,0:
-TL = DIRT
-TR = DIRT
-BL = DIRT
-BR = GRASS
-
-0,1:
-TL = DIRT
-TR = DIRT
-BL = GRASS
-BR = GRASS
-
-0,2:
-TL = DIRT
-TR = DIRT
-BL = GRASS
-BR = DIRT
-
-1,0:
-TL = DIRT
-TR = GRASS
-BL = DIRT
-BR = GRASS
-
-1,1:
-TL = GRASS
-TR = GRASS
-BL = GRASS
-BR = GRASS
-
-1,2:
-TL = GRASS
-TR = DIRT
-BL = GRASS
-BR = DIRT
-
-2,0:
-TL = DIRT
-TR = GRASS
-BL = DIRT
-BR = DIRT
-
-2,1:
-TL = GRASS
-TR = GRASS
-BL = DIRT
-BR = DIRT
-
-2,2:
-TL = GRASS
-TR = DIRT
-BL = DIRT
-BR = DIRT
+    const possibilities: Set<TileId>[][] = [];
 
 
-DIRT SHEET
-==========
+    // ========================================================
+    // START WITH EVERY TILE POSSIBLE EVERYWHERE
+    // ========================================================
 
-0,0:
-TL = GRASS
-TR = GRASS
-BL = GRASS
-BR = DIRT
+    for (let y = 0; y < this.mapHeight; y++) {
 
-0,1:
-TL = GRASS
-TR = GRASS
-BL = DIRT
-BR = DIRT
+      const row: Set<TileId>[] = [];
 
-0,2:
-TL = GRASS
-TR = GRASS
-BL = DIRT
-BR = GRASS
+      for (let x = 0; x < this.mapWidth; x++) {
 
-1,0:
-TL = GRASS
-TR = DIRT
-BL = GRASS
-BR = DIRT
+        row.push(
+          new Set(
+            ALL_TERRAIN_RULES.map(rule => rule.id)
+          )
+        );
+      }
 
-1,1:
-TL = DIRT
-TR = DIRT
-BL = DIRT
-BR = DIRT
+      possibilities.push(row);
+    }
 
-1,2:
-TL = DIRT
-TR = GRASS
-BL = DIRT
-BR = GRASS
 
-2,0:
-TL = GRASS
-TR = DIRT
-BL = GRASS
-BR = GRASS
+    // ========================================================
+    // GENERATE
+    // ========================================================
 
-2,1:
-TL = DIRT
-TR = DIRT
-BL = GRASS
-BR = GRASS
+    const success = this.solve(possibilities);
 
-2,2:
-TL = DIRT
-TR = GRASS
-BL = GRASS
-BR = GRASS
+
+    // ========================================================
+    // IF SOMETHING WENT WRONG
+    // ========================================================
+
+    if (!success) {
+
+      console.error(
+        'Terrain generation failed. The rules contain a contradiction.'
+      );
+
+      this.createFallbackMap();
+
+      return;
+    }
+
+
+    // ========================================================
+    // CONVERT POSSIBILITIES INTO REAL TILES
+    // ========================================================
+
+    this.tiles = [];
+
+    for (let y = 0; y < this.mapHeight; y++) {
+
+      const row: Tile[] = [];
+
+      for (let x = 0; x < this.mapWidth; x++) {
+
+        const possible = [
+          ...possibilities[y][x]
+        ];
+
+        if (possible.length !== 1) {
+
+          console.error(
+            'Cell did not collapse correctly:',
+            x,
+            y,
+            possible
+          );
+
+          row.push(
+            this.makeTile(
+              x,
+              y,
+              'grass:1,1'
+            )
+          );
+
+          continue;
+        }
+
+        row.push(
+          this.makeTile(
+            x,
+            y,
+            possible[0]
+          )
+        );
+      }
+
+      this.tiles.push(row);
+    }
+  }

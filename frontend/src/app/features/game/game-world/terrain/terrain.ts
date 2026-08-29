@@ -1,22 +1,25 @@
 import { Component } from '@angular/core';
 
-type TerrainType = 'grass' | 'dirt';
+import {
+  TerrainType,
+  TileId,
+  TerrainTileRule,
+  ALL_TERRAIN_RULES,
+  TERRAIN_RULE_LOOKUP,
+} from './terrain-rules';
+
 
 interface Tile {
   x: number;
   y: number;
+
+  id: TileId;
   terrain: TerrainType;
 
   sheetColumn: number;
   sheetRow: number;
 }
 
-type CornerPattern = {
-  TL: TerrainType;
-  TR: TerrainType;
-  BL: TerrainType;
-  BR: TerrainType;
-};
 
 @Component({
   selector: 'app-terrain',
@@ -26,33 +29,100 @@ type CornerPattern = {
 })
 export class Terrain {
 
+  // ==========================================================
+  // MAP SETTINGS
+  // ==========================================================
+
   readonly tileSize = 128;
-  readonly debug = true;
 
   readonly mapWidth = 20;
   readonly mapHeight = 20;
 
+  readonly debug = true;
+
+
+  // ==========================================================
+  // GENERATED MAP
+  // ==========================================================
+
   tiles: Tile[][] = [];
 
 
-  // =========================================================
+  // ==========================================================
   // CONSTRUCTOR
-  // =========================================================
+  // ==========================================================
 
   constructor() {
-    this.generateTestFloor();
+    this.generateMap();
   }
 
 
-  // =========================================================
-  // GENERATE TEST FLOOR
-  // =========================================================
+  // ==========================================================
+  // GENERATE MAP
+  // ==========================================================
+  //
+  // This is the actual procedural generator.
+  //
+  // Every cell starts with every available tile.
+  //
+  // We then repeatedly:
+  //
+  //   1. Find a cell with the fewest possibilities.
+  //   2. Pick one of its possible tiles.
+  //   3. Lock that tile into the cell.
+  //   4. Propagate its rules to neighboring cells.
+  //
+  // ==========================================================
 
-  private generateTestFloor(): void {
+  private generateMap(): void {
 
-    // -------------------------------------------------------
-    // CREATE GRASS WORLD
-    // -------------------------------------------------------
+    // ==========================================================
+    // STEP 1: CREATE A SIMPLE CONNECTED DIRT PATH
+    // ==========================================================
+
+    const dirtCells = new Set<string>();
+
+    let pathX = Math.floor(this.mapWidth / 2);
+    let pathY = 0;
+
+    while (pathY < this.mapHeight) {
+
+      // Make the path 2 tiles wide.
+      dirtCells.add(`${pathX},${pathY}`);
+
+      if (pathX + 1 < this.mapWidth) {
+        dirtCells.add(`${pathX + 1},${pathY}`);
+      }
+
+      // Mostly move downward.
+      const roll = Math.random();
+
+      if (roll < 0.65) {
+        pathY++;
+
+      } else if (roll < 0.825) {
+        pathX--;
+
+      } else {
+        pathX++;
+      }
+
+      // Keep it inside the map.
+      pathX = Math.max(
+        1,
+        Math.min(
+          this.mapWidth - 3,
+          pathX
+        )
+      );
+    }
+
+
+    // ==========================================================
+    // STEP 2: BUILD THE MAP
+    // ==========================================================
+
+    this.tiles = [];
 
     for (let y = 0; y < this.mapHeight; y++) {
 
@@ -60,153 +130,550 @@ export class Terrain {
 
       for (let x = 0; x < this.mapWidth; x++) {
 
-        row.push({
-          x,
-          y,
-          terrain: 'grass',
+        const isDirt =
+          dirtCells.has(`${x},${y}`);
 
-          sheetColumn: 1,
-          sheetRow: 1,
-        });
+        const id: TileId = isDirt
+          ? 'dirt:1,1'
+          : 'grass:1,1';
 
+        row.push(
+          this.makeTile(
+            x,
+            y,
+            id
+          )
+        );
       }
 
       this.tiles.push(row);
     }
 
-
-    // -------------------------------------------------------
-    // MAIN DIRT PATH
-    // -------------------------------------------------------
-
-    let pathX = Math.floor(this.mapWidth / 2);
-    let pathY = 0;
-
-    const pathLength = this.mapHeight + 8;
-
-    for (let i = 0; i < pathLength; i++) {
-
-      this.paintDirt(pathX, pathY);
-      this.paintDirt(pathX - 1, pathY);
-      this.paintDirt(pathX + 1, pathY);
-
-      const random = Math.random();
-
-      if (random < 0.65) {
-
-        pathY++;
-
-      } else if (random < 0.825) {
-
-        pathX--;
-
-      } else {
-
-        pathX++;
-      }
-
-      pathX = Math.max(
-        2,
-        Math.min(this.mapWidth - 3, pathX)
-      );
-
-      pathY = Math.min(
-        this.mapHeight - 1,
-        pathY
-      );
-    }
-
-
-    // -------------------------------------------------------
-    // SECOND BRANCH
-    // -------------------------------------------------------
-
-    let branchX = Math.floor(this.mapWidth / 2);
-    let branchY = Math.floor(this.mapHeight * 0.45);
-
-    for (let i = 0; i < 8; i++) {
-
-      this.paintDirt(branchX, branchY);
-      this.paintDirt(branchX + 1, branchY);
-      this.paintDirt(branchX, branchY + 1);
-
-      if (Math.random() < 0.5) {
-
-        branchX++;
-
-      } else {
-
-        branchX--;
-      }
-
-      branchX = Math.max(
-        2,
-        Math.min(this.mapWidth - 3, branchX)
-      );
-
-      branchY++;
-
-      if (branchY >= this.mapHeight) {
-        break;
-      }
-    }
-
-
-    // -------------------------------------------------------
-    // CALCULATE SPRITES
-    // -------------------------------------------------------
-
+    // IMPORTANT:
+    // Now that the entire terrain grid exists,
+    // determine which sprite each cell needs.
     this.updateTileSprites();
   }
 
 
-  // =========================================================
-  // PAINT DIRT
-  // =========================================================
+  // ==========================================================
+  // SOLVE
+  // ==========================================================
+  //
+  // This repeatedly collapses the most constrained cell.
+  //
+  // ==========================================================
 
-  private paintDirt(
-    x: number,
-    y: number
-  ): void {
+  private solve(
+    possibilities: Set<TileId>[][]
+  ): boolean {
 
-    if (
-      x < 0 ||
-      x >= this.mapWidth ||
-      y < 0 ||
-      y >= this.mapHeight
+    const maxAttempts =
+      this.mapWidth *
+      this.mapHeight *
+      10;
+
+
+    for (
+      let attempt = 0;
+      attempt < maxAttempts;
+      attempt++
     ) {
-      return;
+
+      // ------------------------------------------------------
+      // Find the cell with the fewest possibilities.
+      // ------------------------------------------------------
+
+      const cell =
+        this.findMostConstrainedCell(
+          possibilities
+        );
+
+
+      // ------------------------------------------------------
+      // No cell means the map is completely solved.
+      // ------------------------------------------------------
+
+      if (!cell) {
+        return true;
+      }
+
+
+      const options = [
+        ...possibilities[cell.y][cell.x]
+      ];
+
+
+      // ------------------------------------------------------
+      // Contradiction.
+      // ------------------------------------------------------
+
+      if (options.length === 0) {
+
+        return false;
+      }
+
+
+      // ------------------------------------------------------
+      // Pick one possible tile.
+      //
+      // For now this is random.
+      // Later we can add weights.
+      // ------------------------------------------------------
+
+      const chosen =
+        options[
+        Math.floor(
+          Math.random() * options.length
+        )
+        ];
+
+
+      possibilities[cell.y][cell.x] =
+        new Set([chosen]);
+
+
+      // ------------------------------------------------------
+      // Propagate the consequences.
+      // ------------------------------------------------------
+
+      const propagated =
+        this.propagate(
+          possibilities,
+          cell.x,
+          cell.y
+        );
+
+
+      if (!propagated) {
+
+        return false;
+      }
     }
 
-    this.tiles[y][x].terrain = 'dirt';
+
+    return false;
   }
 
 
-  // =========================================================
-  // UPDATE ALL TILE SPRITES
-  // =========================================================
+  // ==========================================================
+  // FIND MOST CONSTRAINED CELL
+  // ==========================================================
+  //
+  // This is the "lowest entropy" part of WFC.
+  //
+  // We want to solve cells that have the fewest possibilities
+  // first.
+  //
+  // ==========================================================
 
-  private updateTileSprites(): void {
+  private findMostConstrainedCell(
+    possibilities: Set<TileId>[][]
+  ): { x: number; y: number } | null {
+
+    let best:
+      { x: number; y: number } | null = null;
+
+    let bestCount =
+      Number.MAX_SAFE_INTEGER;
+
 
     for (let y = 0; y < this.mapHeight; y++) {
 
       for (let x = 0; x < this.mapWidth; x++) {
 
-        const tile = this.tiles[y][x];
+        const count =
+          possibilities[y][x].size;
 
-        const sprite =
-          this.getTileSprite(x, y);
 
-        tile.sheetColumn = sprite.column;
-        tile.sheetRow = sprite.row;
+        // Already solved.
+        if (count <= 1) {
+          continue;
+        }
+
+
+        if (count < bestCount) {
+
+          bestCount = count;
+
+          best = {
+            x,
+            y,
+          };
+        }
       }
+    }
+
+
+    return best;
+  }
+
+
+  // ==========================================================
+  // PROPAGATE
+  // ==========================================================
+  //
+  // This is the important part.
+  //
+  // If a cell can only contain certain tiles, its neighbors
+  // must remove anything that is incompatible with those tiles.
+  //
+  // That change can then affect THEIR neighbors.
+  //
+  // So we keep going until nothing changes.
+  //
+  // ==========================================================
+
+  private propagate(
+    possibilities: Set<TileId>[][],
+    startX: number,
+    startY: number
+  ): boolean {
+
+    const queue: Array<{
+      x: number;
+      y: number;
+    }> = [
+        {
+          x: startX,
+          y: startY,
+        }
+      ];
+
+
+    while (queue.length > 0) {
+
+      const current =
+        queue.shift()!;
+
+
+      const neighbors = [
+        {
+          x: current.x,
+          y: current.y - 1,
+          direction: 'top' as const,
+        },
+
+        {
+          x: current.x,
+          y: current.y + 1,
+          direction: 'bottom' as const,
+        },
+
+        {
+          x: current.x - 1,
+          y: current.y,
+          direction: 'left' as const,
+        },
+
+        {
+          x: current.x + 1,
+          y: current.y,
+          direction: 'right' as const,
+        },
+      ];
+
+
+      for (const neighbor of neighbors) {
+
+        // ----------------------------------------------------
+        // Outside map.
+        // ----------------------------------------------------
+
+        if (
+          neighbor.x < 0 ||
+          neighbor.x >= this.mapWidth ||
+          neighbor.y < 0 ||
+          neighbor.y >= this.mapHeight
+        ) {
+          continue;
+        }
+
+
+        const changed =
+          this.filterNeighbor(
+            possibilities,
+            current.x,
+            current.y,
+            neighbor.x,
+            neighbor.y,
+            neighbor.direction
+          );
+
+
+        // ----------------------------------------------------
+        // Contradiction.
+        // ----------------------------------------------------
+
+        if (
+          possibilities[
+            neighbor.y
+          ][
+            neighbor.x
+          ].size === 0
+        ) {
+
+          return false;
+        }
+
+
+        // ----------------------------------------------------
+        // Something changed.
+        //
+        // That means THIS neighbor may now affect ITS
+        // neighbors too.
+        // ----------------------------------------------------
+
+        if (changed) {
+
+          queue.push({
+            x: neighbor.x,
+            y: neighbor.y,
+          });
+        }
+      }
+    }
+
+
+    return true;
+  }
+
+
+  // ==========================================================
+  // FILTER NEIGHBOR
+  // ==========================================================
+
+  private filterNeighbor(
+    possibilities: Set<TileId>[][],
+
+    currentX: number,
+    currentY: number,
+
+    neighborX: number,
+    neighborY: number,
+
+    direction:
+      | 'top'
+      | 'bottom'
+      | 'left'
+      | 'right'
+  ): boolean {
+
+    const currentOptions =
+      possibilities[
+      currentY
+      ][
+      currentX
+      ];
+
+
+    const neighborOptions =
+      possibilities[
+      neighborY
+      ][
+      neighborX
+      ];
+
+
+    const allowed =
+      new Set<TileId>();
+
+
+    // ========================================================
+    // FIND EVERY TILE THE NEIGHBOR COULD USE
+    // ========================================================
+    //
+    // A neighbor is allowed if AT LEAST ONE possible tile in
+    // the current cell explicitly allows it.
+    //
+    // ========================================================
+
+    for (
+      const currentId
+      of currentOptions
+    ) {
+
+      const rule =
+        TERRAIN_RULE_LOOKUP.get(
+          currentId
+        );
+
+
+      if (!rule) {
+        continue;
+      }
+
+
+      let allowedByCurrent:
+        TileId[];
+
+
+      switch (direction) {
+
+        case 'top':
+
+          // Neighbor is ABOVE current.
+          allowedByCurrent =
+            rule.top;
+
+          break;
+
+
+        case 'bottom':
+
+          // Neighbor is BELOW current.
+          allowedByCurrent =
+            rule.bottom;
+
+          break;
+
+
+        case 'left':
+
+          // Neighbor is LEFT of current.
+          allowedByCurrent =
+            rule.left;
+
+          break;
+
+
+        case 'right':
+
+          // Neighbor is RIGHT of current.
+          allowedByCurrent =
+            rule.right;
+
+          break;
+      }
+
+
+      for (
+        const tileId
+        of allowedByCurrent
+      ) {
+
+        allowed.add(tileId);
+      }
+    }
+
+
+    // ========================================================
+    // REMOVE INVALID NEIGHBOR OPTIONS
+    // ========================================================
+
+    let changed = false;
+
+
+    for (
+      const neighborId
+      of [...neighborOptions]
+    ) {
+
+      if (
+        !allowed.has(neighborId)
+      ) {
+
+        neighborOptions.delete(
+          neighborId
+        );
+
+        changed = true;
+      }
+    }
+
+
+    return changed;
+  }
+
+
+  // ==========================================================
+  // CREATE TILE
+  // ==========================================================
+
+  private makeTile(
+    x: number,
+    y: number,
+    id: TileId
+  ): Tile {
+
+    const rule =
+      TERRAIN_RULE_LOOKUP.get(id);
+
+    if (!rule) {
+      throw new Error(
+        `No terrain rule exists for tile "${id}".`
+      );
+    }
+
+    const match = id.match(
+      /^(grass|dirt):(\d+),(\d+)$/
+    );
+
+    if (!match) {
+      throw new Error(
+        `Invalid terrain tile ID: "${id}"`
+      );
+    }
+
+    // Tile IDs are formatted as terrain:row,column.
+    // The row controls the vertical sprite position and the
+    // column controls the horizontal sprite position.
+    const sheetRow =
+      Number(match[2]);
+
+    const sheetColumn =
+      Number(match[3]);
+
+    return {
+      x,
+      y,
+      id,
+      terrain: rule.terrain,
+      sheetColumn,
+      sheetRow,
+    };
+  }
+
+
+  // ==========================================================
+  // FALLBACK MAP
+  // ==========================================================
+  //
+  // If the manually-authored rules produce a contradiction,
+  // don't crash the entire game.
+  //
+  // ==========================================================
+
+  private createFallbackMap(): void {
+
+    this.tiles = [];
+
+
+    for (let y = 0; y < this.mapHeight; y++) {
+
+      const row: Tile[] = [];
+
+
+      for (let x = 0; x < this.mapWidth; x++) {
+
+        row.push(
+          this.makeTile(
+            x,
+            y,
+            'grass:1,1'
+          )
+        );
+      }
+
+
+      this.tiles.push(row);
     }
   }
 
 
-  // =========================================================
-  // GET TERRAIN
-  // =========================================================
+  // ==========================================================
+  // TERRAIN LOOKUP
+  // ==========================================================
 
   getTerrainAt(
     x: number,
@@ -219,29 +686,55 @@ export class Terrain {
       y < 0 ||
       y >= this.mapHeight
     ) {
+
       return null;
     }
+
 
     return this.tiles[y][x].terrain;
   }
 
 
-  // =========================================================
-  // GET TILE SPRITE
-  // =========================================================
+  // ==========================================================
+  // UPDATE ALL TILE SPRITES
+  // ==========================================================
+
+  private updateTileSprites(): void {
+
+    for (let y = 0; y < this.mapHeight; y++) {
+
+      for (let x = 0; x < this.mapWidth; x++) {
+
+        const tile = this.tiles[y][x];
+
+        const sprite = this.getTileSprite(x, y);
+
+        tile.sheetColumn = sprite.column;
+        tile.sheetRow = sprite.row;
+      }
+    }
+  }
+
+  // ==========================================================
+  // GET SPRITE
+  // ==========================================================
   //
-  // IMPORTANT:
+  // Coordinate convention:
   //
-  // We are NOT trying to guess the sprite from
-  // "up/down/left/right".
+  //     row,column
   //
-  // Instead, each tile looks at the four 2x2 regions
-  // surrounding its four corners.
+  // So:
   //
-  // This lets the actual terrain arrangement determine
-  // which sprite is appropriate.
+  //   0,0 = row 0, column 0
+  //   0,1 = row 0, column 1
+  //   0,2 = row 0, column 2
   //
-  // =========================================================
+  // The renderer then converts that to:
+  //
+  //   sheetColumn
+  //   sheetRow
+  //
+  // ==========================================================
 
   private getTileSprite(
     x: number,
@@ -251,442 +744,203 @@ export class Terrain {
     row: number;
   } {
 
-    const terrain =
-      this.tiles[y][x].terrain;
+    const terrain = this.tiles[y][x].terrain;
 
+    const opposite: TerrainType =
+      terrain === 'grass'
+        ? 'dirt'
+        : 'grass';
 
-    // -------------------------------------------------------
-    // Read the four corner patterns.
-    // -------------------------------------------------------
+    // ========================================================
+    // CHECK FOUR NEIGHBORS
+    // ========================================================
 
-    const topLeft =
-      this.getCornerPattern(
-        x,
-        y,
-        'TL'
-      );
+    const up =
+      this.getTerrainAt(x, y - 1) === opposite;
 
-    const topRight =
-      this.getCornerPattern(
-        x,
-        y,
-        'TR'
-      );
+    const down =
+      this.getTerrainAt(x, y + 1) === opposite;
 
-    const bottomLeft =
-      this.getCornerPattern(
-        x,
-        y,
-        'BL'
-      );
+    const left =
+      this.getTerrainAt(x - 1, y) === opposite;
 
-    const bottomRight =
-      this.getCornerPattern(
-        x,
-        y,
-        'BR'
-      );
+    const right =
+      this.getTerrainAt(x + 1, y) === opposite;
 
-
-    // -------------------------------------------------------
-    // Determine whether each quarter belongs to this tile.
+    // ========================================================
+    // NO OPPOSITE NEIGHBORS
     //
-    // A quarter belongs to this terrain when the majority
-    // of the 2x2 cells around that corner are this terrain.
+    // Completely solid tile.
     //
-    // TIES ARE RESOLVED IN FAVOR OF THE ACTUAL TILE.
-    //
-    // This prevents isolated weird pixels from changing the
-    // entire transition.
-    // -------------------------------------------------------
+    // row 1, column 1
+    // ========================================================
 
-    const TL =
-      this.cornerBelongsToTerrain(
-        topLeft,
-        terrain
-      );
+    if (!up && !down && !left && !right) {
 
-    const TR =
-      this.cornerBelongsToTerrain(
-        topRight,
-        terrain
-      );
-
-    const BL =
-      this.cornerBelongsToTerrain(
-        bottomLeft,
-        terrain
-      );
-
-    const BR =
-      this.cornerBelongsToTerrain(
-        bottomRight,
-        terrain
-      );
-
-
-    const key =
-      `${TL ? 1 : 0}` +
-      `${TR ? 1 : 0}` +
-      `${BL ? 1 : 0}` +
-      `${BR ? 1 : 0}`;
-
-
-    // -------------------------------------------------------
-    // EXACT SPRITESHEET RULES
-    //
-    // These are based directly on the sheet information
-    // you gave me.
-    //
-    // The key describes WHICH QUARTERS contain THIS TILE'S
-    // terrain.
-    //
-    // -------------------------------------------------------
-
-    const spriteMap: Record<
-      string,
-      {
-        column: number;
-        row: number;
-      }
-    > = {
-
-      // -----------------------------------------------------
-      // ALL FOUR QUARTERS
-      // -----------------------------------------------------
-
-      '1111': {
-        column: 1,
+      return {
         row: 1,
-      },
-
-
-      // -----------------------------------------------------
-      // TOP EDGE
-      // -----------------------------------------------------
-
-      '1100': {
         column: 1,
-        row: 0,
-      },
-
-
-      // -----------------------------------------------------
-      // BOTTOM EDGE
-      // -----------------------------------------------------
-
-      '0011': {
-        column: 1,
-        row: 2,
-      },
-
-
-      // -----------------------------------------------------
-      // LEFT EDGE
-      // -----------------------------------------------------
-
-      '1010': {
-        column: 0,
-        row: 1,
-      },
-
-
-      // -----------------------------------------------------
-      // RIGHT EDGE
-      // -----------------------------------------------------
-
-      '0101': {
-        column: 2,
-        row: 1,
-      },
-
-
-      // -----------------------------------------------------
-      // TOP-LEFT CORNER
-      // -----------------------------------------------------
-
-      '1000': {
-        column: 0,
-        row: 0,
-      },
-
-
-      // -----------------------------------------------------
-      // TOP-RIGHT CORNER
-      // -----------------------------------------------------
-
-      '0100': {
-        column: 2,
-        row: 0,
-      },
-
-
-      // -----------------------------------------------------
-      // BOTTOM-LEFT CORNER
-      // -----------------------------------------------------
-
-      '0010': {
-        column: 0,
-        row: 2,
-      },
-
-
-      // -----------------------------------------------------
-      // BOTTOM-RIGHT CORNER
-      // -----------------------------------------------------
-
-      '0001': {
-        column: 2,
-        row: 2,
-      },
-    };
-
-
-    // -------------------------------------------------------
-    // EXACT MATCH
-    // -------------------------------------------------------
-
-    const exactSprite =
-      spriteMap[key];
-
-    if (exactSprite) {
-      return exactSprite;
+      };
     }
 
+    // ========================================================
+    // ONE-SIDE TRANSITIONS
+    // ========================================================
 
-    // -------------------------------------------------------
-    // IMPOSSIBLE / DIAGONAL PATTERNS
+    // Opposite terrain ABOVE
     //
-    // The spritesheet does not contain every possible
-    // combination of four quarters.
-    //
-    // The missing patterns are:
-    //
-    // 1011
-    // 1101
-    // 0111
-    // 1110
-    // 1001
-    // 0110
-    //
-    // These occur at complicated corners / tiny diagonal
-    // transitions.
-    //
-    // We choose the closest valid sprite instead of
-    // returning the center blindly.
-    // -------------------------------------------------------
+    // row 0, column 1
+    if (
+      up &&
+      !down &&
+      !left &&
+      !right
+    ) {
 
-    return this.getClosestSprite(key, spriteMap);
-  }
-
-
-  // =========================================================
-  // GET 2x2 CORNER PATTERN
-  // =========================================================
-
-  private getCornerPattern(
-    x: number,
-    y: number,
-    corner:
-      | 'TL'
-      | 'TR'
-      | 'BL'
-      | 'BR'
-  ): CornerPattern {
-
-    let cells: [
-      [number, number],
-      [number, number],
-      [number, number],
-      [number, number]
-    ];
-
-
-    switch (corner) {
-
-      case 'TL':
-
-        cells = [
-          [x - 1, y - 1],
-          [x,     y - 1],
-          [x - 1, y],
-          [x,     y],
-        ];
-
-        break;
-
-
-      case 'TR':
-
-        cells = [
-          [x,     y - 1],
-          [x + 1, y - 1],
-          [x,     y],
-          [x + 1, y],
-        ];
-
-        break;
-
-
-      case 'BL':
-
-        cells = [
-          [x - 1, y],
-          [x,     y],
-          [x - 1, y + 1],
-          [x,     y + 1],
-        ];
-
-        break;
-
-
-      case 'BR':
-
-        cells = [
-          [x,     y],
-          [x + 1, y],
-          [x,     y + 1],
-          [x + 1, y + 1],
-        ];
-
-        break;
+      return {
+        row: 0,
+        column: 1,
+      };
     }
 
+    // Opposite terrain BELOW
+    //
+    // row 2, column 1
+    if (
+      down &&
+      !up &&
+      !left &&
+      !right
+    ) {
+
+      return {
+        row: 2,
+        column: 1,
+      };
+    }
+
+    // Opposite terrain LEFT
+    //
+    // row 1, column 0
+    if (
+      left &&
+      !up &&
+      !down &&
+      !right
+    ) {
+
+      return {
+        row: 1,
+        column: 0,
+      };
+    }
+
+    // Opposite terrain RIGHT
+    //
+    // row 1, column 2
+    if (
+      right &&
+      !up &&
+      !down &&
+      !left
+    ) {
+
+      return {
+        row: 1,
+        column: 2,
+      };
+    }
+
+    // ========================================================
+    // TWO-SIDE CORNERS
+    // ========================================================
+
+    // ABOVE + LEFT
+    //
+    // row 0, column 0
+    if (
+      up &&
+      left &&
+      !right &&
+      !down
+    ) {
+
+      return {
+        row: 0,
+        column: 0,
+      };
+    }
+
+    // ABOVE + RIGHT
+    //
+    // row 0, column 2
+    if (
+      up &&
+      right &&
+      !left &&
+      !down
+    ) {
+
+      return {
+        row: 0,
+        column: 2,
+      };
+    }
+
+    // BELOW + LEFT
+    //
+    // row 2, column 0
+    if (
+      down &&
+      left &&
+      !right &&
+      !up
+    ) {
+
+      return {
+        row: 2,
+        column: 0,
+      };
+    }
+
+    // BELOW + RIGHT
+    //
+    // row 2, column 2
+    if (
+      down &&
+      right &&
+      !left &&
+      !up
+    ) {
+
+      return {
+        row: 2,
+        column: 2,
+      };
+    }
+
+    // ========================================================
+    // THREE OR FOUR SIDES
+    //
+    // Your current 3x3 sheet doesn't have dedicated sprites
+    // for these configurations.
+    //
+    // Use the solid tile for now.
+    //
+    // This is intentional: we are testing the normal path
+    // boundaries first.
+    // ========================================================
 
     return {
-      TL: this.getTerrainAt(
-        cells[0][0],
-        cells[0][1]
-      ) ?? 'grass',
-
-      TR: this.getTerrainAt(
-        cells[1][0],
-        cells[1][1]
-      ) ?? 'grass',
-
-      BL: this.getTerrainAt(
-        cells[2][0],
-        cells[2][1]
-      ) ?? 'grass',
-
-      BR: this.getTerrainAt(
-        cells[3][0],
-        cells[3][1]
-      ) ?? 'grass',
+      row: 1,
+      column: 1,
     };
   }
 
 
-  // =========================================================
-  // CORNER TERRAIN DECISION
-  // =========================================================
-
-  private cornerBelongsToTerrain(
-    pattern: CornerPattern,
-    terrain: TerrainType
-  ): boolean {
-
-    let count = 0;
-
-    if (pattern.TL === terrain) {
-      count++;
-    }
-
-    if (pattern.TR === terrain) {
-      count++;
-    }
-
-    if (pattern.BL === terrain) {
-      count++;
-    }
-
-    if (pattern.BR === terrain) {
-      count++;
-    }
-
-
-    // -------------------------------------------------------
-    // 3 or 4 = definitely ours.
-    // -------------------------------------------------------
-
-    if (count >= 3) {
-      return true;
-    }
-
-
-    // -------------------------------------------------------
-    // 0 or 1 = definitely opposite.
-    // -------------------------------------------------------
-
-    if (count <= 1) {
-      return false;
-    }
-
-
-    // -------------------------------------------------------
-    // Exactly 2 = tie.
-    //
-    // The center tile itself determines the tie.
-    // -------------------------------------------------------
-
-    return true;
-  }
-
-
-  // =========================================================
-  // FIND CLOSEST VALID SPRITE
-  // =========================================================
-
-  private getClosestSprite(
-    key: string,
-    spriteMap: Record<
-      string,
-      {
-        column: number;
-        row: number;
-      }
-    >
-  ): {
-    column: number;
-    row: number;
-  } {
-
-    let bestKey = '1111';
-    let bestDifference = Infinity;
-
-
-    for (const candidateKey of Object.keys(spriteMap)) {
-
-      let difference = 0;
-
-      for (let i = 0; i < 4; i++) {
-
-        if (
-          key[i] !== candidateKey[i]
-        ) {
-          difference++;
-        }
-      }
-
-
-      if (
-        difference <
-        bestDifference
-      ) {
-
-        bestDifference = difference;
-        bestKey = candidateKey;
-      }
-    }
-
-
-    return spriteMap[bestKey];
-  }
-
-
-  // =========================================================
+  // ==========================================================
   // SPRITESHEET PATH
-  // =========================================================
+  // ==========================================================
 
   getSheetPath(
     tile: Tile
@@ -696,24 +950,21 @@ export class Terrain {
   }
 
 
-  // =========================================================
+  // ==========================================================
   // SPRITESHEET POSITION
-  // =========================================================
+  // ==========================================================
 
   getBackgroundPosition(
     tile: Tile
   ): string {
 
-    return `
-      -${tile.sheetColumn * this.tileSize}px
-      -${tile.sheetRow * this.tileSize}px
-    `;
+    return `-${tile.sheetColumn * this.tileSize}px -${tile.sheetRow * this.tileSize}px`;
   }
 
 
-  // =========================================================
+  // ==========================================================
   // DEBUG
-  // =========================================================
+  // ==========================================================
 
   getNeighborDebug(
     tile: Tile
@@ -722,42 +973,25 @@ export class Terrain {
     const x = tile.x;
     const y = tile.y;
 
-    const opposite =
-      tile.terrain === 'grass'
-        ? 'dirt'
-        : 'grass';
-
-
-    const isOpposite = (
-      checkX: number,
-      checkY: number
-    ): boolean => {
-
-      return this.getTerrainAt(
-        checkX,
-        checkY
-      ) === opposite;
-    };
-
-
-    const up =
-      isOpposite(x, y - 1);
-
-    const down =
-      isOpposite(x, y + 1);
-
-    const left =
-      isOpposite(x - 1, y);
-
-    const right =
-      isOpposite(x + 1, y);
-
 
     return [
-      up ? '↑' : '·',
-      down ? '↓' : '·',
-      left ? '←' : '·',
-      right ? '→' : '·',
+
+      this.tiles[y - 1]?.[x]
+        ? '↑'
+        : '·',
+
+      this.tiles[y + 1]?.[x]
+        ? '↓'
+        : '·',
+
+      this.tiles[y]?.[x - 1]
+        ? '←'
+        : '·',
+
+      this.tiles[y]?.[x + 1]
+        ? '→'
+        : '·',
+
     ].join('');
   }
 }
