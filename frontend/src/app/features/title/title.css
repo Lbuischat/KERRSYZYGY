@@ -1,106 +1,1034 @@
+/* =========================================================
+   HOST
+   ========================================================= */
+
 :host {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
     background: black;
+
     user-select: none;
 }
 
+
+/* =========================================================
+   TITLE SCREEN
+   ========================================================= */
+
 .title-screen {
+    position: relative;
+
     width: 100vw;
     height: 100vh;
 
     display: flex;
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
+
     background: black;
 
     overflow: hidden;
 }
 
-/* Logo */
+/* =========================================================
+   BACKGROUND STARS
+   ========================================================= */
+
+.background-stars {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    /*
+     * Behind the main 12 stars.
+     */
+    z-index: 0;
+}
+
+
+.background-star {
+    position: absolute;
+
+    /*
+     * Start completely invisible.
+     */
+    opacity: 0;
+
+    /*
+     * Very dark gray.
+     *
+     * These should feel almost like
+     * the black background at first.
+     */
+    background: rgb(202, 202, 202);
+
+    border-radius: 50%;
+
+    animation:
+        background-star-reveal 2.5s ease-out forwards;
+}
+
+
+/*
+ * The stars slowly emerge from nothing.
+ *
+ * They don't flash.
+ * They don't move.
+ * They simply become visible.
+ */
+
+@keyframes background-star-reveal {
+
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: var(--star-opacity);
+    }
+
+}
+
+/* =========================================================
+   RANDOM CELESTIAL EVENTS
+   ========================================================= */
+
+.celestial-events {
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    /*
+     * Above the background stars,
+     * but below the main composition.
+     */
+    z-index: 1;
+}
+
+
+/* =========================================================
+   BASE EVENT
+   ========================================================= */
+
+.celestial-event {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: var(--event-size);
+    height: var(--event-size);
+
+    opacity: var(--event-opacity);
+
+    pointer-events: none;
+
+    animation-duration: var(--event-duration);
+
+    animation-timing-function: linear;
+
+    animation-fill-mode: forwards;
+
+    transform-origin: center;
+
+}
+
+
+/* =========================================================
+   COMET
+   ========================================================= */
+
+.comet {
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: aliceblue;
+
+    filter:
+        drop-shadow(0 0 4px rgba(240, 248, 255, 0.9));
+
+    animation-name: comet-cross-screen;
+
+}
+
+
+/*
+ * The tail is created with a pseudo-element.
+ */
+
+.comet::before {
+
+    content: "";
+
+    position: absolute;
+
+    right: 2px;
+    top: 50%;
+
+    width: 70px;
+    height: 1px;
+
+    transform:
+        translateY(-50%);
+
+    transform-origin: right center;
+
+    background:
+        linear-gradient(to left,
+            rgba(240, 248, 255, 0.75),
+            rgba(240, 248, 255, 0));
+
+}
+
+
+/* =========================================================
+   COMET MOVEMENT
+   ========================================================= */
+
+@keyframes comet-cross-screen {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle)) translateX(-20vw);
+
+    }
+
+    8% {
+
+        opacity: var(--event-opacity);
+
+    }
+
+    88% {
+
+        opacity: var(--event-opacity);
+
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle)) translateX(120vw);
+
+    }
+
+}
+
+
+/* =========================================================
+   ASTEROID
+   ========================================================= */
+
+.asteroid {
+
+    border-radius: 35% 50% 45% 40%;
+
+    background: rgb(130, 130, 130);
+
+    filter:
+        drop-shadow(0 0 2px rgba(180, 180, 180, 0.5));
+
+    animation-name: asteroid-cross-screen;
+
+}
+
+
+/*
+ * Tiny irregular highlight.
+ */
+
+.asteroid::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 30%;
+    height: 30%;
+
+    left: 20%;
+    top: 20%;
+
+    border-radius: 50%;
+
+    background: rgba(230, 230, 230, 0.35);
+
+}
+
+
+/* =========================================================
+   ASTEROID MOVEMENT
+   ========================================================= */
+
+@keyframes asteroid-cross-screen {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle)) translateX(-20vw) rotate(0deg);
+
+    }
+
+    8% {
+
+        opacity: var(--event-opacity);
+
+    }
+
+    92% {
+
+        opacity: var(--event-opacity);
+
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle)) translateX(120vw) rotate(220deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   SPECIAL COMET
+   ========================================================= */
+
+.special-comet {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    filter:
+        drop-shadow(0 0 7px rgba(255, 255, 255, 1)) drop-shadow(0 0 18px rgba(200, 220, 255, 0.8));
+
+    animation-name: special-comet-cross-screen;
+
+}
+
+
+/*
+ * The special comet gets a much longer tail.
+ */
+
+.special-comet::before {
+
+    content: "";
+
+    position: absolute;
+
+    right: 4px;
+    top: 50%;
+
+    width: 180px;
+    height: 2px;
+
+    transform:
+        translateY(-50%);
+
+    background:
+        linear-gradient(to left,
+            rgba(255, 255, 255, 0.95),
+            rgba(210, 225, 255, 0.35),
+            rgba(210, 225, 255, 0));
+
+}
+
+
+/*
+ * A second, softer tail.
+ */
+
+.special-comet::after {
+
+    content: "";
+
+    position: absolute;
+
+    right: 5px;
+    top: 50%;
+
+    width: 100px;
+    height: 6px;
+
+    transform:
+        translateY(-50%);
+
+    background:
+        linear-gradient(to left,
+            rgba(210, 225, 255, 0.2),
+            transparent);
+
+    filter: blur(3px);
+
+}
+
+
+/* =========================================================
+   SPECIAL COMET MOVEMENT
+   ========================================================= */
+
+@keyframes special-comet-cross-screen {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle)) translateX(-25vw) scale(0.6);
+
+    }
+
+    10% {
+
+        opacity: 0.3;
+
+    }
+
+    20% {
+
+        opacity: 1;
+
+        transform:
+            rotate(var(--event-angle)) translateX(0vw) scale(1);
+
+    }
+
+    75% {
+
+        opacity: 1;
+
+    }
+
+    92% {
+
+        opacity: 0.5;
+
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle)) translateX(125vw) scale(1.1);
+
+    }
+
+}
+
+/* =========================================================
+   STARS
+   ========================================================= */
+
+.stars {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+.star {
+    position: absolute;
+
+    width: 2px;
+    height: 2px;
+
+    border-radius: 50%;
+
+    background: aliceblue;
+
+    opacity: 0;
+
+    animation:
+        star-appear 1.5s ease-out forwards;
+}
+
+
+/*
+    Star positions
+*/
+
+.star-1 {
+    left: 8%;
+    top: 20%;
+    animation-delay: 0.2s;
+}
+
+.star-2 {
+    left: 18%;
+    top: 72%;
+    animation-delay: 0.45s;
+}
+
+.star-3 {
+    left: 29%;
+    top: 15%;
+    animation-delay: 0.7s;
+}
+
+.star-4 {
+    left: 42%;
+    top: 10%;
+    animation-delay: 1s;
+}
+
+.star-5 {
+    left: 57%;
+    top: 18%;
+    animation-delay: 0.35s;
+}
+
+.star-6 {
+    left: 72%;
+    top: 29%;
+    animation-delay: 0.85s;
+}
+
+.star-7 {
+    left: 87%;
+    top: 65%;
+    animation-delay: 0.6s;
+}
+
+.star-8 {
+    left: 75%;
+    top: 84%;
+    animation-delay: 1.1s;
+}
+
+.star-9 {
+    left: 48%;
+    top: 88%;
+    animation-delay: 0.75s;
+}
+
+.star-10 {
+    left: 27%;
+    top: 84%;
+    animation-delay: 1.25s;
+}
+
+.star-11 {
+    left: 12%;
+    top: 45%;
+    animation-delay: 1.4s;
+}
+
+.star-12 {
+    left: 91%;
+    top: 16%;
+    animation-delay: 1.6s;
+}
+
+
+@keyframes star-appear {
+
+    0% {
+        opacity: 0;
+
+        transform: scale(0);
+    }
+
+    60% {
+        opacity: 0.65;
+
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.4;
+
+        transform: scale(1);
+    }
+}
+
+
+/* =========================================================
+   CELESTIAL SYSTEM
+   ========================================================= */
+
+.celestial-system {
+    position: relative;
+
+    /*
+        BIGGER than before.
+        This controls the overall size of
+        the logo/orbit composition.
+    */
+
+    width: min(1200px, 95vw);
+    height: min(700px, 65vh);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1;
+}
+
+
+/* =========================================================
+   ORBIT
+   ========================================================= */
+
+.orbit {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+}
+
+
+/*
+    The actual ellipse.
+
+    It starts invisible and then gradually
+    draws itself around the logo.
+*/
+
+.orbit ellipse {
+    fill: none;
+
+    stroke: rgba(240, 248, 255, 0.18);
+
+    stroke-width: 1.5;
+
+    stroke-linecap: round;
+
+    /*
+        Because the SVG ellipse has
+        pathLength="1000", this means:
+
+        1000 = entire ellipse
+        0    = nothing visible
+    */
+
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+
+    opacity: 0;
+
+    animation:
+        orbit-draw 3.5s cubic-bezier(0.4, 0, 0.2, 1) 3.8s forwards;
+}
+
+
+@keyframes orbit-draw {
+
+    0% {
+        stroke-dashoffset: 1000;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+/* =========================================================
+   APHELION POINT
+   ========================================================= */
+
+.aphelion-point {
+
+    fill: aliceblue;
+
+    opacity: 0;
+
+    filter:
+        drop-shadow(0 0 5px rgba(240, 248, 255, 0.8));
+
+    transform-box: fill-box;
+    transform-origin: center;
+
+    /*
+     * The point appears after the orbit finishes.
+     */
+
+    animation:
+        planet-appear 0.25s ease-out 7.4s forwards;
+}
+
+
+@keyframes planet-appear {
+
+    0% {
+        opacity: 0;
+
+        transform: scale(0);
+    }
+
+    100% {
+        opacity: 0.55;
+
+        transform: scale(1);
+    }
+}
+
+/* =========================================================
+   ONE BLINK
+   ========================================================= */
+
+@keyframes point-blink {
+
+    0% {
+        opacity: 1;
+
+        transform: scale(1);
+
+        filter:
+            drop-shadow(0 0 5px rgba(240, 248, 255, 0.7));
+    }
+
+    35% {
+        opacity: 1;
+
+        transform: scale(3);
+
+        filter:
+            drop-shadow(0 0 18px rgba(240, 248, 255, 1));
+    }
+
+    100% {
+        opacity: 0.55;
+
+        transform: scale(1);
+
+        filter:
+            drop-shadow(0 0 5px rgba(240, 248, 255, 0.5));
+    }
+}
+
+@keyframes point-appear {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(-50%) scale(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%) scale(1);
+    }
+}
+
+
+/* =========================================================
+   PAGE TRANSITION
+   ========================================================= */
+
+.page-transition {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: black;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    z-index: 99999;
+
+    transition:
+        opacity 1.2s ease;
+}
+
+.page-transition.active {
+
+    opacity: 1;
+
+    pointer-events: all;
+
+}
+
+
+/*
+    ONE blink.
+
+    It grows brighter/larger,
+    then settles down.
+*/
+
+@keyframes point-blink {
+
+    0% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%) scale(1);
+
+        box-shadow:
+            0 0 5px rgba(240, 248, 255, 0.7);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%) scale(3);
+
+        box-shadow:
+            0 0 18px rgba(240, 248, 255, 1);
+    }
+
+    100% {
+        opacity: 0.55;
+
+        transform:
+            translateY(-50%) scale(1);
+
+        box-shadow:
+            0 0 5px rgba(240, 248, 255, 0.5);
+    }
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
 
 .game-logo {
-    width: 300px;
+    position: relative;
+
+    z-index: 2;
+
+    /*
+        Change this number if your logo
+        needs to be larger/smaller.
+    */
+
+    width: 25%;
+
     height: auto;
 
     opacity: 0;
 
-    animation: logo-intro 2s ease-out forwards;
+    /*
+        IMPORTANT:
+
+        The logo DOES NOT MOVE.
+
+        It simply fades into its final position.
+    */
+
+    animation:
+        logo-appear 1.2s ease-out 2.2s forwards;
 }
 
-/* Title + button */
+
+@keyframes logo-appear {
+
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   TITLE + BUTTON
+   ========================================================= */
 
 .title-content {
+    position: relative;
+
+    z-index: 3;
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
+
     gap: 20px;
 
-    opacity: 0;
     color: aliceblue;
 
-    animation: content-intro 0.8s ease-out 2s forwards;
+    opacity: 0;
+
+    /*
+        Title appears at approximately the
+        same moment as the blinking point.
+    */
+
+    animation:
+        title-appear 1s ease-out 7.65s forwards;
 }
 
+
 h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(48px, 7vw, 100px);
     margin: 0;
+
+    font-family: 'Cormorant Garamond', serif;
+
+    font-size: clamp(48px, 7vw, 100px);
+
+    letter-spacing: 0.08em;
+
     cursor: default;
 }
 
+
+/* =========================================================
+   REMEMBER BUTTON
+   ========================================================= */
+
 button {
     margin-top: 40px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
     cursor: pointer;
+
     font-family: 'IM FELL English', serif;
+
+    font-size: 18px;
+
     color: grey;
+
+    opacity: 0;
+
+    /*
+        Button waits until the title and
+        point have finished their moment.
+    */
+
+    animation:
+        button-appear 0.8s ease-out 8.5s forwards;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
 }
+
 
 button:hover {
-    scale: 1.2;
     color: aliceblue;
+
+    transform: scale(1.2);
 }
 
-/* Logo moves upward */
 
-@keyframes logo-intro {
+/* =========================================================
+   TITLE ANIMATION
+   ========================================================= */
 
-    /* Fade in */
-    0% {
-        opacity: 0;
-        transform: translateY(0);
-    }
-
-    40% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    /* Stay completely still at full opacity */
-    55% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    /* THEN move upward */
-    100% {
-        opacity: 1;
-        transform: translateY(-100px);
-    }
-
-}
-
-/* Title and button fade in */
-
-@keyframes content-intro {
+@keyframes title-appear {
 
     0% {
         opacity: 0;
-        transform: translateY(20px);
+
+        transform: translateY(10px);
     }
 
     100% {
         opacity: 1;
+
         transform: translateY(0);
     }
+}
 
+/* =========================================================
+   PAGE TRANSITION
+   ========================================================= */
+
+.title-screen {
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    background: black;
+
+    overflow: hidden;
+
+    opacity: 1;
+
+    transition: opacity 1.2s ease;
+}
+
+
+.title-screen.leaving {
+    opacity: 0;
+}
+
+/* =========================================================
+   BUTTON ANIMATION
+   ========================================================= */
+
+@keyframes button-appear {
+
+    0% {
+        opacity: 0;
+
+        transform: translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
 }

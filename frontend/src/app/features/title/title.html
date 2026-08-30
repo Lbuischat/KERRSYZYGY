@@ -1,16 +1,124 @@
 <div class="title-screen">
 
-    <img
-        class="game-logo"
-        src="/icons/logo.png"
-        alt="Dopamine Dungeon"
-    >
+    <div
+        class="page-transition"
+        [class.active]="isLeaving"
+        aria-hidden="true"
+    ></div>
+
+    <!-- =========================
+         BACKGROUND STARS
+         ========================= -->
+
+    <div class="background-stars" aria-hidden="true">
+
+        @for (star of backgroundStars; track $index) {
+
+        <span class="background-star" [style.left.%]="star.left" [style.top.%]="star.top" [style.width.px]="star.size"
+            [style.height.px]="star.size" [style.--star-opacity]="star.opacity"
+            [style.animation-delay.s]="star.delay"></span>
+
+        }
+
+    </div>
+
+
+    <!-- =========================
+              12 MAIN STARS
+         ========================= -->
+
+    <div class="stars" aria-hidden="true">
+
+        <span class="star star-1"></span>
+        <span class="star star-2"></span>
+        <span class="star star-3"></span>
+        <span class="star star-4"></span>
+        <span class="star star-5"></span>
+        <span class="star star-6"></span>
+        <span class="star star-7"></span>
+        <span class="star star-8"></span>
+        <span class="star star-9"></span>
+        <span class="star star-10"></span>
+        <span class="star star-11"></span>
+        <span class="star star-12"></span>
+
+    </div>
+
+    <!-- =========================
+     RANDOM CELESTIAL EVENTS
+     ========================= -->
+
+    <div class="celestial-events" aria-hidden="true">
+
+        @for (event of celestialEvents; track event.id) {
+
+            <span
+                class="celestial-event"
+                [class.comet]="event.type === 'comet'"
+                [class.asteroid]="event.type === 'asteroid'"
+                [class.special-comet]="event.type === 'special-comet'"
+                [style.left.%]="event.left"
+                [style.top.%]="event.top"
+                [style.--event-angle]="event.angle + 'deg'"
+                [style.--event-duration]="event.duration + 's'"
+                [style.--event-size.px]="event.size"
+                [style.--event-opacity]="event.opacity"
+            ></span>
+    }
+    </div>
+
+
+    <!-- =========================
+         LOGO + ORBIT
+         ========================= -->
+
+    <div class="celestial-system">
+
+
+        <svg class="orbit" viewBox="0 0 1200 700" aria-hidden="true">
+
+            <ellipse 
+            cx="600" 
+            cy="350" 
+            rx="500" 
+            ry="230" 
+            pathLength="1000" 
+            />
+
+            <!-- Planet -->
+            <circle 
+                class="aphelion-point" 
+                [attr.cx]="planetX()" 
+                [attr.cy]="planetY()" 
+                r="3" 
+            />
+
+        </svg>
+
+
+
+
+        <!-- Your logo -->
+        <img class="game-logo" src="/icons/logo.png" alt="Game logo" />
+
+    </div>
+
+
+    <!-- =========================
+         TITLE + BUTTON
+         ========================= -->
 
     <div class="title-content">
 
-        <h1>DOPAMINE DUNGEON</h1>
+        <h1>APHELION</h1>
 
-        <button routerLink="/login">ENTER DUNGEON</button>
+        <button
+            type="button"
+            [class.leaving]="isLeaving"
+            (click)="enterGame()"
+        >
+            REMEMBER
+        </button>
 
     </div>
 
