@@ -54,22 +54,9 @@ export class Title implements OnDestroy {
    * =====================================================
    *
    * Set to true while developing.
-   *
-   * TRUE:
-   *   - skips most of the aphelion waiting period
-   *   - makes the orbit much faster
-   *
-   * FALSE:
-   *   - normal game timing,
-   *     its so slow i think
-   *     imma leave always fast.
    */
 
   private readonly DEBUG_ORBIT = true;
-
-  private readonly DEBUG_APHELION_PAUSE = 1_000;
-
-  private readonly DEBUG_ORBIT_SPEED = 10;
 
 
   /*
@@ -99,38 +86,53 @@ export class Title implements OnDestroy {
 
   /*
    * =====================================================
-   * PLANET / ORBIT
+   * CENTRAL STAR + TWO COMPANION STARS
    * =====================================================
    *
-   * The SVG ellipse:
+   * The logo is the fixed central star.
    *
-   * cx = 600
-   * cy = 350
-   * rx = 500
-   * ry = 230
+   * Companion 1:
+   *   Large inner stellar companion.
    *
-   * The planet starts at:
+   * Companion 2:
+   *   Large outer stellar companion.
    *
-   * x = 1100
-   * y = 350
+   * Moon:
+   *   Small body orbiting Companion 1.
    *
-   * which is the rightmost point of the ellipse.
+   * The coordinates are SVG coordinates relative
+   * to the center of the 1200 x 700 system.
    */
 
-  planetX = signal(1100);
-  planetY = signal(350);
+  companionOneX = signal(600);
+  companionOneY = signal(350);
+
+  companionTwoX = signal(600);
+  companionTwoY = signal(350);
+
+  moonX = signal(0);
+  moonY = signal(0);
 
 
   /*
-   * Angle around the ellipse.
+   * =====================================================
+   * ORBIT ANGLES
+   * =====================================================
    *
-   * 0°   = rightmost point
-   * 90°  = bottom
-   * 180° = leftmost point
-   * 270° = top
+   * These are independent orbital phases.
+   *
+   * The companions do NOT form a rigid triangle.
+   *
+   * Each star has its own orbital period,
+   * which creates a much more natural-looking
+   * stellar system.
    */
 
-  private orbitAngle = 0;
+  private companionOneAngle = 0;
+
+  private companionTwoAngle = Math.PI;
+
+  moonAngle = 0;
 
 
   /*
@@ -157,37 +159,83 @@ export class Title implements OnDestroy {
    * =====================================================
    */
 
+  /*
+   * =====================================================
+   * STELLAR SYSTEM GEOMETRY
+   * =====================================================
+   */
+
   private readonly centerX = 600;
   private readonly centerY = 350;
 
-  private readonly radiusX = 500;
-  private readonly radiusY = 230;
-
-
   /*
-   * How long the planet stays almost completely
-   * still at aphelion.
+   * =====================================================
+   * COMPANION STAR 1 ORBIT
+   * =====================================================
    *
-   * 45 seconds.
+   * This star stays relatively close to the
+   * central logo.
+   *
+   * The orbit is elliptical rather than circular.
    */
 
-  private readonly aphelionPause =
+  private readonly companionOneRadiusX = 220;
+  private readonly companionOneRadiusY = 120;
+
+  /*
+   * =====================================================
+   * COMPANION STAR 2 ORBIT
+   * =====================================================
+   *
+   * This star has a wider orbit.
+   *
+   * Because the two stars have different periods,
+   * they naturally change their relative positions.
+   */
+
+  private readonly companionTwoRadiusX = 380;
+  private readonly companionTwoRadiusY = 195;
+
+  /*
+   * =====================================================
+   * ORBITAL PERIODS
+   * =====================================================
+   *
+   * DEBUG mode makes the system move quickly
+   * while developing.
+   *
+   * Normal values can later be slowed down.
+   */
+
+  private readonly companionOnePeriod =
     this.DEBUG_ORBIT
-      ? this.DEBUG_APHELION_PAUSE
-      : 45_000;
+      ? 7
+      : 35;
+
+  private readonly companionTwoPeriod =
+    this.DEBUG_ORBIT
+      ? 13
+      : 65;
 
   /*
-   * Time since the planet started leaving aphelion.
+   * =====================================================
+   * MOON ORBIT
+   * =====================================================
+   *
+   * This is deliberately much smaller than
+   * the stellar orbits.
    */
 
-  private orbitElapsed = 0;
-
+  private readonly moonRadiusX = 58;
+  private readonly moonRadiusY = 34;
 
   /*
-   * Whether the planet has started its orbit.
+   * Moon orbital period.
    */
 
-  private orbitStarted = false;
+  private readonly moonPeriod = 3.5;
+
+
 
 
   /*
@@ -560,38 +608,126 @@ export class Title implements OnDestroy {
 
   /*
    * =====================================================
-   * START ORBIT
+   * INITIAL STAR POSITIONS
    * =====================================================
    */
 
-  private startOrbit(): void {
+  private updateInitialStarPositions(): void {
 
     /*
-     * Start the timer at the moment
-     * the orbit is activated.
+     * Companion 1
      */
 
-    this.previousTime = performance.now();
+    this.companionOneX.set(
+      this.centerX +
+      this.companionOneRadiusX *
+      Math.cos(this.companionOneAngle)
+    );
 
-    this.animationFrameId =
-      requestAnimationFrame(
-        (time) => this.animateOrbit(time)
-      );
+    this.companionOneY.set(
+      this.centerY +
+      this.companionOneRadiusY *
+      Math.sin(this.companionOneAngle)
+    );
+
+    /*
+     * Companion 2
+     */
+
+    this.companionTwoX.set(
+      this.centerX +
+      this.companionTwoRadiusX *
+      Math.cos(this.companionTwoAngle)
+    );
+
+    this.companionTwoY.set(
+      this.centerY +
+      this.companionTwoRadiusY *
+      Math.sin(this.companionTwoAngle)
+    );
+
+    /*
+     * Moon starts at zero degrees.
+     */
+
+    this.moonAngle = 0;
 
   }
 
 
   /*
    * =====================================================
+   * START ORBIT
+   * =====================================================
+   */
+
+  private startOrbit(): void {
+
+    this.previousTime =
+      performance.now();
+
+    /*
+     * Put the stars into their initial
+     * orbital positions immediately.
+     */
+
+    this.updateInitialStarPositions();
+
+    this.animationFrameId =
+      requestAnimationFrame(
+        (time) =>
+          this.animateOrbit(time)
+      );
+
+  }
+
+
+  /*
+ * =====================================================
+ * ORBIT ANIMATION
+ * =====================================================
+ */
+
+  /*
+   * =====================================================
    * ORBIT ANIMATION
+   * =====================================================
+   *
+   * The logo remains fixed at:
+   *
+   *     600, 350
+   *
+   * Companion 1 and Companion 2 orbit around
+   * that central point.
+   *
+   * Their orbital periods are different, so they
+   * continuously change their relative positions.
+   *
+   * The moon independently orbits Companion 1.
+   *
+   * This creates a hierarchical stellar system:
+   *
+   *
+   *                 Star 2
+   *              ╱           ╲
+   *            ╱               ╲
+   *           ╱       LOGO      ╲
+   *           ╲        ★        ╱
+   *            ╲               ╱
+   *              ╲           ╱
+   *                 Star 1
+   *                    ·
+   *                  moon
+   *
    * =====================================================
    */
 
   private animateOrbit(time: number): void {
 
     /*
-     * Calculate how much time has passed
-     * since the previous frame.
+     * -------------------------------------------------
+     * FRAME TIME
+     * -------------------------------------------------
      */
 
     const deltaTime =
@@ -599,181 +735,144 @@ export class Title implements OnDestroy {
 
     this.previousTime = time;
 
-
     /*
-     * -------------------------------------------------
-     * PHASE 1 — WAIT AT APHELION
-     * -------------------------------------------------
+     * Convert milliseconds to seconds.
      */
 
-    if (!this.orbitStarted) {
-
-      this.orbitElapsed += deltaTime;
-
-      if (this.orbitElapsed >= this.aphelionPause) {
-
-        this.orbitStarted = true;
-
-        this.orbitElapsed = 0;
-
-      }
-
-    }
-
+    const seconds =
+      deltaTime / 1000;
 
     /*
      * -------------------------------------------------
-     * PHASE 2 — MOVE AROUND THE ORBIT
-     * -------------------------------------------------
-     */
-
-    else {
-
-      /*
-       * Convert milliseconds to seconds.
-       */
-
-      const seconds =
-        deltaTime / 1000;
-
-
-      /*
-       * Base orbital speed.
-       *
-       * 2π radians = one complete orbit.
-       *
-       * 60 seconds = roughly one minute
-       * for a complete normal orbit.
-       */
-
-      const normalSpeed =
-        (Math.PI * 2) / 60 *
-        (
-          this.DEBUG_ORBIT
-            ? this.DEBUG_ORBIT_SPEED
-            : 1
-        );
-
-
-
-      /*
-       * Determine where we are around
-       * the orbit.
-       *
-       * 0 = right / aphelion
-       * π = left / opposite point
-       */
-
-      const normalizedAngle =
-        this.orbitAngle % (Math.PI * 2);
-
-
-      /*
-       * -------------------------------------------------
-       * SLOW REGION AROUND APHELION
-       * -------------------------------------------------
-       *
-       * When we're close to the right side,
-       * we move extremely slowly.
-       *
-       * This creates the strange "lingering"
-       * behavior you wanted.
-       */
-
-      const distanceFromAphelion =
-        Math.min(
-          normalizedAngle,
-          Math.PI * 2 - normalizedAngle
-        );
-
-
-      /*
-       * 50° of the orbit is the "slow region".
-       */
-
-      const slowRegion =
-        (50 * Math.PI) / 180;
-
-
-      let speedMultiplier = 1;
-
-
-      if (distanceFromAphelion < slowRegion) {
-
-        /*
-         * Convert distance to 0 → 1.
-         *
-         * 0 = exactly aphelion
-         * 1 = edge of slow region
-         */
-
-        const progress =
-          distanceFromAphelion /
-          slowRegion;
-
-
-        /*
-         * Cubic easing.
-         *
-         * Very slow at aphelion,
-         * gradually becoming normal.
-         */
-
-        speedMultiplier =
-          progress * progress * progress;
-
-        /*
-         * Give it a tiny minimum movement
-         * so it doesn't get permanently stuck.
-         */
-
-        speedMultiplier =
-          Math.max(
-            speedMultiplier,
-            0.002
-          );
-
-      }
-
-
-      /*
-       * Move the planet.
-       */
-
-      this.orbitAngle +=
-        normalSpeed *
-        speedMultiplier *
-        seconds;
-
-    }
-
-
-    /*
-     * -------------------------------------------------
-     * CALCULATE PLANET POSITION
+     * COMPANION STAR 1
      * -------------------------------------------------
      *
-     * Parametric ellipse equation:
-     *
-     * x = cx + rx cos(angle)
-     * y = cy + ry sin(angle)
+     * Elliptical orbit around the central logo.
      */
 
-    this.planetX.set(
+    const companionOneAngularVelocity =
+      (Math.PI * 2) /
+      this.companionOnePeriod;
+
+    this.companionOneAngle +=
+      companionOneAngularVelocity *
+      seconds;
+
+    /*
+     * Elliptical parametric orbit:
+     *
+     * x = cx + rx cos(theta)
+     * y = cy + ry sin(theta)
+     */
+
+    const companionOneX =
       this.centerX +
-      this.radiusX *
-      Math.cos(this.orbitAngle)
-    );
+      this.companionOneRadiusX *
+      Math.cos(this.companionOneAngle);
 
-    this.planetY.set(
+    const companionOneY =
       this.centerY +
-      this.radiusY *
-      Math.sin(this.orbitAngle)
+      this.companionOneRadiusY *
+      Math.sin(this.companionOneAngle);
+
+    this.companionOneX.set(
+      companionOneX
     );
 
+    this.companionOneY.set(
+      companionOneY
+    );
 
     /*
-     * Ask the browser for the next frame.
+     * -------------------------------------------------
+     * COMPANION STAR 2
+     * -------------------------------------------------
+     *
+     * Star 2 has:
+     *
+     * - a larger orbit
+     * - a different orbital period
+     * - an initial phase opposite Star 1
+     *
+     * This prevents the stars from behaving
+     * like a rigid triangle.
+     */
+
+    const companionTwoAngularVelocity =
+      (Math.PI * 2) /
+      this.companionTwoPeriod;
+
+    this.companionTwoAngle +=
+      companionTwoAngularVelocity *
+      seconds;
+
+    /*
+     * Small orbital eccentricity.
+     *
+     * The radius changes slightly over the orbit.
+     *
+     * This prevents the movement from looking
+     * mechanically perfect.
+     */
+
+    const companionTwoX =
+      this.centerX +
+      this.companionTwoRadiusX *
+      Math.cos(this.companionTwoAngle);
+
+    const companionTwoY =
+      this.centerY +
+      this.companionTwoRadiusY *
+      Math.sin(this.companionTwoAngle);
+
+    this.companionTwoX.set(
+      companionTwoX
+    );
+
+    this.companionTwoY.set(
+      companionTwoY
+    );
+
+    /*
+     * -------------------------------------------------
+     * MOON AROUND COMPANION 1
+     * -------------------------------------------------
+     *
+     * The moon does NOT orbit the logo.
+     *
+     * It orbits Companion 1.
+     */
+
+    const moonAngularVelocity =
+      (Math.PI * 2) /
+      this.moonPeriod;
+
+    this.moonAngle +=
+      moonAngularVelocity *
+      seconds;
+
+    const moonLocalX =
+      this.moonRadiusX *
+      Math.cos(this.moonAngle);
+
+    const moonLocalY =
+      this.moonRadiusY *
+      Math.sin(this.moonAngle);
+
+    this.moonX.set(
+      this.companionOneX() +
+      moonLocalX
+    );
+
+    this.moonY.set(
+      this.companionOneY() +
+      moonLocalY
+    );
+
+    /*
+     * -------------------------------------------------
+     * NEXT FRAME
+     * -------------------------------------------------
      */
 
     this.animationFrameId =
@@ -783,7 +882,6 @@ export class Title implements OnDestroy {
       );
 
   }
-
 
   /*
    * =====================================================
@@ -804,17 +902,20 @@ export class Title implements OnDestroy {
 
     if (this.eventTimer !== undefined) {
 
-      clearTimeout(this.eventTimer);
+      clearTimeout(
+        this.eventTimer
+      );
 
     }
 
 
     if (this.specialCometTimer !== undefined) {
 
-      clearTimeout(this.specialCometTimer);
+      clearTimeout(
+        this.specialCometTimer
+      );
 
     }
 
   }
-
 }

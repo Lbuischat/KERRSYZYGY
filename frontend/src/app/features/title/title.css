@@ -581,16 +581,17 @@
    ========================================================= */
 
 .celestial-system {
+
     position: relative;
 
     /*
-        BIGGER than before.
-        This controls the overall size of
-        the logo/orbit composition.
-    */
+     * Large enough for the companion stars
+     * to orbit around the logo.
+     */
 
-    width: min(1200px, 95vw);
-    height: min(700px, 65vh);
+    width: min(1200px, 96vw);
+
+    height: min(700px, 68vh);
 
     display: flex;
 
@@ -598,14 +599,24 @@
     justify-content: center;
 
     z-index: 1;
+
+    /*
+     * IMPORTANT:
+     *
+     * Nothing in the celestial system
+     * should clip the outer stars.
+     */
+
+    overflow: visible;
+
 }
 
-
 /* =========================================================
-   ORBIT
+   ORBIT SVG
    ========================================================= */
 
 .orbit {
+
     position: absolute;
 
     inset: 0;
@@ -614,132 +625,447 @@
     height: 100%;
 
     pointer-events: none;
+
+    overflow: visible;
+
 }
 
+/* =========================================================
+   STELLAR ORBIT PATHS
+   ========================================================= */
 
-/*
-    The actual ellipse.
+.companion-orbit {
 
-    It starts invisible and then gradually
-    draws itself around the logo.
-*/
-
-.orbit ellipse {
     fill: none;
 
-    stroke: rgba(240, 248, 255, 0.18);
+    stroke: rgba(240, 248, 255, 0.14);
 
-    stroke-width: 1.5;
+    stroke-width: 1.2;
 
     stroke-linecap: round;
 
-    /*
-        Because the SVG ellipse has
-        pathLength="1000", this means:
-
-        1000 = entire ellipse
-        0    = nothing visible
-    */
+    opacity: 0;
 
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
 
-    opacity: 0;
-
     animation:
-        orbit-draw 3.5s cubic-bezier(0.4, 0, 0.2, 1) 3.8s forwards;
+        stellar-orbit-draw
+        3s
+        cubic-bezier(0.4, 0, 0.2, 1)
+        4.2s
+        forwards;
 }
 
-
-@keyframes orbit-draw {
+@keyframes stellar-orbit-draw {
 
     0% {
-        stroke-dashoffset: 1000;
         opacity: 0;
+        stroke-dashoffset: 1000;
     }
 
-    10% {
+    12% {
         opacity: 1;
     }
 
     100% {
-        stroke-dashoffset: 0;
         opacity: 1;
+        stroke-dashoffset: 0;
     }
+
 }
 
 /* =========================================================
-   APHELION POINT
+   COMPANION STAR SYSTEM
    ========================================================= */
 
-.aphelion-point {
-
-    fill: aliceblue;
-
-    opacity: 0;
-
-    filter:
-        drop-shadow(0 0 5px rgba(240, 248, 255, 0.8));
-
-    transform-box: fill-box;
-    transform-origin: center;
+.companion-star {
 
     /*
-     * The point appears after the orbit finishes.
+     * These are SVG groups controlled by
+     * Angular's transform attribute.
      */
 
+    transform-box: fill-box;
+
+    transform-origin: center;
+
+    pointer-events: none;
+
+    opacity: 0;
+
     animation:
-        planet-appear 0.25s ease-out 7.4s forwards;
+        system-star-appear
+        0.8s
+        ease-out
+        4.5s
+        forwards;
+
 }
 
-
-@keyframes planet-appear {
+@keyframes system-star-appear {
 
     0% {
         opacity: 0;
+        transform: scale(0.8);
+    }
 
-        transform: scale(0);
+    60% {
+        opacity: 1;
+        transform: scale(1.05);
     }
 
     100% {
-        opacity: 0.55;
-
+        opacity: 1;
         transform: scale(1);
     }
+
 }
 
 /* =========================================================
-   ONE BLINK
+   STAR GLOW
    ========================================================= */
 
-@keyframes point-blink {
+.star-glow {
+
+    fill: white;
+
+    opacity: 0.12;
+
+    filter:
+        blur(5px);
+
+}
+
+/* =========================================================
+   STELLAR BODY
+   ========================================================= */
+
+.stellar-body {
+
+    fill: white;
+
+    opacity: 1;
+
+    filter:
+        drop-shadow(
+            0 0 5px
+            rgba(240, 248, 255, 1)
+        )
+
+        drop-shadow(
+            0 0 12px
+            rgba(200, 220, 255, 0.9)
+        )
+
+        drop-shadow(
+            0 0 24px
+            rgba(180, 210, 255, 0.45)
+        );
+
+}
+
+
+/* =========================================================
+   COMPANION STAR 1
+   ========================================================= */
+
+.companion-star-one {
+
+    /*
+     * Slightly stronger because this is
+     * the star that has the moon.
+     */
+
+    filter:
+        brightness(1.1);
+
+}
+
+/* =========================================================
+   COMPANION STAR 2
+   ========================================================= */
+
+.companion-star-two {
+
+    opacity: 0.9;
+
+}
+
+/* =========================================================
+   CENTRAL STAR
+   ========================================================= */
+
+.central-star {
+
+    pointer-events: none;
+
+}
+
+/* =========================================================
+   CENTRAL STELLAR HALO
+   ========================================================= */
+
+.central-star-glow {
+
+    fill: white;
+
+    opacity: 0.06;
+
+    filter:
+        blur(18px);
+
+}
+
+/* =========================================================
+   CENTRAL STAR RAYS
+   ========================================================= */
+
+.central-star-rays {
+
+    fill: white;
+
+    opacity: 0.12;
+
+    filter:
+        blur(2px)
+
+        drop-shadow(
+            0 0 12px
+            rgba(240, 248, 255, 0.8)
+        );
+
+}
+
+/* =========================================================
+   MOON ORBIT
+   ========================================================= */
+
+.star-moon-orbit {
+
+    /*
+     * Angular rotates this entire group
+     * around Companion Star 1.
+     */
+
+    transform-box: fill-box;
+
+    transform-origin: center;
+
+}
+
+/* =========================================================
+   MOON'S ORBITAL PATH
+   ========================================================= */
+
+.moon-orbit-path {
+
+    fill: none;
+
+    stroke:
+        rgba(240, 248, 255, 0.10);
+
+    stroke-width: 0.9;
+
+    stroke-linecap: round;
+
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0;
+
+    opacity: 0.65;
+
+}
+
+/* =========================================================
+   MOON
+   ========================================================= */
+
+.moon {
+    position: absolute;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: rgb(145, 145, 145);
+
+    box-shadow: none;
+
+    filter: none;
+
+    opacity: 0.85;
+
+    z-index: 4;
+}
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.game-logo {
+
+    position: relative;
+
+    z-index: 2;
+
+    /*
+     * The logo is the CENTRAL STAR.
+     *
+     * It remains completely stationary.
+     */
+
+    width: 25%;
+
+    height: auto;
+
+    opacity: 0;
+
+    animation:
+        logo-appear
+        1.2s
+        ease-out
+        2.2s
+        forwards;
+
+}
+
+/* =========================================================
+   LOGO APPEAR
+   ========================================================= */
+
+@keyframes logo-appear {
 
     0% {
-        opacity: 1;
 
-        transform: scale(1);
+        opacity: 0;
 
-        filter:
-            drop-shadow(0 0 5px rgba(240, 248, 255, 0.7));
-    }
-
-    35% {
-        opacity: 1;
-
-        transform: scale(3);
-
-        filter:
-            drop-shadow(0 0 18px rgba(240, 248, 255, 1));
     }
 
     100% {
-        opacity: 0.55;
 
-        transform: scale(1);
+        opacity: 1;
+
+    }
+
+}
+
+/* =========================================================
+   SUBTLE STELLAR PULSATION
+   ========================================================= */
+
+.stellar-body {
+
+    animation:
+        stellar-pulse
+        4s
+        ease-in-out
+        infinite;
+
+}
+
+@keyframes stellar-pulse {
+
+    0% {
 
         filter:
-            drop-shadow(0 0 5px rgba(240, 248, 255, 0.5));
+            drop-shadow(
+                0 0 4px
+                rgba(240, 248, 255, 0.9)
+            )
+
+            drop-shadow(
+                0 0 10px
+                rgba(200, 220, 255, 0.7)
+            )
+
+            drop-shadow(
+                0 0 20px
+                rgba(180, 210, 255, 0.3)
+            );
+
     }
+
+    50% {
+
+        filter:
+            drop-shadow(
+                0 0 7px
+                rgba(240, 248, 255, 1)
+            )
+
+            drop-shadow(
+                0 0 16px
+                rgba(200, 220, 255, 0.9)
+            )
+
+            drop-shadow(
+                0 0 30px
+                rgba(180, 210, 255, 0.45)
+            );
+
+    }
+
+    100% {
+
+        filter:
+            drop-shadow(
+                0 0 4px
+                rgba(240, 248, 255, 0.9)
+            )
+
+            drop-shadow(
+                0 0 10px
+                rgba(200, 220, 255, 0.7)
+            )
+
+            drop-shadow(
+                0 0 20px
+                rgba(180, 210, 255, 0.3)
+            );
+
+    }
+
+}
+
+/* =========================================================
+   RESPONSIVE SCALING
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .celestial-system {
+
+        width: 110vw;
+
+        height: 65vh;
+
+    }
+
+    .game-logo {
+
+        width: 30%;
+
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .celestial-system {
+
+        width: 125vw;
+
+        height: 58vh;
+
+    }
+
+    .game-logo {
+
+        width: 38%;
+
+    }
+
 }
 
 @keyframes point-appear {
