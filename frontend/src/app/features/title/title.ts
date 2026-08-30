@@ -179,8 +179,8 @@ export class Title implements OnDestroy {
    * The orbit is elliptical rather than circular.
    */
 
-  private readonly companionOneRadiusX = 220;
-  private readonly companionOneRadiusY = 120;
+  private readonly companionOneRadiusX = 230;
+  private readonly companionOneRadiusY = 135;
 
   /*
    * =====================================================
@@ -192,9 +192,8 @@ export class Title implements OnDestroy {
    * Because the two stars have different periods,
    * they naturally change their relative positions.
    */
-
   private readonly companionTwoRadiusX = 380;
-  private readonly companionTwoRadiusY = 195;
+  private readonly companionTwoRadiusY = 215;
 
   /*
    * =====================================================
@@ -209,13 +208,13 @@ export class Title implements OnDestroy {
 
   private readonly companionOnePeriod =
     this.DEBUG_ORBIT
-      ? 7
-      : 35;
+      ? 24
+      : 45;
 
   private readonly companionTwoPeriod =
     this.DEBUG_ORBIT
-      ? 13
-      : 65;
+      ? 38
+      : 75;
 
   /*
    * =====================================================
@@ -264,7 +263,7 @@ export class Title implements OnDestroy {
 
         this.startOrbit();
 
-      }, 8_500);
+      }, 2_500);
 
 
       /*
@@ -858,16 +857,6 @@ export class Title implements OnDestroy {
     const moonLocalY =
       this.moonRadiusY *
       Math.sin(this.moonAngle);
-
-    this.moonX.set(
-      this.companionOneX() +
-      moonLocalX
-    );
-
-    this.moonY.set(
-      this.companionOneY() +
-      moonLocalY
-    );
 
     /*
      * -------------------------------------------------

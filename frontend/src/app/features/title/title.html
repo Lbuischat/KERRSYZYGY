@@ -1,38 +1,22 @@
 <div class="title-screen">
 
-    <div
-        class="page-transition"
-        [class.active]="isLeaving"
-        aria-hidden="true"
-    ></div>
+    <div class="page-transition" [class.active]="isLeaving" aria-hidden="true"></div>
 
 
     <!-- =====================================================
          BACKGROUND STARS
          ===================================================== -->
 
-    <div
-        class="background-stars"
-        aria-hidden="true"
-    >
+    <div class="background-stars" aria-hidden="true">
 
         @for (
-            star of backgroundStars;
-            track $index
+        star of backgroundStars;
+        track $index
         ) {
 
-            <span
-                class="background-star"
-
-                [style.left.%]="star.left"
-                [style.top.%]="star.top"
-
-                [style.width.px]="star.size"
-                [style.height.px]="star.size"
-
-                [style.--star-opacity]="star.opacity"
-                [style.animation-delay.s]="star.delay"
-            ></span>
+        <span class="background-star" [style.left.%]="star.left" [style.top.%]="star.top" [style.width.px]="star.size"
+            [style.height.px]="star.size" [style.--star-opacity]="star.opacity"
+            [style.animation-delay.s]="star.delay"></span>
 
         }
 
@@ -43,10 +27,7 @@
          12 MAIN BACKGROUND STARS
          ===================================================== -->
 
-    <div
-        class="stars"
-        aria-hidden="true"
-    >
+    <div class="stars" aria-hidden="true">
 
         <span class="star star-1"></span>
         <span class="star star-2"></span>
@@ -68,31 +49,18 @@
          RANDOM CELESTIAL EVENTS
          ===================================================== -->
 
-    <div
-        class="celestial-events"
-        aria-hidden="true"
-    >
+    <div class="celestial-events" aria-hidden="true">
 
         @for (
-            event of celestialEvents;
-            track event.id
+        event of celestialEvents;
+        track event.id
         ) {
 
-            <span
-                class="celestial-event"
-
-                [class.comet]="event.type === 'comet'"
-                [class.asteroid]="event.type === 'asteroid'"
-                [class.special-comet]="event.type === 'special-comet'"
-
-                [style.left.%]="event.left"
-                [style.top.%]="event.top"
-
-                [style.--event-angle]="event.angle + 'deg'"
-                [style.--event-duration]="event.duration + 's'"
-                [style.--event-size.px]="event.size"
-                [style.--event-opacity]="event.opacity"
-            ></span>
+        <span class="celestial-event" [class.comet]="event.type === 'comet'"
+            [class.asteroid]="event.type === 'asteroid'" [class.special-comet]="event.type === 'special-comet'"
+            [style.left.%]="event.left" [style.top.%]="event.top" [style.--event-angle]="event.angle + 'deg'"
+            [style.--event-duration]="event.duration + 's'" [style.--event-size.px]="event.size"
+            [style.--event-opacity]="event.opacity"></span>
 
         }
 
@@ -116,115 +84,53 @@
              calculated in TypeScript.
              ================================================= -->
 
-        <svg
-            class="orbit"
-            viewBox="0 0 1200 700"
-            aria-hidden="true"
-        >
+        <svg class="orbit" viewBox="0 0 1200 700" aria-hidden="true">
 
             <!-- =================================================
                  STAR 1 ORBIT
                  ================================================= -->
 
-            <ellipse
-                class="companion-orbit companion-one-orbit"
-                cx="600"
-                cy="350"
-                rx="230"
-                ry="135"
-                pathLength="1000"
-            />
+            <ellipse class="companion-orbit companion-one-orbit" cx="600" cy="350" rx="230" ry="135"
+                pathLength="1000" />
 
             <!-- =================================================
                  STAR 2 ORBIT
                  ================================================= -->
 
-            <ellipse
-                class="companion-orbit companion-two-orbit"
-                cx="600"
-                cy="350"
-                rx="380"
-                ry="215"
-                pathLength="1000"
-                ry="215"
-                pathLength="1000"
-            />
+            <ellipse class="companion-orbit companion-two-orbit" cx="600" cy="350" rx="380" ry="215"
+                pathLength="1000" />
 
 
             <!-- =================================================
                  COMPANION STAR 1
                  ================================================= -->
 
-            <g
-                class="companion-star companion-star-one"
-
-                [attr.transform]="
-                    'translate(' +
-                    companionOneX() +
-                    ' ' +
-                    companionOneY() +
-                    ')'
-                "
-            >
+            <g class="companion-star companion-star-one" [attr.transform]="
+        'translate(' +
+        companionOneX() +
+        ' ' +
+        companionOneY() +
+        ')'
+    ">
 
                 <!-- Outer glow -->
-
-                <circle
-                    class="star-glow"
-                    cx="0"
-                    cy="0"
-                    r="38"
-                ></circle>
-
+                <circle class="star-glow" cx="0" cy="0" r="38"></circle>
 
                 <!-- Stellar body -->
-
-                <circle
-                    class="stellar-body"
-                    cx="0"
-                    cy="0"
-                    r="17"
-                ></circle>
+                <circle class="stellar-body" cx="0" cy="0" r="17"></circle>
 
 
-                <!-- =================================================
-                     MOON / SECONDARY BODY AROUND STAR 1
-                     ================================================= -->
+                <!-- =============================================
+         MOON SYSTEM
+         ============================================= -->
 
-                <g
-                    class="star-moon-orbit"
+                <g class="moon-system" [attr.transform]="'rotate(' + moonAngle + ')'">
 
-                    [attr.transform]="
-                        'rotate(' +
-                        moonAngle +
-                        ')'
-                    "
-                >
-
-                    <!-- Moon's orbital path -->
-
-                    <ellipse
-                        class="moon-orbit-path"
-
-                        cx="0"
-                        cy="0"
-
-                        rx="58"
-                        ry="34"
-                        pathLength="1000"
-                    ></ellipse>
-
+                    <!-- Moon's orbit -->
+                    <ellipse class="moon-orbit-path" cx="0" cy="0" rx="58" ry="34" pathLength="1000"></ellipse>
 
                     <!-- Moon -->
-
-                    <circle
-                        class="star-moon"
-
-                        cx="48"
-                        cy="0"
-
-                        r="5"
-                    ></circle>
+                    <circle class="star-moon" cx="58" cy="0" r="5"></circle>
 
                 </g>
 
@@ -235,36 +141,22 @@
                  COMPANION STAR 2
                  ================================================= -->
 
-            <g
-                class="companion-star companion-star-two"
-
-                [attr.transform]="
+            <g class="companion-star companion-star-two" [attr.transform]="
                     'translate(' +
                     companionTwoX() +
                     ' ' +
                     companionTwoY() +
                     ')'
-                "
-            >
+                ">
 
                 <!-- Outer glow -->
 
-                <circle
-                    class="star-glow"
-                    cx="0"
-                    cy="0"
-                    r="31"
-                ></circle>
+                <circle class="star-glow" cx="0" cy="0" r="31"></circle>
 
 
                 <!-- Stellar body -->
 
-                <circle
-                    class="stellar-body"
-                    cx="0"
-                    cy="0"
-                    r="13"
-                ></circle>
+                <circle class="stellar-body" cx="0" cy="0" r="13"></circle>
 
 
             </g>
@@ -274,29 +166,16 @@
                  CENTRAL LOGO / PRIMARY STAR
                  ================================================= -->
 
-            <g
-                class="central-star"
-                aria-hidden="true"
-            >
+            <g class="central-star" aria-hidden="true">
 
                 <!-- Large stellar halo behind logo -->
 
-                <circle
-                    class="central-star-glow"
-
-                    cx="600"
-                    cy="350"
-
-                    r="145"
-                ></circle>
+                <circle class="central-star-glow" cx="600" cy="350" r="145"></circle>
 
 
                 <!-- Main stellar rays behind logo -->
 
-                <path
-                    class="central-star-rays"
-
-                    d="
+                <path class="central-star-rays" d="
                         M 600 165
                         L 616 334
                         L 600 350
@@ -320,8 +199,7 @@
                         L 600 350
                         L 584 366
                         Z
-                    "
-                ></path>
+                    "></path>
 
             </g>
 
@@ -337,13 +215,7 @@
              It does NOT move.
              ===================================================== -->
 
-        <img
-            class="game-logo"
-
-            src="/icons/logo.png"
-
-            alt="Game logo"
-        />
+        <img class="game-logo" src="/icons/logo.png" alt="Game logo" />
 
 
     </div>
@@ -360,13 +232,7 @@
         </h1>
 
 
-        <button
-            type="button"
-
-            [class.leaving]="isLeaving"
-
-            (click)="enterGame()"
-        >
+        <button type="button" [class.leaving]="isLeaving" (click)="enterGame()">
             REMEMBER
         </button>
 
