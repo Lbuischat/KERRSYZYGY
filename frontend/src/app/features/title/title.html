@@ -1,11 +1,10 @@
-<div class="title-screen">
-    <div
-        class="page-transition"
-        [class.active]="isLeaving"
-        aria-hidden="true">
-    </div>
+<div class="title-screen" [class.zooming-out]="isLeaving">
 
-    <!-- Background stars -->
+    <!-- =====================================================
+         BACKGROUND STARS
+         These disappear when leaving.
+         ===================================================== -->
+
     <div class="background-stars" aria-hidden="true">
         @for (star of backgroundStars; track $index) {
             <span
@@ -20,8 +19,14 @@
         }
     </div>
 
-    <!-- Main background stars -->
+
+    <!-- =====================================================
+         MAIN BACKGROUND STARS
+         These disappear when leaving.
+         ===================================================== -->
+
     <div class="stars" aria-hidden="true">
+
         <span class="star star-1"></span>
         <span class="star star-2"></span>
         <span class="star star-3"></span>
@@ -34,11 +39,19 @@
         <span class="star star-10"></span>
         <span class="star star-11"></span>
         <span class="star star-12"></span>
+
     </div>
 
-    <!-- Random celestial events -->
+
+    <!-- =====================================================
+         RANDOM CELESTIAL EVENTS
+         These disappear when leaving.
+         ===================================================== -->
+
     <div class="celestial-events" aria-hidden="true">
+
         @for (event of celestialEvents; track event.id) {
+
             <span
                 class="celestial-event"
                 [class.comet]="event.type === 'comet'"
@@ -51,189 +64,255 @@
                 [style.--event-size.px]="event.size"
                 [style.--event-opacity]="event.opacity">
             </span>
+
         }
+
     </div>
 
-    <!-- Central stellar system -->
-    <div class="celestial-system">
-        <svg
-            class="orbit"
-            viewBox="0 0 1200 700"
-            aria-hidden="true">
 
-            <!-- Orbital paths -->
-            <!-- Left ellipse s2 -->
-            <ellipse
-                class="companion-orbit companion-one-orbit"
-                cx="400"
-                cy="350"
-                rx="400"
-                ry="250"
-                pathLength="1000" />
+    <!-- =====================================================
+         CORE SCENE
+         
+         THIS ENTIRE GROUP REMAINS.
+         ===================================================== -->
 
-            <!-- Right ellipse s3 -->
-            <ellipse
-                class="companion-orbit companion-two-orbit"
-                cx="800"
-                cy="350"
-                rx="400"
-                ry="250"
-                pathLength="1000" />
+    <div class="persistent-scene">
 
-            <!-- Orbital intersection points -->
-            <g class="orbit-intersections">
-                <!-- Top intersection -->
-                <g transform="translate(600 170)">
-                    <line x1="-8" y1="-8" x2="8" y2="8" />
-                    <line x1="8" y1="-8" x2="-8" y2="8" />
+        <!-- =================================================
+             CELESTIAL SYSTEM
+             ================================================= -->
+
+        <div class="celestial-system">
+
+            <svg
+                class="orbit"
+                viewBox="0 0 1200 700"
+                aria-hidden="true">
+
+                <!-- Orbital paths -->
+
+                <!-- S2 orbit -->
+                <ellipse
+                    class="companion-orbit companion-one-orbit"
+                    cx="400"
+                    cy="350"
+                    rx="400"
+                    ry="250"
+                    pathLength="1000" />
+
+                <!-- S3 orbit -->
+                <ellipse
+                    class="companion-orbit companion-two-orbit"
+                    cx="800"
+                    cy="350"
+                    rx="400"
+                    ry="250"
+                    pathLength="1000" />
+
+
+                <!-- Orbital intersection points -->
+
+                <g class="orbit-intersections">
+
+                    <g transform="translate(600 170)">
+                        <line x1="-8" y1="-8" x2="8" y2="8" />
+                        <line x1="8" y1="-8" x2="-8" y2="8" />
+                    </g>
+
+                    <g transform="translate(600 530)">
+                        <line x1="-8" y1="-8" x2="8" y2="8" />
+                        <line x1="8" y1="-8" x2="-8" y2="8" />
+                    </g>
+
                 </g>
 
-                <!-- Bottom intersection -->
-                <g transform="translate(600 530)">
-                    <line x1="-8" y1="-8" x2="8" y2="8" />
-                    <line x1="8" y1="-8" x2="-8" y2="8" />
-                </g>
-            </g>
 
-            <!-- Companion star 1 -->
-            <g
-                class="companion-star companion-star-one"
-                [attr.transform]="
-                    'translate(' +
-                    companionOneX() +
-                    ' ' +
-                    companionOneY() +
-                    ')'
-                ">
+                <!-- =================================================
+                     S2
+                     ================================================= -->
 
-                <circle
-                    class="star-glow"
-                    cx="0"
-                    cy="0"
-                    r="38" />
-
-                <circle
-                    class="stellar-body"
-                    cx="0"
-                    cy="0"
-                    r="17" />
-
-                <!-- Moon system -->
                 <g
-                    class="moon-system"
+                    class="companion-star companion-star-one"
                     [attr.transform]="
                         'translate(' +
-                        moonX() +
+                        companionOneX() +
                         ' ' +
-                        moonY() +
+                        companionOneY() +
                         ')'
                     ">
-                    
-                    <!-- Earth -->
+
                     <circle
-                        class="star-moon"
+                        class="star-glow"
                         cx="0"
                         cy="0"
-                        r="5" />
+                        r="38" />
 
-                    <!-- Actual Moon -->
+                    <circle
+                        class="stellar-body"
+                        cx="0"
+                        cy="0"
+                        r="17" />
+
+
+                    <!-- S2 moon system -->
+
                     <g
-                        class="moon-1-system"
+                        class="moon-system"
                         [attr.transform]="
                             'translate(' +
-                            moonOneX() +
+                            moonX() +
                             ' ' +
-                            moonOneY() +
+                            moonY() +
                             ')'
                         ">
 
+                        <!-- Earth -->
                         <circle
-                            class="moon-one"
+                            class="star-moon"
                             cx="0"
                             cy="0"
-                            r="4" />
+                            r="5" />
+
+
+                        <!-- Moon -->
+                        <g
+                            class="moon-1-system"
+                            [attr.transform]="
+                                'translate(' +
+                                moonOneX() +
+                                ' ' +
+                                moonOneY() +
+                                ')'
+                            ">
+
+                            <circle
+                                class="moon-one"
+                                cx="0"
+                                cy="0"
+                                r="4" />
+
+                        </g>
+
                     </g>
+
                 </g>
-            </g>
 
-            <!-- Companion star 2 -->
-            <g
-                class="companion-star companion-star-two"
-                [attr.transform]="
-                    'translate(' +
-                    companionTwoX() +
-                    ' ' +
-                    companionTwoY() +
-                    ')'
-                ">
 
-                <circle
-                    class="star-glow"
-                    cx="0"
-                    cy="0"
-                    r="31" />
+                <!-- =================================================
+                     S3
+                     ================================================= -->
 
-                <circle
-                    class="stellar-body"
-                    cx="0"
-                    cy="0"
-                    r="13" />
-            </g>
+                <g
+                    class="companion-star companion-star-two"
+                    [attr.transform]="
+                        'translate(' +
+                        companionTwoX() +
+                        ' ' +
+                        companionTwoY() +
+                        ')'
+                    ">
 
-            <!-- Central star / logo -->
-            <g class="central-star" aria-hidden="true">
-                <circle
-                    class="central-star-glow"
-                    cx="600"
-                    cy="350"
-                    r="145" />
+                    <circle
+                        class="star-glow"
+                        cx="0"
+                        cy="0"
+                        r="31" />
 
-                <path
-                    class="central-star-rays"
-                    d="
-                        M 600 165
-                        L 616 334
-                        L 600 350
-                        L 584 334
-                        Z
+                    <circle
+                        class="stellar-body"
+                        cx="0"
+                        cy="0"
+                        r="13" />
 
-                        M 785 350
-                        L 616 366
-                        L 600 350
-                        L 616 334
-                        Z
+                </g>
 
-                        M 600 535
-                        L 584 366
-                        L 600 350
-                        L 616 366
-                        Z
 
-                        M 415 350
-                        L 584 334
-                        L 600 350
-                        L 584 366
-                        Z
-                    " />
-            </g>
-        </svg>
+                <!-- =================================================
+                     S1 / CENTRAL STAR
+                     ================================================= -->
 
-        <!-- Game logo -->
-        <img
-            class="game-logo"
-            src="/icons/logo.png"
-            alt="Game logo" />
+                <g
+                    class="central-star"
+                    aria-hidden="true">
+
+                    <circle
+                        class="central-star-glow"
+                        cx="600"
+                        cy="350"
+                        r="145" />
+
+                    <path
+                        class="central-star-rays"
+                        d="
+                            M 600 165
+                            L 616 334
+                            L 600 350
+                            L 584 334
+                            Z
+
+                            M 785 350
+                            L 616 366
+                            L 600 350
+                            L 616 334
+                            Z
+
+                            M 600 535
+                            L 584 366
+                            L 600 350
+                            L 616 366
+                            Z
+
+                            M 415 350
+                            L 584 334
+                            L 600 350
+                            L 584 366
+                            Z
+                        " />
+
+                </g>
+
+            </svg>
+
+
+            <!-- =================================================
+                 LOGO
+                 ================================================= -->
+
+            <img
+                class="game-logo"
+                src="/icons/logo.png"
+                alt="Game logo" />
+
+        </div>
+
+
+        <!-- =====================================================
+             GAME TITLE
+             ===================================================== -->
+
+        <div class="title-content">
+
+            <h1>KERRSYZYGY</h1>
+
+
+            <!-- =================================================
+                 REMEMBER BUTTON
+
+                 This disappears.
+                 ================================================= -->
+
+            <button
+                type="button"
+                id="remember"
+                [class.leaving]="isLeaving"
+                (click)="enterGame()">
+
+                REMEMBER
+
+            </button>
+
+        </div>
+
     </div>
 
-    <!-- Title and button -->
-    <div class="title-content">
-        <h1>KERRSYZYGY</h1>
-
-        <button
-            type="button"
-            [class.leaving]="isLeaving"
-            (click)="enterGame()">
-            REMEMBER
-        </button>
-    </div>
 </div>

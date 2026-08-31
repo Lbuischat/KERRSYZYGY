@@ -4,6 +4,7 @@
 
 :host {
     display: block;
+
     width: 100%;
     height: 100%;
 
@@ -33,11 +34,6 @@
     overflow: hidden;
 
     opacity: 1;
-    transition: opacity 1.2s ease;
-}
-
-.title-screen.leaving {
-    opacity: 0;
 }
 
 
@@ -63,13 +59,18 @@
     opacity: 0;
 
     background: rgb(202, 202, 202);
+
     border-radius: 50%;
 
     animation:
-        background-star-reveal 2.5s ease-out forwards;
+        background-star-reveal
+        2.5s
+        ease-out
+        forwards;
 }
 
 @keyframes background-star-reveal {
+
     0% {
         opacity: 0;
     }
@@ -77,6 +78,7 @@
     100% {
         opacity: var(--star-opacity);
     }
+
 }
 
 
@@ -106,7 +108,10 @@
     opacity: 0;
 
     animation:
-        star-appear 1.5s ease-out forwards;
+        star-appear
+        1.5s
+        ease-out
+        forwards;
 }
 
 
@@ -184,21 +189,30 @@
     animation-delay: 1.6s;
 }
 
+
 @keyframes star-appear {
+
     0% {
         opacity: 0;
-        transform: scale(0);
+
+        transform:
+            scale(0);
     }
 
     60% {
         opacity: 0.65;
-        transform: scale(1);
+
+        transform:
+            scale(1);
     }
 
     100% {
         opacity: 0.4;
-        transform: scale(1);
+
+        transform:
+            scale(1);
     }
+
 }
 
 
@@ -251,9 +265,13 @@
     background: aliceblue;
 
     filter:
-        drop-shadow(0 0 4px rgba(240, 248, 255, 0.9));
+        drop-shadow(
+            0 0 4px
+            rgba(240, 248, 255, 0.9)
+        );
 
-    animation-name: comet-cross-screen;
+    animation-name:
+        comet-cross-screen;
 }
 
 .comet::before {
@@ -270,7 +288,8 @@
     transform:
         translateY(-50%);
 
-    transform-origin: right center;
+    transform-origin:
+        right center;
 
     background:
         linear-gradient(
@@ -281,6 +300,7 @@
 }
 
 @keyframes comet-cross-screen {
+
     0% {
         opacity: 0;
 
@@ -290,11 +310,13 @@
     }
 
     8% {
-        opacity: var(--event-opacity);
+        opacity:
+            var(--event-opacity);
     }
 
     88% {
-        opacity: var(--event-opacity);
+        opacity:
+            var(--event-opacity);
     }
 
     100% {
@@ -304,6 +326,7 @@
             rotate(var(--event-angle))
             translateX(120vw);
     }
+
 }
 
 
@@ -312,14 +335,20 @@
    ========================================================= */
 
 .asteroid {
-    border-radius: 35% 50% 45% 40%;
+    border-radius:
+        35% 50% 45% 40%;
 
-    background: rgb(130, 130, 130);
+    background:
+        rgb(130, 130, 130);
 
     filter:
-        drop-shadow(0 0 2px rgba(180, 180, 180, 0.5));
+        drop-shadow(
+            0 0 2px
+            rgba(180, 180, 180, 0.5)
+        );
 
-    animation-name: asteroid-cross-screen;
+    animation-name:
+        asteroid-cross-screen;
 }
 
 .asteroid::before {
@@ -335,10 +364,12 @@
 
     border-radius: 50%;
 
-    background: rgba(230, 230, 230, 0.35);
+    background:
+        rgba(230, 230, 230, 0.35);
 }
 
 @keyframes asteroid-cross-screen {
+
     0% {
         opacity: 0;
 
@@ -349,11 +380,13 @@
     }
 
     8% {
-        opacity: var(--event-opacity);
+        opacity:
+            var(--event-opacity);
     }
 
     92% {
-        opacity: var(--event-opacity);
+        opacity:
+            var(--event-opacity);
     }
 
     100% {
@@ -364,6 +397,7 @@
             translateX(120vw)
             rotate(220deg);
     }
+
 }
 
 
@@ -380,10 +414,17 @@
     background: white;
 
     filter:
-        drop-shadow(0 0 7px rgba(255, 255, 255, 1))
-        drop-shadow(0 0 18px rgba(200, 220, 255, 0.8));
+        drop-shadow(
+            0 0 7px
+            rgba(255, 255, 255, 1)
+        )
+        drop-shadow(
+            0 0 18px
+            rgba(200, 220, 255, 0.8)
+        );
 
-    animation-name: special-comet-cross-screen;
+    animation-name:
+        special-comet-cross-screen;
 }
 
 .special-comet::before {
@@ -430,10 +471,12 @@
             transparent
         );
 
-    filter: blur(3px);
+    filter:
+        blur(3px);
 }
 
 @keyframes special-comet-cross-screen {
+
     0% {
         opacity: 0;
 
@@ -472,6 +515,56 @@
             translateX(125vw)
             scale(1.1);
     }
+
+}
+
+
+/* =========================================================
+   PERSISTENT SCENE
+   ========================================================= */
+
+/*
+ * THIS is the important wrapper.
+ *
+ * Everything inside this element stays together:
+ *
+ *   - S1
+ *   - S2
+ *   - S3
+ *   - moons
+ *   - SVG orbital paths
+ *   - orbital intersections
+ *   - logo
+ *   - KERRSYZYGY
+ *
+ * When REMEMBER is clicked, this entire composition
+ * becomes smaller and moves upward.
+ */
+
+.persistent-scene {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    transform-origin:
+        center center;
+
+    transition:
+        transform
+        1.2s
+        cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        );
 }
 
 
@@ -501,6 +594,7 @@
 
 .orbit {
     position: absolute;
+
     inset: 0;
 
     width: 100%;
@@ -519,26 +613,37 @@
 .companion-orbit {
     fill: none;
 
-    stroke: rgba(240, 248, 255, 0.45);
+    stroke:
+        rgba(240, 248, 255, 0.45);
+
     stroke-width: 2;
+
     stroke-linecap: round;
 
     opacity: 0;
 
     stroke-dasharray: 1000;
+
     stroke-dashoffset: 1000;
 
     animation:
         stellar-orbit-draw
         3s
-        cubic-bezier(0.4, 0, 0.2, 1)
+        cubic-bezier(
+            0.4,
+            0,
+            0.2,
+            1
+        )
         3.5s
         forwards;
 }
 
 @keyframes stellar-orbit-draw {
+
     0% {
         opacity: 0;
+
         stroke-dashoffset: 1000;
     }
 
@@ -548,8 +653,10 @@
 
     100% {
         opacity: 1;
+
         stroke-dashoffset: 0;
     }
+
 }
 
 
@@ -563,8 +670,8 @@
     opacity: 0;
 
     /*
-     * Angular/TypeScript controls the SVG transform.
-     * CSS must not apply another transform here.
+     * TypeScript controls the SVG transform.
+     * CSS does NOT apply transform here.
      */
 
     animation:
@@ -576,6 +683,7 @@
 }
 
 @keyframes system-star-appear {
+
     0% {
         opacity: 0;
     }
@@ -583,6 +691,7 @@
     100% {
         opacity: 1;
     }
+
 }
 
 
@@ -591,11 +700,6 @@
    ========================================================= */
 
 .companion-star-one {
-    /*
-     * Star 1 is slightly stronger because
-     * it carries the moon system.
-     */
-
     filter:
         brightness(1.1);
 }
@@ -616,6 +720,7 @@
 
 .star-glow {
     fill: white;
+
     opacity: 0.12;
 
     filter:
@@ -629,33 +734,66 @@
 
 .stellar-body {
     fill: white;
+
     opacity: 1;
 
     animation:
-        stellar-pulse 4s ease-in-out infinite;
+        stellar-pulse
+        4s
+        ease-in-out
+        infinite;
 }
 
 @keyframes stellar-pulse {
+
     0% {
         filter:
-            drop-shadow(0 0 4px rgba(240, 248, 255, 0.9))
-            drop-shadow(0 0 10px rgba(200, 220, 255, 0.7))
-            drop-shadow(0 0 20px rgba(180, 210, 255, 0.3));
+            drop-shadow(
+                0 0 4px
+                rgba(240, 248, 255, 0.9)
+            )
+            drop-shadow(
+                0 0 10px
+                rgba(200, 220, 255, 0.7)
+            )
+            drop-shadow(
+                0 0 20px
+                rgba(180, 210, 255, 0.3)
+            );
     }
 
     50% {
         filter:
-            drop-shadow(0 0 7px rgba(240, 248, 255, 1))
-            drop-shadow(0 0 16px rgba(200, 220, 255, 0.9))
-            drop-shadow(0 0 30px rgba(180, 210, 255, 0.45));
+            drop-shadow(
+                0 0 7px
+                rgba(240, 248, 255, 1)
+            )
+            drop-shadow(
+                0 0 16px
+                rgba(200, 220, 255, 0.9)
+            )
+            drop-shadow(
+                0 0 30px
+                rgba(180, 210, 255, 0.45)
+            );
     }
 
     100% {
         filter:
-            drop-shadow(0 0 4px rgba(240, 248, 255, 0.9))
-            drop-shadow(0 0 10px rgba(200, 220, 255, 0.7))
-            drop-shadow(0 0 20px rgba(180, 210, 255, 0.3));
+            drop-shadow(
+                0 0 4px
+                rgba(240, 248, 255, 0.9)
+            )
+            drop-shadow(
+                0 0 10px
+                rgba(200, 220, 255, 0.7)
+            )
+            drop-shadow(
+                0 0 20px
+                rgba(180, 210, 255, 0.3)
+            );
     }
+
 }
 
 
@@ -667,10 +805,8 @@
     pointer-events: none;
 
     /*
-     * TypeScript controls the rotation through
-     * the SVG transform attribute.
-     *
-     * CSS must not apply another transform.
+     * TypeScript controls the SVG transform.
+     * CSS does NOT apply transform here.
      */
 }
 
@@ -684,7 +820,8 @@
    ========================================================= */
 
 .star-moon {
-    fill: rgb(145, 145, 145);
+    fill:
+        rgb(145, 145, 145);
 
     opacity: 0.85;
 
@@ -700,7 +837,9 @@
 
 .moon-one {
     opacity: 0.9;
-    fill: rgba(100, 100, 100, 0.61);
+
+    fill:
+        rgba(100, 100, 100, 0.61);
 }
 
 
@@ -745,7 +884,10 @@
 
     filter:
         blur(2px)
-        drop-shadow(0 0 12px rgba(240, 248, 255, 0.8));
+        drop-shadow(
+            0 0 12px
+            rgba(240, 248, 255, 0.8)
+        );
 
     animation:
         central-star-support-appear
@@ -756,6 +898,7 @@
 }
 
 @keyframes central-star-support-appear {
+
     0% {
         opacity: 0;
     }
@@ -763,6 +906,7 @@
     100% {
         opacity: 0.3;
     }
+
 }
 
 
@@ -780,11 +924,6 @@
 
     opacity: 0;
 
-    /*
-     * The logo remains completely stationary.
-     * It simply fades into its final position.
-     */
-
     animation:
         logo-appear
         1.2s
@@ -794,6 +933,7 @@
 }
 
 @keyframes logo-appear {
+
     0% {
         opacity: 0;
     }
@@ -801,6 +941,7 @@
     100% {
         opacity: 1;
     }
+
 }
 
 
@@ -834,10 +975,15 @@
 h1 {
     margin: 0;
 
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(48px, 7vw, 100px);
+    font-family:
+        'Cormorant Garamond',
+        serif;
 
-    letter-spacing: 0.08em;
+    font-size:
+        clamp(48px, 7vw, 100px);
+
+    letter-spacing:
+        0.08em;
 
     cursor: default;
 }
@@ -847,16 +993,21 @@ h1 {
    REMEMBER BUTTON
    ========================================================= */
 
-button {
+#remember {
     margin-top: 40px;
+
     padding: 0;
 
     border: none;
+
     background: transparent;
 
     cursor: pointer;
 
-    font-family: 'IM FELL English', serif;
+    font-family:
+        'IM FELL English',
+        serif;
+
     font-size: 18px;
 
     color: grey;
@@ -872,12 +1023,30 @@ button {
 
     transition:
         color 0.3s ease,
-        transform 0.3s ease;
+        transform 0.3s ease,
+        opacity 0.25s ease;
 }
 
-button:hover {
+#remember:hover {
     color: aliceblue;
-    transform: scale(1.2);
+
+    transform:
+        scale(1.2);
+}
+
+
+/* =========================================================
+   REMEMBER LEAVING
+   ========================================================= */
+
+#remember.leaving {
+    opacity: 0 !important;
+
+    pointer-events: none;
+
+    transform:
+        translateY(-30px)
+        scale(0.7);
 }
 
 
@@ -886,15 +1055,21 @@ button:hover {
    ========================================================= */
 
 @keyframes title-appear {
+
     0% {
         opacity: 0;
-        transform: translateY(10px);
+
+        transform:
+            translateY(10px);
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
+
 }
 
 
@@ -903,15 +1078,21 @@ button:hover {
    ========================================================= */
 
 @keyframes button-appear {
+
     0% {
         opacity: 0;
-        transform: translateY(8px);
+
+        transform:
+            translateY(8px);
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
+
 }
 
 
@@ -920,8 +1101,10 @@ button:hover {
    ========================================================= */
 
 @keyframes point-appear {
+
     0% {
         opacity: 0;
+
         transform:
             translateY(-50%)
             scale(0);
@@ -929,13 +1112,16 @@ button:hover {
 
     100% {
         opacity: 1;
+
         transform:
             translateY(-50%)
             scale(1);
     }
+
 }
 
 @keyframes point-blink {
+
     0% {
         opacity: 1;
 
@@ -944,7 +1130,8 @@ button:hover {
             scale(1);
 
         box-shadow:
-            0 0 5px rgba(240, 248, 255, 0.7);
+            0 0 5px
+            rgba(240, 248, 255, 0.7);
     }
 
     35% {
@@ -955,7 +1142,8 @@ button:hover {
             scale(3);
 
         box-shadow:
-            0 0 18px rgba(240, 248, 255, 1);
+            0 0 18px
+            rgba(240, 248, 255, 1);
     }
 
     100% {
@@ -966,42 +1154,18 @@ button:hover {
             scale(1);
 
         box-shadow:
-            0 0 5px rgba(240, 248, 255, 0.5);
+            0 0 5px
+            rgba(240, 248, 255, 0.5);
     }
+
 }
-
-
-/* =========================================================
-   PAGE TRANSITION
-   ========================================================= */
-
-.page-transition {
-    position: fixed;
-    inset: 0;
-
-    background: black;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    z-index: 99999;
-
-    transition:
-        opacity 1.2s ease;
-}
-
-.page-transition.active {
-    opacity: 1;
-    pointer-events: all;
-}
-
 
 /* =========================================================
    RESPONSIVE SCALING
    ========================================================= */
 
 @media (max-width: 900px) {
+
     .celestial-system {
         width: 110vw;
         height: 65vh;
@@ -1010,9 +1174,11 @@ button:hover {
     .game-logo {
         width: 30%;
     }
+
 }
 
 @media (max-width: 600px) {
+
     .celestial-system {
         width: 125vw;
         height: 58vh;
@@ -1021,4 +1187,43 @@ button:hover {
     .game-logo {
         width: 38%;
     }
+
+}
+
+/* =========================================================
+   REMEMBER TRANSITION
+   ========================================================= */
+
+.persistent-scene {
+    position: absolute;
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    transform-origin: center center;
+
+    transition:
+        transform 1.2s cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        );
+}
+
+
+.title-screen.zooming-out .persistent-scene {
+    transform:
+        translateY(-20vh)
+        scale(0.5);
+}
+
+.title-screen.zooming-out #remember {
+    opacity: 0;
+    pointer-events: none;
 }

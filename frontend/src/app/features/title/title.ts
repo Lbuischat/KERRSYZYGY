@@ -2,8 +2,11 @@ import {
   Component,
   OnDestroy,
   afterNextRender,
-  signal
+  signal,
+  output,
+  input
 } from '@angular/core';
+import { hidden } from '@angular/forms/signals';
 
 import { Router } from '@angular/router';
 
@@ -41,6 +44,10 @@ interface CelestialEvent {
   styleUrl: './title.css'
 })
 export class Title implements OnDestroy {
+  
+  zoomingOut = input(false);
+
+  remember = output<void>();
 
   isLeaving = false;
 
@@ -478,36 +485,25 @@ export class Title implements OnDestroy {
   enterGame(): void {
 
     /*
-     * Prevent multiple clicks while
-     * the transition is happening.
-     */
-
-    if (this.isLeaving) {
-
-      return;
-
-    }
-
-
-    /*
-     * Start the page transition.
+     * Kill the REMEMBER button immediately.
+     *
+     * The title scene itself remains mounted.
      */
 
     this.isLeaving = true;
 
-
     /*
-     * Wait for the transition to finish,
-     * then navigate to the login page.
+     * Tell GameEntry to begin the transition.
      */
 
-    setTimeout(() => {
-
-      this.router.navigate(['/login']);
-
-    }, 1_200);
+    this.remember.emit();
 
   }
+
+ if () {
+  this.isLeaving = true;
+
+ }
 
 
   // =========================================================

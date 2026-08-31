@@ -1,0 +1,17 @@
+<div
+    class="game-entry"
+    [class.transitioning]="isTransitioning()"
+    [class.login-visible]="showLogin()">
+
+    <div class="title-layer">
+        <app-title
+            #title
+            (remember)="enterLogin()">
+        </app-title>
+    </div>
+
+    <div class="login-layer">
+        <app-login></app-login>
+    </div>
+
+</div>

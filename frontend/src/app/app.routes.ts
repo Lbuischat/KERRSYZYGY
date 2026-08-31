@@ -1,22 +1,24 @@
 import { Routes } from '@angular/router';
+
 import { GameShell } from './features/game/game-shell/game-shell';
-import { Title } from './features/title/title';
-import { Login } from './features/auth/login/login';
+import { GameEntry } from './features/entry/game-entry';
+import { Start } from './features/start/start';
 
 export const routes: Routes = [
 
     {
         path: '',
-        component: Title
+        component: GameEntry
     },
 
     {
-        path: 'login',
-        component: Login
+        path: 'start',
+        component: Start
     },
 
     {
         path: 'game',
         component: GameShell
     }
+
 ];
