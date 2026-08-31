@@ -1,34 +1,27 @@
 <div class="title-screen">
-
-    <div class="page-transition" [class.active]="isLeaving" aria-hidden="true"></div>
-
-
-    <!-- =====================================================
-         BACKGROUND STARS
-         ===================================================== -->
-
-    <div class="background-stars" aria-hidden="true">
-
-        @for (
-        star of backgroundStars;
-        track $index
-        ) {
-
-        <span class="background-star" [style.left.%]="star.left" [style.top.%]="star.top" [style.width.px]="star.size"
-            [style.height.px]="star.size" [style.--star-opacity]="star.opacity"
-            [style.animation-delay.s]="star.delay"></span>
-
-        }
-
+    <div
+        class="page-transition"
+        [class.active]="isLeaving"
+        aria-hidden="true">
     </div>
 
+    <!-- Background stars -->
+    <div class="background-stars" aria-hidden="true">
+        @for (star of backgroundStars; track $index) {
+            <span
+                class="background-star"
+                [style.left.%]="star.left"
+                [style.top.%]="star.top"
+                [style.width.px]="star.size"
+                [style.height.px]="star.size"
+                [style.--star-opacity]="star.opacity"
+                [style.animation-delay.s]="star.delay">
+            </span>
+        }
+    </div>
 
-    <!-- =====================================================
-         12 MAIN BACKGROUND STARS
-         ===================================================== -->
-
+    <!-- Main background stars -->
     <div class="stars" aria-hidden="true">
-
         <span class="star star-1"></span>
         <span class="star star-2"></span>
         <span class="star star-3"></span>
@@ -41,107 +34,132 @@
         <span class="star star-10"></span>
         <span class="star star-11"></span>
         <span class="star star-12"></span>
-
     </div>
 
-
-    <!-- =====================================================
-         RANDOM CELESTIAL EVENTS
-         ===================================================== -->
-
+    <!-- Random celestial events -->
     <div class="celestial-events" aria-hidden="true">
-
-        @for (
-        event of celestialEvents;
-        track event.id
-        ) {
-
-        <span class="celestial-event" [class.comet]="event.type === 'comet'"
-            [class.asteroid]="event.type === 'asteroid'" [class.special-comet]="event.type === 'special-comet'"
-            [style.left.%]="event.left" [style.top.%]="event.top" [style.--event-angle]="event.angle + 'deg'"
-            [style.--event-duration]="event.duration + 's'" [style.--event-size.px]="event.size"
-            [style.--event-opacity]="event.opacity"></span>
-
+        @for (event of celestialEvents; track event.id) {
+            <span
+                class="celestial-event"
+                [class.comet]="event.type === 'comet'"
+                [class.asteroid]="event.type === 'asteroid'"
+                [class.special-comet]="event.type === 'special-comet'"
+                [style.left.%]="event.left"
+                [style.top.%]="event.top"
+                [style.--event-angle]="event.angle + 'deg'"
+                [style.--event-duration]="event.duration + 's'"
+                [style.--event-size.px]="event.size"
+                [style.--event-opacity]="event.opacity">
+            </span>
         }
-
     </div>
 
-
-    <!-- =====================================================
-         CENTRAL STELLAR SYSTEM
-         ===================================================== -->
-
+    <!-- Central stellar system -->
     <div class="celestial-system">
+        <svg
+            class="orbit"
+            viewBox="0 0 1200 700"
+            aria-hidden="true">
 
-
-        <!-- =================================================
-             LARGE SYSTEM ORBIT
-
-             This is a visual reference orbit around
-             the central logo.
-
-             The actual companion-star movement is
-             calculated in TypeScript.
-             ================================================= -->
-
-        <svg class="orbit" viewBox="0 0 1200 700" aria-hidden="true">
-
-            <!-- =================================================
-                 STAR 1 ORBIT
-                 ================================================= -->
-
-            <ellipse class="companion-orbit companion-one-orbit" cx="600" cy="350" rx="230" ry="135"
+            <!-- Orbital paths -->
+            <!-- Left ellipse s2 -->
+            <ellipse
+                class="companion-orbit companion-one-orbit"
+                cx="400"
+                cy="350"
+                rx="400"
+                ry="250"
                 pathLength="1000" />
 
-            <!-- =================================================
-                 STAR 2 ORBIT
-                 ================================================= -->
-
-            <ellipse class="companion-orbit companion-two-orbit" cx="600" cy="350" rx="380" ry="215"
+            <!-- Right ellipse s3 -->
+            <ellipse
+                class="companion-orbit companion-two-orbit"
+                cx="800"
+                cy="350"
+                rx="400"
+                ry="250"
                 pathLength="1000" />
 
-
-            <!-- =================================================
-                 COMPANION STAR 1
-                 ================================================= -->
-
-            <g class="companion-star companion-star-one" [attr.transform]="
-        'translate(' +
-        companionOneX() +
-        ' ' +
-        companionOneY() +
-        ')'
-    ">
-
-                <!-- Outer glow -->
-                <circle class="star-glow" cx="0" cy="0" r="38"></circle>
-
-                <!-- Stellar body -->
-                <circle class="stellar-body" cx="0" cy="0" r="17"></circle>
-
-
-                <!-- =============================================
-         MOON SYSTEM
-         ============================================= -->
-
-                <g class="moon-system" [attr.transform]="'rotate(' + moonAngle + ')'">
-
-                    <!-- Moon's orbit -->
-                    <ellipse class="moon-orbit-path" cx="0" cy="0" rx="58" ry="34" pathLength="1000"></ellipse>
-
-                    <!-- Moon -->
-                    <circle class="star-moon" cx="58" cy="0" r="5"></circle>
-
+            <!-- Orbital intersection points -->
+            <g class="orbit-intersections">
+                <!-- Top intersection -->
+                <g transform="translate(600 170)">
+                    <line x1="-8" y1="-8" x2="8" y2="8" />
+                    <line x1="8" y1="-8" x2="-8" y2="8" />
                 </g>
 
+                <!-- Bottom intersection -->
+                <g transform="translate(600 530)">
+                    <line x1="-8" y1="-8" x2="8" y2="8" />
+                    <line x1="8" y1="-8" x2="-8" y2="8" />
+                </g>
             </g>
 
+            <!-- Companion star 1 -->
+            <g
+                class="companion-star companion-star-one"
+                [attr.transform]="
+                    'translate(' +
+                    companionOneX() +
+                    ' ' +
+                    companionOneY() +
+                    ')'
+                ">
 
-            <!-- =================================================
-                 COMPANION STAR 2
-                 ================================================= -->
+                <circle
+                    class="star-glow"
+                    cx="0"
+                    cy="0"
+                    r="38" />
 
-            <g class="companion-star companion-star-two" [attr.transform]="
+                <circle
+                    class="stellar-body"
+                    cx="0"
+                    cy="0"
+                    r="17" />
+
+                <!-- Moon system -->
+                <g
+                    class="moon-system"
+                    [attr.transform]="
+                        'translate(' +
+                        moonX() +
+                        ' ' +
+                        moonY() +
+                        ')'
+                    ">
+                    
+                    <!-- Earth -->
+                    <circle
+                        class="star-moon"
+                        cx="0"
+                        cy="0"
+                        r="5" />
+
+                    <!-- Actual Moon -->
+                    <g
+                        class="moon-1-system"
+                        [attr.transform]="
+                            'translate(' +
+                            moonOneX() +
+                            ' ' +
+                            moonOneY() +
+                            ')'
+                        ">
+
+                        <circle
+                            class="moon-one"
+                            cx="0"
+                            cy="0"
+                            r="4" />
+                    </g>
+                </g>
+            </g>
+
+            <!-- Companion star 2 -->
+            <g
+                class="companion-star companion-star-two"
+                [attr.transform]="
                     'translate(' +
                     companionTwoX() +
                     ' ' +
@@ -149,33 +167,30 @@
                     ')'
                 ">
 
-                <!-- Outer glow -->
+                <circle
+                    class="star-glow"
+                    cx="0"
+                    cy="0"
+                    r="31" />
 
-                <circle class="star-glow" cx="0" cy="0" r="31"></circle>
-
-
-                <!-- Stellar body -->
-
-                <circle class="stellar-body" cx="0" cy="0" r="13"></circle>
-
-
+                <circle
+                    class="stellar-body"
+                    cx="0"
+                    cy="0"
+                    r="13" />
             </g>
 
-
-            <!-- =================================================
-                 CENTRAL LOGO / PRIMARY STAR
-                 ================================================= -->
-
+            <!-- Central star / logo -->
             <g class="central-star" aria-hidden="true">
+                <circle
+                    class="central-star-glow"
+                    cx="600"
+                    cy="350"
+                    r="145" />
 
-                <!-- Large stellar halo behind logo -->
-
-                <circle class="central-star-glow" cx="600" cy="350" r="145"></circle>
-
-
-                <!-- Main stellar rays behind logo -->
-
-                <path class="central-star-rays" d="
+                <path
+                    class="central-star-rays"
+                    d="
                         M 600 165
                         L 616 334
                         L 600 350
@@ -199,44 +214,26 @@
                         L 600 350
                         L 584 366
                         Z
-                    "></path>
-
+                    " />
             </g>
-
-
         </svg>
 
-
-        <!-- =====================================================
-             LOGO
-
-             The logo itself is the CENTRAL STAR.
-
-             It does NOT move.
-             ===================================================== -->
-
-        <img class="game-logo" src="/icons/logo.png" alt="Game logo" />
-
-
+        <!-- Game logo -->
+        <img
+            class="game-logo"
+            src="/icons/logo.png"
+            alt="Game logo" />
     </div>
 
-
-    <!-- =====================================================
-         TITLE + BUTTON
-         ===================================================== -->
-
+    <!-- Title and button -->
     <div class="title-content">
+        <h1>KERRSYZYGY</h1>
 
-        <h1>
-            KERRSYZYGY
-        </h1>
-
-
-        <button type="button" [class.leaving]="isLeaving" (click)="enterGame()">
+        <button
+            type="button"
+            [class.leaving]="isLeaving"
+            (click)="enterGame()">
             REMEMBER
         </button>
-
     </div>
-
-
 </div>

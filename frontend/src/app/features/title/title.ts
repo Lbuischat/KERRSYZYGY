@@ -7,6 +7,7 @@ import {
 
 import { Router } from '@angular/router';
 
+
 interface BackgroundStar {
   left: number;
   top: number;
@@ -15,8 +16,8 @@ interface BackgroundStar {
   delay: number;
 }
 
-interface CelestialEvent {
 
+interface CelestialEvent {
   id: number;
 
   type:
@@ -25,18 +26,13 @@ interface CelestialEvent {
   | 'special-comet';
 
   left: number;
-
   top: number;
-
   angle: number;
-
   duration: number;
-
   size: number;
-
   opacity: number;
-
 }
+
 
 @Component({
   selector: 'app-title',
@@ -48,60 +44,132 @@ export class Title implements OnDestroy {
 
   isLeaving = false;
 
+
+  // =========================================================
+  // DEBUG
+  // =========================================================
+
   /*
-   * =====================================================
-   * DEBUG
-   * =====================================================
-   *
    * Set to true while developing.
    */
 
-  private readonly DEBUG_ORBIT = true;
+  private readonly DEBUG_ORBIT = false;
+
+
+  // =========================================================
+  // ORBITAL STATE
+  // =========================================================
+
+  private orbitalPhase:
+    | 'normal'
+    | 'binary'
+    | 'exit' = 'normal';
+
+  /*
+   * BINARY
+   *
+   * The pair circles the fixed center star
+   * (S1) together, opposite each other, for a
+   * fixed number of full revolutions.
+   */
+
+  private binaryProgress = 0;
+  private binaryAngle = 0;
+
+  private readonly binaryDuration = 1.75;
 
 
   /*
-   * =====================================================
-   * BACKGROUND STARS
-   * =====================================================
+   * The angle (on the small circle around S1)
+   * that companion one starts AND ends the
+   * binary phase at. Companion two is always
+   * diametrically opposite. Since the pair
+   * completes a whole number of revolutions,
+   * they finish exactly where they started.
    */
+
+  private binaryStartAngle = 0;
+
+  private exitProgress = 0;
+  private readonly exitDuration = 1.2;
+
+  /*
+   * Which encounter point each companion
+   * approached from — and will exit back
+   * toward, now on its newly swapped orbit.
+   * Set the moment a swap begins; cleared once
+   * normal orbiting resumes.
+   */
+
+  private entryPointOne:
+    | { x: number; y: number }
+    | null = null;
+
+  private entryPointTwo:
+    | { x: number; y: number }
+    | null = null;
+
+  /*
+   * The angle each companion should resume at,
+   * on its NEW orbit, once the exit maneuver
+   * finishes. Computed the instant the swap
+   * happens so motion stays continuous.
+   */
+
+  private exitTargetAngleOne = 0;
+  private exitTargetAngleTwo = 0;
+
+  /*
+   * Tracks which physical orbit each companion
+   * is currently using.
+   *
+   * A = left ellipse
+   * B = right ellipse
+   */
+
+  private starTwoOrbit: 'A' | 'B' = 'A';
+  private starThreeOrbit: 'A' | 'B' = 'B';
+
+
+  // =========================================================
+  // BACKGROUND STARS
+  // =========================================================
 
   backgroundStars: BackgroundStar[] = [];
 
-  /*
- * =====================================================
- * RANDOM CELESTIAL EVENTS
- * =====================================================
- */
+
+  // =========================================================
+  // RANDOM CELESTIAL EVENTS
+  // =========================================================
 
   celestialEvents: CelestialEvent[] = [];
 
   private nextEventId = 0;
 
   private eventTimer?: ReturnType<typeof setTimeout>;
-
   private specialCometTimer?: ReturnType<typeof setTimeout>;
 
   private specialCometTriggered = false;
 
 
+  // =========================================================
+  // CENTRAL STAR + COMPANION STARS
+  // =========================================================
+
   /*
-   * =====================================================
-   * CENTRAL STAR + TWO COMPANION STARS
-   * =====================================================
-   *
    * The logo is the fixed central star.
    *
-   * Companion 1:
-   *   Large inner stellar companion.
+   * S2:
+   *   Companion star 1.
    *
-   * Companion 2:
-   *   Large outer stellar companion.
+   * S3:
+   *   Companion star 2.
    *
    * Moon:
-   *   Small body orbiting Companion 1.
+   *   Small body orbiting S2.
    *
-   * The coordinates are SVG coordinates relative
-   * to the center of the 1200 x 700 system.
+   * All coordinates use the SVG's
+   * 1200 × 700 coordinate system.
    */
 
   companionOneX = signal(600);
@@ -113,31 +181,40 @@ export class Title implements OnDestroy {
   moonX = signal(0);
   moonY = signal(0);
 
+  moonOneX = signal(0);
+  moonOneY = signal(0);
+
+
+  // =========================================================
+  // ORBIT ANGLES
+  // =========================================================
 
   /*
-   * =====================================================
-   * ORBIT ANGLES
-   * =====================================================
-   *
-   * These are independent orbital phases.
-   *
-   * The companions do NOT form a rigid triangle.
-   *
-   * Each star has its own orbital period,
-   * which creates a much more natural-looking
-   * stellar system.
+   * S2 starts at the top of its orbit.
    */
 
-  private companionOneAngle = 0;
+  private companionOneAngle = Math.PI / 2;
 
-  private companionTwoAngle = Math.PI;
+  /*
+   * S3 starts at the top of its orbit.
+   */
+
+  private companionTwoAngle = Math.PI / 2;
+
+  /*
+   * Moon starts at zero degrees.
+   */
 
   moonAngle = 0;
 
 
+  // =========================================================
+  // ANIMATION TIMING
+  // =========================================================
+
   /*
-   * Used to calculate elapsed time
-   * between animation frames.
+   * Used to calculate elapsed time between
+   * animation frames.
    */
 
   private previousTime = 0;
@@ -146,102 +223,173 @@ export class Title implements OnDestroy {
   /*
    * requestAnimationFrame ID.
    *
-   * We keep this so we can stop the animation
-   * if the component is destroyed.
+   * Stored so the animation can be stopped
+   * when the component is destroyed.
    */
 
   private animationFrameId?: number;
 
 
-  /*
-   * =====================================================
-   * ORBIT SETTINGS
-   * =====================================================
-   */
+  // =========================================================
+  // STELLAR SYSTEM GEOMETRY
+  // =========================================================
 
   /*
-   * =====================================================
-   * STELLAR SYSTEM GEOMETRY
-   * =====================================================
+   * Central logo / S1.
    */
 
   private readonly centerX = 600;
   private readonly centerY = 350;
 
+
   /*
-   * =====================================================
-   * COMPANION STAR 1 ORBIT
-   * =====================================================
+   * ---------------------------------------------------------
+   * LEFT ELLIPSE / ORBIT A
+   * ---------------------------------------------------------
    *
-   * This star stays relatively close to the
-   * central logo.
+   * Matches the HTML exactly:
    *
-   * The orbit is elliptical rather than circular.
+   *   cx="400"
+   *   cy="350"
+   *   rx="400"
+   *   ry="250"
    */
 
-  private readonly companionOneRadiusX = 230;
-  private readonly companionOneRadiusY = 135;
+  private readonly orbitACenterX = 400;
+  private readonly orbitACenterY = 350;
+
+  private readonly orbitARadiusX = 400;
+  private readonly orbitARadiusY = 250;
+
 
   /*
-   * =====================================================
-   * COMPANION STAR 2 ORBIT
-   * =====================================================
+   * ---------------------------------------------------------
+   * RIGHT ELLIPSE / ORBIT B
+   * ---------------------------------------------------------
    *
-   * This star has a wider orbit.
+   * Matches the HTML exactly:
    *
-   * Because the two stars have different periods,
-   * they naturally change their relative positions.
+   *   cx="800"
+   *   cy="350"
+   *   rx="400"
+   *   ry="250"
    */
-  private readonly companionTwoRadiusX = 380;
-  private readonly companionTwoRadiusY = 215;
+
+  private readonly orbitBCenterX = 800;
+  private readonly orbitBCenterY = 350;
+
+  private readonly orbitBRadiusX = 400;
+  private readonly orbitBRadiusY = 250;
+
 
   /*
-   * =====================================================
-   * ORBITAL PERIODS
-   * =====================================================
+   * ---------------------------------------------------------
+   * ENCOUNTER POINTS
+   * ---------------------------------------------------------
    *
+   * Orbit A and Orbit B intersect at exactly two points,
+   * both sitting on the vertical line through the fixed
+   * center star (S1).
+   *
+   * These are derived from the orbit geometry above rather
+   * than hardcoded, so they stay correct if the ellipses
+   * are ever resized.
+   */
+
+  private readonly encounterX =
+    (this.orbitACenterX +
+      this.orbitBCenterX) /
+    2;
+
+  private readonly encounterYOffset =
+    this.orbitARadiusY *
+    Math.sqrt(
+      1 -
+      Math.pow(
+        (this.encounterX -
+          this.orbitACenterX) /
+        this.orbitARadiusX,
+        2
+      )
+    );
+
+  private readonly topEncounterY =
+    this.orbitACenterY -
+    this.encounterYOffset;
+
+  private readonly bottomEncounterY =
+    this.orbitACenterY +
+    this.encounterYOffset;
+
+  private readonly encounterTolerance = 8;
+
+  /*
+   * Encounters repeat indefinitely, but the pair
+   * needs a brief grace period after each swap
+   * before the same (or the other) encounter point
+   * is allowed to trigger again — otherwise they'd
+   * re-trigger the instant they land back on top of
+   * the intersection they just swapped at.
+   */
+
+  private encounterCooldownRemaining = 0;
+
+  private readonly encounterCooldownDuration = 2;
+
+
+  // =========================================================
+  // ORBIT ROTATION
+  // =========================================================
+
+  /*
+   * Both SVG ellipses are horizontal,
+   * so no rotation is currently required.
+   */
+
+  private readonly orbitARotation = 0;
+  private readonly orbitBRotation = 0;
+
+
+  // =========================================================
+  // ORBITAL PERIODS
+  // =========================================================
+
+  /*
    * DEBUG mode makes the system move quickly
    * while developing.
-   *
-   * Normal values can later be slowed down.
    */
 
   private readonly companionOnePeriod =
     this.DEBUG_ORBIT
-      ? 24
-      : 45;
+      ? 1
+      : 35;
 
   private readonly companionTwoPeriod =
     this.DEBUG_ORBIT
-      ? 38
-      : 75;
+      ? 7
+      : 43;
 
-  /*
-   * =====================================================
-   * MOON ORBIT
-   * =====================================================
-   *
-   * This is deliberately much smaller than
-   * the stellar orbits.
-   */
+
+  // =========================================================
+  // MOON ORBIT
+  // =========================================================
 
   private readonly moonRadiusX = 58;
   private readonly moonRadiusY = 34;
 
-  /*
-   * Moon orbital period.
-   */
+  private readonly moonPeriod = 20;
 
-  private readonly moonPeriod = 3.5;
+  private readonly moonOneRadiusX = 15;
+  private readonly moonOneRadiusY = 11;
+
+  private readonly moonOnePeriod = 0.5;
+
+  moonOneAngle = 0;
 
 
-
-
-  /*
-   * =====================================================
-   * CONSTRUCTOR
-   * =====================================================
-   */
+  // =========================================================
+  // CONSTRUCTOR
+  // =========================================================
 
   constructor(
     private readonly router: Router
@@ -249,15 +397,16 @@ export class Title implements OnDestroy {
 
     this.createBackgroundStars();
 
-    /*
-     * This code runs only after Angular has
-     * rendered the component in the browser.
-     *
-     * This is important because your project
-     * uses server-side rendering (SSR).
-     */
 
     afterNextRender(() => {
+
+      /*
+       * Start the orbital animation after
+       * the title screen has appeared.
+       *
+       * This is browser-only code and therefore
+       * runs safely after Angular rendering.
+       */
 
       setTimeout(() => {
 
@@ -267,9 +416,8 @@ export class Title implements OnDestroy {
 
 
       /*
-       * Start random celestial events
-       * after the title screen has had time
-       * to establish itself.
+       * Start random celestial events after
+       * the title screen has had time to establish itself.
        */
 
       setTimeout(() => {
@@ -280,29 +428,28 @@ export class Title implements OnDestroy {
 
 
       /*
-       * The special comet cannot appear
-       * before one minute has passed.
+       * The special comet cannot appear before
+       * one minute has passed.
        *
-       * We give it a little randomness so
-       * it doesn't happen at exactly 60.000 seconds.
+       * Add a random 0–30 second delay so it
+       * does not always appear at the same time.
        */
 
-      this.specialCometTimer = setTimeout(() => {
+      this.specialCometTimer =
+        setTimeout(() => {
 
-        this.triggerSpecialComet();
+          this.triggerSpecialComet();
 
-      }, 60_000 + Math.random() * 30_000);
+        }, 60_000 + Math.random() * 30_000);
 
     });
 
   }
 
 
-  /*
-   * =====================================================
-   * DEBUG — SHOW RANDOM CELESTIAL EVENT
-   * =====================================================
-   */
+  // =========================================================
+  // DEBUG — RANDOM CELESTIAL EVENT
+  // =========================================================
 
   debugCelestialEvent(): void {
 
@@ -311,11 +458,9 @@ export class Title implements OnDestroy {
   }
 
 
-  /*
-   * =====================================================
-   * DEBUG — SHOW SPECIAL COMET
-   * =====================================================
-   */
+  // =========================================================
+  // DEBUG — SPECIAL COMET
+  // =========================================================
 
   debugSpecialComet(): void {
 
@@ -324,6 +469,11 @@ export class Title implements OnDestroy {
     this.triggerSpecialComet();
 
   }
+
+
+  // =========================================================
+  // ENTER GAME
+  // =========================================================
 
   enterGame(): void {
 
@@ -340,15 +490,15 @@ export class Title implements OnDestroy {
 
 
     /*
-     * Start the fade.
+     * Start the page transition.
      */
 
     this.isLeaving = true;
 
 
     /*
-     * Wait for the fade to finish,
-     * then navigate.
+     * Wait for the transition to finish,
+     * then navigate to the login page.
      */
 
     setTimeout(() => {
@@ -360,27 +510,33 @@ export class Title implements OnDestroy {
   }
 
 
-  /*
-   * =====================================================
-   * BACKGROUND STARS
-   * =====================================================
-   */
+  // =========================================================
+  // BACKGROUND STARS
+  // =========================================================
 
   private createBackgroundStars(): void {
 
     const numberOfStars = 180;
 
-    for (let i = 0; i < numberOfStars; i++) {
+
+    for (
+      let i = 0;
+      i < numberOfStars;
+      i++
+    ) {
 
       this.backgroundStars.push({
 
-        left: Math.random() * 100,
+        left:
+          Math.random() * 100,
 
-        top: Math.random() * 100,
+        top:
+          Math.random() * 100,
 
-        size: Math.random() < 0.9
-          ? 1
-          : 2,
+        size:
+          Math.random() < 0.9
+            ? 1
+            : 2,
 
         opacity:
           0.08 +
@@ -396,16 +552,15 @@ export class Title implements OnDestroy {
 
   }
 
-  /*
- * =====================================================
- * SCHEDULE NEXT CELESTIAL EVENT
- * =====================================================
- */
+
+  // =========================================================
+  // SCHEDULE NEXT CELESTIAL EVENT
+  // =========================================================
 
   private scheduleNextCelestialEvent(): void {
 
     /*
-     * Random delay between 20 and 40 seconds.
+     * Random delay between 20 and 60 seconds.
      */
 
     const delay =
@@ -413,22 +568,21 @@ export class Title implements OnDestroy {
       Math.random() * 40_000;
 
 
-    this.eventTimer = setTimeout(() => {
+    this.eventTimer =
+      setTimeout(() => {
 
-      this.createRandomCelestialEvent();
+        this.createRandomCelestialEvent();
 
-      this.scheduleNextCelestialEvent();
+        this.scheduleNextCelestialEvent();
 
-    }, delay);
+      }, delay);
 
   }
 
 
-  /*
-   * =====================================================
-   * CREATE RANDOM EVENT
-   * =====================================================
-   */
+  // =========================================================
+  // CREATE RANDOM CELESTIAL EVENT
+  // =========================================================
 
   private createRandomCelestialEvent(): void {
 
@@ -445,16 +599,21 @@ export class Title implements OnDestroy {
 
     const event: CelestialEvent = {
 
-      id: this.nextEventId++,
+      id:
+        this.nextEventId++,
 
       type,
 
       /*
-       * Start somewhere vertically across
-       * the screen.
+       * Events enter from the left side.
        */
 
       left: 0,
+
+      /*
+       * Start somewhere vertically
+       * across most of the screen.
+       */
 
       top:
         5 +
@@ -479,8 +638,8 @@ export class Title implements OnDestroy {
           : 2.5 + Math.random() * 2,
 
       /*
-       * Asteroids get different sizes.
        * Comets stay tiny.
+       * Asteroids get different sizes.
        */
 
       size:
@@ -521,11 +680,9 @@ export class Title implements OnDestroy {
   }
 
 
-  /*
-   * =====================================================
-   * SPECIAL COMET
-   * =====================================================
-   */
+  // =========================================================
+  // SPECIAL COMET
+  // =========================================================
 
   private triggerSpecialComet(): void {
 
@@ -545,9 +702,11 @@ export class Title implements OnDestroy {
 
     const event: CelestialEvent = {
 
-      id: this.nextEventId++,
+      id:
+        this.nextEventId++,
 
-      type: 'special-comet',
+      type:
+        'special-comet',
 
       left: 0,
 
@@ -560,7 +719,7 @@ export class Title implements OnDestroy {
         Math.random() * 55,
 
       /*
-       * A much more dramatic trajectory.
+       * Give it a more dramatic trajectory.
        */
 
       angle:
@@ -568,10 +727,8 @@ export class Title implements OnDestroy {
         Math.random() * 36,
 
       /*
-       * Slower than normal comets.
-       *
-       * This gives the player time to actually
-       * notice what the fuck just happened.
+       * Slower than normal comets so
+       * the player has time to notice it.
        */
 
       duration:
@@ -605,45 +762,213 @@ export class Title implements OnDestroy {
   }
 
 
+  // =========================================================
+  // ANGLE FOR A KNOWN POINT ON AN ORBIT
+  // =========================================================
+
   /*
-   * =====================================================
-   * INITIAL STAR POSITIONS
-   * =====================================================
+   * Both encounter points sit exactly on Orbit A
+   * AND Orbit B (that is what makes them intersections),
+   * so given either orbit and one of those points, this
+   * returns the parametric angle that reproduces it.
+   *
+   * Used right after a swap so the companion can resume
+   * normal orbiting from the correct angle instead of
+   * snapping back to its orbit's starting position.
    */
+
+  private calculateAngleOnOrbit(
+    orbit: 'A' | 'B',
+    point: { x: number; y: number }
+  ): number {
+
+    const centerX =
+      orbit === 'A'
+        ? this.orbitACenterX
+        : this.orbitBCenterX;
+
+
+    const centerY =
+      orbit === 'A'
+        ? this.orbitACenterY
+        : this.orbitBCenterY;
+
+
+    const radiusX =
+      orbit === 'A'
+        ? this.orbitARadiusX
+        : this.orbitBRadiusX;
+
+
+    const radiusY =
+      orbit === 'A'
+        ? this.orbitARadiusY
+        : this.orbitBRadiusY;
+
+
+    return Math.atan2(
+      (point.y - centerY) /
+      radiusY,
+
+      (point.x - centerX) /
+      radiusX
+    );
+
+  }
+
+
+  // =========================================================
+  // ORBIT POSITION
+  // =========================================================
+
+  /*
+   * Calculates a position directly from the
+   * SVG ellipse that the star is currently using.
+   *
+   * This is the important part:
+   *
+   * TypeScript and HTML now use the same geometry.
+   */
+
+  private calculateOrbitPosition(
+    orbit: 'A' | 'B',
+    angle: number
+  ) {
+
+    const centerX =
+      orbit === 'A'
+        ? this.orbitACenterX
+        : this.orbitBCenterX;
+
+
+    const centerY =
+      orbit === 'A'
+        ? this.orbitACenterY
+        : this.orbitBCenterY;
+
+
+    const radiusX =
+      orbit === 'A'
+        ? this.orbitARadiusX
+        : this.orbitBRadiusX;
+
+
+    const radiusY =
+      orbit === 'A'
+        ? this.orbitARadiusY
+        : this.orbitBRadiusY;
+
+
+    /*
+     * Horizontal ellipses currently have
+     * zero rotation, but keeping the rotation
+     * calculation here makes the method easier
+     * to extend later.
+     */
+
+    const rotation =
+      orbit === 'A'
+        ? this.orbitARotation
+        : this.orbitBRotation;
+
+
+    const localX =
+      radiusX *
+      Math.cos(angle);
+
+
+    const localY =
+      radiusY *
+      Math.sin(angle);
+
+
+    const cosRotation =
+      Math.cos(rotation);
+
+
+    const sinRotation =
+      Math.sin(rotation);
+
+
+    return {
+
+      x:
+        centerX +
+        localX * cosRotation -
+        localY * sinRotation,
+
+      y:
+        centerY +
+        localX * sinRotation +
+        localY * cosRotation
+
+    };
+
+  }
+
+
+  // =========================================================
+  // LINEAR INTERPOLATION
+  // =========================================================
+
+  private lerp(
+    start: number,
+    end: number,
+    amount: number
+  ): number {
+
+    return start +
+      (end - start) *
+      amount;
+
+  }
+
+
+  // =========================================================
+  // INITIAL STAR POSITIONS
+  // =========================================================
 
   private updateInitialStarPositions(): void {
 
     /*
-     * Companion 1
+     * S2 starts on Orbit A.
      */
 
+    const s2Position =
+      this.calculateOrbitPosition(
+        this.starTwoOrbit,
+        this.companionOneAngle
+      );
+
+
     this.companionOneX.set(
-      this.centerX +
-      this.companionOneRadiusX *
-      Math.cos(this.companionOneAngle)
+      s2Position.x
     );
 
     this.companionOneY.set(
-      this.centerY +
-      this.companionOneRadiusY *
-      Math.sin(this.companionOneAngle)
+      s2Position.y
     );
 
+
     /*
-     * Companion 2
+     * S3 starts on Orbit B.
      */
 
+    const s3Position =
+      this.calculateOrbitPosition(
+        this.starThreeOrbit,
+        this.companionTwoAngle
+      );
+
+
     this.companionTwoX.set(
-      this.centerX +
-      this.companionTwoRadiusX *
-      Math.cos(this.companionTwoAngle)
+      s3Position.x
     );
 
     this.companionTwoY.set(
-      this.centerY +
-      this.companionTwoRadiusY *
-      Math.sin(this.companionTwoAngle)
+      s3Position.y
     );
+
 
     /*
      * Moon starts at zero degrees.
@@ -654,16 +979,406 @@ export class Title implements OnDestroy {
   }
 
 
-  /*
-   * =====================================================
-   * START ORBIT
-   * =====================================================
-   */
+  // =========================================================
+  // NORMAL ORBIT
+  // =========================================================
+
+  private updateNormalOrbit(
+    deltaTime: number
+  ): void {
+
+    /*
+     * -------------------------------------------------------
+     * S2
+     * -------------------------------------------------------
+     */
+
+    const s2AngularVelocity =
+      (Math.PI * 2) /
+      this.companionOnePeriod;
+
+
+    this.companionOneAngle +=
+      s2AngularVelocity *
+      deltaTime;
+
+
+    const s2Position =
+      this.calculateOrbitPosition(
+        this.starTwoOrbit,
+        this.companionOneAngle
+      );
+
+
+    this.companionOneX.set(
+      s2Position.x
+    );
+
+    this.companionOneY.set(
+      s2Position.y
+    );
+
+
+    /*
+     * -------------------------------------------------------
+     * S3
+     * -------------------------------------------------------
+     */
+
+    const s3AngularVelocity =
+      (Math.PI * 2) /
+      this.companionTwoPeriod;
+
+
+    this.companionTwoAngle +=
+      s3AngularVelocity *
+      deltaTime;
+
+
+    const s3Position =
+      this.calculateOrbitPosition(
+        this.starThreeOrbit,
+        this.companionTwoAngle
+      );
+
+
+    this.companionTwoX.set(
+      s3Position.x
+    );
+
+    this.companionTwoY.set(
+      s3Position.y
+    );
+
+
+    /*
+     * -------------------------------------------------------
+     * COOLDOWN
+     * -------------------------------------------------------
+     */
+
+    if (
+      this.encounterCooldownRemaining >
+      0
+    ) {
+
+      this.encounterCooldownRemaining =
+        Math.max(
+          0,
+          this.encounterCooldownRemaining -
+          deltaTime
+        );
+
+      return;
+
+    }
+
+
+    /*
+     * -------------------------------------------------------
+     * ENCOUNTER POINTS
+     * -------------------------------------------------------
+     */
+
+    const topPoint = {
+      x: this.encounterX,
+      y: this.topEncounterY
+    };
+
+
+    const bottomPoint = {
+      x: this.encounterX,
+      y: this.bottomEncounterY
+    };
+
+
+    const isNear = (
+      x: number,
+      y: number,
+      point: { x: number; y: number }
+    ): boolean =>
+      Math.hypot(
+        x - point.x,
+        y - point.y
+      ) <
+      this.encounterTolerance;
+
+
+    const s2AtTop =
+      isNear(
+        this.companionOneX(),
+        this.companionOneY(),
+        topPoint
+      );
+
+
+    const s2AtBottom =
+      isNear(
+        this.companionOneX(),
+        this.companionOneY(),
+        bottomPoint
+      );
+
+
+    const s3AtTop =
+      isNear(
+        this.companionTwoX(),
+        this.companionTwoY(),
+        topPoint
+      );
+
+
+    const s3AtBottom =
+      isNear(
+        this.companionTwoX(),
+        this.companionTwoY(),
+        bottomPoint
+      );
+
+
+    /*
+     * -------------------------------------------------------
+     * START BINARY MANEUVER
+     * -------------------------------------------------------
+     *
+     * One star must be at the top and the other
+     * at the bottom.
+     *
+     * No convergence.
+     * No inward movement.
+     * No stopping.
+     */
+
+    if (
+      s2AtTop &&
+      s3AtBottom
+    ) {
+
+      this.entryPointOne = topPoint;
+      this.entryPointTwo = bottomPoint;
+
+      this.binaryStartAngle =
+        -Math.PI / 2;
+
+      this.binaryAngle =
+        this.binaryStartAngle;
+
+      this.binaryProgress = 0;
+
+      this.orbitalPhase =
+        'binary';
+
+    } else if (
+      s2AtBottom &&
+      s3AtTop
+    ) {
+
+      this.entryPointOne = bottomPoint;
+      this.entryPointTwo = topPoint;
+
+      this.binaryStartAngle =
+        Math.PI / 2;
+
+      this.binaryAngle =
+        this.binaryStartAngle;
+
+      this.binaryProgress = 0;
+
+      this.orbitalPhase =
+        'binary';
+
+    }
+
+  }
+
+
+  // =========================================================
+  // BINARY ORBIT
+  // =========================================================
+
+  private updateBinaryOrbit(
+    deltaTime: number
+  ): void {
+
+    /*
+     * Advance through exactly ONE HALF revolution.
+     *
+     * S2:
+     *   top    → bottom
+     *
+     * S3:
+     *   bottom → top
+     *
+     * They never move toward the center.
+     * They simply rotate around S1.
+     */
+
+    this.binaryProgress +=
+      deltaTime;
+
+
+    const progress =
+      Math.min(
+        this.binaryProgress /
+        this.binaryDuration,
+        1
+      );
+
+
+    this.binaryAngle =
+      this.binaryStartAngle +
+      progress * Math.PI;
+    /*
+     * Radius of the binary circle.
+     *
+     * This is exactly the distance from S1
+     * to the top/bottom encounter points.
+     */
+
+    const binaryRadius =
+      Math.abs(
+        this.topEncounterY -
+        this.centerY
+      );
+
+
+    /*
+     * -------------------------------------------------------
+     * S2
+     * -------------------------------------------------------
+     */
+
+    const s2x =
+      this.centerX +
+      Math.cos(this.binaryAngle) *
+      binaryRadius;
+
+
+    const s2y =
+      this.centerY +
+      Math.sin(this.binaryAngle) *
+      binaryRadius;
+
+
+    /*
+     * -------------------------------------------------------
+     * S3
+     * -------------------------------------------------------
+     *
+     * Always exactly opposite S2.
+     */
+
+    const s3x =
+      this.centerX -
+      Math.cos(this.binaryAngle) *
+      binaryRadius;
+
+
+    const s3y =
+      this.centerY -
+      Math.sin(this.binaryAngle) *
+      binaryRadius;
+
+
+    this.companionOneX.set(s2x);
+    this.companionOneY.set(s2y);
+
+    this.companionTwoX.set(s3x);
+    this.companionTwoY.set(s3y);
+
+
+    /*
+     * -------------------------------------------------------
+     * FINISHED
+     * -------------------------------------------------------
+     */
+
+    if (
+      progress >= 1
+    ) {
+
+      /*
+       * Swap the physical orbits.
+       */
+
+      const temporary =
+        this.starTwoOrbit;
+
+      this.starTwoOrbit =
+        this.starThreeOrbit;
+
+      this.starThreeOrbit =
+        temporary;
+
+
+      /*
+       * The stars are now sitting exactly on
+       * the opposite encounter points.
+       *
+       * Calculate those exact positions as angles
+       * on their NEW orbits.
+       */
+
+      this.companionOneAngle =
+        this.calculateAngleOnOrbit(
+          this.starTwoOrbit,
+          {
+            x: this.companionOneX(),
+            y: this.companionOneY()
+          }
+        );
+
+
+      this.companionTwoAngle =
+        this.calculateAngleOnOrbit(
+          this.starThreeOrbit,
+          {
+            x: this.companionTwoX(),
+            y: this.companionTwoY()
+          }
+        );
+
+
+      /*
+       * Prevent the same intersection from
+       * immediately triggering again.
+       */
+
+      this.encounterCooldownRemaining =
+        this.encounterCooldownDuration;
+
+
+      /*
+       * Reset binary state.
+       */
+
+      this.binaryProgress = 0;
+
+
+      /*
+       * GO DIRECTLY BACK TO NORMAL ORBIT.
+       *
+       * No exit phase.
+       * No interpolation.
+       * No pause.
+       */
+
+      this.orbitalPhase =
+        'normal';
+
+    }
+
+  }
+
+  // =========================================================
+  // START ORBIT
+  // =========================================================
 
   private startOrbit(): void {
 
     this.previousTime =
       performance.now();
+
 
     /*
      * Put the stars into their initial
@@ -671,6 +1386,11 @@ export class Title implements OnDestroy {
      */
 
     this.updateInitialStarPositions();
+
+
+    /*
+     * Start the animation loop.
+     */
 
     this.animationFrameId =
       requestAnimationFrame(
@@ -681,58 +1401,48 @@ export class Title implements OnDestroy {
   }
 
 
-  /*
- * =====================================================
- * ORBIT ANIMATION
- * =====================================================
- */
+  // =========================================================
+  // ORBIT ANIMATION
+  // =========================================================
 
   /*
-   * =====================================================
-   * ORBIT ANIMATION
-   * =====================================================
-   *
    * The logo remains fixed at:
    *
-   *     600, 350
+   *   600, 350
    *
-   * Companion 1 and Companion 2 orbit around
-   * that central point.
+   * S2 and S3 follow their elliptical paths.
    *
-   * Their orbital periods are different, so they
-   * continuously change their relative positions.
+   * The moon independently orbits S2.
    *
-   * The moon independently orbits Companion 1.
-   *
-   * This creates a hierarchical stellar system:
-   *
-   *
-   *                 Star 2
-   *              ╱           ╲
-   *            ╱               ╲
-   *           ╱       LOGO      ╲
-   *           ╲        ★        ╱
-   *            ╲               ╱
-   *              ╲           ╱
-   *                 Star 1
-   *                    ·
-   *                  moon
-   *
-   * =====================================================
+   * Whenever one companion sits at the top
+   * intersection while the other sits at the
+   * bottom (either can be at either point),
+   * they're pulled inward to circle the fixed
+   * center star (S1) together twice, then
+   * head back out — each onto the OTHER'S
+   * former orbit — through the same point it
+   * came in from. This repeats indefinitely
+   * for as long as the animation runs.
    */
 
-  private animateOrbit(time: number): void {
+  private animateOrbit(
+    time: number
+  ): void {
 
     /*
-     * -------------------------------------------------
+     * -------------------------------------------------------
      * FRAME TIME
-     * -------------------------------------------------
+     * -------------------------------------------------------
      */
 
     const deltaTime =
-      time - this.previousTime;
+      time -
+      this.previousTime;
 
-    this.previousTime = time;
+
+    this.previousTime =
+      time;
+
 
     /*
      * Convert milliseconds to seconds.
@@ -741,127 +1451,101 @@ export class Title implements OnDestroy {
     const seconds =
       deltaTime / 1000;
 
-    /*
-     * -------------------------------------------------
-     * COMPANION STAR 1
-     * -------------------------------------------------
-     *
-     * Elliptical orbit around the central logo.
-     */
-
-    const companionOneAngularVelocity =
-      (Math.PI * 2) /
-      this.companionOnePeriod;
-
-    this.companionOneAngle +=
-      companionOneAngularVelocity *
-      seconds;
 
     /*
-     * Elliptical parametric orbit:
-     *
-     * x = cx + rx cos(theta)
-     * y = cy + ry sin(theta)
+     * -------------------------------------------------------
+     * ORBITAL STATE
+     * -------------------------------------------------------
      */
 
-    const companionOneX =
-      this.centerX +
-      this.companionOneRadiusX *
-      Math.cos(this.companionOneAngle);
+    if (
+      this.orbitalPhase ===
+      'binary'
+    ) {
 
-    const companionOneY =
-      this.centerY +
-      this.companionOneRadiusY *
-      Math.sin(this.companionOneAngle);
+      this.updateBinaryOrbit(
+        seconds
+      );
 
-    this.companionOneX.set(
-      companionOneX
-    );
+    } else {
 
-    this.companionOneY.set(
-      companionOneY
-    );
+      this.updateNormalOrbit(
+        seconds
+      );
+
+    }
+
 
     /*
-     * -------------------------------------------------
-     * COMPANION STAR 2
-     * -------------------------------------------------
+     * -------------------------------------------------------
+     * MOON AROUND S2
+     * -------------------------------------------------------
      *
-     * Star 2 has:
+     * The moon does not orbit the logo.
      *
-     * - a larger orbit
-     * - a different orbital period
-     * - an initial phase opposite Star 1
-     *
-     * This prevents the stars from behaving
-     * like a rigid triangle.
+     * It orbits Companion 1 / S2.
      */
-
-    const companionTwoAngularVelocity =
-      (Math.PI * 2) /
-      this.companionTwoPeriod;
-
-    this.companionTwoAngle +=
-      companionTwoAngularVelocity *
-      seconds;
-
-    /*
-     * Small orbital eccentricity.
-     *
-     * The radius changes slightly over the orbit.
-     *
-     * This prevents the movement from looking
-     * mechanically perfect.
-     */
-
-    const companionTwoX =
-      this.centerX +
-      this.companionTwoRadiusX *
-      Math.cos(this.companionTwoAngle);
-
-    const companionTwoY =
-      this.centerY +
-      this.companionTwoRadiusY *
-      Math.sin(this.companionTwoAngle);
-
-    this.companionTwoX.set(
-      companionTwoX
-    );
-
-    this.companionTwoY.set(
-      companionTwoY
-    );
-
-    /*
-     * -------------------------------------------------
-     * MOON AROUND COMPANION 1
-     * -------------------------------------------------
-     *
-     * The moon does NOT orbit the logo.
-     *
-     * It orbits Companion 1.
-     */
-
     const moonAngularVelocity =
       (Math.PI * 2) /
       this.moonPeriod;
+
 
     this.moonAngle +=
       moonAngularVelocity *
       seconds;
 
+
     const moonLocalX =
       this.moonRadiusX *
       Math.cos(this.moonAngle);
+
 
     const moonLocalY =
       this.moonRadiusY *
       Math.sin(this.moonAngle);
 
+
+    this.moonX.set(
+      moonLocalX
+    );
+
+    this.moonY.set(
+      moonLocalY
+    );
+
+    const moonOneAngularVelocity =
+      (Math.PI * 2) /
+      this.moonOnePeriod;
+
+
+    this.moonOneAngle +=
+      moonOneAngularVelocity *
+      seconds;
+
+
+    const moonOneLocalX =
+      this.moonOneRadiusX *
+      Math.cos(this.moonOneAngle);
+
+
+    const moonOneLocalY =
+      this.moonOneRadiusY *
+      Math.sin(this.moonOneAngle);
+
+
+    this.moonOneX.set(
+      moonOneLocalX
+    );
+
+    this.moonOneY.set(
+      moonOneLocalY
+    );
+
+
     /*
-     * -------------------------------------------------
+     * -------------------------------------------------------
      * NEXT FRAME
-     * -------------------------------------------------
+     * -------------------------------------------------------
      */
 
     this.animationFrameId =
@@ -872,15 +1556,21 @@ export class Title implements OnDestroy {
 
   }
 
-  /*
-   * =====================================================
-   * CLEANUP
-   * =====================================================
-   */
+
+  // =========================================================
+  // CLEANUP
+  // =========================================================
 
   ngOnDestroy(): void {
 
-    if (this.animationFrameId !== undefined) {
+    /*
+     * Stop the orbital animation.
+     */
+
+    if (
+      this.animationFrameId !==
+      undefined
+    ) {
 
       cancelAnimationFrame(
         this.animationFrameId
@@ -889,7 +1579,14 @@ export class Title implements OnDestroy {
     }
 
 
-    if (this.eventTimer !== undefined) {
+    /*
+     * Stop random celestial events.
+     */
+
+    if (
+      this.eventTimer !==
+      undefined
+    ) {
 
       clearTimeout(
         this.eventTimer
@@ -898,7 +1595,14 @@ export class Title implements OnDestroy {
     }
 
 
-    if (this.specialCometTimer !== undefined) {
+    /*
+     * Stop the special-comet timer.
+     */
+
+    if (
+      this.specialCometTimer !==
+      undefined
+    ) {
 
       clearTimeout(
         this.specialCometTimer
@@ -907,4 +1611,5 @@ export class Title implements OnDestroy {
     }
 
   }
+
 }

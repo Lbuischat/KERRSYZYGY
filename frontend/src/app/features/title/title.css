@@ -4,7 +4,6 @@
 
 :host {
     display: block;
-
     width: 100%;
     height: 100%;
 
@@ -26,14 +25,21 @@
 
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
 
     background: black;
 
     overflow: hidden;
+
+    opacity: 1;
+    transition: opacity 1.2s ease;
 }
+
+.title-screen.leaving {
+    opacity: 0;
+}
+
 
 /* =========================================================
    BACKGROUND STARS
@@ -41,51 +47,29 @@
 
 .background-stars {
     position: absolute;
-
     inset: 0;
 
     pointer-events: none;
 
-    /*
-     * Behind the main 12 stars.
-     */
     z-index: 0;
 }
-
 
 .background-star {
     position: absolute;
 
-    /*
-     * Start completely invisible.
-     */
+    width: auto;
+    height: auto;
+
     opacity: 0;
 
-    /*
-     * Very dark gray.
-     *
-     * These should feel almost like
-     * the black background at first.
-     */
     background: rgb(202, 202, 202);
-
     border-radius: 50%;
 
     animation:
         background-star-reveal 2.5s ease-out forwards;
 }
 
-
-/*
- * The stars slowly emerge from nothing.
- *
- * They don't flash.
- * They don't move.
- * They simply become visible.
- */
-
 @keyframes background-star-reveal {
-
     0% {
         opacity: 0;
     }
@@ -93,357 +77,8 @@
     100% {
         opacity: var(--star-opacity);
     }
-
 }
 
-/* =========================================================
-   RANDOM CELESTIAL EVENTS
-   ========================================================= */
-
-.celestial-events {
-    position: absolute;
-
-    inset: 0;
-
-    overflow: hidden;
-
-    pointer-events: none;
-
-    /*
-     * Above the background stars,
-     * but below the main composition.
-     */
-    z-index: 1;
-}
-
-
-/* =========================================================
-   BASE EVENT
-   ========================================================= */
-
-.celestial-event {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: var(--event-size);
-    height: var(--event-size);
-
-    opacity: var(--event-opacity);
-
-    pointer-events: none;
-
-    animation-duration: var(--event-duration);
-
-    animation-timing-function: linear;
-
-    animation-fill-mode: forwards;
-
-    transform-origin: center;
-
-}
-
-
-/* =========================================================
-   COMET
-   ========================================================= */
-
-.comet {
-
-    width: 3px;
-    height: 3px;
-
-    border-radius: 50%;
-
-    background: aliceblue;
-
-    filter:
-        drop-shadow(0 0 4px rgba(240, 248, 255, 0.9));
-
-    animation-name: comet-cross-screen;
-
-}
-
-
-/*
- * The tail is created with a pseudo-element.
- */
-
-.comet::before {
-
-    content: "";
-
-    position: absolute;
-
-    right: 2px;
-    top: 50%;
-
-    width: 70px;
-    height: 1px;
-
-    transform:
-        translateY(-50%);
-
-    transform-origin: right center;
-
-    background:
-        linear-gradient(to left,
-            rgba(240, 248, 255, 0.75),
-            rgba(240, 248, 255, 0));
-
-}
-
-
-/* =========================================================
-   COMET MOVEMENT
-   ========================================================= */
-
-@keyframes comet-cross-screen {
-
-    0% {
-
-        opacity: 0;
-
-        transform:
-            rotate(var(--event-angle)) translateX(-20vw);
-
-    }
-
-    8% {
-
-        opacity: var(--event-opacity);
-
-    }
-
-    88% {
-
-        opacity: var(--event-opacity);
-
-    }
-
-    100% {
-
-        opacity: 0;
-
-        transform:
-            rotate(var(--event-angle)) translateX(120vw);
-
-    }
-
-}
-
-
-/* =========================================================
-   ASTEROID
-   ========================================================= */
-
-.asteroid {
-
-    border-radius: 35% 50% 45% 40%;
-
-    background: rgb(130, 130, 130);
-
-    filter:
-        drop-shadow(0 0 2px rgba(180, 180, 180, 0.5));
-
-    animation-name: asteroid-cross-screen;
-
-}
-
-
-/*
- * Tiny irregular highlight.
- */
-
-.asteroid::before {
-
-    content: "";
-
-    position: absolute;
-
-    width: 30%;
-    height: 30%;
-
-    left: 20%;
-    top: 20%;
-
-    border-radius: 50%;
-
-    background: rgba(230, 230, 230, 0.35);
-
-}
-
-
-/* =========================================================
-   ASTEROID MOVEMENT
-   ========================================================= */
-
-@keyframes asteroid-cross-screen {
-
-    0% {
-
-        opacity: 0;
-
-        transform:
-            rotate(var(--event-angle)) translateX(-20vw) rotate(0deg);
-
-    }
-
-    8% {
-
-        opacity: var(--event-opacity);
-
-    }
-
-    92% {
-
-        opacity: var(--event-opacity);
-
-    }
-
-    100% {
-
-        opacity: 0;
-
-        transform:
-            rotate(var(--event-angle)) translateX(120vw) rotate(220deg);
-
-    }
-
-}
-
-
-/* =========================================================
-   SPECIAL COMET
-   ========================================================= */
-
-.special-comet {
-
-    width: 7px;
-    height: 7px;
-
-    border-radius: 50%;
-
-    background: white;
-
-    filter:
-        drop-shadow(0 0 7px rgba(255, 255, 255, 1)) drop-shadow(0 0 18px rgba(200, 220, 255, 0.8));
-
-    animation-name: special-comet-cross-screen;
-
-}
-
-
-/*
- * The special comet gets a much longer tail.
- */
-
-.special-comet::before {
-
-    content: "";
-
-    position: absolute;
-
-    right: 4px;
-    top: 50%;
-
-    width: 180px;
-    height: 2px;
-
-    transform:
-        translateY(-50%);
-
-    background:
-        linear-gradient(to left,
-            rgba(255, 255, 255, 0.95),
-            rgba(210, 225, 255, 0.35),
-            rgba(210, 225, 255, 0));
-
-}
-
-
-/*
- * A second, softer tail.
- */
-
-.special-comet::after {
-
-    content: "";
-
-    position: absolute;
-
-    right: 5px;
-    top: 50%;
-
-    width: 100px;
-    height: 6px;
-
-    transform:
-        translateY(-50%);
-
-    background:
-        linear-gradient(to left,
-            rgba(210, 225, 255, 0.2),
-            transparent);
-
-    filter: blur(3px);
-
-}
-
-
-/* =========================================================
-   SPECIAL COMET MOVEMENT
-   ========================================================= */
-
-@keyframes special-comet-cross-screen {
-
-    0% {
-
-        opacity: 0;
-
-        transform:
-            rotate(var(--event-angle)) translateX(-25vw) scale(0.6);
-
-    }
-
-    10% {
-
-        opacity: 0.3;
-
-    }
-
-    20% {
-
-        opacity: 1;
-
-        transform:
-            rotate(var(--event-angle)) translateX(0vw) scale(1);
-
-    }
-
-    75% {
-
-        opacity: 1;
-
-    }
-
-    92% {
-
-        opacity: 0.5;
-
-    }
-
-    100% {
-
-        opacity: 0;
-
-        transform:
-            rotate(var(--event-angle)) translateX(125vw) scale(1.1);
-
-    }
-
-}
 
 /* =========================================================
    STARS
@@ -451,14 +86,12 @@
 
 .stars {
     position: absolute;
-
     inset: 0;
 
     pointer-events: none;
 
     z-index: 0;
 }
-
 
 .star {
     position: absolute;
@@ -477,9 +110,7 @@
 }
 
 
-/*
-    Star positions
-*/
+/* Star positions */
 
 .star-1 {
     left: 8%;
@@ -553,25 +184,293 @@
     animation-delay: 1.6s;
 }
 
-
 @keyframes star-appear {
-
     0% {
         opacity: 0;
-
         transform: scale(0);
     }
 
     60% {
         opacity: 0.65;
-
         transform: scale(1);
     }
 
     100% {
         opacity: 0.4;
-
         transform: scale(1);
+    }
+}
+
+
+/* =========================================================
+   RANDOM CELESTIAL EVENTS
+   ========================================================= */
+
+.celestial-events {
+    position: absolute;
+    inset: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+.celestial-event {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: var(--event-size);
+    height: var(--event-size);
+
+    opacity: var(--event-opacity);
+
+    pointer-events: none;
+
+    animation-duration: var(--event-duration);
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+
+    transform-origin: center;
+}
+
+
+/* =========================================================
+   COMET
+   ========================================================= */
+
+.comet {
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: aliceblue;
+
+    filter:
+        drop-shadow(0 0 4px rgba(240, 248, 255, 0.9));
+
+    animation-name: comet-cross-screen;
+}
+
+.comet::before {
+    content: "";
+
+    position: absolute;
+
+    right: 2px;
+    top: 50%;
+
+    width: 70px;
+    height: 1px;
+
+    transform:
+        translateY(-50%);
+
+    transform-origin: right center;
+
+    background:
+        linear-gradient(
+            to left,
+            rgba(240, 248, 255, 0.75),
+            rgba(240, 248, 255, 0)
+        );
+}
+
+@keyframes comet-cross-screen {
+    0% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(-20vw);
+    }
+
+    8% {
+        opacity: var(--event-opacity);
+    }
+
+    88% {
+        opacity: var(--event-opacity);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(120vw);
+    }
+}
+
+
+/* =========================================================
+   ASTEROID
+   ========================================================= */
+
+.asteroid {
+    border-radius: 35% 50% 45% 40%;
+
+    background: rgb(130, 130, 130);
+
+    filter:
+        drop-shadow(0 0 2px rgba(180, 180, 180, 0.5));
+
+    animation-name: asteroid-cross-screen;
+}
+
+.asteroid::before {
+    content: "";
+
+    position: absolute;
+
+    width: 30%;
+    height: 30%;
+
+    left: 20%;
+    top: 20%;
+
+    border-radius: 50%;
+
+    background: rgba(230, 230, 230, 0.35);
+}
+
+@keyframes asteroid-cross-screen {
+    0% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(-20vw)
+            rotate(0deg);
+    }
+
+    8% {
+        opacity: var(--event-opacity);
+    }
+
+    92% {
+        opacity: var(--event-opacity);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(120vw)
+            rotate(220deg);
+    }
+}
+
+
+/* =========================================================
+   SPECIAL COMET
+   ========================================================= */
+
+.special-comet {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    filter:
+        drop-shadow(0 0 7px rgba(255, 255, 255, 1))
+        drop-shadow(0 0 18px rgba(200, 220, 255, 0.8));
+
+    animation-name: special-comet-cross-screen;
+}
+
+.special-comet::before {
+    content: "";
+
+    position: absolute;
+
+    right: 4px;
+    top: 50%;
+
+    width: 180px;
+    height: 2px;
+
+    transform:
+        translateY(-50%);
+
+    background:
+        linear-gradient(
+            to left,
+            rgba(255, 255, 255, 0.95),
+            rgba(210, 225, 255, 0.35),
+            rgba(210, 225, 255, 0)
+        );
+}
+
+.special-comet::after {
+    content: "";
+
+    position: absolute;
+
+    right: 5px;
+    top: 50%;
+
+    width: 100px;
+    height: 6px;
+
+    transform:
+        translateY(-50%);
+
+    background:
+        linear-gradient(
+            to left,
+            rgba(210, 225, 255, 0.2),
+            transparent
+        );
+
+    filter: blur(3px);
+}
+
+@keyframes special-comet-cross-screen {
+    0% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(-25vw)
+            scale(0.6);
+    }
+
+    10% {
+        opacity: 0.3;
+    }
+
+    20% {
+        opacity: 1;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(0vw)
+            scale(1);
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    92% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(125vw)
+            scale(1.1);
     }
 }
 
@@ -581,44 +480,27 @@
    ========================================================= */
 
 .celestial-system {
-
     position: relative;
 
-    /*
-     * Large enough for the companion stars
-     * to orbit around the logo.
-     */
-
     width: min(1200px, 96vw);
-
     height: min(700px, 68vh);
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     z-index: 1;
 
-    /*
-     * IMPORTANT:
-     *
-     * Nothing in the celestial system
-     * should clip the outer stars.
-     */
-
     overflow: visible;
-
 }
+
 
 /* =========================================================
    ORBIT SVG
    ========================================================= */
 
 .orbit {
-
     position: absolute;
-
     inset: 0;
 
     width: 100%;
@@ -627,40 +509,34 @@
     pointer-events: none;
 
     overflow: visible;
-
 }
+
 
 /* =========================================================
    STELLAR ORBIT PATHS
    ========================================================= */
 
 .companion-orbit {
-
     fill: none;
 
-    stroke: rgba(240, 248, 255, 0.14);
-
-    stroke-width: 1.2;
-
+    stroke: rgba(240, 248, 255, 0.45);
+    stroke-width: 2;
     stroke-linecap: round;
 
     opacity: 0;
 
-    /*
-     * Draw the entire ellipse.
-     */
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
 
-    /*
-     * Wait until after the logo has appeared.
-     */
     animation:
-        stellar-orbit-draw 3s cubic-bezier(0.4, 0, 0.2, 1) 3.5s forwards;
+        stellar-orbit-draw
+        3s
+        cubic-bezier(0.4, 0, 0.2, 1)
+        3.5s
+        forwards;
 }
 
 @keyframes stellar-orbit-draw {
-
     0% {
         opacity: 0;
         stroke-dashoffset: 1000;
@@ -674,42 +550,21 @@
         opacity: 1;
         stroke-dashoffset: 0;
     }
-
 }
+
 
 /* =========================================================
    COMPANION STAR SYSTEM
    ========================================================= */
 
-/*
- * IMPORTANT:
- *
- * Angular/TypeScript controls the SVG transform attribute:
- *
- *     translate(x y)
- *
- * Therefore CSS MUST NOT animate transform on the
- * companion-star <g> elements.
- *
- * CSS is responsible only for visibility.
- */
-
 .companion-star {
-
     pointer-events: none;
 
     opacity: 0;
 
     /*
-     * DO NOT add:
-     *
-     * transform
-     * transform-origin
-     * transform-box
-     *
-     * here.
-     *
-     * The SVG transform attribute is controlled by Angular.
+     * Angular/TypeScript controls the SVG transform.
+     * CSS must not apply another transform here.
      */
 
     animation:
@@ -720,13 +575,7 @@
         forwards;
 }
 
-
-/* =========================================================
-   COMPANION STAR APPEAR
-   ========================================================= */
-
 @keyframes system-star-appear {
-
     0% {
         opacity: 0;
     }
@@ -734,7 +583,6 @@
     100% {
         opacity: 1;
     }
-
 }
 
 
@@ -743,7 +591,6 @@
    ========================================================= */
 
 .companion-star-one {
-
     /*
      * Star 1 is slightly stronger because
      * it carries the moon system.
@@ -751,7 +598,6 @@
 
     filter:
         brightness(1.1);
-
 }
 
 
@@ -760,16 +606,7 @@
    ========================================================= */
 
 .companion-star-two {
-
-    /*
-     * Keep this subtle.
-     *
-     * Do NOT use a second opacity animation here,
-     * because .companion-star already controls it.
-     */
-
     opacity: 0;
-
 }
 
 
@@ -778,14 +615,11 @@
    ========================================================= */
 
 .star-glow {
-
     fill: white;
-
     opacity: 0.12;
 
     filter:
         blur(5px);
-
 }
 
 
@@ -794,27 +628,34 @@
    ========================================================= */
 
 .stellar-body {
-
     fill: white;
-
     opacity: 1;
 
-    filter:
-        drop-shadow(
-            0 0 5px
-            rgba(240, 248, 255, 1)
-        )
+    animation:
+        stellar-pulse 4s ease-in-out infinite;
+}
 
-        drop-shadow(
-            0 0 12px
-            rgba(200, 220, 255, 0.9)
-        )
+@keyframes stellar-pulse {
+    0% {
+        filter:
+            drop-shadow(0 0 4px rgba(240, 248, 255, 0.9))
+            drop-shadow(0 0 10px rgba(200, 220, 255, 0.7))
+            drop-shadow(0 0 20px rgba(180, 210, 255, 0.3));
+    }
 
-        drop-shadow(
-            0 0 24px
-            rgba(180, 210, 255, 0.45)
-        );
+    50% {
+        filter:
+            drop-shadow(0 0 7px rgba(240, 248, 255, 1))
+            drop-shadow(0 0 16px rgba(200, 220, 255, 0.9))
+            drop-shadow(0 0 30px rgba(180, 210, 255, 0.45));
+    }
 
+    100% {
+        filter:
+            drop-shadow(0 0 4px rgba(240, 248, 255, 0.9))
+            drop-shadow(0 0 10px rgba(200, 220, 255, 0.7))
+            drop-shadow(0 0 20px rgba(180, 210, 255, 0.3));
+    }
 }
 
 
@@ -823,48 +664,26 @@
    ========================================================= */
 
 .moon-system {
-
     pointer-events: none;
 
     /*
-     * TypeScript controls the rotation through:
+     * TypeScript controls the rotation through
+     * the SVG transform attribute.
      *
-     * [attr.transform]="'rotate(' + moonAngle + ')'"
-     *
-     * Therefore CSS must not apply another transform.
+     * CSS must not apply another transform.
      */
-
 }
 
-
-/* =========================================================
-   MOON ORBIT PATH
-   ========================================================= */
-
-.moon-orbit-path {
-
-    fill: none;
-
-    stroke:
-        rgba(240, 248, 255, 0.10);
-
-    stroke-width: 0.9;
-
-    stroke-linecap: round;
-
-    opacity: 0.65;
-
+.moon-1-system {
     pointer-events: none;
-
 }
 
 
 /* =========================================================
-   MOON
+   EARTH / MOON SYSTEM BODY
    ========================================================= */
 
 .star-moon {
-
     fill: rgb(145, 145, 145);
 
     opacity: 0.85;
@@ -872,297 +691,109 @@
     pointer-events: none;
 
     filter: none;
-
 }
+
+
+/* =========================================================
+   ACTUAL MOON
+   ========================================================= */
+
+.moon-one {
+    opacity: 0.9;
+    fill: rgba(100, 100, 100, 0.61);
+}
+
 
 /* =========================================================
    CENTRAL STAR
    ========================================================= */
 
 .central-star {
-
     pointer-events: none;
-
 }
+
 
 /* =========================================================
    CENTRAL STELLAR HALO
    ========================================================= */
 
 .central-star-glow {
-
     fill: white;
 
-    opacity: 0.06;
+    opacity: 0;
 
     filter:
-        blur(18px);
+        blur(100px);
 
+    animation:
+        central-star-support-appear
+        1.2s
+        ease-out
+        2.2s
+        forwards;
 }
+
 
 /* =========================================================
    CENTRAL STAR RAYS
    ========================================================= */
 
 .central-star-rays {
-
     fill: white;
 
-    opacity: 0.12;
+    opacity: 0;
 
     filter:
-        blur(2px) drop-shadow(0 0 12px rgba(240, 248, 255, 0.8));
+        blur(2px)
+        drop-shadow(0 0 12px rgba(240, 248, 255, 0.8));
 
+    animation:
+        central-star-support-appear
+        1.2s
+        ease-out
+        2.2s
+        forwards;
 }
+
+@keyframes central-star-support-appear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
+}
+
 
 /* =========================================================
    LOGO
    ========================================================= */
 
 .game-logo {
-
     position: relative;
 
     z-index: 2;
 
+    width: 25%;
+    height: auto;
+
+    opacity: 0;
+
     /*
-     * The logo is the CENTRAL STAR.
-     *
-     * It remains completely stationary.
+     * The logo remains completely stationary.
+     * It simply fades into its final position.
      */
 
-    width: 25%;
-
-    height: auto;
-
-    opacity: 0;
-
     animation:
-        logo-appear 1.2s ease-out 2.2s forwards;
-
+        logo-appear
+        1.2s
+        ease-out
+        2.2s
+        forwards;
 }
-
-/* =========================================================
-   LOGO APPEAR
-   ========================================================= */
 
 @keyframes logo-appear {
-
-    0% {
-
-        opacity: 0;
-
-    }
-
-    100% {
-
-        opacity: 1;
-
-    }
-
-}
-
-/* =========================================================
-   SUBTLE STELLAR PULSATION
-   ========================================================= */
-
-.stellar-body {
-
-    animation:
-        stellar-pulse 4s ease-in-out infinite;
-
-}
-
-@keyframes stellar-pulse {
-
-    0% {
-
-        filter:
-            drop-shadow(0 0 4px rgba(240, 248, 255, 0.9)) drop-shadow(0 0 10px rgba(200, 220, 255, 0.7)) drop-shadow(0 0 20px rgba(180, 210, 255, 0.3));
-
-    }
-
-    50% {
-
-        filter:
-            drop-shadow(0 0 7px rgba(240, 248, 255, 1)) drop-shadow(0 0 16px rgba(200, 220, 255, 0.9)) drop-shadow(0 0 30px rgba(180, 210, 255, 0.45));
-
-    }
-
-    100% {
-
-        filter:
-            drop-shadow(0 0 4px rgba(240, 248, 255, 0.9)) drop-shadow(0 0 10px rgba(200, 220, 255, 0.7)) drop-shadow(0 0 20px rgba(180, 210, 255, 0.3));
-
-    }
-
-}
-
-/* =========================================================
-   RESPONSIVE SCALING
-   ========================================================= */
-
-@media (max-width: 900px) {
-
-    .celestial-system {
-
-        width: 110vw;
-
-        height: 65vh;
-
-    }
-
-    .game-logo {
-
-        width: 30%;
-
-    }
-
-}
-
-@media (max-width: 600px) {
-
-    .celestial-system {
-
-        width: 125vw;
-
-        height: 58vh;
-
-    }
-
-    .game-logo {
-
-        width: 38%;
-
-    }
-
-}
-
-@keyframes point-appear {
-
-    0% {
-        opacity: 0;
-
-        transform:
-            translateY(-50%) scale(0);
-    }
-
-    100% {
-        opacity: 1;
-
-        transform:
-            translateY(-50%) scale(1);
-    }
-}
-
-
-/* =========================================================
-   PAGE TRANSITION
-   ========================================================= */
-
-.page-transition {
-
-    position: fixed;
-
-    inset: 0;
-
-    background: black;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    z-index: 99999;
-
-    transition:
-        opacity 1.2s ease;
-}
-
-.page-transition.active {
-
-    opacity: 1;
-
-    pointer-events: all;
-
-}
-
-
-/*
-    ONE blink.
-
-    It grows brighter/larger,
-    then settles down.
-*/
-
-@keyframes point-blink {
-
-    0% {
-        opacity: 1;
-
-        transform:
-            translateY(-50%) scale(1);
-
-        box-shadow:
-            0 0 5px rgba(240, 248, 255, 0.7);
-    }
-
-    35% {
-        opacity: 1;
-
-        transform:
-            translateY(-50%) scale(3);
-
-        box-shadow:
-            0 0 18px rgba(240, 248, 255, 1);
-    }
-
-    100% {
-        opacity: 0.55;
-
-        transform:
-            translateY(-50%) scale(1);
-
-        box-shadow:
-            0 0 5px rgba(240, 248, 255, 0.5);
-    }
-}
-
-
-/* =========================================================
-   LOGO
-   ========================================================= */
-
-.game-logo {
-    position: relative;
-
-    z-index: 2;
-
-    /*
-        Change this number if your logo
-        needs to be larger/smaller.
-    */
-
-    width: 25%;
-
-    height: auto;
-
-    opacity: 0;
-
-    /*
-        IMPORTANT:
-
-        The logo DOES NOT MOVE.
-
-        It simply fades into its final position.
-    */
-
-    animation:
-        logo-appear 1.2s ease-out 2.2s forwards;
-}
-
-
-@keyframes logo-appear {
-
     0% {
         opacity: 0;
     }
@@ -1183,9 +814,7 @@
     z-index: 3;
 
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
 
     gap: 20px;
@@ -1194,21 +823,18 @@
 
     opacity: 0;
 
-    /*
-        Title appears at approximately the
-        same moment as the blinking point.
-    */
-
     animation:
-        title-appear 1s ease-out 7.65s forwards;
+        title-appear
+        1s
+        ease-out
+        7.65s
+        forwards;
 }
-
 
 h1 {
     margin: 0;
 
     font-family: 'Cormorant Garamond', serif;
-
     font-size: clamp(48px, 7vw, 100px);
 
     letter-spacing: 0.08em;
@@ -1223,40 +849,34 @@ h1 {
 
 button {
     margin-top: 40px;
-
     padding: 0;
 
     border: none;
-
     background: transparent;
 
     cursor: pointer;
 
     font-family: 'IM FELL English', serif;
-
     font-size: 18px;
 
     color: grey;
 
     opacity: 0;
 
-    /*
-        Button waits until the title and
-        point have finished their moment.
-    */
-
     animation:
-        button-appear 0.8s ease-out 8.5s forwards;
+        button-appear
+        0.8s
+        ease-out
+        8.5s
+        forwards;
 
     transition:
         color 0.3s ease,
         transform 0.3s ease;
 }
 
-
 button:hover {
     color: aliceblue;
-
     transform: scale(1.2);
 }
 
@@ -1266,65 +886,139 @@ button:hover {
    ========================================================= */
 
 @keyframes title-appear {
-
     0% {
         opacity: 0;
-
         transform: translateY(10px);
     }
 
     100% {
         opacity: 1;
-
         transform: translateY(0);
     }
 }
 
-/* =========================================================
-   PAGE TRANSITION
-   ========================================================= */
-
-.title-screen {
-    position: relative;
-
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    background: black;
-
-    overflow: hidden;
-
-    opacity: 1;
-
-    transition: opacity 1.2s ease;
-}
-
-
-.title-screen.leaving {
-    opacity: 0;
-}
 
 /* =========================================================
    BUTTON ANIMATION
    ========================================================= */
 
 @keyframes button-appear {
-
     0% {
         opacity: 0;
-
         transform: translateY(8px);
     }
 
     100% {
         opacity: 1;
-
         transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   POINT ANIMATIONS
+   ========================================================= */
+
+@keyframes point-appear {
+    0% {
+        opacity: 0;
+        transform:
+            translateY(-50%)
+            scale(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            translateY(-50%)
+            scale(1);
+    }
+}
+
+@keyframes point-blink {
+    0% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%)
+            scale(1);
+
+        box-shadow:
+            0 0 5px rgba(240, 248, 255, 0.7);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%)
+            scale(3);
+
+        box-shadow:
+            0 0 18px rgba(240, 248, 255, 1);
+    }
+
+    100% {
+        opacity: 0.55;
+
+        transform:
+            translateY(-50%)
+            scale(1);
+
+        box-shadow:
+            0 0 5px rgba(240, 248, 255, 0.5);
+    }
+}
+
+
+/* =========================================================
+   PAGE TRANSITION
+   ========================================================= */
+
+.page-transition {
+    position: fixed;
+    inset: 0;
+
+    background: black;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    z-index: 99999;
+
+    transition:
+        opacity 1.2s ease;
+}
+
+.page-transition.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+/* =========================================================
+   RESPONSIVE SCALING
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .celestial-system {
+        width: 110vw;
+        height: 65vh;
+    }
+
+    .game-logo {
+        width: 30%;
+    }
+}
+
+@media (max-width: 600px) {
+    .celestial-system {
+        width: 125vw;
+        height: 58vh;
+    }
+
+    .game-logo {
+        width: 38%;
     }
 }
