@@ -48,7 +48,7 @@ export class ProjectileService {
       size: 8,
       color: 'white',
 
-      lifetime: 3,
+      lifetime: 0.3,
       age: 0
     };
 

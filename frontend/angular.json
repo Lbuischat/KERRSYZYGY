@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "DopamineDungeon": {
+    "KERRSYZYGY": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -65,10 +65,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "DopamineDungeon:build:production"
+              "buildTarget": "KERRSYZYGY:build:production"
             },
             "development": {
-              "buildTarget": "DopamineDungeon:build:development"
+              "buildTarget": "KERRSYZYGY:build:development"
             }
           },
           "defaultConfiguration": "development"

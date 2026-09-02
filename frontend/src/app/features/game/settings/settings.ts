@@ -1,5 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { GameSettingsService } from './settings.service';
+
+type SettingsSection = 'gameplay' | 'sound' | 'accessibility';
 
 @Component({
   imports: [],
@@ -9,28 +13,26 @@ import { GameSettingsService } from './settings.service';
 })
 export class Settings {
 
-  @Output() closeSettings = new EventEmitter<void>();
+  activeSection: SettingsSection = 'gameplay';
 
-  constructor(public settings: GameSettingsService) {}
+  constructor(
+    public settings: GameSettingsService,
+    private router: Router,
+  ) { }
 
-  activeTab = 'gpt';
-
-  selectTab(tab: string): void {
-    this.activeTab = tab;
+  selectSection(section: SettingsSection): void {
+    this.activeSection = section;
   }
 
-  updateSliderProgress(event: Event): void {
-    const slider = event.target as HTMLInputElement;
+  goBack(): void {
+    this.router.navigate(['/game']);
+  }
 
-    const min = Number(slider.min);
-    const max = Number(slider.max);
-    const value = Number(slider.value);
-
-    const progress = ((value - min) / (max - min)) * 100;
-
-    slider.style.setProperty(
-      '--slider-progress',
-      `${progress}%`
+  getDifficultyStarClass(index: number): string {
+    const litCount = Math.ceil(
+      this.settings.difficulty / 2
     );
+
+    return index < litCount ? 'lit' : '';
   }
 }

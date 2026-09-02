@@ -13,7 +13,7 @@ export class AppController {
   @Get('test')
   getTest() {
     return {
-      message: 'Hello from the Dopamine Dungeon backend!'
+      message: 'Hello from the KERRSYZYGY backend!'
     };
   }
 }

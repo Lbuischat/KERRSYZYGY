@@ -1,16 +1,14 @@
 import { Component, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Hud } from '../hud/hud';
 import { GameWorld } from '../game-world/game-world';
-import { Settings } from '../settings/settings';
 import { Inventory } from '../hud/inventory/inventory';
-
 
 @Component({
   imports: [
     Hud,
     GameWorld,
-    Settings,
     Inventory,
   ],
   selector: 'app-game-shell',
@@ -18,31 +16,13 @@ import { Inventory } from '../hud/inventory/inventory';
   templateUrl: './game-shell.html',
 })
 export class GameShell {
-  settingsOpen = false;
-  settingsClosing = false;
 
   inventoryOpen = false;
 
+  constructor(private router: Router) {}
+
   openSettings(): void {
-    this.settingsOpen = true;
-    console.log('⚙️ SETTINGS OPEN:', this.settingsOpen);
-  }
-
-  closeSettings(): void {
-    if (!this.settingsOpen || this.settingsClosing) {
-      return;
-    }
-
-    console.log('⚙️ SETTINGS CLOSING');
-
-    this.settingsClosing = true;
-
-    setTimeout(() => {
-      this.settingsOpen = false;
-      this.settingsClosing = false;
-
-      console.log('⚙️ SETTINGS CLOSED');
-    }, 180);
+    this.router.navigate(['/settings']);
   }
 
   toggleInventory(): void {
@@ -55,19 +35,8 @@ export class GameShell {
   onKeyDown(event: Event): void {
     const keyboardEvent = event as KeyboardEvent;
 
-    if (keyboardEvent.key === 'Escape') {
-      if (this.settingsOpen) {
-        console.log('🚪 ESC PRESSED - CLOSING SETTINGS');
-        this.closeSettings();
-      } else if (this.inventoryOpen) {
-        console.log('🚪 ESC PRESSED - CLOSING INVENTORY');
-        this.inventoryOpen = false;
-      }
-    }
-
     if (
-      keyboardEvent.key.toLowerCase() === 'i' &&
-      !this.settingsOpen
+      keyboardEvent.key.toLowerCase() === 'i'
     ) {
       this.toggleInventory();
     }

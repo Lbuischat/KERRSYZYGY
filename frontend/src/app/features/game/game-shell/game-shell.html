@@ -7,13 +7,6 @@
     (inventoryOpen)="toggleInventory()"
   />
 
-  @if (settingsOpen) {
-    <app-settings
-      [class]="'settings-host' + (settingsClosing ? ' settings-closing' : '')"
-      (closeSettings)="closeSettings()"
-    />
-  }
-
   @if (inventoryOpen) {
     <app-inventory />
   }
