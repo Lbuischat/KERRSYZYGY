@@ -33,93 +33,101 @@
         <span class="star star-12"></span>
 
     </div>
-    
-        <!-- =====================================================
+
+    <!-- =====================================================
          LOGIN CONTENT
          ===================================================== -->
 
-        <main class="login-content">
+    <main class="login-content">
 
-            <p class="journey-text">
-                CONTINUE YOUR JOURNEY
-            </p>
+        <p class="journey-text">
+            CONTINUE YOUR JOURNEY
+        </p>
 
 
-            <!-- =================================================
+        <!-- =================================================
              GOOGLE
              ================================================= -->
 
-            <div class="google-area">
+        <div class="google-area">
 
-                <div id="google-button" class="google-button">
-                </div>
-
+            <div id="google-button" class="google-button">
             </div>
 
+        </div>
 
-            <!-- =================================================
+
+        <!-- =================================================
              DIVIDER
              ================================================= -->
 
-            <div class="login-divider" aria-hidden="true">
-                <span></span>
-                <em>or</em>
-                <span></span>
-            </div>
+        <div class="login-divider" aria-hidden="true">
+            <span></span>
+            <em>or</em>
+            <span></span>
+        </div>
 
 
-            <!-- =================================================
+        <!-- =================================================
              EMAIL / PASSWORD
              ================================================= -->
 
-            <form class="credentials" (submit)="$event.preventDefault()">
+        <form class="credentials" (ngSubmit)="login()">
 
-                <div class="field">
+            <div class="field">
 
-                    <input id="email" name="email" type="email" placeholder=" " autocomplete="email" />
+                <input id="email" name="email" type="email" placeholder=" " autocomplete="email" [(ngModel)]="email" />
 
-                    <label for="email">
-                        EMAIL
-                    </label>
+                <label for="email">
+                    EMAIL
+                </label>
 
-                </div>
-
-
-                <div class="field">
-
-                    <input id="password" name="password" type="password" placeholder=" "
-                        autocomplete="current-password" />
-
-                    <label for="password">
-                        PASSWORD
-                    </label>
-
-                </div>
+            </div>
 
 
-                <button type="submit" class="login-button">
-                    LOG IN
-                </button>
+            <div class="field">
 
-            </form>
+                <input id="password" name="password" type="password" placeholder=" " autocomplete="current-password"
+                    [(ngModel)]="password" />
+
+                <label for="password">
+                    PASSWORD
+                </label>
+
+            </div>
 
 
-            <!-- =================================================
+            <button type="submit" class="login-button">
+                LOG IN
+            </button>
+
+        </form>
+
+        @if (errorMessage) {
+
+        <p class="login-error">
+            {{ errorMessage }}
+        </p>
+
+        }
+
+
+        <!-- =================================================
              CREATE ACCOUNT
              ================================================= -->
 
-            <p class="create-account">
+        <p class="create-account">
 
-                <span>
-                    Don't have an account?
-                </span>
+            <span>
+                Don't have an account?
+            </span>
 
-                <button type="button" class="create-account-button">
-                    Create one.
-                </button>
+            <button type="button" class="create-account-button" routerLink="/create-account">
+                Create one.
+            </button>
 
-            </p>
+        </p>
 
-        </main>
+    </main>
 
-    </div>
+</div>

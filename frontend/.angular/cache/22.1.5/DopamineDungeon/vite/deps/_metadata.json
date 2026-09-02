@@ -1,37 +1,43 @@
 {
-  "hash": "10a7f588",
-  "configHash": "63697d05",
+  "hash": "8a520d70",
+  "configHash": "64a84c80",
   "lockfileHash": "413cb193",
-  "browserHash": "2190c9b5",
+  "browserHash": "bd0b0346",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "0426f58e",
+      "fileHash": "4a0f69e4",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "eecc6344",
+      "fileHash": "66cb2fa8",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "2afc076d",
+      "fileHash": "3cf18e84",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "2c8b6ebc",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "34388a3d",
+      "fileHash": "3cf68564",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "183cff78",
+      "fileHash": "4c2bae02",
       "needsInterop": false
     }
   },
@@ -48,12 +54,20 @@
       "file": "core-DhRcqFx3.js",
       "isDynamicEntry": false
     },
-    "http-Ck1vWomh": {
-      "file": "http-Ck1vWomh.js",
+    "createObject-CHRbNgcv": {
+      "file": "createObject-CHRbNgcv.js",
       "isDynamicEntry": false
     },
-    "platform-browser-9OrQBkbi": {
-      "file": "platform-browser-9OrQBkbi.js",
+    "from-0rBJ1ZR5": {
+      "file": "from-0rBJ1ZR5.js",
+      "isDynamicEntry": false
+    },
+    "http-CbxTCCll": {
+      "file": "http-CbxTCCll.js",
+      "isDynamicEntry": false
+    },
+    "platform-browser-Cp7EtUQa": {
+      "file": "platform-browser-Cp7EtUQa.js",
       "isDynamicEntry": false
     }
   }

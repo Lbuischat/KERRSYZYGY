@@ -1,11 +1,11 @@
-POST http://localhost:3000/users
+POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-  "username": "TestPlayer",
-  "email": "test@kerrsyzygy.com"
+  "email": "bibiundcakiinbibigagaland@gmail.com",
+  "password": "123456767"
 }
 
 ###
 
-GET http://localhost:3000/users?email=test@kerrsyzygy.com
+GET http://localhost:3000/users?email=bibiundcakiinbibigagaland@gmail.com
