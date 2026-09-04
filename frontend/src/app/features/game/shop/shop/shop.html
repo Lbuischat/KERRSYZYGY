@@ -1,0 +1,633 @@
+<main class="space-shop">
+
+
+  <!-- FUNDO -->
+
+  <div class="stars stars-one"></div>
+
+  <div class="stars stars-two"></div>
+
+
+
+  <section class="ship-shell">
+
+
+    <!-- =====================================================
+         TOPO
+    ===================================================== -->
+
+    <div class="ship-topbar">
+
+
+      <div class="ship-name">
+
+        NAVE MERCANTE //
+
+        <strong>
+          LGX-3000
+        </strong>
+
+      </div>
+
+
+      <div class="store-open">
+
+        <span></span>
+
+        LOJA ABERTA
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CABEÇALHO
+    ===================================================== -->
+
+    <header class="shop-header">
+
+
+      <!-- XP -->
+
+      <div class="resource-box xp-box">
+
+
+        <div class="resource-symbol">
+          ✦
+        </div>
+
+
+        <div>
+
+          <span>
+            NÚCLEO DE XP
+          </span>
+
+          <strong>
+            {{ xp }}
+          </strong>
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- LOGO -->
+
+      <div class="ship-logo">
+
+        <small>
+          LUMI
+        </small>
+
+        <strong>
+          EXPRESSO GALÁCTICO
+        </strong>
+
+        <span>
+          COMÉRCIO E ENTREGAS INTERPLANETÁRIAS
+        </span>
+
+      </div>
+
+
+
+      <!-- CRÉDITOS -->
+
+      <div class="resource-box credits-box">
+
+
+        <div class="resource-symbol">
+          ◈
+        </div>
+
+
+        <div>
+
+          <span>
+            Moedas
+          </span>
+
+          <strong>
+            {{ credits }}
+          </strong>
+
+        </div>
+
+
+      </div>
+
+
+    </header>
+
+
+
+    <!-- =====================================================
+         PERFIL
+    ===================================================== -->
+
+    <button
+      class="crew-terminal"
+      type="button"
+      routerLink="/playerinfo"
+    >
+
+      ◉ PERFIL
+
+    </button>
+
+
+
+    <!-- =====================================================
+         FEEDBACK
+    ===================================================== -->
+
+    @if (mensagem) {
+
+      <div
+        class="shop-feedback"
+        [class.success]="tipoMensagem === 'sucesso'"
+        [class.error]="tipoMensagem === 'erro'"
+      >
+
+        <span class="feedback-icon">
+
+          @if (tipoMensagem === 'sucesso') {
+            ✓
+          }
+
+          @if (tipoMensagem === 'erro') {
+            !
+          }
+
+        </span>
+
+
+        {{ mensagem }}
+
+      </div>
+
+    }
+
+
+
+    <!-- =====================================================
+         CONTEÚDO
+    ===================================================== -->
+
+    <div class="shop-content">
+
+
+      <!-- =================================================
+           ITENS
+      ================================================== -->
+
+      <section class="space-panel cargo-panel">
+
+
+        <div class="panel-header">
+
+          <h2>
+            ITENS
+          </h2>
+
+
+          <span class="panel-status">
+            DISPONÍVEL
+          </span>
+
+        </div>
+
+
+
+        @for (boost of boosts; track boost.nome) {
+
+          <article class="cargo-item">
+
+
+            <div class="cargo-icon">
+
+              {{ boost.icone }}
+
+            </div>
+
+
+
+            <div class="cargo-info">
+
+
+              <div class="cargo-name">
+
+                <strong>
+                  {{ boost.nome }}
+                </strong>
+
+
+                @if (boost.quantidade > 0) {
+
+                  <span class="cargo-quantity">
+
+                    x{{ boost.quantidade }}
+
+                  </span>
+
+                }
+
+              </div>
+
+
+              <p>
+                {{ boost.descricao }}
+              </p>
+
+
+              <span class="cargo-price">
+
+                ✦ {{ boost.preco }} XP
+
+              </span>
+
+
+            </div>
+
+
+
+            <button
+              class="cargo-buy"
+              type="button"
+
+              (pointerdown)="iniciarCompraContinua(boost)"
+
+              (pointerup)="pararAcaoContinua()"
+
+              (pointerleave)="pararAcaoContinua()"
+
+              (pointercancel)="pararAcaoContinua()"
+            >
+
+              +
+
+            </button>
+
+
+          </article>
+
+        }
+
+
+      </section>
+
+
+
+      <!-- =================================================
+           CENTRO
+      ================================================== -->
+
+      <section class="merchant-zone">
+
+
+  <!-- =================================================
+       JANELA DA NAVE
+  ================================================== -->
+
+  <div class="ship-window">
+
+
+    <div class="window-glass">
+
+
+      <!-- PLANETA -->
+
+      <div class="planet"></div>
+
+
+      <div class="tiny-moon"></div>
+
+
+
+      <!-- NAVE -->
+
+      <div class="delivery-ship">
+
+        <div class="ship-body"></div>
+
+        <div class="ship-cabin"></div>
+
+        <div class="ship-fin"></div>
+
+        <div class="ship-engine"></div>
+
+      </div>
+
+
+
+      <!-- ESTRELAS -->
+
+      <span class="window-star star-1">
+        ✦
+      </span>
+
+
+      <span class="window-star star-2">
+        ·
+      </span>
+
+
+      <span class="window-star star-3">
+        ✦
+      </span>
+
+
+      <span class="window-star star-4">
+        ·
+      </span>
+
+
+
+      <!-- REFLEXO DO VIDRO -->
+
+      <div class="window-reflection"></div>
+
+
+    </div>
+
+
+
+    <!-- DIVISÕES DA JANELA -->
+
+    <div class="window-divider vertical"></div>
+
+    <div class="window-divider horizontal"></div>
+
+
+
+    <!-- PARAFUSOS -->
+
+    <span class="window-bolt bolt-1"></span>
+
+    <span class="window-bolt bolt-2"></span>
+
+    <span class="window-bolt bolt-3"></span>
+
+    <span class="window-bolt bolt-4"></span>
+
+
+  </div>
+
+
+
+  <!-- =================================================
+       LUMI
+  ================================================== -->
+
+  <div class="lumi-area">
+
+
+    <div class="lumi-image">
+
+      <img
+        src="https://i.pinimg.com/736x/0c/a7/2e/0ca72e3739eac96cb4768da55eacdcd5.jpg"
+        alt="Lumi"
+      >
+
+    </div>
+
+
+
+    <div class="lumi-name">
+
+      LUMI
+
+    </div>
+
+
+  </div>
+
+
+
+  <!-- =================================================
+       STATUS
+  ================================================== -->
+
+  <div class="merchant-status">
+
+    <span class="online-dot"></span>
+
+    COMERCIANTE DISPONÍVEL
+
+  </div>
+
+
+
+  <!-- =================================================
+       FALA DA LUMI
+  ================================================== -->
+
+  <div class="speech-terminal">
+
+
+    <span class="speech-id">
+
+      LUMI // COMERCIANTE
+
+    </span>
+
+
+    <strong>
+
+      Boas notícias, tripulação!
+
+    </strong>
+
+
+    <p>
+
+      Chegaram novos itens dos sistemas exteriores.
+
+    </p>
+
+
+  </div>
+
+
+</section>
+
+
+
+      <!-- =================================================
+           MELHORIAS
+      ================================================== -->
+
+      <section class="space-panel upgrade-panel">
+
+
+        <div class="panel-header">
+
+
+          <h2>
+            MELHORIAS
+          </h2>
+
+
+          <span class="panel-status">
+            DISPONÍVEL
+          </span>
+
+
+        </div>
+
+
+
+        @for (stat of stats; track stat.nome) {
+
+          <article class="upgrade-row">
+
+
+            <div class="upgrade-name">
+
+
+              <span class="upgrade-icon">
+
+                {{ stat.icone }}
+
+              </span>
+
+
+              <strong>
+
+                {{ stat.nome }}
+
+              </strong>
+
+
+            </div>
+
+
+
+            <div class="upgrade-controls">
+
+
+              <button
+                class="minus-button"
+                type="button"
+
+                (pointerdown)="iniciarDiminuicaoContinua(stat)"
+
+                (pointerup)="pararAcaoContinua()"
+
+                (pointerleave)="pararAcaoContinua()"
+
+                (pointercancel)="pararAcaoContinua()"
+              >
+
+                −
+
+              </button>
+
+
+
+              <div class="upgrade-value">
+
+                {{ stat.valor }}
+
+              </div>
+
+
+
+              <button
+                class="plus-button"
+                type="button"
+
+                (pointerdown)="iniciarAumentoContinuo(stat)"
+
+                (pointerup)="pararAcaoContinua()"
+
+                (pointerleave)="pararAcaoContinua()"
+
+                (pointercancel)="pararAcaoContinua()"
+              >
+
+                +
+
+              </button>
+
+
+            </div>
+
+
+
+            <div class="upgrade-price">
+
+              ◈ {{ stat.preco }} CRÉDITOS
+
+            </div>
+
+
+          </article>
+
+        }
+
+
+
+        <div class="engine-status">
+
+
+          <span>
+            SISTEMA
+          </span>
+
+
+          <div class="engine-bar">
+
+            <div class="engine-fill"></div>
+
+          </div>
+
+
+          <strong>
+            ESTÁVEL
+          </strong>
+
+
+        </div>
+
+
+      </section>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CHÃO
+    ===================================================== -->
+
+    <footer class="ship-floor">
+
+
+      <div class="floor-line"></div>
+
+
+      <div class="floor-warning">
+
+        ⚠ DECK MAGNÉTICO ⚠
+
+      </div>
+
+
+      <div class="floor-line"></div>
+
+
+    </footer>
+
+
+  </section>
+
+
+</main>
