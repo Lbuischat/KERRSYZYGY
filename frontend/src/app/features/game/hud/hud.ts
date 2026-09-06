@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 
 import { PlayerInfo } from './player-info/player-info';
-import { CurrencyDisplay } from './currency-display/currency-display';
+import { ShopButton } from './shop-button/shop-button';
 import { TaskPanel } from '../../tasks/task-panel/task-panel';
 import { MiniMap } from './mini-map/mini-map';
 import { ActionBar } from '../combat/action-bar/action-bar';
@@ -12,7 +12,7 @@ import { SettingsButton } from './settings-button/settings-button';
   selector: 'app-hud',
   imports: [
     PlayerInfo,
-    CurrencyDisplay,
+    ShopButton,
     TaskPanel,
     MiniMap,
     ActionBar,

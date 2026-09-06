@@ -1,36 +1,48 @@
 <div class="pointer-events-none absolute inset-0">
+
   <!-- Player info -->
   <div class="pointer-events-auto absolute left-6 top-10">
     <app-player-info />
   </div>
 
-  <!-- Currency -->
-  <div class="pointer-events-auto absolute right-6 top-13">
-    <app-currency-display />
+
+  <!-- Top-right controls -->
+  <div class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3">
+
+    <!-- Inventory -->
+    <app-inventory-button
+      (inventoryClicked)="toggleInventory()"
+    ></app-inventory-button>
+
+    <!-- Shop -->
+    <app-shop-button></app-shop-button>
+
   </div>
+
 
   <!-- Tasks -->
   <div class="pointer-events-auto absolute left-6 top-35">
     <app-task-panel />
   </div>
 
+
   <!-- Mini-map -->
   <div class="pointer-events-auto absolute right-6 top-35">
     <app-mini-map />
   </div>
+
 
   <!-- Action buttons -->
   <div class="pointer-events-auto absolute bottom-6 right-6">
     <app-action-bar />
   </div>
 
-  <!-- Inventory Btn -->
-  <div class="pointer-events-auto absolute right-30 top-11 -translate-x-1/2">
-    <app-inventory-button (inventoryClicked)="toggleInventory()"></app-inventory-button>
-  </div>
 
   <!-- Settings Btn -->
   <div class="pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2">
-    <app-settings-button (settingsClicked)="openSettings()" />
+    <app-settings-button
+      (settingsClicked)="openSettings()"
+    />
   </div>
+
 </div>
