@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 
-import { PlayerInfo } from './player-info/player-info';
+import { PlayerInfoBnt } from './player-info-btn/player-info-bnt';
 import { ShopButton } from './shop-button/shop-button';
 import { TaskPanel } from '../../tasks/task-panel/task-panel';
 import { MiniMap } from './mini-map/mini-map';
@@ -11,7 +11,7 @@ import { SettingsButton } from './settings-button/settings-button';
 @Component({
   selector: 'app-hud',
   imports: [
-    PlayerInfo,
+    PlayerInfoBnt,
     ShopButton,
     TaskPanel,
     MiniMap,
