@@ -10,5 +10,5 @@
   "include": [
     "src/**/*.d.ts",
     "src/**/*.spec.ts"
-  ]
+, "src/app/features/game/hud/player-info-btn/player-info-bnt.spec.ts"  ]
 }

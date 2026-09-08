@@ -1,0 +1,644 @@
+/* =========================
+   Base
+   ========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+:host {
+    display: block;
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    --background: #030303;
+    --surface: rgba(10, 10, 10, 0.65);
+    --surface-light: rgba(255, 255, 255, 0.04);
+
+    --border: rgba(255, 255, 255, 0.15);
+    --border-hover: rgba(255, 255, 255, 0.4);
+    --border-focus: rgba(255, 255, 255, 0.7);
+
+    --text-primary: #ffffff;
+    --text-secondary: #bdbdbd;
+    --text-muted: rgba(255, 255, 255, 0.5);
+
+    --radius-small: 8px;
+    --radius-medium: 10px;
+    --radius-large: 20px;
+
+    --transition: 0.2s ease;
+}
+
+
+/* =========================
+   Start Page
+   ========================= */
+
+.start-page {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 100vh;
+    padding: 30px;
+
+    overflow: hidden;
+
+    color: var(--text-primary);
+    background-color: var(--background);
+
+    background-image:
+        radial-gradient(circle at 10% 10%, white 1px, transparent 1px),
+        radial-gradient(circle at 25% 60%, white 1px, transparent 1px),
+        radial-gradient(circle at 45% 30%, white 1px, transparent 1px),
+        radial-gradient(circle at 75% 20%, white 1px, transparent 1px),
+        radial-gradient(circle at 90% 70%, white 1px, transparent 1px),
+        radial-gradient(circle at 60% 90%, white 1px, transparent 1px),
+        radial-gradient(
+            circle at center,
+            #151515 0%,
+            #080808 45%,
+            #000000 100%
+        );
+
+    background-size:
+        130px 130px,
+        170px 170px,
+        200px 200px,
+        250px 250px,
+        290px 290px,
+        340px 340px,
+        100% 100%;
+}
+
+.start-page::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    background-image:
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, white 1.5px, transparent 1.5px);
+
+    background-size:
+        90px 90px,
+        190px 190px;
+
+    background-position:
+        20px 30px,
+        60px 80px;
+
+    opacity: 0.2;
+
+    animation: starsBlink 3s ease-in-out infinite alternate;
+}
+
+
+/* =========================
+   Animations
+   ========================= */
+
+@keyframes starsBlink {
+    from {
+        opacity: 0.15;
+    }
+
+    to {
+        opacity: 0.4;
+    }
+}
+
+@keyframes storyAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoPulse {
+    from {
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+
+/* =========================
+   Screens
+   ========================= */
+
+.story-screen,
+.choice-screen {
+    position: relative;
+    z-index: 2;
+
+    width: min(700px, 100%);
+
+    text-align: center;
+}
+
+.choice-screen {
+    width: min(650px, 100%);
+}
+
+.story-content,
+.choice-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-large);
+
+    background: var(--surface);
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(255, 255, 255, 0.03);
+
+    backdrop-filter: blur(8px);
+}
+
+.story-content {
+    gap: 18px;
+    padding: 50px 35px;
+
+    animation: storyAppear 1.2s ease;
+}
+
+.choice-content {
+    padding: 50px 35px;
+
+    animation: storyAppear 0.7s ease;
+}
+
+
+/* =========================
+   Story
+   ========================= */
+
+.story-logo img {
+    display: block;
+
+    width: 100px;
+    height: auto;
+
+    filter:
+        drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))
+        drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+
+    animation: logoPulse 1.8s ease-in-out infinite alternate;
+}
+
+.story-text {
+    margin: 0;
+
+    color: #dedede;
+
+    font-family: Garamond, Georgia, serif;
+    font-size: 20px;
+    line-height: 1.6;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================
+   Choice Content
+   ========================= */
+
+.eyebrow {
+    margin: 0 0 10px;
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+}
+
+.choice-content h1 {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-family: Garamond, Georgia, serif;
+    font-size: 42px;
+    font-weight: 500;
+}
+
+.choice-description {
+    max-width: 450px;
+    margin: 15px 0 30px;
+
+    color: var(--text-secondary);
+
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+
+/* =========================
+   Choice Buttons
+   ========================= */
+
+.choice-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 12px;
+
+    width: 100%;
+    max-width: 500px;
+}
+
+.choice-button {
+    padding: 16px 20px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+
+    color: var(--text-primary);
+    background: var(--surface-light);
+
+    font-family: inherit;
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--transition),
+        border-color var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+
+.choice-button:hover {
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.08);
+
+    transform: translateY(-2px);
+}
+
+.choice-button.selected {
+    border-color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.15);
+
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================
+   Username Input
+   ========================= */
+
+.username-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 16px 20px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+
+    outline: none;
+
+    color: var(--text-primary);
+    background: var(--surface-light);
+
+    font-family: inherit;
+    font-size: 16px;
+    text-align: center;
+
+    transition:
+        border-color var(--transition),
+        background-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.username-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.username-input:hover {
+    border-color: var(--border-hover);
+}
+
+.username-input:focus {
+    border-color: var(--border-focus);
+    background: rgba(255, 255, 255, 0.07);
+
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.06);
+}
+
+
+/* =========================
+   Birthday
+   ========================= */
+
+.birthday-selects {
+    display: flex;
+
+    gap: 12px;
+
+    width: 100%;
+    max-width: 320px;
+    margin-top: 10px;
+}
+
+.custom-select {
+    position: relative;
+
+    flex: 1;
+}
+
+.custom-select::after {
+    content: "⌄";
+
+    position: absolute;
+    top: 50%;
+    right: 16px;
+
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 18px;
+
+    pointer-events: none;
+
+    transform: translateY(-55%);
+}
+
+.custom-select select {
+    width: 100%;
+    padding: 16px 42px 16px 18px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    outline: none;
+
+    color: var(--text-primary);
+    background: rgba(20, 20, 20, 0.85);
+
+    font-family: Garamond, Georgia, serif;
+    font-size: 17px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.25s ease,
+        background-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.custom-select select:hover {
+    border-color: var(--border-hover);
+    background: rgba(30, 30, 30, 0.95);
+}
+
+.custom-select select:focus {
+    border-color: var(--border-focus);
+
+    box-shadow:
+        0 0 15px rgba(255, 255, 255, 0.08),
+        0 0 35px rgba(255, 255, 255, 0.04);
+}
+
+.custom-select select option {
+    color: var(--text-primary);
+    background: #101010;
+}
+
+
+/* =========================
+   Birthday Checkbox
+   ========================= */
+
+.birthday-checkbox {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+    max-width: 320px;
+    margin-top: 22px;
+
+    color: rgba(255, 255, 255, 0.65);
+
+    font-family: Garamond, Georgia, serif;
+    font-size: 16px;
+    line-height: 1.3;
+
+    text-align: left;
+
+    cursor: pointer;
+    user-select: none;
+}
+
+.birthday-checkbox input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+.checkbox-box {
+    position: relative;
+
+    width: 20px;
+    height: 20px;
+
+    flex: 0 0 20px;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 5px;
+
+    background: var(--surface-light);
+
+    transition:
+        border-color var(--transition),
+        background-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.birthday-checkbox:hover .checkbox-box {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.birthday-checkbox input:checked + .checkbox-box {
+    border-color: var(--text-primary);
+    background: var(--text-primary);
+
+    box-shadow:
+        0 0 10px rgba(255, 255, 255, 0.35),
+        0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+.birthday-checkbox input:checked + .checkbox-box::after {
+    content: "✓";
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    color: #111;
+
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+
+    transform: translate(-50%, -52%);
+}
+
+
+/* =========================
+   Continue Button
+   ========================= */
+
+.continue-button {
+    margin-top: 25px;
+    padding: 13px 30px;
+
+    border: 1px solid var(--text-primary);
+    border-radius: var(--radius-small);
+
+    color: #000;
+    background: var(--text-primary);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        transform var(--transition),
+        background-color var(--transition),
+        color var(--transition),
+        box-shadow var(--transition);
+}
+
+.choice-content .continue-button {
+    margin-top: 30px;
+}
+
+.continue-button:hover:not(:disabled) {
+    color: var(--text-primary);
+    background: transparent;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 0 10px rgba(255, 255, 255, 0.7),
+        0 0 25px rgba(255, 255, 255, 0.15);
+}
+
+.continue-button:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.continue-button:disabled {
+    opacity: 0.3;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+}
+
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 600px) {
+    .start-page {
+        padding: 20px;
+    }
+
+    .story-content,
+    .choice-content {
+        padding: 40px 25px;
+    }
+
+    .choice-content h1 {
+        font-size: 34px;
+    }
+
+    .choice-list {
+        grid-template-columns: 1fr;
+    }
+
+    .birthday-selects {
+        flex-direction: column;
+    }
+
+    .birthday-checkbox,
+    .birthday-selects {
+        max-width: 320px;
+    }
+}
+
+@media (max-width: 400px) {
+    .start-page {
+        padding: 15px;
+    }
+
+    .story-content,
+    .choice-content {
+        padding: 35px 20px;
+    }
+
+    .story-text {
+        font-size: 18px;
+    }
+
+    .choice-content h1 {
+        font-size: 30px;
+    }
+
+    .choice-description {
+        font-size: 15px;
+    }
+}
+
+
+/* =========================
+   Reduced Motion
+   ========================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

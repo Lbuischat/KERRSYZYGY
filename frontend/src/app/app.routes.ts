@@ -5,8 +5,8 @@ import { GameEntry } from './features/entry/game-entry';
 import { Start } from './features/start/start';
 import { Settings } from './features/game/settings/settings';
 import { CreateAccount } from './features/auth/create-account/create-account';
-import { PlayerInfo } from './features/player-info/player-info';
-import { Shop } from './features/game/shop/shop/shop';
+import { PlayerInfo } from './features/game/player-info/player-info';
+import { Shop } from './features/game/shop/shop';
 
 export const routes: Routes = [
 
