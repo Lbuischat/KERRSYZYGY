@@ -1,16 +1,6 @@
-import {
-  Component,
-  OnDestroy,
-  afterNextRender,
-  signal,
-  output,
-  input
-} from '@angular/core';
-import { hidden } from '@angular/forms/signals';
-
+import { Component, OnDestroy, afterNextRender, signal, output, input } from '@angular/core';
+import { LanguageService } from '../../services/language/language.service';
 import { Router } from '@angular/router';
-
-
 interface BackgroundStar {
   left: number;
   top: number;
@@ -19,14 +9,10 @@ interface BackgroundStar {
   delay: number;
 }
 
-
 interface CelestialEvent {
   id: number;
 
-  type:
-  | 'comet'
-  | 'asteroid'
-  | 'special-comet';
+  type: 'comet' | 'asteroid' | 'special-comet';
 
   left: number;
   top: number;
@@ -36,21 +22,18 @@ interface CelestialEvent {
   opacity: number;
 }
 
-
 @Component({
   selector: 'app-title',
   imports: [],
   templateUrl: './title.html',
-  styleUrl: './title.css'
+  styleUrl: './title.css',
 })
 export class Title implements OnDestroy {
-  
   zoomingOut = input(false);
 
   remember = output<void>();
 
   isLeaving = false;
-
 
   // =========================================================
   // DEBUG
@@ -62,15 +45,11 @@ export class Title implements OnDestroy {
 
   private readonly DEBUG_ORBIT = false;
 
-
   // =========================================================
   // ORBITAL STATE
   // =========================================================
 
-  private orbitalPhase:
-    | 'normal'
-    | 'binary'
-    | 'exit' = 'normal';
+  private orbitalPhase: 'normal' | 'binary' | 'exit' = 'normal';
 
   /*
    * BINARY
@@ -84,7 +63,6 @@ export class Title implements OnDestroy {
   private binaryAngle = 0;
 
   private readonly binaryDuration = 1.75;
-
 
   /*
    * The angle (on the small circle around S1)
@@ -108,13 +86,9 @@ export class Title implements OnDestroy {
    * normal orbiting resumes.
    */
 
-  private entryPointOne:
-    | { x: number; y: number }
-    | null = null;
+  private entryPointOne: { x: number; y: number } | null = null;
 
-  private entryPointTwo:
-    | { x: number; y: number }
-    | null = null;
+  private entryPointTwo: { x: number; y: number } | null = null;
 
   /*
    * The angle each companion should resume at,
@@ -137,13 +111,11 @@ export class Title implements OnDestroy {
   private starTwoOrbit: 'A' | 'B' = 'A';
   private starThreeOrbit: 'A' | 'B' = 'B';
 
-
   // =========================================================
   // BACKGROUND STARS
   // =========================================================
 
   backgroundStars: BackgroundStar[] = [];
-
 
   // =========================================================
   // RANDOM CELESTIAL EVENTS
@@ -157,7 +129,6 @@ export class Title implements OnDestroy {
   private specialCometTimer?: ReturnType<typeof setTimeout>;
 
   private specialCometTriggered = false;
-
 
   // =========================================================
   // CENTRAL STAR + COMPANION STARS
@@ -191,7 +162,6 @@ export class Title implements OnDestroy {
   moonOneX = signal(0);
   moonOneY = signal(0);
 
-
   // =========================================================
   // ORBIT ANGLES
   // =========================================================
@@ -214,7 +184,6 @@ export class Title implements OnDestroy {
 
   moonAngle = 0;
 
-
   // =========================================================
   // ANIMATION TIMING
   // =========================================================
@@ -226,7 +195,6 @@ export class Title implements OnDestroy {
 
   private previousTime = 0;
 
-
   /*
    * requestAnimationFrame ID.
    *
@@ -235,7 +203,6 @@ export class Title implements OnDestroy {
    */
 
   private animationFrameId?: number;
-
 
   // =========================================================
   // STELLAR SYSTEM GEOMETRY
@@ -247,7 +214,6 @@ export class Title implements OnDestroy {
 
   private readonly centerX = 600;
   private readonly centerY = 350;
-
 
   /*
    * ---------------------------------------------------------
@@ -268,7 +234,6 @@ export class Title implements OnDestroy {
   private readonly orbitARadiusX = 400;
   private readonly orbitARadiusY = 250;
 
-
   /*
    * ---------------------------------------------------------
    * RIGHT ELLIPSE / ORBIT B
@@ -288,7 +253,6 @@ export class Title implements OnDestroy {
   private readonly orbitBRadiusX = 400;
   private readonly orbitBRadiusY = 250;
 
-
   /*
    * ---------------------------------------------------------
    * ENCOUNTER POINTS
@@ -303,30 +267,15 @@ export class Title implements OnDestroy {
    * are ever resized.
    */
 
-  private readonly encounterX =
-    (this.orbitACenterX +
-      this.orbitBCenterX) /
-    2;
+  private readonly encounterX = (this.orbitACenterX + this.orbitBCenterX) / 2;
 
   private readonly encounterYOffset =
     this.orbitARadiusY *
-    Math.sqrt(
-      1 -
-      Math.pow(
-        (this.encounterX -
-          this.orbitACenterX) /
-        this.orbitARadiusX,
-        2
-      )
-    );
+    Math.sqrt(1 - Math.pow((this.encounterX - this.orbitACenterX) / this.orbitARadiusX, 2));
 
-  private readonly topEncounterY =
-    this.orbitACenterY -
-    this.encounterYOffset;
+  private readonly topEncounterY = this.orbitACenterY - this.encounterYOffset;
 
-  private readonly bottomEncounterY =
-    this.orbitACenterY +
-    this.encounterYOffset;
+  private readonly bottomEncounterY = this.orbitACenterY + this.encounterYOffset;
 
   private readonly encounterTolerance = 8;
 
@@ -343,7 +292,6 @@ export class Title implements OnDestroy {
 
   private readonly encounterCooldownDuration = 2;
 
-
   // =========================================================
   // ORBIT ROTATION
   // =========================================================
@@ -356,7 +304,6 @@ export class Title implements OnDestroy {
   private readonly orbitARotation = 0;
   private readonly orbitBRotation = 0;
 
-
   // =========================================================
   // ORBITAL PERIODS
   // =========================================================
@@ -366,16 +313,9 @@ export class Title implements OnDestroy {
    * while developing.
    */
 
-  private readonly companionOnePeriod =
-    this.DEBUG_ORBIT
-      ? 1
-      : 35;
+  private readonly companionOnePeriod = this.DEBUG_ORBIT ? 1 : 35;
 
-  private readonly companionTwoPeriod =
-    this.DEBUG_ORBIT
-      ? 7
-      : 43;
-
+  private readonly companionTwoPeriod = this.DEBUG_ORBIT ? 7 : 43;
 
   // =========================================================
   // MOON ORBIT
@@ -393,20 +333,17 @@ export class Title implements OnDestroy {
 
   moonOneAngle = 0;
 
-
   // =========================================================
   // CONSTRUCTOR
   // =========================================================
 
   constructor(
-    private readonly router: Router
+    public readonly languageService: LanguageService,
+    private readonly router: Router,
   ) {
-
     this.createBackgroundStars();
 
-
     afterNextRender(() => {
-
       /*
        * Start the orbital animation after
        * the title screen has appeared.
@@ -416,11 +353,8 @@ export class Title implements OnDestroy {
        */
 
       setTimeout(() => {
-
         this.startOrbit();
-
       }, 2_500);
-
 
       /*
        * Start random celestial events after
@@ -428,11 +362,8 @@ export class Title implements OnDestroy {
        */
 
       setTimeout(() => {
-
         this.scheduleNextCelestialEvent();
-
       }, 12_000);
-
 
       /*
        * The special comet cannot appear before
@@ -442,48 +373,38 @@ export class Title implements OnDestroy {
        * does not always appear at the same time.
        */
 
-      this.specialCometTimer =
-        setTimeout(() => {
-
+      this.specialCometTimer = setTimeout(
+        () => {
           this.triggerSpecialComet();
-
-        }, 60_000 + Math.random() * 30_000);
-
+        },
+        60_000 + Math.random() * 30_000,
+      );
     });
-
   }
-
 
   // =========================================================
   // DEBUG — RANDOM CELESTIAL EVENT
   // =========================================================
 
   debugCelestialEvent(): void {
-
     this.createRandomCelestialEvent();
-
   }
-
 
   // =========================================================
   // DEBUG — SPECIAL COMET
   // =========================================================
 
   debugSpecialComet(): void {
-
     this.specialCometTriggered = false;
 
     this.triggerSpecialComet();
-
   }
-
 
   // =========================================================
   // ENTER GAME
   // =========================================================
 
   enterGame(): void {
-
     /*
      * Kill the REMEMBER button immediately.
      *
@@ -497,106 +418,66 @@ export class Title implements OnDestroy {
      */
 
     this.remember.emit();
-
   }
 
- if () {
-  this.isLeaving = true;
-
- }
-
+  if() {
+    this.isLeaving = true;
+  }
 
   // =========================================================
   // BACKGROUND STARS
   // =========================================================
 
   private createBackgroundStars(): void {
-
     const numberOfStars = 180;
 
-
-    for (
-      let i = 0;
-      i < numberOfStars;
-      i++
-    ) {
-
+    for (let i = 0; i < numberOfStars; i++) {
       this.backgroundStars.push({
+        left: Math.random() * 100,
 
-        left:
-          Math.random() * 100,
+        top: Math.random() * 100,
 
-        top:
-          Math.random() * 100,
+        size: Math.random() < 0.9 ? 1 : 2,
 
-        size:
-          Math.random() < 0.9
-            ? 1
-            : 2,
+        opacity: 0.08 + Math.random() * 0.17,
 
-        opacity:
-          0.08 +
-          Math.random() * 0.17,
-
-        delay:
-          9 +
-          Math.random() * 5
-
+        delay: 9 + Math.random() * 5,
       });
-
     }
-
   }
-
 
   // =========================================================
   // SCHEDULE NEXT CELESTIAL EVENT
   // =========================================================
 
   private scheduleNextCelestialEvent(): void {
-
     /*
      * Random delay between 20 and 60 seconds.
      */
 
-    const delay =
-      20_000 +
-      Math.random() * 40_000;
+    const delay = 20_000 + Math.random() * 40_000;
 
+    this.eventTimer = setTimeout(() => {
+      this.createRandomCelestialEvent();
 
-    this.eventTimer =
-      setTimeout(() => {
-
-        this.createRandomCelestialEvent();
-
-        this.scheduleNextCelestialEvent();
-
-      }, delay);
-
+      this.scheduleNextCelestialEvent();
+    }, delay);
   }
-
 
   // =========================================================
   // CREATE RANDOM CELESTIAL EVENT
   // =========================================================
 
   private createRandomCelestialEvent(): void {
-
     /*
      * About 70% comets.
      * About 30% asteroids.
      */
 
-    const type =
-      Math.random() < 0.7
-        ? 'comet'
-        : 'asteroid';
-
+    const type = Math.random() < 0.7 ? 'comet' : 'asteroid';
 
     const event: CelestialEvent = {
-
-      id:
-        this.nextEventId++,
+      id: this.nextEventId++,
 
       type,
 
@@ -611,98 +492,69 @@ export class Title implements OnDestroy {
        * across most of the screen.
        */
 
-      top:
-        5 +
-        Math.random() * 90,
+      top: 5 + Math.random() * 90,
 
       /*
        * Slightly random diagonal trajectory.
        */
 
-      angle:
-        -25 +
-        Math.random() * 50,
+      angle: -25 + Math.random() * 50,
 
       /*
        * Comets are fast.
        * Asteroids are a little slower.
        */
 
-      duration:
-        type === 'comet'
-          ? 1.5 + Math.random() * 1.5
-          : 2.5 + Math.random() * 2,
+      duration: type === 'comet' ? 1.5 + Math.random() * 1.5 : 2.5 + Math.random() * 2,
 
       /*
        * Comets stay tiny.
        * Asteroids get different sizes.
        */
 
-      size:
-        type === 'comet'
-          ? 3
-          : 3 + Math.random() * 6,
+      size: type === 'comet' ? 3 : 3 + Math.random() * 6,
 
       /*
        * Keep them subtle.
        */
 
-      opacity:
-        type === 'comet'
-          ? 0.45 + Math.random() * 0.4
-          : 0.25 + Math.random() * 0.35
-
+      opacity: type === 'comet' ? 0.45 + Math.random() * 0.4 : 0.25 + Math.random() * 0.35,
     };
 
-
     this.celestialEvents.push(event);
-
 
     /*
      * Remove the event after its animation
      * has finished.
      */
 
-    setTimeout(() => {
-
-      this.celestialEvents =
-        this.celestialEvents.filter(
-          current =>
-            current.id !== event.id
-        );
-
-    }, (event.duration + 0.5) * 1000);
-
+    setTimeout(
+      () => {
+        this.celestialEvents = this.celestialEvents.filter((current) => current.id !== event.id);
+      },
+      (event.duration + 0.5) * 1000,
+    );
   }
-
 
   // =========================================================
   // SPECIAL COMET
   // =========================================================
 
   private triggerSpecialComet(): void {
-
     /*
      * Only allow this to happen once.
      */
 
     if (this.specialCometTriggered) {
-
       return;
-
     }
-
 
     this.specialCometTriggered = true;
 
-
     const event: CelestialEvent = {
+      id: this.nextEventId++,
 
-      id:
-        this.nextEventId++,
-
-      type:
-        'special-comet',
+      type: 'special-comet',
 
       left: 0,
 
@@ -710,53 +562,39 @@ export class Title implements OnDestroy {
        * Put it somewhere slightly unusual.
        */
 
-      top:
-        15 +
-        Math.random() * 55,
+      top: 15 + Math.random() * 55,
 
       /*
        * Give it a more dramatic trajectory.
        */
 
-      angle:
-        -18 +
-        Math.random() * 36,
+      angle: -18 + Math.random() * 36,
 
       /*
        * Slower than normal comets so
        * the player has time to notice it.
        */
 
-      duration:
-        5.5 +
-        Math.random() * 2,
+      duration: 5.5 + Math.random() * 2,
 
       size: 7,
 
-      opacity: 1
-
+      opacity: 1,
     };
 
-
     this.celestialEvents.push(event);
-
 
     /*
      * Remove it after the animation.
      */
 
-    setTimeout(() => {
-
-      this.celestialEvents =
-        this.celestialEvents.filter(
-          current =>
-            current.id !== event.id
-        );
-
-    }, (event.duration + 1) * 1000);
-
+    setTimeout(
+      () => {
+        this.celestialEvents = this.celestialEvents.filter((current) => current.id !== event.id);
+      },
+      (event.duration + 1) * 1000,
+    );
   }
-
 
   // =========================================================
   // ANGLE FOR A KNOWN POINT ON AN ORBIT
@@ -773,45 +611,21 @@ export class Title implements OnDestroy {
    * snapping back to its orbit's starting position.
    */
 
-  private calculateAngleOnOrbit(
-    orbit: 'A' | 'B',
-    point: { x: number; y: number }
-  ): number {
+  private calculateAngleOnOrbit(orbit: 'A' | 'B', point: { x: number; y: number }): number {
+    const centerX = orbit === 'A' ? this.orbitACenterX : this.orbitBCenterX;
 
-    const centerX =
-      orbit === 'A'
-        ? this.orbitACenterX
-        : this.orbitBCenterX;
+    const centerY = orbit === 'A' ? this.orbitACenterY : this.orbitBCenterY;
 
+    const radiusX = orbit === 'A' ? this.orbitARadiusX : this.orbitBRadiusX;
 
-    const centerY =
-      orbit === 'A'
-        ? this.orbitACenterY
-        : this.orbitBCenterY;
-
-
-    const radiusX =
-      orbit === 'A'
-        ? this.orbitARadiusX
-        : this.orbitBRadiusX;
-
-
-    const radiusY =
-      orbit === 'A'
-        ? this.orbitARadiusY
-        : this.orbitBRadiusY;
-
+    const radiusY = orbit === 'A' ? this.orbitARadiusY : this.orbitBRadiusY;
 
     return Math.atan2(
-      (point.y - centerY) /
-      radiusY,
+      (point.y - centerY) / radiusY,
 
-      (point.x - centerX) /
-      radiusX
+      (point.x - centerX) / radiusX,
     );
-
   }
-
 
   // =========================================================
   // ORBIT POSITION
@@ -826,34 +640,14 @@ export class Title implements OnDestroy {
    * TypeScript and HTML now use the same geometry.
    */
 
-  private calculateOrbitPosition(
-    orbit: 'A' | 'B',
-    angle: number
-  ) {
+  private calculateOrbitPosition(orbit: 'A' | 'B', angle: number) {
+    const centerX = orbit === 'A' ? this.orbitACenterX : this.orbitBCenterX;
 
-    const centerX =
-      orbit === 'A'
-        ? this.orbitACenterX
-        : this.orbitBCenterX;
+    const centerY = orbit === 'A' ? this.orbitACenterY : this.orbitBCenterY;
 
+    const radiusX = orbit === 'A' ? this.orbitARadiusX : this.orbitBRadiusX;
 
-    const centerY =
-      orbit === 'A'
-        ? this.orbitACenterY
-        : this.orbitBCenterY;
-
-
-    const radiusX =
-      orbit === 'A'
-        ? this.orbitARadiusX
-        : this.orbitBRadiusX;
-
-
-    const radiusY =
-      orbit === 'A'
-        ? this.orbitARadiusY
-        : this.orbitBRadiusY;
-
+    const radiusY = orbit === 'A' ? this.orbitARadiusY : this.orbitBRadiusY;
 
     /*
      * Horizontal ellipses currently have
@@ -862,158 +656,83 @@ export class Title implements OnDestroy {
      * to extend later.
      */
 
-    const rotation =
-      orbit === 'A'
-        ? this.orbitARotation
-        : this.orbitBRotation;
+    const rotation = orbit === 'A' ? this.orbitARotation : this.orbitBRotation;
 
+    const localX = radiusX * Math.cos(angle);
 
-    const localX =
-      radiusX *
-      Math.cos(angle);
+    const localY = radiusY * Math.sin(angle);
 
+    const cosRotation = Math.cos(rotation);
 
-    const localY =
-      radiusY *
-      Math.sin(angle);
-
-
-    const cosRotation =
-      Math.cos(rotation);
-
-
-    const sinRotation =
-      Math.sin(rotation);
-
+    const sinRotation = Math.sin(rotation);
 
     return {
+      x: centerX + localX * cosRotation - localY * sinRotation,
 
-      x:
-        centerX +
-        localX * cosRotation -
-        localY * sinRotation,
-
-      y:
-        centerY +
-        localX * sinRotation +
-        localY * cosRotation
-
+      y: centerY + localX * sinRotation + localY * cosRotation,
     };
-
   }
-
 
   // =========================================================
   // LINEAR INTERPOLATION
   // =========================================================
 
-  private lerp(
-    start: number,
-    end: number,
-    amount: number
-  ): number {
-
-    return start +
-      (end - start) *
-      amount;
-
+  private lerp(start: number, end: number, amount: number): number {
+    return start + (end - start) * amount;
   }
-
 
   // =========================================================
   // INITIAL STAR POSITIONS
   // =========================================================
 
   private updateInitialStarPositions(): void {
-
     /*
      * S2 starts on Orbit A.
      */
 
-    const s2Position =
-      this.calculateOrbitPosition(
-        this.starTwoOrbit,
-        this.companionOneAngle
-      );
+    const s2Position = this.calculateOrbitPosition(this.starTwoOrbit, this.companionOneAngle);
 
+    this.companionOneX.set(s2Position.x);
 
-    this.companionOneX.set(
-      s2Position.x
-    );
-
-    this.companionOneY.set(
-      s2Position.y
-    );
-
+    this.companionOneY.set(s2Position.y);
 
     /*
      * S3 starts on Orbit B.
      */
 
-    const s3Position =
-      this.calculateOrbitPosition(
-        this.starThreeOrbit,
-        this.companionTwoAngle
-      );
+    const s3Position = this.calculateOrbitPosition(this.starThreeOrbit, this.companionTwoAngle);
 
+    this.companionTwoX.set(s3Position.x);
 
-    this.companionTwoX.set(
-      s3Position.x
-    );
-
-    this.companionTwoY.set(
-      s3Position.y
-    );
-
+    this.companionTwoY.set(s3Position.y);
 
     /*
      * Moon starts at zero degrees.
      */
 
     this.moonAngle = 0;
-
   }
-
 
   // =========================================================
   // NORMAL ORBIT
   // =========================================================
 
-  private updateNormalOrbit(
-    deltaTime: number
-  ): void {
-
+  private updateNormalOrbit(deltaTime: number): void {
     /*
      * -------------------------------------------------------
      * S2
      * -------------------------------------------------------
      */
 
-    const s2AngularVelocity =
-      (Math.PI * 2) /
-      this.companionOnePeriod;
+    const s2AngularVelocity = (Math.PI * 2) / this.companionOnePeriod;
 
+    this.companionOneAngle += s2AngularVelocity * deltaTime;
 
-    this.companionOneAngle +=
-      s2AngularVelocity *
-      deltaTime;
+    const s2Position = this.calculateOrbitPosition(this.starTwoOrbit, this.companionOneAngle);
 
+    this.companionOneX.set(s2Position.x);
 
-    const s2Position =
-      this.calculateOrbitPosition(
-        this.starTwoOrbit,
-        this.companionOneAngle
-      );
-
-
-    this.companionOneX.set(
-      s2Position.x
-    );
-
-    this.companionOneY.set(
-      s2Position.y
-    );
-
+    this.companionOneY.set(s2Position.y);
 
     /*
      * -------------------------------------------------------
@@ -1021,31 +740,15 @@ export class Title implements OnDestroy {
      * -------------------------------------------------------
      */
 
-    const s3AngularVelocity =
-      (Math.PI * 2) /
-      this.companionTwoPeriod;
+    const s3AngularVelocity = (Math.PI * 2) / this.companionTwoPeriod;
 
+    this.companionTwoAngle += s3AngularVelocity * deltaTime;
 
-    this.companionTwoAngle +=
-      s3AngularVelocity *
-      deltaTime;
+    const s3Position = this.calculateOrbitPosition(this.starThreeOrbit, this.companionTwoAngle);
 
+    this.companionTwoX.set(s3Position.x);
 
-    const s3Position =
-      this.calculateOrbitPosition(
-        this.starThreeOrbit,
-        this.companionTwoAngle
-      );
-
-
-    this.companionTwoX.set(
-      s3Position.x
-    );
-
-    this.companionTwoY.set(
-      s3Position.y
-    );
-
+    this.companionTwoY.set(s3Position.y);
 
     /*
      * -------------------------------------------------------
@@ -1053,22 +756,11 @@ export class Title implements OnDestroy {
      * -------------------------------------------------------
      */
 
-    if (
-      this.encounterCooldownRemaining >
-      0
-    ) {
-
-      this.encounterCooldownRemaining =
-        Math.max(
-          0,
-          this.encounterCooldownRemaining -
-          deltaTime
-        );
+    if (this.encounterCooldownRemaining > 0) {
+      this.encounterCooldownRemaining = Math.max(0, this.encounterCooldownRemaining - deltaTime);
 
       return;
-
     }
-
 
     /*
      * -------------------------------------------------------
@@ -1078,59 +770,24 @@ export class Title implements OnDestroy {
 
     const topPoint = {
       x: this.encounterX,
-      y: this.topEncounterY
+      y: this.topEncounterY,
     };
-
 
     const bottomPoint = {
       x: this.encounterX,
-      y: this.bottomEncounterY
+      y: this.bottomEncounterY,
     };
 
+    const isNear = (x: number, y: number, point: { x: number; y: number }): boolean =>
+      Math.hypot(x - point.x, y - point.y) < this.encounterTolerance;
 
-    const isNear = (
-      x: number,
-      y: number,
-      point: { x: number; y: number }
-    ): boolean =>
-      Math.hypot(
-        x - point.x,
-        y - point.y
-      ) <
-      this.encounterTolerance;
+    const s2AtTop = isNear(this.companionOneX(), this.companionOneY(), topPoint);
 
+    const s2AtBottom = isNear(this.companionOneX(), this.companionOneY(), bottomPoint);
 
-    const s2AtTop =
-      isNear(
-        this.companionOneX(),
-        this.companionOneY(),
-        topPoint
-      );
+    const s3AtTop = isNear(this.companionTwoX(), this.companionTwoY(), topPoint);
 
-
-    const s2AtBottom =
-      isNear(
-        this.companionOneX(),
-        this.companionOneY(),
-        bottomPoint
-      );
-
-
-    const s3AtTop =
-      isNear(
-        this.companionTwoX(),
-        this.companionTwoY(),
-        topPoint
-      );
-
-
-    const s3AtBottom =
-      isNear(
-        this.companionTwoX(),
-        this.companionTwoY(),
-        bottomPoint
-      );
-
+    const s3AtBottom = isNear(this.companionTwoX(), this.companionTwoY(), bottomPoint);
 
     /*
      * -------------------------------------------------------
@@ -1145,57 +802,36 @@ export class Title implements OnDestroy {
      * No stopping.
      */
 
-    if (
-      s2AtTop &&
-      s3AtBottom
-    ) {
-
+    if (s2AtTop && s3AtBottom) {
       this.entryPointOne = topPoint;
       this.entryPointTwo = bottomPoint;
 
-      this.binaryStartAngle =
-        -Math.PI / 2;
+      this.binaryStartAngle = -Math.PI / 2;
 
-      this.binaryAngle =
-        this.binaryStartAngle;
+      this.binaryAngle = this.binaryStartAngle;
 
       this.binaryProgress = 0;
 
-      this.orbitalPhase =
-        'binary';
-
-    } else if (
-      s2AtBottom &&
-      s3AtTop
-    ) {
-
+      this.orbitalPhase = 'binary';
+    } else if (s2AtBottom && s3AtTop) {
       this.entryPointOne = bottomPoint;
       this.entryPointTwo = topPoint;
 
-      this.binaryStartAngle =
-        Math.PI / 2;
+      this.binaryStartAngle = Math.PI / 2;
 
-      this.binaryAngle =
-        this.binaryStartAngle;
+      this.binaryAngle = this.binaryStartAngle;
 
       this.binaryProgress = 0;
 
-      this.orbitalPhase =
-        'binary';
-
+      this.orbitalPhase = 'binary';
     }
-
   }
-
 
   // =========================================================
   // BINARY ORBIT
   // =========================================================
 
-  private updateBinaryOrbit(
-    deltaTime: number
-  ): void {
-
+  private updateBinaryOrbit(deltaTime: number): void {
     /*
      * Advance through exactly ONE HALF revolution.
      *
@@ -1209,21 +845,11 @@ export class Title implements OnDestroy {
      * They simply rotate around S1.
      */
 
-    this.binaryProgress +=
-      deltaTime;
+    this.binaryProgress += deltaTime;
 
+    const progress = Math.min(this.binaryProgress / this.binaryDuration, 1);
 
-    const progress =
-      Math.min(
-        this.binaryProgress /
-        this.binaryDuration,
-        1
-      );
-
-
-    this.binaryAngle =
-      this.binaryStartAngle +
-      progress * Math.PI;
+    this.binaryAngle = this.binaryStartAngle + progress * Math.PI;
     /*
      * Radius of the binary circle.
      *
@@ -1231,12 +857,7 @@ export class Title implements OnDestroy {
      * to the top/bottom encounter points.
      */
 
-    const binaryRadius =
-      Math.abs(
-        this.topEncounterY -
-        this.centerY
-      );
-
+    const binaryRadius = Math.abs(this.topEncounterY - this.centerY);
 
     /*
      * -------------------------------------------------------
@@ -1244,17 +865,9 @@ export class Title implements OnDestroy {
      * -------------------------------------------------------
      */
 
-    const s2x =
-      this.centerX +
-      Math.cos(this.binaryAngle) *
-      binaryRadius;
+    const s2x = this.centerX + Math.cos(this.binaryAngle) * binaryRadius;
 
-
-    const s2y =
-      this.centerY +
-      Math.sin(this.binaryAngle) *
-      binaryRadius;
-
+    const s2y = this.centerY + Math.sin(this.binaryAngle) * binaryRadius;
 
     /*
      * -------------------------------------------------------
@@ -1264,17 +877,9 @@ export class Title implements OnDestroy {
      * Always exactly opposite S2.
      */
 
-    const s3x =
-      this.centerX -
-      Math.cos(this.binaryAngle) *
-      binaryRadius;
+    const s3x = this.centerX - Math.cos(this.binaryAngle) * binaryRadius;
 
-
-    const s3y =
-      this.centerY -
-      Math.sin(this.binaryAngle) *
-      binaryRadius;
-
+    const s3y = this.centerY - Math.sin(this.binaryAngle) * binaryRadius;
 
     this.companionOneX.set(s2x);
     this.companionOneY.set(s2y);
@@ -1282,30 +887,22 @@ export class Title implements OnDestroy {
     this.companionTwoX.set(s3x);
     this.companionTwoY.set(s3y);
 
-
     /*
      * -------------------------------------------------------
      * FINISHED
      * -------------------------------------------------------
      */
 
-    if (
-      progress >= 1
-    ) {
-
+    if (progress >= 1) {
       /*
        * Swap the physical orbits.
        */
 
-      const temporary =
-        this.starTwoOrbit;
+      const temporary = this.starTwoOrbit;
 
-      this.starTwoOrbit =
-        this.starThreeOrbit;
+      this.starTwoOrbit = this.starThreeOrbit;
 
-      this.starThreeOrbit =
-        temporary;
-
+      this.starThreeOrbit = temporary;
 
       /*
        * The stars are now sitting exactly on
@@ -1315,41 +912,28 @@ export class Title implements OnDestroy {
        * on their NEW orbits.
        */
 
-      this.companionOneAngle =
-        this.calculateAngleOnOrbit(
-          this.starTwoOrbit,
-          {
-            x: this.companionOneX(),
-            y: this.companionOneY()
-          }
-        );
+      this.companionOneAngle = this.calculateAngleOnOrbit(this.starTwoOrbit, {
+        x: this.companionOneX(),
+        y: this.companionOneY(),
+      });
 
-
-      this.companionTwoAngle =
-        this.calculateAngleOnOrbit(
-          this.starThreeOrbit,
-          {
-            x: this.companionTwoX(),
-            y: this.companionTwoY()
-          }
-        );
-
+      this.companionTwoAngle = this.calculateAngleOnOrbit(this.starThreeOrbit, {
+        x: this.companionTwoX(),
+        y: this.companionTwoY(),
+      });
 
       /*
        * Prevent the same intersection from
        * immediately triggering again.
        */
 
-      this.encounterCooldownRemaining =
-        this.encounterCooldownDuration;
-
+      this.encounterCooldownRemaining = this.encounterCooldownDuration;
 
       /*
        * Reset binary state.
        */
 
       this.binaryProgress = 0;
-
 
       /*
        * GO DIRECTLY BACK TO NORMAL ORBIT.
@@ -1359,11 +943,8 @@ export class Title implements OnDestroy {
        * No pause.
        */
 
-      this.orbitalPhase =
-        'normal';
-
+      this.orbitalPhase = 'normal';
     }
-
   }
 
   // =========================================================
@@ -1371,10 +952,7 @@ export class Title implements OnDestroy {
   // =========================================================
 
   private startOrbit(): void {
-
-    this.previousTime =
-      performance.now();
-
+    this.previousTime = performance.now();
 
     /*
      * Put the stars into their initial
@@ -1383,19 +961,12 @@ export class Title implements OnDestroy {
 
     this.updateInitialStarPositions();
 
-
     /*
      * Start the animation loop.
      */
 
-    this.animationFrameId =
-      requestAnimationFrame(
-        (time) =>
-          this.animateOrbit(time)
-      );
-
+    this.animationFrameId = requestAnimationFrame((time) => this.animateOrbit(time));
   }
-
 
   // =========================================================
   // ORBIT ANIMATION
@@ -1421,32 +992,22 @@ export class Title implements OnDestroy {
    * for as long as the animation runs.
    */
 
-  private animateOrbit(
-    time: number
-  ): void {
-
+  private animateOrbit(time: number): void {
     /*
      * -------------------------------------------------------
      * FRAME TIME
      * -------------------------------------------------------
      */
 
-    const deltaTime =
-      time -
-      this.previousTime;
+    const deltaTime = time - this.previousTime;
 
-
-    this.previousTime =
-      time;
-
+    this.previousTime = time;
 
     /*
      * Convert milliseconds to seconds.
      */
 
-    const seconds =
-      deltaTime / 1000;
-
+    const seconds = deltaTime / 1000;
 
     /*
      * -------------------------------------------------------
@@ -1454,23 +1015,11 @@ export class Title implements OnDestroy {
      * -------------------------------------------------------
      */
 
-    if (
-      this.orbitalPhase ===
-      'binary'
-    ) {
-
-      this.updateBinaryOrbit(
-        seconds
-      );
-
+    if (this.orbitalPhase === 'binary') {
+      this.updateBinaryOrbit(seconds);
     } else {
-
-      this.updateNormalOrbit(
-        seconds
-      );
-
+      this.updateNormalOrbit(seconds);
     }
-
 
     /*
      * -------------------------------------------------------
@@ -1481,62 +1030,29 @@ export class Title implements OnDestroy {
      *
      * It orbits Companion 1 / S2.
      */
-    const moonAngularVelocity =
-      (Math.PI * 2) /
-      this.moonPeriod;
+    const moonAngularVelocity = (Math.PI * 2) / this.moonPeriod;
 
+    this.moonAngle += moonAngularVelocity * seconds;
 
-    this.moonAngle +=
-      moonAngularVelocity *
-      seconds;
+    const moonLocalX = this.moonRadiusX * Math.cos(this.moonAngle);
 
+    const moonLocalY = this.moonRadiusY * Math.sin(this.moonAngle);
 
-    const moonLocalX =
-      this.moonRadiusX *
-      Math.cos(this.moonAngle);
+    this.moonX.set(moonLocalX);
 
+    this.moonY.set(moonLocalY);
 
-    const moonLocalY =
-      this.moonRadiusY *
-      Math.sin(this.moonAngle);
+    const moonOneAngularVelocity = (Math.PI * 2) / this.moonOnePeriod;
 
+    this.moonOneAngle += moonOneAngularVelocity * seconds;
 
-    this.moonX.set(
-      moonLocalX
-    );
+    const moonOneLocalX = this.moonOneRadiusX * Math.cos(this.moonOneAngle);
 
-    this.moonY.set(
-      moonLocalY
-    );
+    const moonOneLocalY = this.moonOneRadiusY * Math.sin(this.moonOneAngle);
 
-    const moonOneAngularVelocity =
-      (Math.PI * 2) /
-      this.moonOnePeriod;
+    this.moonOneX.set(moonOneLocalX);
 
-
-    this.moonOneAngle +=
-      moonOneAngularVelocity *
-      seconds;
-
-
-    const moonOneLocalX =
-      this.moonOneRadiusX *
-      Math.cos(this.moonOneAngle);
-
-
-    const moonOneLocalY =
-      this.moonOneRadiusY *
-      Math.sin(this.moonOneAngle);
-
-
-    this.moonOneX.set(
-      moonOneLocalX
-    );
-
-    this.moonOneY.set(
-      moonOneLocalY
-    );
-
+    this.moonOneY.set(moonOneLocalY);
 
     /*
      * -------------------------------------------------------
@@ -1544,68 +1060,36 @@ export class Title implements OnDestroy {
      * -------------------------------------------------------
      */
 
-    this.animationFrameId =
-      requestAnimationFrame(
-        (nextTime) =>
-          this.animateOrbit(nextTime)
-      );
-
+    this.animationFrameId = requestAnimationFrame((nextTime) => this.animateOrbit(nextTime));
   }
-
 
   // =========================================================
   // CLEANUP
   // =========================================================
 
   ngOnDestroy(): void {
-
     /*
      * Stop the orbital animation.
      */
 
-    if (
-      this.animationFrameId !==
-      undefined
-    ) {
-
-      cancelAnimationFrame(
-        this.animationFrameId
-      );
-
+    if (this.animationFrameId !== undefined) {
+      cancelAnimationFrame(this.animationFrameId);
     }
-
 
     /*
      * Stop random celestial events.
      */
 
-    if (
-      this.eventTimer !==
-      undefined
-    ) {
-
-      clearTimeout(
-        this.eventTimer
-      );
-
+    if (this.eventTimer !== undefined) {
+      clearTimeout(this.eventTimer);
     }
-
 
     /*
      * Stop the special-comet timer.
      */
 
-    if (
-      this.specialCometTimer !==
-      undefined
-    ) {
-
-      clearTimeout(
-        this.specialCometTimer
-      );
-
+    if (this.specialCometTimer !== undefined) {
+      clearTimeout(this.specialCometTimer);
     }
-
   }
-
 }

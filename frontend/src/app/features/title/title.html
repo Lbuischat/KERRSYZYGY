@@ -6,7 +6,9 @@
          ===================================================== -->
 
     <div class="background-stars" aria-hidden="true">
+
         @for (star of backgroundStars; track $index) {
+
             <span
                 class="background-star"
                 [style.left.%]="star.left"
@@ -16,7 +18,9 @@
                 [style.--star-opacity]="star.opacity"
                 [style.animation-delay.s]="star.delay">
             </span>
+
         }
+
     </div>
 
 
@@ -72,11 +76,11 @@
 
     <!-- =====================================================
          CORE SCENE
-         
          THIS ENTIRE GROUP REMAINS.
          ===================================================== -->
 
     <div class="persistent-scene">
+
 
         <!-- =================================================
              CELESTIAL SYSTEM
@@ -92,6 +96,7 @@
                 <!-- Orbital paths -->
 
                 <!-- S2 orbit -->
+
                 <ellipse
                     class="companion-orbit companion-one-orbit"
                     cx="400"
@@ -100,7 +105,9 @@
                     ry="250"
                     pathLength="1000" />
 
+
                 <!-- S3 orbit -->
+
                 <ellipse
                     class="companion-orbit companion-two-orbit"
                     cx="800"
@@ -115,13 +122,36 @@
                 <g class="orbit-intersections">
 
                     <g transform="translate(600 170)">
-                        <line x1="-8" y1="-8" x2="8" y2="8" />
-                        <line x1="8" y1="-8" x2="-8" y2="8" />
+
+                        <line
+                            x1="-8"
+                            y1="-8"
+                            x2="8"
+                            y2="8" />
+
+                        <line
+                            x1="8"
+                            y1="-8"
+                            x2="-8"
+                            y2="8" />
+
                     </g>
 
+
                     <g transform="translate(600 530)">
-                        <line x1="-8" y1="-8" x2="8" y2="8" />
-                        <line x1="8" y1="-8" x2="-8" y2="8" />
+
+                        <line
+                            x1="-8"
+                            y1="-8"
+                            x2="8"
+                            y2="8" />
+
+                        <line
+                            x1="8"
+                            y1="-8"
+                            x2="-8"
+                            y2="8" />
+
                     </g>
 
                 </g>
@@ -167,6 +197,7 @@
                         ">
 
                         <!-- Earth -->
+
                         <circle
                             class="star-moon"
                             cx="0"
@@ -175,6 +206,7 @@
 
 
                         <!-- Moon -->
+
                         <g
                             class="moon-1-system"
                             [attr.transform]="
@@ -292,12 +324,12 @@
 
         <div class="title-content">
 
+            <!-- Game title stays unchanged -->
             <h1>KERRSYZYGY</h1>
 
 
             <!-- =================================================
                  REMEMBER BUTTON
-
                  This disappears.
                  ================================================= -->
 
@@ -307,7 +339,7 @@
                 [class.leaving]="isLeaving"
                 (click)="enterGame()">
 
-                REMEMBER
+                {{ languageService.t().title.remember }}
 
             </button>
 

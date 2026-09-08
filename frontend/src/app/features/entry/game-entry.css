@@ -56,3 +56,99 @@
     opacity: 1;
     transform: none;
 }
+
+/* =========================================================
+   LANGUAGE SELECTOR
+   ========================================================= */
+
+.language-container {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 20;
+}
+
+.language-button {
+    padding: 10px 16px;
+
+    background: rgba(0, 0, 0, 0.65);
+    color: white;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 4px;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.language-button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: translateY(-1px);
+}
+
+.language-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+
+    min-width: 150px;
+
+    padding: 6px;
+
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    border-radius: 4px;
+
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.language-menu button {
+    display: block;
+
+    width: 100%;
+
+    padding: 10px 12px;
+
+    background: transparent;
+    color: white;
+
+    border: none;
+
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease;
+}
+
+.language-menu button:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Hide language selector during the title -> login transition */
+
+.game-entry.transitioning .language-container {
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+        opacity 0.2s ease;
+}
+
+/* Also keep it hidden once login is showing */
+
+.game-entry.login-visible .language-container {
+    opacity: 0;
+    pointer-events: none;
+}

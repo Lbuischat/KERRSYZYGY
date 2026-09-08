@@ -5,11 +5,21 @@
          ===================================================== -->
 
     <div class="background-stars" aria-hidden="true">
+
         @for (star of backgroundStars; track $index) {
-        <span class="background-star" [style.left.%]="star.left" [style.top.%]="star.top" [style.width.px]="star.size"
-            [style.height.px]="star.size" [style.--star-opacity]="star.opacity" [style.animation-delay.s]="star.delay">
-        </span>
+
+            <span
+                class="background-star"
+                [style.left.%]="star.left"
+                [style.top.%]="star.top"
+                [style.width.px]="star.size"
+                [style.height.px]="star.size"
+                [style.--star-opacity]="star.opacity"
+                [style.animation-delay.s]="star.delay">
+            </span>
+
         }
+
     </div>
 
 
@@ -34,6 +44,7 @@
 
     </div>
 
+
     <!-- =====================================================
          LOGIN CONTENT
          ===================================================== -->
@@ -41,7 +52,7 @@
     <main class="login-content">
 
         <p class="journey-text">
-            CONTINUE YOUR JOURNEY
+            {{ languageService.t().login.journey }}
         </p>
 
 
@@ -51,7 +62,9 @@
 
         <div class="google-area">
 
-            <div id="google-button" class="google-button">
+            <div
+                id="google-button"
+                class="google-button">
             </div>
 
         </div>
@@ -62,9 +75,15 @@
              ================================================= -->
 
         <div class="login-divider" aria-hidden="true">
+
             <span></span>
-            <em>or</em>
+
+            <em>
+                {{ languageService.t().login.or }}
+            </em>
+
             <span></span>
+
         </div>
 
 
@@ -72,14 +91,22 @@
              EMAIL / PASSWORD
              ================================================= -->
 
-        <form class="credentials" (ngSubmit)="login()">
+        <form
+            class="credentials"
+            (ngSubmit)="login()">
 
             <div class="field">
 
-                <input id="email" name="email" type="email" placeholder=" " autocomplete="email" [(ngModel)]="email" />
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder=" "
+                    autocomplete="email"
+                    [(ngModel)]="email" />
 
                 <label for="email">
-                    EMAIL
+                    {{ languageService.t().login.email }}
                 </label>
 
             </div>
@@ -87,27 +114,37 @@
 
             <div class="field">
 
-                <input id="password" name="password" type="password" placeholder=" " autocomplete="current-password"
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder=" "
+                    autocomplete="current-password"
                     [(ngModel)]="password" />
 
                 <label for="password">
-                    PASSWORD
+                    {{ languageService.t().login.password }}
                 </label>
 
             </div>
 
 
-            <button type="submit" class="login-button">
-                LOG IN
+            <button
+                type="submit"
+                class="login-button">
+
+                {{ languageService.t().login.submit }}
+
             </button>
 
         </form>
 
+
         @if (errorMessage) {
 
-        <p class="login-error">
-            {{ errorMessage }}
-        </p>
+            <p class="login-error">
+                {{ errorMessage }}
+            </p>
 
         }
 
@@ -119,11 +156,16 @@
         <p class="create-account">
 
             <span>
-                Don't have an account?
+                {{ languageService.t().login.noAccount }}
             </span>
 
-            <button type="button" class="create-account-button" routerLink="/create-account">
-                Create one.
+            <button
+                type="button"
+                class="create-account-button"
+                routerLink="/create-account">
+
+                {{ languageService.t().login.createAccount }}
+
             </button>
 
         </p>
