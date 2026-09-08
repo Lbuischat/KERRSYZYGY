@@ -21105,8 +21105,12 @@ var require_utils$1 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		combine: function combine(a, b, arrayLimit, plainObjects, throwOnLimitExceeded) {
 			if (isOverflow(a)) {
 				if (throwOnLimitExceeded) throw new RangeError("Array limit exceeded. Only " + arrayLimit + " element" + (arrayLimit === 1 ? "" : "s") + " allowed in an array.");
-				var newIndex = getMaxIndex(a) + 1;
-				a[newIndex] = b;
+				var bValues = isArray(b) ? b : [b];
+				var newIndex = getMaxIndex(a);
+				for (var i = 0; i < bValues.length; ++i) {
+					newIndex += 1;
+					a[newIndex] = bValues[i];
+				}
 				setMaxIndex(a, newIndex);
 				return a;
 			}
@@ -21190,7 +21194,7 @@ var require_utils$1 = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		},
 		isBuffer: function isBuffer(obj) {
 			if (!obj || typeof obj !== "object") return false;
-			return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
+			return !!(obj.constructor && typeof obj.constructor.isBuffer === "function" && obj.constructor.isBuffer(obj));
 		},
 		isOverflow,
 		isRegExp: function isRegExp(obj) {
@@ -21243,6 +21247,7 @@ var require_stringify = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		charsetSentinel: false,
 		commaRoundTrip: false,
 		delimiter: "&",
+		depth: Infinity,
 		encode: true,
 		encodeDotInKeys: false,
 		encoder: utils.encode,
@@ -21261,8 +21266,9 @@ var require_stringify = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		return typeof v === "string" || typeof v === "number" || typeof v === "boolean" || typeof v === "symbol" || typeof v === "bigint";
 	};
 	var sentinel = {};
-	var stringify = function stringify(object, prefix, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, sideChannel) {
+	var stringify = function stringify(object, prefix, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, sideChannel, depth, currentDepth) {
 		var obj = object;
+		if (currentDepth > depth) throw new RangeError("Input depth exceeded depth option of " + depth);
 		var tmpSc = sideChannel;
 		var step = 0;
 		var findFlag = false;
@@ -21273,8 +21279,8 @@ var require_stringify = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			else findFlag = true;
 			if (typeof tmpSc.get(sentinel) === "undefined") step = 0;
 		}
-		if (typeof filter === "function") obj = filter(prefix, obj);
-		else if (obj instanceof Date) obj = serializeDate(obj);
+		obj = typeof filter === "function" ? filter(prefix, obj) : obj;
+		if (obj instanceof Date) obj = serializeDate(obj);
 		else if (generateArrayPrefix === "comma" && isArray(obj)) obj = utils.maybeMap(obj, function(value) {
 			if (value instanceof Date) return serializeDate(value);
 			return value;
@@ -21302,7 +21308,7 @@ var require_stringify = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 		}
 		var encodedPrefix = encodeDotInKeys ? String(prefix).replace(/\./g, "%2E") : String(prefix);
 		var adjustedPrefix = commaRoundTrip && isArray(obj) && obj.length === 1 ? encodedPrefix + "[]" : encodedPrefix;
-		if (allowEmptyArrays && isArray(obj) && obj.length === 0) return adjustedPrefix + "[]";
+		if (allowEmptyArrays && isArray(obj) && obj.length === 0 && Object.keys(obj).length === 0) return adjustedPrefix + "[]";
 		for (var j = 0; j < objKeys.length; ++j) {
 			var key = objKeys[j];
 			var value = typeof key === "object" && key && typeof key.value !== "undefined" ? key.value : obj[key];
@@ -21312,7 +21318,7 @@ var require_stringify = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			sideChannel.set(object, step);
 			var valueSideChannel = getSideChannel();
 			valueSideChannel.set(sentinel, sideChannel);
-			pushToArray(values, stringify(value, keyPrefix, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, generateArrayPrefix === "comma" && encodeValuesOnly && isArray(obj) ? null : encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, valueSideChannel));
+			pushToArray(values, stringify(value, keyPrefix, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, generateArrayPrefix === "comma" && encodeValuesOnly && isArray(obj) ? null : encoder, filter, sort, allowDots, serializeDate, format, formatter, encodeValuesOnly, charset, valueSideChannel, depth, currentDepth + 1));
 		}
 		return values;
 	};
@@ -21346,6 +21352,7 @@ var require_stringify = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			charsetSentinel: typeof opts.charsetSentinel === "boolean" ? opts.charsetSentinel : defaults.charsetSentinel,
 			commaRoundTrip: !!opts.commaRoundTrip,
 			delimiter: typeof opts.delimiter === "undefined" ? defaults.delimiter : opts.delimiter,
+			depth: typeof opts.depth === "number" ? opts.depth : defaults.depth,
 			encode: typeof opts.encode === "boolean" ? opts.encode : defaults.encode,
 			encodeDotInKeys: typeof opts.encodeDotInKeys === "boolean" ? opts.encodeDotInKeys : defaults.encodeDotInKeys,
 			encoder: typeof opts.encoder === "function" ? opts.encoder : defaults.encoder,
@@ -21383,7 +21390,7 @@ var require_stringify = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			if (typeof key === "undefined" || key === null) continue;
 			var value = obj[key];
 			if (options.skipNulls && value === null) continue;
-			pushToArray(keys, stringify(value, key, generateArrayPrefix, commaRoundTrip, options.allowEmptyArrays, options.strictNullHandling, options.skipNulls, options.encodeDotInKeys, options.encode ? options.encoder : null, options.filter, options.sort, options.allowDots, options.serializeDate, options.format, options.formatter, options.encodeValuesOnly, options.charset, sideChannel));
+			pushToArray(keys, stringify(value, options.encodeDotInKeys ? String(key).replace(/\./g, "%2E") : String(key), generateArrayPrefix, commaRoundTrip, options.allowEmptyArrays, options.strictNullHandling, options.skipNulls, options.encodeDotInKeys, options.encode ? options.encoder : null, options.filter, options.sort, options.allowDots, options.serializeDate, options.format, options.formatter, options.encodeValuesOnly, options.charset, sideChannel, options.depth, 0));
 		}
 		var joined = keys.join(options.delimiter);
 		var prefix = options.addQueryPrefix === true ? "?" : "";
@@ -21427,9 +21434,9 @@ var require_parse = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 			return String.fromCharCode(parseInt(numberStr, 10));
 		});
 	};
-	var parseArrayValue = function(val, options, currentArrayLength, isFlatArrayValue) {
+	var parseArrayValue = function(val, options, currentArrayLength) {
 		if (val && typeof val === "string" && options.comma && val.indexOf(",") > -1) {
-			if (isFlatArrayValue && options.throwOnLimitExceeded) {
+			if (options.throwOnLimitExceeded) {
 				var commaCount = 0;
 				var commaIndex = val.indexOf(",");
 				while (commaIndex > -1) {
@@ -21475,7 +21482,7 @@ var require_parse = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 				val = options.strictNullHandling ? null : "";
 			} else {
 				key = options.decoder(part.slice(0, pos), defaults.decoder, charset, "key");
-				if (key !== null) val = utils.maybeMap(parseArrayValue(part.slice(pos + 1), options, isArray(obj[key]) ? obj[key].length : 0, part.indexOf("[]=") === -1), function(encodedVal) {
+				if (key !== null) val = utils.maybeMap(parseArrayValue(part.slice(pos + 1), options, isArray(obj[key]) ? obj[key].length : 0), function(encodedVal) {
 					return options.decoder(encodedVal, defaults.decoder, charset, "value");
 				});
 			}
