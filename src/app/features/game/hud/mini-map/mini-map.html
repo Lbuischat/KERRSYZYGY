@@ -1,3 +1,38 @@
-<div class="flex h-50 w-50 items-center justify-center rounded-full bg-amber-900">
-  <span class="text-white">MAP</span>
+<div class="mini-mapa"><div>
+
+  <!-- PONTOS CARDEAIS -->
+   
+  <span class="direcao norte">N</span>
+  <span class="direcao sul">S</span>
+  <span class="direcao leste">L</span>
+  <span class="direcao oeste">O</span>
+
+  <!-- RADAR -->
+  <div class="radar radar-1"></div>
+  <div class="radar radar-2"></div>
+
+  <!-- LINHAS DO RADAR -->
+  <div class="linha-radar horizontal"></div>
+  <div class="linha-radar vertical"></div>
+
+  <!-- INIMIGO -->
+  <div
+    class="inimigo-mapa"
+    [style.left.%]="posicaoInimigoX"
+    [style.top.%]="posicaoInimigoY">
+  </div>
+
+  <!-- JOGADOR -->
+  <div
+    class="jogador-mapa"
+    [style.left.%]="posicaoJogadorX"
+    [style.top.%]="posicaoJogadorY"
+    [style.transform]="
+      'translate(-50%, -50%) rotate(' +
+      direcaoJogador +
+      'deg)'
+    ">
+    ▲
+  </div>
+
 </div>
