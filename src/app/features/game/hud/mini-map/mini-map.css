@@ -1,0 +1,180 @@
+/* =========================
+   MINI MAPA / RADAR
+========================= */
+
+.mini-mapa {
+  position: absolute;
+
+  top: 80px;
+  right: 30px;
+
+  width: 160px;
+  height: 160px;
+
+  background: #75462f;
+
+  border: 3px solid #a87555;
+
+  border-radius: 35px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+
+  overflow: hidden;
+
+  z-index: 10;
+}
+
+
+/* =========================
+   DIREÇÕES
+========================= */
+
+.direcao {
+  position: absolute;
+
+  color: #d8c2ad;
+
+  font-size: 11px;
+
+  font-weight: bold;
+
+  z-index: 8;
+
+  text-shadow: 1px 1px 2px #3b2116;
+}
+
+.norte {
+  top: 7px;
+  left: 50%;
+
+  transform: translateX(-50%);
+}
+
+.sul {
+  bottom: 7px;
+  left: 50%;
+
+  transform: translateX(-50%);
+}
+
+.leste {
+  right: 8px;
+  top: 50%;
+
+  transform: translateY(-50%);
+}
+
+.oeste {
+  left: 8px;
+  top: 50%;
+
+  transform: translateY(-50%);
+}
+
+
+/* =========================
+   CÍRCULOS DO RADAR
+========================= */
+
+.radar {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  border: 1px solid rgba(216, 194, 173, 0.35);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+.radar-1 {
+  width: 65%;
+  height: 65%;
+}
+
+.radar-2 {
+  width: 35%;
+  height: 35%;
+}
+
+
+/* =========================
+   LINHAS DO RADAR
+========================= */
+
+.linha-radar {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  background: rgba(216, 194, 173, 0.25);
+
+  pointer-events: none;
+}
+
+.horizontal {
+  width: 100%;
+  height: 1px;
+
+  transform: translate(-50%, -50%);
+}
+
+.vertical {
+  width: 1px;
+  height: 100%;
+
+  transform: translate(-50%, -50%);
+}
+
+
+/* =========================
+   JOGADOR
+========================= */
+
+.jogador-mapa {
+  position: absolute;
+
+  color: #5dbb63;
+
+  font-size: 24px;
+
+  font-weight: bold;
+
+  line-height: 1;
+
+  z-index: 10;
+
+  filter: drop-shadow(
+    0 0 4px rgba(93, 187, 99, 0.9)
+  );
+}
+
+
+/* =========================
+   INIMIGO
+========================= */
+
+.inimigo-mapa {
+  position: absolute;
+
+  width: 14px;
+  height: 14px;
+
+  background: #e53935;
+
+  border: 2px solid white;
+
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 9;
+
+  box-shadow:
+    0 0 7px rgba(229, 57, 53, 0.9);
+}
