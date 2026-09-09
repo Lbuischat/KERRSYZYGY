@@ -40,6 +40,17 @@ export class Enemy {
   health = 100;
   isDead = false;
 
+  // Momento em que o inimigo poderá andar e atacar novamente.
+  private stunnedUntil = 0;
+
+  get isStunned(): boolean {
+    return Date.now() < this.stunnedUntil;
+  }
+
+  stun(duration: number): void {
+    this.stunnedUntil = Date.now() + duration;
+  }
+
   // =========================
   // SIZE
   // =========================
