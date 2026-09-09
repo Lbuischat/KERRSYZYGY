@@ -15,8 +15,11 @@ export class ProjectileService {
     startX: number,
     startY: number,
     targetX: number,
-    targetY: number
+    targetY: number,
+    isCharged = false,
   ): void {
+
+    const isEnemyProjectile = ownerId === 'enemy';
 
     const deltaX = targetX - startX;
     const deltaY = targetY - startY;
@@ -34,7 +37,7 @@ export class ProjectileService {
 
       id: this.nextId++,
       ownerId,
-      type: 'basic',
+      type: isEnemyProjectile ? 'enemy' : isCharged ? 'charged' : 'basic',
 
       x: startX,
       y: startY,
@@ -42,13 +45,13 @@ export class ProjectileService {
       directionX: deltaX / distance,
       directionY: deltaY / distance,
 
-      speed: 700,
-      damage: 10,
+      speed: isEnemyProjectile ? 450 : isCharged ? 550 : 700,
+      damage: isEnemyProjectile ? 8 : isCharged ? 30 : 10,
 
-      size: 8,
-      color: 'blue',
+      size: isEnemyProjectile ? 8 : isCharged ? 14 : 8,
+      color: isEnemyProjectile ? 'orange' : isCharged ? 'blue' : 'white',
 
-      lifetime: 3,
+      lifetime: isEnemyProjectile ? 0.8 : isCharged ? 0.5 : 0.3,
       age: 0
     };
 
