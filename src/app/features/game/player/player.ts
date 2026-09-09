@@ -19,9 +19,17 @@ export class Player {
     @Output() shoot = new EventEmitter<{
         mouseX: number;
         mouseY: number;
+        isCharged: boolean;
     }>();
 
     @Output() attack =
+        new EventEmitter<void>();
+
+    // Avisa o mundo quando o jogador usa a habilidade do Q.
+    @Output() skill3 =
+        new EventEmitter<void>();
+
+    @Output() skill2 =
         new EventEmitter<void>();
 
     // =========================
@@ -54,6 +62,15 @@ export class Player {
     }
 
     public takeDamage(amount: number): void {
+        if (Date.now() < this.shieldActiveUntil) {
+            console.log('SHIELD! Player blocked damage');
+            return;
+        }
+
+        if (Date.now() < this.dodgeUntil) {
+            console.log('DODGE! Player avoided damage');
+            return;
+        }
         console.log('⚠️ PLAYER TAKE DAMAGE CALLED', amount);
         this.health -= amount;
         if (this.health < 0) {
@@ -99,6 +116,13 @@ export class Player {
 
     private maxHealth = 100;
     private health = 100;
+    private dodgeUntil = 0;
+    private shieldActiveUntil = 0;
+    private shieldCooldownUntil = 0;
+
+    public startDodge(duration: number): void {
+        this.dodgeUntil = Date.now() + duration;
+    }
 
     // =========================
     // MOVEMENT
@@ -113,6 +137,9 @@ export class Player {
 
     private holdTimer?: ReturnType<typeof setTimeout>;
     private isHoldingAttack = false;
+    private isChargedShotReady = false;
+    private skill2CooldownUntil = 0;
+    private skill3CooldownUntil = 0;
 
     // =========================
     // CONSTRUCTOR
@@ -191,6 +218,16 @@ export class Player {
             return;
         }
 
+        // Shield — T
+        if (key === 't') {
+
+            event.preventDefault();
+
+            this.useShield();
+
+            return;
+        }
+
         // Movement + Shift
         if (
             key === 'w' ||
@@ -232,6 +269,7 @@ export class Player {
         // LEFT MOUSE — NORMAL ATTACK
         if (event.button === 0) {
             this.isHoldingAttack = true;
+            this.isChargedShotReady = false;
 
             this.setButtonActive('attack-btn');
 
@@ -248,7 +286,7 @@ export class Player {
                     if (this.isHoldingAttack) {
                         this.useSkill1();
                     }
-                }, 2000);
+                }, 3000);
 
             return;
         }
@@ -258,10 +296,20 @@ export class Player {
 
             event.preventDefault();
 
+            const isCharged = this.isChargedShotReady;
+
             this.shoot.emit({
                 mouseX: event.clientX,
-                mouseY: event.clientY
+                mouseY: event.clientY,
+                isCharged,
             });
+
+            // Um tiro carregado usa toda a carga.
+            if (isCharged) {
+                this.isChargedShotReady = false;
+                this.setButtonInactive('skill1-btn');
+                this.changePlayerColor('yellow');
+            }
 
             return;
         }
@@ -276,6 +324,7 @@ export class Player {
         }
 
         this.isHoldingAttack = false;
+        this.isChargedShotReady = false;
 
         this.setButtonInactive('attack-btn');
         this.setButtonInactive('skill1-btn');
@@ -300,6 +349,9 @@ export class Player {
 
     private useSkill1(): void {
 
+        // A carga fica pronta depois de segurar o ataque por 3 segundos.
+        this.isChargedShotReady = true;
+
         this.setButtonActive('skill1-btn');
 
         this.changePlayerColor(
@@ -313,6 +365,14 @@ export class Player {
     // =========================
 
     private useSkill2(): void {
+
+        // F só pode ser usado uma vez a cada 5 segundos.
+        if (Date.now() < this.skill2CooldownUntil) {
+            return;
+        }
+        this.skill2CooldownUntil = Date.now() + 5000;
+
+        this.skill2.emit();
 
         this.setButtonActive('skill2-btn');
 
@@ -342,6 +402,16 @@ export class Player {
 
     private useSkill3(): void {
 
+        // Q só pode ser usado uma vez a cada 5 segundos.
+        if (Date.now() < this.skill3CooldownUntil) {
+            return;
+        }
+        this.skill3CooldownUntil = Date.now() + 5000;
+
+        // O Player só percebe a tecla. Quem sabe onde está o
+        // inimigo e aplica o efeito é o GameWorld.
+        this.skill3.emit();
+
         this.setButtonActive('skill3-btn');
 
         this.changePlayerColor(
@@ -362,6 +432,30 @@ export class Player {
 
         }, 500);
 
+    }
+
+    // =========================
+    // SHIELD — T
+    // =========================
+
+    private useShield(): void {
+
+        if (Date.now() < this.shieldCooldownUntil) {
+            return;
+        }
+
+        // Active for 3 seconds, then waits 5 more seconds before reuse.
+        this.shieldActiveUntil = Date.now() + 3000;
+        this.shieldCooldownUntil = Date.now() + 8000;
+
+        this.changePlayerColor('blue');
+        console.log('SHIELD ACTIVE!');
+
+        setTimeout(() => {
+            if (!this.isHoldingAttack) {
+                this.changePlayerColor('red');
+            }
+        }, 3000);
     }
 
     // =========================
@@ -502,6 +596,28 @@ export class Player {
             this.playerY +=
                 vertical *
                 currentSpeed;
+
+
+            // Keep player inside the world
+
+            const worldWidth = 20 * 128;
+            const worldHeight = 20 * 128;
+
+            this.playerX = Math.max(
+                0,
+                Math.min(
+                    this.playerX,
+                    worldWidth - this.getSize()
+                )
+            );
+
+            this.playerY = Math.max(
+                0,
+                Math.min(
+                    this.playerY,
+                    worldHeight - this.getSize()
+                )
+            );
 
             this.updatePlayerPosition();
 
