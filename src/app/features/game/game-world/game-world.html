@@ -1,13 +1,39 @@
-<div id="game-world" class="relative min-h-screen w-full overflow-hidden bg-green-900"
-  (mousedown)="handleMouseDown($event)" (mouseup)="handleMouseUp($event)">
+<div
+  id="game-world"
+  class="relative h-screen w-full overflow-hidden bg-green-900"
+  (mousedown)="handleMouseDown($event)"
+  (mouseup)="handleMouseUp($event)"
+>
 
-  <!-- Player -->
-  <app-player (shoot)="shootProjectile($event)" (attack)="playerAttack()"></app-player>
+  <!-- CAMERA / WORLD -->
+  <div
+    id="world-layer"
+    class="absolute left-0 top-0"
+    [style.transform]="
+      'translate(' + (-cameraX) + 'px, ' + (-cameraY) + 'px)'
+    "
+  >
 
-  <!-- Projectiles -->
-  <div id="projectile-layer" class="pointer-events-none absolute inset-0"></div>
+    <!-- Terrain -->
+    <app-terrain></app-terrain>
 
-  <!-- Enemy -->
-  <app-enemy></app-enemy>
+    <!-- Player -->
+    <app-player
+      (shoot)="shootProjectile($event)"
+      (attack)="playerAttack()"
+      (skill2)="dodgeAway()"
+      (skill3)="dashPushStun()">
+    </app-player>
+
+    <!-- Projectiles -->
+    <div
+      id="projectile-layer"
+      class="pointer-events-none absolute inset-0">
+    </div>
+
+    <!-- Enemy -->
+    <app-enemy></app-enemy>
+
+  </div>
 
 </div>
