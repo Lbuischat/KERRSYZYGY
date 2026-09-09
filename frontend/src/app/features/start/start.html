@@ -1,336 +1,356 @@
 <main class="start-page">
-@if (etapa === 0) {
+  <!-- =====================================================
+       BACKGROUND STARS
+       STATIC — DO NOT ANIMATE
+       ===================================================== -->
+  <div class="background-stars" aria-hidden="true">
+    @for (star of backgroundStars; track $index) {
+      <span
+        class="background-star"
+        [style.left.%]="star.left"
+        [style.top.%]="star.top"
+        [style.width.px]="star.size"
+        [style.height.px]="star.size"
+        [style.--star-opacity]="star.opacity"
+      >
+      </span>
+    }
+  </div>
 
-    <section class="story-screen">
+  <!-- =====================================================
+       RANDOM CELESTIAL EVENTS
+       COMETS / METEORS — THESE MOVE
+       ===================================================== -->
+  <div class="celestial-events" aria-hidden="true">
+    @for (event of celestialEvents; track event.id) {
+      <span
+        class="celestial-event"
+        [class.comet]="event.type === 'comet'"
+        [class.meteor]="event.type === 'meteor'"
+        [style.left.%]="event.left"
+        [style.top.%]="event.top"
+        [style.--event-duration.s]="event.duration"
+        [style.--event-delay.s]="event.delay"
+      >
+      </span>
+    }
+  </div>
 
+  <!-- =====================================================
+       MAIN STARS
+       STATIC — DO NOT ANIMATE
+       ===================================================== -->
+  <div class="stars" aria-hidden="true">
+    <span class="star star-1"></span>
+    <span class="star star-2"></span>
+    <span class="star star-3"></span>
+    <span class="star star-4"></span>
+    <span class="star star-5"></span>
+    <span class="star star-6"></span>
+    <span class="star star-7"></span>
+    <span class="star star-8"></span>
+    <span class="star star-9"></span>
+    <span class="star star-10"></span>
+    <span class="star star-11"></span>
+    <span class="star star-12"></span>
+  </div>
+
+  <!-- =====================================================
+       QUESTION SCREENS
+       ===================================================== -->
+  <div class="question-container">
+    <!-- ===================================================
+         STAGE 0 — STORY
+         =================================================== -->
+    @if (etapa === 0) {
+      <section
+        class="story-screen question-screen"
+        animate.enter="question-enter"
+        animate.leave="question-leave"
+      >
         <div class="story-content">
+          <div class="story-logo">
+            <img src="assets/logo.png" alt="Game logo" />
+          </div>
 
-            <div class="story-logo">
+          <p class="story-text">
+            {{ languageService.t().start.story.beforeJourney }}
+          </p>
 
-                <img src="assets/logo.png" alt="Game logo">
+          <p class="story-text">
+            {{ languageService.t().start.story.worldWaiting }}
+          </p>
 
-            </div>
-
-            <p class="story-text">
-                {{ languageService.t().start.story.beforeJourney }}
-            </p>
-
-            <p class="story-text">
-                {{ languageService.t().start.story.worldWaiting }}
-            </p>
-
-            <button
-                class="continue-button"
-                type="button"
-                (click)="continue()"
-            >
-                {{ languageService.t().start.story.continue }}
-            </button>
-
+          <button class="continue-button" type="button" (click)="continue()">
+            {{ languageService.t().start.story.continue }}
+          </button>
         </div>
+      </section>
+    }
 
-    </section>
-
-}
-
-@if (etapa === 1) {
-
-    <section class="choice-screen">
-
+    <!-- ===================================================
+         STAGE 1 — GENDER
+         =================================================== -->
+    @if (etapa === 1) {
+      <section
+        class="choice-screen question-screen"
+        animate.enter="question-enter"
+        animate.leave="question-leave"
+      >
         <div class="choice-content">
+          <p class="eyebrow">
+            {{ languageService.t().start.gender.eyebrow }}
+          </p>
 
-            <p class="eyebrow">
-                {{ languageService.t().start.gender.eyebrow }}
-            </p>
+          <h1>
+            {{ languageService.t().start.gender.title }}
+          </h1>
 
-            <h1>
-                {{ languageService.t().start.gender.title }}
-            </h1>
+          <p class="choice-description">
+            {{ languageService.t().start.gender.description }}
+          </p>
 
-            <p class="choice-description">
-                {{ languageService.t().start.gender.description }}
-            </p>
+          <div class="choice-list">
+            @for (gender of genderOptions; track gender) {
+              <button
+                type="button"
+                class="choice-button"
+                [class.selected]="playerService.profile.gender === gender"
+                (click)="selectGender(gender)"
+              >
+                {{ gender }}
+              </button>
+            }
+          </div>
 
-            <div class="choice-list">
+          <button
+            class="continue-button"
+            type="button"
+            [disabled]="!playerService.profile.gender"
+            (click)="continueAfterGender()"
+          >
+            {{ languageService.t().start.gender.continue }}
+          </button>
+        </div>
+      </section>
+    }
 
-                @for (gender of genderOptions; track gender) {
+    <!-- ===================================================
+         STAGE 2 — USERNAME
+         =================================================== -->
+    @if (etapa === 2) {
+      <section
+        class="choice-screen question-screen"
+        animate.enter="question-enter"
+        animate.leave="question-leave"
+      >
+        <div class="choice-content">
+          <p class="eyebrow">
+            {{ languageService.t().start.username.eyebrow }}
+          </p>
 
-                    <button
-                        type="button"
-                        class="choice-button"
-                        [class.selected]="playerService.profile.gender === gender"
-                        (click)="selectGender(gender)"
-                    >
-                        {{ gender }}
-                    </button>
+          <h1>
+            {{ languageService.t().start.username.title }}
+          </h1>
 
+          <p class="choice-description">
+            {{ languageService.t().start.username.description }}
+          </p>
+
+          <input
+            class="username-input"
+            type="text"
+            maxlength="20"
+            [placeholder]="languageService.t().start.username.placeholder"
+            [(ngModel)]="playerService.profile.username"
+          />
+
+          <button
+            class="continue-button"
+            type="button"
+            [disabled]="!playerService.profile.username.trim()"
+            (click)="selectUsername()"
+          >
+            {{ languageService.t().start.username.continue }}
+          </button>
+        </div>
+      </section>
+    }
+
+    <!-- ===================================================
+         STAGE 3 — PRONOUNS
+         =================================================== -->
+    @if (etapa === 3) {
+      <section
+        class="choice-screen question-screen"
+        animate.enter="question-enter"
+        animate.leave="question-leave"
+      >
+        <div class="choice-content">
+          <p class="eyebrow">
+            {{ languageService.t().start.pronouns.eyebrow }}
+          </p>
+
+          <h1>
+            {{ languageService.t().start.pronouns.title }}
+          </h1>
+
+          <p class="choice-description">
+            {{ languageService.t().start.pronouns.description }}
+          </p>
+
+          <div class="choice-list">
+            @for (pronouns of pronounOptions; track pronouns) {
+              <button
+                type="button"
+                class="choice-button"
+                [class.selected]="playerService.profile.pronouns === pronouns"
+                (click)="selectPronouns(pronouns)"
+              >
+                {{ pronouns }}
+              </button>
+            }
+          </div>
+
+          <button
+            class="continue-button"
+            type="button"
+            [disabled]="!playerService.profile.pronouns"
+            (click)="continueAfterPronouns()"
+          >
+            {{ languageService.t().start.pronouns.continue }}
+          </button>
+        </div>
+      </section>
+    }
+
+    <!-- ===================================================
+         STAGE 4 — BIRTHDAY
+         =================================================== -->
+    @if (etapa === 4) {
+      <section
+        class="choice-screen question-screen"
+        animate.enter="question-enter"
+        animate.leave="question-leave"
+      >
+        <div class="choice-content">
+          <p class="eyebrow">
+            {{ languageService.t().start.birthday.eyebrow }}
+          </p>
+
+          <h1>
+            {{ languageService.t().start.birthday.title }}
+          </h1>
+
+          <p class="choice-description">
+            {{ languageService.t().start.birthday.description }}
+          </p>
+
+          <div class="birthday-selects">
+            <!-- Month -->
+            <div class="custom-select">
+              <select
+                [value]="selectedMonth"
+                (change)="selectBirthday('month', $any($event.target).value)"
+              >
+                <option value="" disabled>
+                  {{ languageService.t().start.birthday.month }}
+                </option>
+
+                @for (month of months; track month) {
+                  <option [value]="month">
+                    {{ month }}
+                  </option>
                 }
-
+              </select>
             </div>
 
-            <button
-                class="continue-button"
-                type="button"
-                [disabled]="!playerService.profile.gender"
-                (click)="continueAfterGender()"
-            >
-                {{ languageService.t().start.gender.continue }}
-            </button>
+            <!-- Day -->
+            <div class="custom-select">
+              <select
+                [value]="selectedDay ?? ''"
+                (change)="selectBirthday('day', +$any($event.target).value)"
+              >
+                <option value="" disabled>
+                  {{ languageService.t().start.birthday.day }}
+                </option>
 
-        </div>
-
-    </section>
-
-}
-
-@if (etapa === 2) {
-
-    <section class="choice-screen">
-
-        <div class="choice-content">
-
-            <p class="eyebrow">
-                {{ languageService.t().start.username.eyebrow }}
-            </p>
-
-            <h1>
-                {{ languageService.t().start.username.title }}
-            </h1>
-
-            <p class="choice-description">
-                {{ languageService.t().start.username.description }}
-            </p>
-
-            <input
-                class="username-input"
-                type="text"
-                maxlength="20"
-                [placeholder]="languageService.t().start.username.placeholder"
-                [(ngModel)]="playerService.profile.username"
-            >
-
-            <button
-                class="continue-button"
-                type="button"
-                [disabled]="!playerService.profile.username.trim()"
-                (click)="selectUsername()"
-            >
-                {{ languageService.t().start.username.continue }}
-            </button>
-
-        </div>
-
-    </section>
-
-}
-
-@if (etapa === 3) {
-
-    <section class="choice-screen">
-
-        <div class="choice-content">
-
-            <p class="eyebrow">
-                {{ languageService.t().start.pronouns.eyebrow }}
-            </p>
-
-            <h1>
-                {{ languageService.t().start.pronouns.title }}
-            </h1>
-
-            <p class="choice-description">
-                {{ languageService.t().start.pronouns.description }}
-            </p>
-
-            <div class="choice-list">
-
-                @for (pronouns of pronounOptions; track pronouns) {
-
-                    <button
-                        type="button"
-                        class="choice-button"
-                        [class.selected]="playerService.profile.pronouns === pronouns"
-                        (click)="selectPronouns(pronouns)"
-                    >
-                        {{ pronouns }}
-                    </button>
-
+                @for (day of availableDays; track day) {
+                  <option [value]="day">
+                    {{ day }}
+                  </option>
                 }
-
+              </select>
             </div>
 
-            <button
-                class="continue-button"
-                type="button"
-                [disabled]="!playerService.profile.pronouns"
-                (click)="continueAfterPronouns()"
-            >
-                {{ languageService.t().start.pronouns.continue }}
-            </button>
+            <!-- Year -->
+            <div class="custom-select">
+              <select
+                [value]="selectedYear ?? ''"
+                (change)="selectBirthday('year', +$any($event.target).value)"
+              >
+                <option value="" disabled>
+                  {{ languageService.t().start.birthday.year }}
+                </option>
 
-        </div>
-
-    </section>
-
-}
-
-@if (etapa === 4) {
-
-    <section class="choice-screen">
-
-        <div class="choice-content">
-
-            <p class="eyebrow">
-                {{ languageService.t().start.birthday.eyebrow }}
-            </p>
-
-            <h1>
-                {{ languageService.t().start.birthday.title }}
-            </h1>
-
-            <p class="choice-description">
-                {{ languageService.t().start.birthday.description }}
-            </p>
-
-            <div class="birthday-selects">
-
-                <!-- Month -->
-
-                <div class="custom-select">
-
-                    <select
-                        [value]="selectedMonth"
-                        (change)="selectBirthday('month', $any($event.target).value)"
-                    >
-
-                        <option value="" disabled>
-                            {{ languageService.t().start.birthday.month }}
-                        </option>
-
-                        @for (month of months; track month) {
-
-                            <option [value]="month">
-                                {{ month }}
-                            </option>
-
-                        }
-
-                    </select>
-
-                </div>
-
-                <!-- Day -->
-
-                <div class="custom-select">
-
-                    <select
-                        [value]="selectedDay ?? ''"
-                        (change)="selectBirthday('day', +$any($event.target).value)"
-                    >
-
-                        <option value="" disabled>
-                            {{ languageService.t().start.birthday.day }}
-                        </option>
-
-                        @for (day of days; track day) {
-
-                            <option [value]="day">
-                                {{ day }}
-                            </option>
-
-                        }
-
-                    </select>
-
-                </div>
-
-                <!-- Year -->
-
-                <div class="custom-select">
-
-                    <select
-                        [value]="selectedYear ?? ''"
-                        (change)="selectBirthday('year', +$any($event.target).value)"
-                    >
-
-                        <option value="" disabled>
-                            {{ languageService.t().start.birthday.year }}
-                        </option>
-
-                        @for (year of years; track year) {
-
-                            <option [value]="year">
-                                {{ year }}
-                            </option>
-
-                        }
-
-                    </select>
-
-                </div>
-
+                @for (year of years; track year) {
+                  <option [value]="year">
+                    {{ year }}
+                  </option>
+                }
+              </select>
             </div>
+          </div>
 
-            <label class="birthday-checkbox">
+          <label class="birthday-checkbox">
+            <input type="checkbox" [(ngModel)]="playerService.profile.receiveBirthdayEmails" />
 
-                <input
-                    type="checkbox"
-                    [(ngModel)]="playerService.profile.receiveBirthdayEmails"
-                >
+            <span class="checkbox-box"></span>
 
-                <span class="checkbox-box"></span>
+            <span class="checkbox-text">
+              {{ languageService.t().start.birthday.emailWishes }}
+            </span>
+          </label>
 
-                <span class="checkbox-text">
-                    {{ languageService.t().start.birthday.emailWishes }}
-                </span>
-
-            </label>
-
-            <button
-                class="continue-button"
-                type="button"
-                [disabled]="!playerService.profile.birthday"
-                (click)="continueAfterBirthday()"
-            >
-                {{ languageService.t().start.birthday.continue }}
-            </button>
-
+          <button
+            class="continue-button"
+            type="button"
+            [disabled]="!playerService.profile.birthday"
+            (click)="continueAfterBirthday()"
+          >
+            {{ languageService.t().start.birthday.continue }}
+          </button>
         </div>
+      </section>
+    }
 
-    </section>
-
-}
-
-@if (etapa === 5) {
-
-    <section class="choice-screen">
-
+    <!-- ===================================================
+         STAGE 5 — READY
+         =================================================== -->
+    @if (etapa === 5) {
+      <section
+        class="choice-screen question-screen"
+        animate.enter="question-enter"
+        animate.leave="question-leave"
+      >
         <div class="choice-content">
+          <p class="eyebrow">
+            {{ languageService.t().start.ready.eyebrow }}
+          </p>
 
-            <p class="eyebrow">
-                {{ languageService.t().start.ready.eyebrow }}
-            </p>
+          <h1>
+            {{ languageService.t().start.ready.title }}
+          </h1>
 
-            <h1>
-                {{ languageService.t().start.ready.title }}
-            </h1>
+          <p class="choice-description">
+            {{ languageService.t().start.ready.description }}
+          </p>
 
-            <p class="choice-description">
-                {{ languageService.t().start.ready.description }}
-            </p>
-
-            <button
-                class="continue-button"
-                type="button"
-                (click)="startJourney()"
-            >
-                {{ languageService.t().start.ready.begin }}
-            </button>
-
+          <button class="continue-button" type="button" (click)="startJourney()">
+            {{ languageService.t().start.ready.begin }}
+          </button>
         </div>
-
-    </section>
-
-}
-
+      </section>
+    }
+  </div>
 </main>

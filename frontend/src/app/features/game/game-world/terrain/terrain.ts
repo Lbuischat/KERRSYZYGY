@@ -38,7 +38,7 @@ export class Terrain {
   readonly mapWidth = 20;
   readonly mapHeight = 20;
 
-  readonly debug = true;
+  readonly debug = false;
 
 
   // ==========================================================

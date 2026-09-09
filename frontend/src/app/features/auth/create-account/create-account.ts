@@ -394,7 +394,7 @@ export class CreateAccount
   goToLogin(): void {
 
     this.router.navigate(
-      ['/login']
+      ['']
     );
 
   }
