@@ -128,7 +128,7 @@ export class GameWorld {
     const dy = playerCenterY - enemyCenterY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     console.log('Attack distance:', distance);
-    const attackRange = 60;
+    const attackRange = 70; // Adjust this value as needed
     if (distance <= attackRange) {
       this.enemy.takeDamage(10);
       console.log('MELEE HIT! Damage: 10');
@@ -193,9 +193,43 @@ export class GameWorld {
       return;
     }
     const playerPosition = this.player.getPosition();
-    const dx = playerPosition.x - this.enemy.x;
-    const dy = playerPosition.y - this.enemy.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const playerSize = this.player.getSize();
+
+    this.enemy.checkPlayerInView(
+      playerPosition.x,
+      playerPosition.y,
+      playerSize
+    );
+
+    if (!this.enemy.isPlayerInView) {
+      return;
+    }
+
+    const playerCenterX =
+      playerPosition.x +
+      playerSize / 2;
+
+    const playerCenterY =
+      playerPosition.y +
+      playerSize / 2;
+
+    const enemyCenterX =
+      this.enemy.x +
+      this.enemy.size / 2;
+
+    const enemyCenterY =
+      this.enemy.y +
+      this.enemy.size / 2;
+
+    const dx =
+      playerCenterX - enemyCenterX;
+
+    const dy =
+      playerCenterY - enemyCenterY;
+
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
+
     // Don't move if we're already touching the player
     if (distance === 0) {
       return;
@@ -220,13 +254,30 @@ export class GameWorld {
     const enemyX = this.enemy.x;
     const enemyY = this.enemy.y;
     const enemySize = this.enemy.size;
-    const playerCenterX = playerPosition.x + playerSize / 2;
-    const playerCenterY = playerPosition.y + playerSize / 2;
-    const enemyCenterX = enemyX + enemySize / 2;
-    const enemyCenterY = enemyY + enemySize / 2;
-    const dx = playerCenterX - enemyCenterX;
-    const dy = playerCenterY - enemyCenterY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const playerCenterX =
+      playerPosition.x +
+      playerSize / 2;
+
+    const playerCenterY =
+      playerPosition.y +
+      playerSize / 2;
+
+    const enemyCenterX =
+      this.enemy.x +
+      this.enemy.size / 2;
+
+    const enemyCenterY =
+      this.enemy.y +
+      this.enemy.size / 2;
+
+    const dx =
+      playerCenterX - enemyCenterX;
+
+    const dy =
+      playerCenterY - enemyCenterY;
+
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
     const collisionDistance = playerSize / 2 + enemySize / 2;
     if (distance <= collisionDistance) {
       console.log('🚨 ENEMY ATTACKING', 'isDead:', this.enemy.isDead, 'health:', this.enemy.health);
