@@ -1,15 +1,24 @@
-import { Component, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
-
 import { isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  Inject,
+  PLATFORM_ID,
+  ViewChild
+} from '@angular/core';
 
+import { Enemy } from '../enemy/enemy';
 import { Player } from '../player/player';
 import { ProjectileService } from '../projectile/projectile.service';
-import { Enemy } from '../enemy/enemy';
+import { GameStateService } from '../../../services/game-state/game-state.service';
 import { Terrain } from './terrain/terrain';
 
 @Component({
   selector: 'app-game-world',
-  imports: [Player, Enemy, Terrain],
+  imports: [
+    Player,
+    Enemy,
+    Terrain
+  ],
   templateUrl: './game-world.html',
   styleUrl: './game-world.css',
 })
@@ -26,8 +35,8 @@ export class GameWorld {
   cameraX = 0;
   cameraY = 0;
 
-  private readonly worldWidth = 20 * 128;
-  private readonly worldHeight = 20 * 128;
+  readonly worldWidth = 20 * 128;
+  readonly worldHeight = 20 * 128;
 
   handleMouseDown(event: MouseEvent): void {
     if (event.button === 0) {
@@ -51,6 +60,8 @@ export class GameWorld {
     private platformId: object,
 
     private projectileService: ProjectileService,
+
+    private gameStateService: GameStateService,
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.startGameLoop();
@@ -62,30 +73,16 @@ export class GameWorld {
 
     const update = (currentTime: number): void => {
       const deltaTime = (currentTime - lastTime) / 1000;
-
       lastTime = currentTime;
-      // Update camera
 
       this.updateCamera();
-
-      // Update projectile physics
       this.projectileService.update(deltaTime);
-
-      // Update enemy movement
       this.updateEnemyMovement();
-
-      // Enemy attacks player
       this.updateEnemyAttack(deltaTime);
-
-      // Player <-> Enemy collision
       this.resolvePlayerEnemyCollision();
-
-      // Check projectile collisions
       this.checkProjectileCollisions();
-
       this.updateEnemyHealthBar();
-
-      // Update projectile visuals
+      this.updateMiniMap(); // <-- IMPORTANT
       this.renderProjectiles();
 
       this.animationFrameId = requestAnimationFrame(update);
@@ -310,6 +307,28 @@ export class GameWorld {
         element.remove();
         this.projectileElements.delete(id);
       }
+    }
+  }
+
+  private updateMiniMap(): void {
+    if (this.player) {
+      const position = this.player.getPosition();
+
+      this.gameStateService.setPlayerPosition({
+        x: position.x,
+        y: position.y,
+      });
+    }
+
+    if (this.enemy && !this.enemy.isDead) {
+      this.gameStateService.setEnemyPositions([
+        {
+          x: this.enemy.x,
+          y: this.enemy.y,
+        },
+      ]);
+    } else {
+      this.gameStateService.setEnemyPositions([]);
     }
   }
 

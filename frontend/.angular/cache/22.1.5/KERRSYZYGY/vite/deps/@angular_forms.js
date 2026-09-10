@@ -1,44 +1,6 @@
-import { $n as Output, Bt as computed, Dn as Host, Do as ɵɵgetInheritedFactory, Ec as Injector, El as ɵɵdefineInjector, En as ElementRef, Hc as RuntimeError, Il as map, In as Input, Jo as ɵɵlistener, Kc as Version, Mr as afterNextRender, O as booleanAttribute, Pn as Inject, Qn as Optional, Rl as Subject, Tc as InjectionToken, Ui as setClassMetadata, Vl as Observable, ao as ɵɵdirectiveInject, ba as ɵɵclassProp, bl as signal, ca as ɵɵNgOnChangesFeature, dr as Service, el as effect, ia as ɵɵControlFeature, io as ɵɵdefineService, ir as Renderer2, la as ɵɵProvidersFeature, mc as DestroyRef, nl as forwardRef, no as ɵɵdefineNgModule, ol as inject, pr as SkipSelf, ql as Subscription, qn as NgModule, qt as untracked, r as ChangeDetectorRef, sa as ɵɵInheritDefinitionFeature, tl as formatRuntimeError, tn as ApplicationRef, to as ɵɵdefineDirective, ur as Self, va as ɵɵattribute, vi as isPromise, wn as Directive, yc as EventEmitter, yi as isSubscribable, zl as createOperatorSubscriber } from "./core-DhRcqFx3.js";
-import { i as popResultSelector, r as innerFrom, t as from } from "./from-0rBJ1ZR5.js";
-import { n as argsArgArrayOrObject, r as mapOneOrManyArgs, t as createObject } from "./createObject-CHRbNgcv.js";
-import { s as getDOM } from "./_xhr-chunk-DMTKXwav.js";
-//#region node_modules/rxjs/dist/esm5/internal/observable/forkJoin.js
-function forkJoin() {
-	var args = [];
-	for (var _i = 0; _i < arguments.length; _i++) args[_i] = arguments[_i];
-	var resultSelector = popResultSelector(args);
-	var _a = argsArgArrayOrObject(args), sources = _a.args, keys = _a.keys;
-	var result = new Observable(function(subscriber) {
-		var length = sources.length;
-		if (!length) {
-			subscriber.complete();
-			return;
-		}
-		var values = new Array(length);
-		var remainingCompletions = length;
-		var remainingEmissions = length;
-		var _loop_1 = function(sourceIndex) {
-			var hasValue = false;
-			innerFrom(sources[sourceIndex]).subscribe(createOperatorSubscriber(subscriber, function(value) {
-				if (!hasValue) {
-					hasValue = true;
-					remainingEmissions--;
-				}
-				values[sourceIndex] = value;
-			}, function() {
-				return remainingCompletions--;
-			}, void 0, function() {
-				if (!remainingCompletions || !hasValue) {
-					if (!remainingEmissions) subscriber.next(keys ? createObject(keys, values) : values);
-					subscriber.complete();
-				}
-			}));
-		};
-		for (var sourceIndex = 0; sourceIndex < length; sourceIndex++) _loop_1(sourceIndex);
-	});
-	return resultSelector ? result.pipe(mapOneOrManyArgs(resultSelector)) : result;
-}
-//#endregion
+import { Mn as from, Qn as Subject, cn as forkJoin, ur as Subscription, vn as map } from "./esm5-ChK3bs0s.js";
+import { $n as Output, Bt as computed, Dn as Host, Do as ɵɵgetInheritedFactory, Ec as Injector, El as ɵɵdefineInjector, En as ElementRef, Hc as RuntimeError, In as Input, Jo as ɵɵlistener, Kc as Version, Mr as afterNextRender, O as booleanAttribute, Pn as Inject, Qn as Optional, Tc as InjectionToken, Ui as setClassMetadata, ao as ɵɵdirectiveInject, ba as ɵɵclassProp, bl as signal, ca as ɵɵNgOnChangesFeature, dr as Service, el as effect, ia as ɵɵControlFeature, io as ɵɵdefineService, ir as Renderer2, la as ɵɵProvidersFeature, mc as DestroyRef, nl as forwardRef, no as ɵɵdefineNgModule, ol as inject, pr as SkipSelf, qn as NgModule, qt as untracked, r as ChangeDetectorRef, sa as ɵɵInheritDefinitionFeature, tl as formatRuntimeError, tn as ApplicationRef, to as ɵɵdefineDirective, ur as Self, va as ɵɵattribute, vi as isPromise, wn as Directive, yc as EventEmitter, yi as isSubscribable } from "./core-DK4zC9WD.js";
+import { s as getDOM } from "./_xhr-chunk-DKtJTjzJ.js";
 //#region node_modules/@angular/forms/fesm2022/forms.mjs
 /**
 * @license Angular v22.1.3

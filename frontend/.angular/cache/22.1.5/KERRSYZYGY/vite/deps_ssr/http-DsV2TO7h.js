@@ -1,133 +1,14 @@
-import { Bl as operate, Bt as computed, Cl as truncateMiddle, Cr as TracingService, Ec as Injector, El as ɵɵdefineInjector, Fn as Injectable, Hc as RuntimeError, Il as map, Lt as ResourceImpl, Pc as NgZone, Pn as Inject, Tc as InjectionToken, Ti as performanceMarkFeature, Tl as ɵɵdefineInjectable, Ui as setClassMetadata, Vl as Observable, Vt as encapsulateResourceError, Wc as TransferState, Wt as linkedSignal, Xc as assertInInjectionContext, Yl as isFunction, Yt as APP_BOOTSTRAP_LISTENER, _c as EnvironmentInjector, bl as signal, dc as CSP_NONCE, dr as Service, fl as makeEnvironmentProviders, io as ɵɵdefineService, kl as ɵɵinject, mc as DestroyRef, no as ɵɵdefineNgModule, ol as inject, pc as DOCUMENT, pl as makeStateKey, qn as NgModule, qt as untracked, tl as formatRuntimeError, tn as ApplicationRef, vl as runInInjectionContext, zc as PendingTasks, zl as createOperatorSubscriber } from "./core-DhRcqFx3.js";
-import { a as popScheduler, n as executeSchedule, r as innerFrom, t as from } from "./from-0rBJ1ZR5.js";
-import { n as parseCookieValue, o as PlatformLocation, t as XhrFactory } from "./_xhr-chunk-DMTKXwav.js";
-//#region node_modules/rxjs/dist/esm5/internal/observable/of.js
-function of() {
-	var args = [];
-	for (var _i = 0; _i < arguments.length; _i++) args[_i] = arguments[_i];
-	return from(args, popScheduler(args));
-}
-//#endregion
-//#region node_modules/rxjs/dist/esm5/internal/operators/mergeInternals.js
-function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, expand, innerSubScheduler, additionalFinalizer) {
-	var buffer = [];
-	var active = 0;
-	var index = 0;
-	var isComplete = false;
-	var checkComplete = function() {
-		if (isComplete && !buffer.length && !active) subscriber.complete();
-	};
-	var outerNext = function(value) {
-		return active < concurrent ? doInnerSub(value) : buffer.push(value);
-	};
-	var doInnerSub = function(value) {
-		expand && subscriber.next(value);
-		active++;
-		var innerComplete = false;
-		innerFrom(project(value, index++)).subscribe(createOperatorSubscriber(subscriber, function(innerValue) {
-			onBeforeNext === null || onBeforeNext === void 0 || onBeforeNext(innerValue);
-			if (expand) outerNext(innerValue);
-			else subscriber.next(innerValue);
-		}, function() {
-			innerComplete = true;
-		}, void 0, function() {
-			if (innerComplete) try {
-				active--;
-				var _loop_1 = function() {
-					var bufferedValue = buffer.shift();
-					if (innerSubScheduler) executeSchedule(subscriber, innerSubScheduler, function() {
-						return doInnerSub(bufferedValue);
-					});
-					else doInnerSub(bufferedValue);
-				};
-				while (buffer.length && active < concurrent) _loop_1();
-				checkComplete();
-			} catch (err) {
-				subscriber.error(err);
-			}
-		}));
-	};
-	source.subscribe(createOperatorSubscriber(subscriber, outerNext, function() {
-		isComplete = true;
-		checkComplete();
-	}));
-	return function() {
-		additionalFinalizer === null || additionalFinalizer === void 0 || additionalFinalizer();
-	};
-}
-//#endregion
-//#region node_modules/rxjs/dist/esm5/internal/operators/mergeMap.js
-function mergeMap(project, resultSelector, concurrent) {
-	if (concurrent === void 0) concurrent = Infinity;
-	if (isFunction(resultSelector)) return mergeMap(function(a, i) {
-		return map(function(b, ii) {
-			return resultSelector(a, b, i, ii);
-		})(innerFrom(project(a, i)));
-	}, concurrent);
-	else if (typeof resultSelector === "number") concurrent = resultSelector;
-	return operate(function(source, subscriber) {
-		return mergeInternals(source, subscriber, project, concurrent);
-	});
-}
-//#endregion
-//#region node_modules/rxjs/dist/esm5/internal/operators/filter.js
-function filter(predicate, thisArg) {
-	return operate(function(source, subscriber) {
-		var index = 0;
-		source.subscribe(createOperatorSubscriber(subscriber, function(value) {
-			return predicate.call(thisArg, value, index++) && subscriber.next(value);
-		}));
-	});
-}
-//#endregion
-//#region node_modules/rxjs/dist/esm5/internal/operators/concatMap.js
-function concatMap(project, resultSelector) {
-	return isFunction(resultSelector) ? mergeMap(project, resultSelector, 1) : mergeMap(project, 1);
-}
-//#endregion
-//#region node_modules/rxjs/dist/esm5/internal/operators/finalize.js
-function finalize(callback) {
-	return operate(function(source, subscriber) {
-		try {
-			source.subscribe(subscriber);
-		} finally {
-			subscriber.add(callback);
-		}
-	});
-}
-//#endregion
-//#region node_modules/rxjs/dist/esm5/internal/operators/switchMap.js
-function switchMap(project, resultSelector) {
-	return operate(function(source, subscriber) {
-		var innerSubscriber = null;
-		var index = 0;
-		var isComplete = false;
-		var checkComplete = function() {
-			return isComplete && !innerSubscriber && subscriber.complete();
-		};
-		source.subscribe(createOperatorSubscriber(subscriber, function(value) {
-			innerSubscriber === null || innerSubscriber === void 0 || innerSubscriber.unsubscribe();
-			var innerIndex = 0;
-			var outerIndex = index++;
-			innerFrom(project(value, outerIndex)).subscribe(innerSubscriber = createOperatorSubscriber(subscriber, function(innerValue) {
-				return subscriber.next(resultSelector ? resultSelector(value, innerValue, outerIndex, innerIndex++) : innerValue);
-			}, function() {
-				innerSubscriber = null;
-				checkComplete();
-			}));
-		}, function() {
-			isComplete = true;
-			checkComplete();
-		}));
-	});
-}
-//#endregion
+import { t as require_cjs } from "./rxjs.js";
+import { Al as ɵɵinject, Bc as PendingTasks, Bt as computed, Cr as TracingService, Dc as Injector, Dl as ɵɵdefineInjector, Ec as InjectionToken, El as ɵɵdefineInjectable, Fc as NgZone, Fn as Injectable, Gc as TransferState, Lt as ResourceImpl, Pn as Inject, Ti as performanceMarkFeature, Uc as RuntimeError, Ui as setClassMetadata, Vt as encapsulateResourceError, Wt as linkedSignal, Yt as APP_BOOTSTRAP_LISTENER, Zc as assertInInjectionContext, cc as require_operators, dr as Service, fc as CSP_NONCE, fn as Console, hc as DestroyRef, io as ɵɵdefineService, mc as DOCUMENT, ml as makeStateKey, nl as formatRuntimeError, no as ɵɵdefineNgModule, pl as makeEnvironmentProviders, qn as NgModule, qt as untracked, sl as inject, tn as ApplicationRef, vc as EnvironmentInjector, wl as truncateMiddle, xl as signal, yl as runInInjectionContext } from "./core-Cf1yj7rw.js";
+import { o as PlatformLocation, t as XhrFactory } from "./_xhr-chunk-BucWBGOi.js";
 //#region node_modules/@angular/common/fesm2022/_module-chunk.mjs
 /**
 * @license Angular v22.1.3
 * (c) 2010-2026 Google LLC. https://angular.dev/
 * License: MIT
 */
+var import_operators = require_operators();
+var import_cjs = require_cjs();
 var HttpHeaders = class HttpHeaders {
 	headers;
 	normalizedNames = /* @__PURE__ */ new Map();
@@ -774,14 +655,15 @@ var HttpStatusCode;
 	HttpStatusCode[HttpStatusCode["NetworkAuthenticationRequired"] = 511] = "NetworkAuthenticationRequired";
 })(HttpStatusCode || (HttpStatusCode = {}));
 var XSSI_PREFIX$1 = /^\)\]\}',?\n/;
-var HTTP_FETCH_MAX_RESPONSE_SIZE = new InjectionToken(typeof ngDevMode !== "undefined" && ngDevMode ? "HTTP_FETCH_MAX_RESPONSE_SIZE" : "", { factory: () => null });
+var DEFAULT_SSR_MAX_RESPONSE_BODY_SIZE = 1024 * 1024;
+var HTTP_FETCH_MAX_RESPONSE_SIZE = new InjectionToken(typeof ngDevMode !== "undefined" && ngDevMode ? "HTTP_FETCH_MAX_RESPONSE_SIZE" : "", { factory: () => DEFAULT_SSR_MAX_RESPONSE_BODY_SIZE });
 var FetchBackend = class FetchBackend {
 	fetchImpl = inject(FetchFactory, { optional: true })?.fetch ?? ((...args) => globalThis.fetch(...args));
 	ngZone = inject(NgZone);
 	destroyRef = inject(DestroyRef);
 	maxResponseSize = inject(HTTP_FETCH_MAX_RESPONSE_SIZE);
 	handle(request) {
-		return new Observable((observer) => {
+		return new import_cjs.Observable((observer) => {
 			const aborter = new AbortController();
 			let done = false;
 			const wrappedObserver = {
@@ -1024,13 +906,7 @@ var HttpXsrfCookieExtractor = class HttpXsrfCookieExtractor {
 	lastToken = null;
 	parseCount = 0;
 	getToken() {
-		const cookieString = this.doc.cookie || "";
-		if (cookieString !== this.lastCookieString) {
-			this.parseCount++;
-			this.lastToken = parseCookieValue(cookieString, this.cookieName);
-			this.lastCookieString = cookieString;
-		}
-		return this.lastToken;
+		return null;
 	}
 	static ɵfac = function HttpXsrfCookieExtractor_Factory(__ngFactoryType__) {
 		return new (__ngFactoryType__ || HttpXsrfCookieExtractor)();
@@ -1118,7 +994,7 @@ function legacyInterceptorFnFactory() {
 		const pendingTasks = inject(PendingTasks);
 		if (inject(REQUESTS_CONTRIBUTE_TO_STABILITY)) {
 			const removeTask = pendingTasks.add();
-			return chain(req, handler).pipe(finalize(removeTask));
+			return chain(req, handler).pipe((0, import_operators.finalize)(removeTask));
 		} else return chain(req, handler);
 	};
 }
@@ -1146,6 +1022,7 @@ var HttpBackend = class HttpBackend {
 		}]
 	}], null, null);
 })();
+var fetchBackendWarningDisplayed = false;
 var HttpInterceptorHandler = class HttpInterceptorHandler {
 	backend;
 	injector;
@@ -1155,7 +1032,13 @@ var HttpInterceptorHandler = class HttpInterceptorHandler {
 	constructor(backend, injector) {
 		this.backend = backend;
 		this.injector = injector;
-		if ((typeof ngDevMode === "undefined" || ngDevMode) && true) this.backend.isTestingBackend;
+		if ((typeof ngDevMode === "undefined" || ngDevMode) && !fetchBackendWarningDisplayed) {
+			const isTestingBackend = this.backend.isTestingBackend;
+			if (!(this.backend instanceof FetchBackend) && !isTestingBackend) {
+				fetchBackendWarningDisplayed = true;
+				injector.get(Console).warn(formatRuntimeError(2801, "Angular detected that `HttpClient` is not configured to use `fetch` APIs. It's strongly recommended to enable `fetch` for applications that use Server-Side Rendering for better performance and compatibility. To enable `fetch`, remove the `withXhr()` feature from the `provideHttpClient()` call"));
+			}
+		}
 	}
 	handle(initialRequest) {
 		if (this.chain === null) {
@@ -1168,7 +1051,7 @@ var HttpInterceptorHandler = class HttpInterceptorHandler {
 		const chain = this.chain;
 		if (this.contributeToStability) {
 			const removeTask = this.pendingTasks.add();
-			return untracked(() => chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest))).pipe(finalize(removeTask));
+			return untracked(() => chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest))).pipe((0, import_operators.finalize)(removeTask));
 		} else return untracked(() => chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)));
 	}
 	static ɵfac = function HttpInterceptorHandler_Factory(__ngFactoryType__) {
@@ -1253,24 +1136,24 @@ var HttpClient = class HttpClient {
 				timeout: options.timeout
 			});
 		}
-		const events$ = of(req).pipe(concatMap((req) => this.handler.handle(req)));
+		const events$ = (0, import_cjs.of)(req).pipe((0, import_operators.concatMap)((req) => this.handler.handle(req)));
 		if (first instanceof HttpRequest || options.observe === "events") return events$;
-		const res$ = events$.pipe(filter((event) => event instanceof HttpResponse));
+		const res$ = events$.pipe((0, import_operators.filter)((event) => event instanceof HttpResponse));
 		switch (options.observe || "body") {
 			case "body": switch (req.responseType) {
-				case "arraybuffer": return res$.pipe(map((res) => {
+				case "arraybuffer": return res$.pipe((0, import_operators.map)((res) => {
 					if (res.body !== null && !(res.body instanceof ArrayBuffer)) throw new RuntimeError(2806, ngDevMode && "Response is not an ArrayBuffer.");
 					return res.body;
 				}));
-				case "blob": return res$.pipe(map((res) => {
+				case "blob": return res$.pipe((0, import_operators.map)((res) => {
 					if (res.body !== null && !(res.body instanceof Blob)) throw new RuntimeError(2807, ngDevMode && "Response is not a Blob.");
 					return res.body;
 				}));
-				case "text": return res$.pipe(map((res) => {
+				case "text": return res$.pipe((0, import_operators.map)((res) => {
 					if (res.body !== null && typeof res.body !== "string") throw new RuntimeError(2808, ngDevMode && "Response is not a string.");
 					return res.body;
 				}));
-				default: return res$.pipe(map((res) => res.body));
+				default: return res$.pipe((0, import_operators.map)((res) => res.body));
 			}
 			case "response": return res$;
 			default: throw new RuntimeError(2809, ngDevMode && `Unreachable: unhandled observe type ${options.observe}}`);
@@ -1349,7 +1232,7 @@ var JsonpClientBackend = class JsonpClientBackend {
 		else if (req.responseType !== "json") throw new RuntimeError(2811, ngDevMode && JSONP_ERR_WRONG_RESPONSE_TYPE);
 		if (req.headers.keys().length > 0) throw new RuntimeError(2812, ngDevMode && JSONP_ERR_HEADERS_NOT_SUPPORTED);
 		if (!this.isAllowedJsonpUrl(req.urlWithParams)) throw new RuntimeError(2826, ngDevMode && JSONP_ERR_UNSAFE_URL);
-		return new Observable((observer) => {
+		return new import_cjs.Observable((observer) => {
 			const callback = this.nextCallback();
 			const url = req.urlWithParams.replace(/=JSONP_CALLBACK(&|$)/, `=${callback}$1`);
 			const node = this.document.createElement("script");
@@ -1509,8 +1392,8 @@ var HttpXhrBackend = class HttpXhrBackend {
 		if (req.method === "JSONP") throw new RuntimeError(-2800, (typeof ngDevMode === "undefined" || ngDevMode) && `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`HttpClientJsonpModule\` in the root NgModule.`);
 		ngDevMode && validateXhrCompatibility(req);
 		const xhrFactory = this.xhrFactory;
-		return of(null).pipe(switchMap(() => {
-			return new Observable((observer) => {
+		return (xhrFactory.ɵloadImpl ? (0, import_cjs.from)(xhrFactory.ɵloadImpl()) : (0, import_cjs.of)(null)).pipe((0, import_operators.switchMap)(() => {
+			return new import_cjs.Observable((observer) => {
 				const xhr = xhrFactory.build();
 				xhr.open(req.method, req.urlWithParams);
 				if (req.withCredentials) xhr.withCredentials = true;
@@ -1899,11 +1782,7 @@ function getHeadersToInclude(options, requestOptions) {
 }
 function retrieveStateFromCache(req, options, transferState, originMap, storeKey, skipUseCacheChecks = false) {
 	if (!skipUseCacheChecks && !canUseOrCacheRequest(req, options)) return null;
-	if (originMap) throw new RuntimeError(2803, ngDevMode && "Angular detected that the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token is configured and present in the client side code. Please ensure that this token is only provided in the server code of the application.");
-	if (!storeKey) {
-		const requestUrl = req.url;
-		storeKey = makeCacheKey(req, requestUrl);
-	}
+	if (!storeKey) storeKey = makeCacheKey(req, originMap ? mapRequestOriginUrl(req.url, originMap) : req.url);
 	const response = transferState.get(storeKey, null);
 	if (!response) return null;
 	const { [BODY]: undecodedBody, [RESPONSE_TYPE]: responseType, [HEADERS]: httpHeaders, [STATUS]: status, [STATUS_TEXT]: statusText, [REQ_URL]: url } = response;
@@ -1934,11 +1813,27 @@ function transferCacheInterceptorFn(req, next) {
 	const options = inject(CACHE_OPTIONS);
 	if (!canUseOrCacheRequest(req, options)) return next(req);
 	const transferState = inject(TransferState);
-	inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, { optional: true });
-	const requestUrl = req.url;
-	const cachedResponse = retrieveStateFromCache(req, options, transferState, null, makeCacheKey(req, requestUrl), true);
-	if (cachedResponse) return of(cachedResponse);
-	return next(req);
+	const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, { optional: true });
+	const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+	const storeKey = makeCacheKey(req, requestUrl);
+	const cachedResponse = retrieveStateFromCache(req, options, transferState, null, storeKey, true);
+	if (cachedResponse) return (0, import_cjs.of)(cachedResponse);
+	return next(req).pipe((0, import_operators.tap)((event) => {
+		if (event instanceof HttpResponse) {
+			const { headers, body, status, statusText } = event;
+			if (!options.includeNonCacheableRequests && (hasUncacheableCacheControl(headers) || hasSetCookieHeader(headers))) return;
+			const { transferCache: requestOptions, responseType } = req;
+			const headersToInclude = getHeadersToInclude(options, requestOptions);
+			transferState.set(storeKey, {
+				[BODY]: responseType === "arraybuffer" || responseType === "blob" ? toBase64(body) : body,
+				[HEADERS]: getFilteredHeaders(headers, headersToInclude),
+				[STATUS]: status,
+				[STATUS_TEXT]: statusText,
+				[REQ_URL]: requestUrl,
+				[RESPONSE_TYPE]: responseType
+			});
+		}
+	}));
 }
 function hasAuthHeaders(req) {
 	const headers = req.headers;
@@ -1957,12 +1852,24 @@ function hasUncacheableCacheControl(headers) {
 		return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
 	});
 }
+function hasSetCookieHeader(headers) {
+	return headers.has("set-cookie");
+}
 function isNonCacheableRequest(cache) {
 	return cache === "no-cache" || cache === "no-store";
 }
 function hasOutgoingCredentials(req) {
 	const { withCredentials, credentials } = req;
 	return withCredentials || credentials === "include" || credentials === "same-origin";
+}
+function getFilteredHeaders(headers, includeHeaders) {
+	if (!includeHeaders) return {};
+	const headersMap = {};
+	for (const key of includeHeaders) {
+		const values = headers.getAll(key);
+		if (values !== null) headersMap[key] = values;
+	}
+	return headersMap;
 }
 function sortAndConcatParams(params) {
 	const searchParams = new URLSearchParams(params instanceof URLSearchParams ? params : params.toString());
@@ -1982,6 +1889,16 @@ function makeCacheKey(request, mappedRequestUrl) {
 		serializedBody,
 		encodedParams
 	].join("\0")));
+}
+function toBase64(buffer) {
+	const bytes = new Uint8Array(buffer);
+	const CHUNK_SIZE = 32768;
+	let binaryString = "";
+	for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+		const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+		binaryString += String.fromCharCode.apply(null, chunk);
+	}
+	return btoa(binaryString);
 }
 function fromBase64(base64) {
 	const binary = atob(base64);
@@ -2038,6 +1955,16 @@ function appendMissingHeadersDetection(url, headers, headersToInclude) {
 			return value.apply(target, [headerName]);
 		};
 	} });
+}
+function mapRequestOriginUrl(url, originMap) {
+	const origin = new URL(url, "resolve://").origin;
+	const mappedOrigin = originMap[origin];
+	if (!mappedOrigin) return url;
+	if (typeof ngDevMode === "undefined" || ngDevMode) verifyMappedOrigin(mappedOrigin);
+	return url.replace(origin, mappedOrigin);
+}
+function verifyMappedOrigin(url) {
+	if (new URL(url, "resolve://").pathname !== "/") throw new RuntimeError(2804, `Angular detected a URL with a path segment in the value provided for the \`HTTP_TRANSFER_CACHE_ORIGIN_MAP\` token: ${url}. The map should only contain origins without any other segments.`);
 }
 var SHA256_ROUND_CONSTANTS = /* @__PURE__ */ new Uint32Array([
 	1116352408,
@@ -2313,4 +2240,4 @@ var HttpResourceImpl = class extends ResourceImpl {
 	}
 };
 //#endregion
-export { JsonpClientBackend as A, withXhr as B, HttpRequest as C, HttpUrlEncodingCodec as D, HttpStatusCode as E, withInterceptors as F, filter as G, switchMap as H, withInterceptorsFromDi as I, mergeMap as K, withJsonpSupport as L, REQUESTS_CONTRIBUTE_TO_STABILITY as M, provideHttpClient as N, HttpXhrBackend as O, withFetch as P, withNoXsrfProtection as R, HttpParams as S, HttpResponseBase as T, finalize as U, withXsrfConfiguration as V, concatMap as W, HttpFeatureKind as _, HTTP_FETCH_MAX_RESPONSE_SIZE as a, HttpHeaders as b, HttpBackend as c, HttpClientModule as d, HttpClientXsrfModule as f, HttpEventType as g, HttpErrorResponse as h, FetchBackend as i, JsonpInterceptor as j, HttpXsrfTokenExtractor as k, HttpClient as l, HttpContextToken as m, httpResource as n, HTTP_INTERCEPTORS as o, HttpContext as p, of as q, withHttpTransferCache as r, HTTP_ROOT_INTERCEPTOR_FNS as s, HTTP_TRANSFER_CACHE_ORIGIN_MAP as t, HttpClientJsonpModule as u, HttpHandler as v, HttpResponse as w, HttpInterceptorHandler as x, HttpHeaderResponse as y, withRequestsMadeViaParent as z };
+export { JsonpClientBackend as A, withXhr as B, HttpRequest as C, HttpUrlEncodingCodec as D, HttpStatusCode as E, withInterceptors as F, withInterceptorsFromDi as I, withJsonpSupport as L, REQUESTS_CONTRIBUTE_TO_STABILITY as M, provideHttpClient as N, HttpXhrBackend as O, withFetch as P, withNoXsrfProtection as R, HttpParams as S, HttpResponseBase as T, withXsrfConfiguration as V, HttpFeatureKind as _, HTTP_FETCH_MAX_RESPONSE_SIZE as a, HttpHeaders as b, HttpBackend as c, HttpClientModule as d, HttpClientXsrfModule as f, HttpEventType as g, HttpErrorResponse as h, FetchBackend as i, JsonpInterceptor as j, HttpXsrfTokenExtractor as k, HttpClient as l, HttpContextToken as m, httpResource as n, HTTP_INTERCEPTORS as o, HttpContext as p, withHttpTransferCache as r, HTTP_ROOT_INTERCEPTOR_FNS as s, HTTP_TRANSFER_CACHE_ORIGIN_MAP as t, HttpClientJsonpModule as u, HttpHandler as v, HttpResponse as w, HttpInterceptorHandler as x, HttpHeaderResponse as y, withRequestsMadeViaParent as z };

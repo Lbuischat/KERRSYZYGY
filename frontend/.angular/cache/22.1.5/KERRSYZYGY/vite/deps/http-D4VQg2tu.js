@@ -1,13 +1,12 @@
-import { Al as ɵɵinject, Bc as PendingTasks, Bt as computed, Cr as TracingService, Dc as Injector, Dl as ɵɵdefineInjector, Ec as InjectionToken, El as ɵɵdefineInjectable, Fc as NgZone, Fn as Injectable, Gc as TransferState, Ll as require_cjs, Lt as ResourceImpl, Pn as Inject, Ti as performanceMarkFeature, Uc as RuntimeError, Ui as setClassMetadata, Vt as encapsulateResourceError, Wt as linkedSignal, Yt as APP_BOOTSTRAP_LISTENER, Zc as assertInInjectionContext, cc as require_operators, dr as Service, fc as CSP_NONCE, fn as Console, hc as DestroyRef, io as ɵɵdefineService, mc as DOCUMENT, ml as makeStateKey, nl as formatRuntimeError, no as ɵɵdefineNgModule, pl as makeEnvironmentProviders, qn as NgModule, qt as untracked, sl as inject, tn as ApplicationRef, vc as EnvironmentInjector, wl as truncateMiddle, xl as signal, yl as runInInjectionContext } from "./core-DI804xF1.js";
-import { o as PlatformLocation, t as XhrFactory } from "./_xhr-chunk-x_ich5Fj.js";
+import { Xt as filter, b as switchMap, jn as of, jt as concatMap, ot as finalize, rr as Observable, vn as map } from "./esm5-ChK3bs0s.js";
+import { Bt as computed, Cl as truncateMiddle, Cr as TracingService, Ec as Injector, El as ɵɵdefineInjector, Fn as Injectable, Hc as RuntimeError, Lt as ResourceImpl, Pc as NgZone, Pn as Inject, Tc as InjectionToken, Ti as performanceMarkFeature, Tl as ɵɵdefineInjectable, Ui as setClassMetadata, Vt as encapsulateResourceError, Wc as TransferState, Wt as linkedSignal, Xc as assertInInjectionContext, Yt as APP_BOOTSTRAP_LISTENER, _c as EnvironmentInjector, bl as signal, dc as CSP_NONCE, dr as Service, fl as makeEnvironmentProviders, io as ɵɵdefineService, kl as ɵɵinject, mc as DestroyRef, no as ɵɵdefineNgModule, ol as inject, pc as DOCUMENT, pl as makeStateKey, qn as NgModule, qt as untracked, tl as formatRuntimeError, tn as ApplicationRef, vl as runInInjectionContext, zc as PendingTasks } from "./core-DK4zC9WD.js";
+import { n as parseCookieValue, o as PlatformLocation, t as XhrFactory } from "./_xhr-chunk-DKtJTjzJ.js";
 //#region node_modules/@angular/common/fesm2022/_module-chunk.mjs
 /**
 * @license Angular v22.1.3
 * (c) 2010-2026 Google LLC. https://angular.dev/
 * License: MIT
 */
-var import_operators = require_operators();
-var import_cjs = require_cjs();
 var HttpHeaders = class HttpHeaders {
 	headers;
 	normalizedNames = /* @__PURE__ */ new Map();
@@ -654,15 +653,14 @@ var HttpStatusCode;
 	HttpStatusCode[HttpStatusCode["NetworkAuthenticationRequired"] = 511] = "NetworkAuthenticationRequired";
 })(HttpStatusCode || (HttpStatusCode = {}));
 var XSSI_PREFIX$1 = /^\)\]\}',?\n/;
-var DEFAULT_SSR_MAX_RESPONSE_BODY_SIZE = 1024 * 1024;
-var HTTP_FETCH_MAX_RESPONSE_SIZE = new InjectionToken(typeof ngDevMode !== "undefined" && ngDevMode ? "HTTP_FETCH_MAX_RESPONSE_SIZE" : "", { factory: () => DEFAULT_SSR_MAX_RESPONSE_BODY_SIZE });
+var HTTP_FETCH_MAX_RESPONSE_SIZE = new InjectionToken(typeof ngDevMode !== "undefined" && ngDevMode ? "HTTP_FETCH_MAX_RESPONSE_SIZE" : "", { factory: () => null });
 var FetchBackend = class FetchBackend {
 	fetchImpl = inject(FetchFactory, { optional: true })?.fetch ?? ((...args) => globalThis.fetch(...args));
 	ngZone = inject(NgZone);
 	destroyRef = inject(DestroyRef);
 	maxResponseSize = inject(HTTP_FETCH_MAX_RESPONSE_SIZE);
 	handle(request) {
-		return new import_cjs.Observable((observer) => {
+		return new Observable((observer) => {
 			const aborter = new AbortController();
 			let done = false;
 			const wrappedObserver = {
@@ -905,7 +903,13 @@ var HttpXsrfCookieExtractor = class HttpXsrfCookieExtractor {
 	lastToken = null;
 	parseCount = 0;
 	getToken() {
-		return null;
+		const cookieString = this.doc.cookie || "";
+		if (cookieString !== this.lastCookieString) {
+			this.parseCount++;
+			this.lastToken = parseCookieValue(cookieString, this.cookieName);
+			this.lastCookieString = cookieString;
+		}
+		return this.lastToken;
 	}
 	static ɵfac = function HttpXsrfCookieExtractor_Factory(__ngFactoryType__) {
 		return new (__ngFactoryType__ || HttpXsrfCookieExtractor)();
@@ -993,7 +997,7 @@ function legacyInterceptorFnFactory() {
 		const pendingTasks = inject(PendingTasks);
 		if (inject(REQUESTS_CONTRIBUTE_TO_STABILITY)) {
 			const removeTask = pendingTasks.add();
-			return chain(req, handler).pipe((0, import_operators.finalize)(removeTask));
+			return chain(req, handler).pipe(finalize(removeTask));
 		} else return chain(req, handler);
 	};
 }
@@ -1021,7 +1025,6 @@ var HttpBackend = class HttpBackend {
 		}]
 	}], null, null);
 })();
-var fetchBackendWarningDisplayed = false;
 var HttpInterceptorHandler = class HttpInterceptorHandler {
 	backend;
 	injector;
@@ -1031,13 +1034,7 @@ var HttpInterceptorHandler = class HttpInterceptorHandler {
 	constructor(backend, injector) {
 		this.backend = backend;
 		this.injector = injector;
-		if ((typeof ngDevMode === "undefined" || ngDevMode) && !fetchBackendWarningDisplayed) {
-			const isTestingBackend = this.backend.isTestingBackend;
-			if (!(this.backend instanceof FetchBackend) && !isTestingBackend) {
-				fetchBackendWarningDisplayed = true;
-				injector.get(Console).warn(formatRuntimeError(2801, "Angular detected that `HttpClient` is not configured to use `fetch` APIs. It's strongly recommended to enable `fetch` for applications that use Server-Side Rendering for better performance and compatibility. To enable `fetch`, remove the `withXhr()` feature from the `provideHttpClient()` call"));
-			}
-		}
+		if ((typeof ngDevMode === "undefined" || ngDevMode) && true) this.backend.isTestingBackend;
 	}
 	handle(initialRequest) {
 		if (this.chain === null) {
@@ -1050,7 +1047,7 @@ var HttpInterceptorHandler = class HttpInterceptorHandler {
 		const chain = this.chain;
 		if (this.contributeToStability) {
 			const removeTask = this.pendingTasks.add();
-			return untracked(() => chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest))).pipe((0, import_operators.finalize)(removeTask));
+			return untracked(() => chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest))).pipe(finalize(removeTask));
 		} else return untracked(() => chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)));
 	}
 	static ɵfac = function HttpInterceptorHandler_Factory(__ngFactoryType__) {
@@ -1135,24 +1132,24 @@ var HttpClient = class HttpClient {
 				timeout: options.timeout
 			});
 		}
-		const events$ = (0, import_cjs.of)(req).pipe((0, import_operators.concatMap)((req) => this.handler.handle(req)));
+		const events$ = of(req).pipe(concatMap((req) => this.handler.handle(req)));
 		if (first instanceof HttpRequest || options.observe === "events") return events$;
-		const res$ = events$.pipe((0, import_operators.filter)((event) => event instanceof HttpResponse));
+		const res$ = events$.pipe(filter((event) => event instanceof HttpResponse));
 		switch (options.observe || "body") {
 			case "body": switch (req.responseType) {
-				case "arraybuffer": return res$.pipe((0, import_operators.map)((res) => {
+				case "arraybuffer": return res$.pipe(map((res) => {
 					if (res.body !== null && !(res.body instanceof ArrayBuffer)) throw new RuntimeError(2806, ngDevMode && "Response is not an ArrayBuffer.");
 					return res.body;
 				}));
-				case "blob": return res$.pipe((0, import_operators.map)((res) => {
+				case "blob": return res$.pipe(map((res) => {
 					if (res.body !== null && !(res.body instanceof Blob)) throw new RuntimeError(2807, ngDevMode && "Response is not a Blob.");
 					return res.body;
 				}));
-				case "text": return res$.pipe((0, import_operators.map)((res) => {
+				case "text": return res$.pipe(map((res) => {
 					if (res.body !== null && typeof res.body !== "string") throw new RuntimeError(2808, ngDevMode && "Response is not a string.");
 					return res.body;
 				}));
-				default: return res$.pipe((0, import_operators.map)((res) => res.body));
+				default: return res$.pipe(map((res) => res.body));
 			}
 			case "response": return res$;
 			default: throw new RuntimeError(2809, ngDevMode && `Unreachable: unhandled observe type ${options.observe}}`);
@@ -1231,7 +1228,7 @@ var JsonpClientBackend = class JsonpClientBackend {
 		else if (req.responseType !== "json") throw new RuntimeError(2811, ngDevMode && JSONP_ERR_WRONG_RESPONSE_TYPE);
 		if (req.headers.keys().length > 0) throw new RuntimeError(2812, ngDevMode && JSONP_ERR_HEADERS_NOT_SUPPORTED);
 		if (!this.isAllowedJsonpUrl(req.urlWithParams)) throw new RuntimeError(2826, ngDevMode && JSONP_ERR_UNSAFE_URL);
-		return new import_cjs.Observable((observer) => {
+		return new Observable((observer) => {
 			const callback = this.nextCallback();
 			const url = req.urlWithParams.replace(/=JSONP_CALLBACK(&|$)/, `=${callback}$1`);
 			const node = this.document.createElement("script");
@@ -1391,8 +1388,8 @@ var HttpXhrBackend = class HttpXhrBackend {
 		if (req.method === "JSONP") throw new RuntimeError(-2800, (typeof ngDevMode === "undefined" || ngDevMode) && `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`HttpClientJsonpModule\` in the root NgModule.`);
 		ngDevMode && validateXhrCompatibility(req);
 		const xhrFactory = this.xhrFactory;
-		return (xhrFactory.ɵloadImpl ? (0, import_cjs.from)(xhrFactory.ɵloadImpl()) : (0, import_cjs.of)(null)).pipe((0, import_operators.switchMap)(() => {
-			return new import_cjs.Observable((observer) => {
+		return of(null).pipe(switchMap(() => {
+			return new Observable((observer) => {
 				const xhr = xhrFactory.build();
 				xhr.open(req.method, req.urlWithParams);
 				if (req.withCredentials) xhr.withCredentials = true;
@@ -1781,7 +1778,11 @@ function getHeadersToInclude(options, requestOptions) {
 }
 function retrieveStateFromCache(req, options, transferState, originMap, storeKey, skipUseCacheChecks = false) {
 	if (!skipUseCacheChecks && !canUseOrCacheRequest(req, options)) return null;
-	if (!storeKey) storeKey = makeCacheKey(req, originMap ? mapRequestOriginUrl(req.url, originMap) : req.url);
+	if (originMap) throw new RuntimeError(2803, ngDevMode && "Angular detected that the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token is configured and present in the client side code. Please ensure that this token is only provided in the server code of the application.");
+	if (!storeKey) {
+		const requestUrl = req.url;
+		storeKey = makeCacheKey(req, requestUrl);
+	}
 	const response = transferState.get(storeKey, null);
 	if (!response) return null;
 	const { [BODY]: undecodedBody, [RESPONSE_TYPE]: responseType, [HEADERS]: httpHeaders, [STATUS]: status, [STATUS_TEXT]: statusText, [REQ_URL]: url } = response;
@@ -1812,27 +1813,11 @@ function transferCacheInterceptorFn(req, next) {
 	const options = inject(CACHE_OPTIONS);
 	if (!canUseOrCacheRequest(req, options)) return next(req);
 	const transferState = inject(TransferState);
-	const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, { optional: true });
-	const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
-	const storeKey = makeCacheKey(req, requestUrl);
-	const cachedResponse = retrieveStateFromCache(req, options, transferState, null, storeKey, true);
-	if (cachedResponse) return (0, import_cjs.of)(cachedResponse);
-	return next(req).pipe((0, import_operators.tap)((event) => {
-		if (event instanceof HttpResponse) {
-			const { headers, body, status, statusText } = event;
-			if (!options.includeNonCacheableRequests && (hasUncacheableCacheControl(headers) || hasSetCookieHeader(headers))) return;
-			const { transferCache: requestOptions, responseType } = req;
-			const headersToInclude = getHeadersToInclude(options, requestOptions);
-			transferState.set(storeKey, {
-				[BODY]: responseType === "arraybuffer" || responseType === "blob" ? toBase64(body) : body,
-				[HEADERS]: getFilteredHeaders(headers, headersToInclude),
-				[STATUS]: status,
-				[STATUS_TEXT]: statusText,
-				[REQ_URL]: requestUrl,
-				[RESPONSE_TYPE]: responseType
-			});
-		}
-	}));
+	inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, { optional: true });
+	const requestUrl = req.url;
+	const cachedResponse = retrieveStateFromCache(req, options, transferState, null, makeCacheKey(req, requestUrl), true);
+	if (cachedResponse) return of(cachedResponse);
+	return next(req);
 }
 function hasAuthHeaders(req) {
 	const headers = req.headers;
@@ -1851,24 +1836,12 @@ function hasUncacheableCacheControl(headers) {
 		return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
 	});
 }
-function hasSetCookieHeader(headers) {
-	return headers.has("set-cookie");
-}
 function isNonCacheableRequest(cache) {
 	return cache === "no-cache" || cache === "no-store";
 }
 function hasOutgoingCredentials(req) {
 	const { withCredentials, credentials } = req;
 	return withCredentials || credentials === "include" || credentials === "same-origin";
-}
-function getFilteredHeaders(headers, includeHeaders) {
-	if (!includeHeaders) return {};
-	const headersMap = {};
-	for (const key of includeHeaders) {
-		const values = headers.getAll(key);
-		if (values !== null) headersMap[key] = values;
-	}
-	return headersMap;
 }
 function sortAndConcatParams(params) {
 	const searchParams = new URLSearchParams(params instanceof URLSearchParams ? params : params.toString());
@@ -1888,16 +1861,6 @@ function makeCacheKey(request, mappedRequestUrl) {
 		serializedBody,
 		encodedParams
 	].join("\0")));
-}
-function toBase64(buffer) {
-	const bytes = new Uint8Array(buffer);
-	const CHUNK_SIZE = 32768;
-	let binaryString = "";
-	for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
-		const chunk = bytes.subarray(i, i + CHUNK_SIZE);
-		binaryString += String.fromCharCode.apply(null, chunk);
-	}
-	return btoa(binaryString);
 }
 function fromBase64(base64) {
 	const binary = atob(base64);
@@ -1954,16 +1917,6 @@ function appendMissingHeadersDetection(url, headers, headersToInclude) {
 			return value.apply(target, [headerName]);
 		};
 	} });
-}
-function mapRequestOriginUrl(url, originMap) {
-	const origin = new URL(url, "resolve://").origin;
-	const mappedOrigin = originMap[origin];
-	if (!mappedOrigin) return url;
-	if (typeof ngDevMode === "undefined" || ngDevMode) verifyMappedOrigin(mappedOrigin);
-	return url.replace(origin, mappedOrigin);
-}
-function verifyMappedOrigin(url) {
-	if (new URL(url, "resolve://").pathname !== "/") throw new RuntimeError(2804, `Angular detected a URL with a path segment in the value provided for the \`HTTP_TRANSFER_CACHE_ORIGIN_MAP\` token: ${url}. The map should only contain origins without any other segments.`);
 }
 var SHA256_ROUND_CONSTANTS = /* @__PURE__ */ new Uint32Array([
 	1116352408,

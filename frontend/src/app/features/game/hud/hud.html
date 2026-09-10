@@ -10,9 +10,7 @@
   <div class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3">
 
     <!-- Inventory -->
-    <app-inventory-button
-      (inventoryClicked)="toggleInventory()"
-    ></app-inventory-button>
+    <app-inventory-button (inventoryClicked)="toggleInventory()"></app-inventory-button>
 
     <!-- Shop -->
     <app-shop-button></app-shop-button>
@@ -28,7 +26,8 @@
 
   <!-- Mini-map -->
   <div class="pointer-events-auto absolute right-6 top-35">
-    <app-mini-map />
+    <app-mini-map [worldWidth]="worldWidth" [worldHeight]="worldHeight" [playerPosition]="playerPosition"
+      [enemies]="enemies" />
   </div>
 
 
@@ -40,9 +39,7 @@
 
   <!-- Settings Btn -->
   <div class="pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2">
-    <app-settings-button
-      (settingsClicked)="openSettings()"
-    />
+    <app-settings-button (settingsClicked)="openSettings()" />
   </div>
 
 </div>
