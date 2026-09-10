@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export interface GamePosition {
@@ -25,6 +25,15 @@ export class GameStateService {
 
   enemyPositions$ =
     this.enemyPositionsSubject.asObservable();
+
+
+  /** Freezes the game loops while a panel such as the inventory is open. */
+  readonly paused = signal(false);
+
+
+  setPaused(paused: boolean): void {
+    this.paused.set(paused);
+  }
 
 
   setPlayerPosition(position: GamePosition): void {

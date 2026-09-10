@@ -1,9 +1,10 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Hud } from '../hud/hud';
 import { GameWorld } from '../game-world/game-world';
 import { Inventory } from '../hud/inventory/inventory';
+import { GameStateService } from '../../../services/game-state/game-state.service';
 
 @Component({
   imports: [
@@ -19,6 +20,8 @@ export class GameShell {
 
   inventoryOpen = false;
 
+  private readonly gameStateService = inject(GameStateService);
+
   constructor(private router: Router) {}
 
   openSettings(): void {
@@ -28,7 +31,8 @@ export class GameShell {
   toggleInventory(): void {
     this.inventoryOpen = !this.inventoryOpen;
 
-    console.log('🎒 INVENTORY OPEN:', this.inventoryOpen);
+    // An open inventory pauses the fight behind it.
+    this.gameStateService.setPaused(this.inventoryOpen);
   }
 
   @HostListener('document:keydown', ['$event'])

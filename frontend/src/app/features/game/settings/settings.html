@@ -25,176 +25,62 @@
 
     <!-- BACK -->
     <button type="button" class="back-button" (click)="goBack()">
-        ← Back
+        {{ text().back }}
     </button>
 
 
     <!-- HEADER -->
     <header class="settings-header">
-        <h1>
-            @if (activeSection === 'gameplay') {
-                Gameplay
-            } @else if (activeSection === 'sound') {
-                Sound
-            } @else if (activeSection === 'accessibility') {
-                Accessibility
-            }
-        </h1>
+        <h1>{{ text()[activeSection()] }}</h1>
     </header>
 
 
     <!-- CONTENT -->
     <main class="settings-content">
 
-        <!-- ===================================================== -->
-        <!-- GAMEPLAY -->
-        <!-- ===================================================== -->
+        @if (activeSection() === 'language') {
 
-        @if (activeSection === 'gameplay') {
+        <!-- ===================================================== -->
+        <!-- LANGUAGE -->
+        <!-- ===================================================== -->
 
         <section class="settings-section">
 
-            <!-- SHOW DAMAGE NUMBERS -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Show Damage Numbers</h2>
-                    <p>Display damage values when attacking enemies.</p>
-                </div>
+            <div class="language-list">
 
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.showDamageNumbers"
-                    [attr.aria-pressed]="settings.showDamageNumbers"
-                    aria-label="Toggle Show Damage Numbers"
-                    (click)="settings.toggleDamageNumbers()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
+                @for (option of languageOptions; track option.code) {
+                    <button
+                        type="button"
+                        class="language-option"
+                        [class.active]="languageService.language() === option.code"
+                        [attr.aria-pressed]="languageService.language() === option.code"
+                        (click)="languageService.setLanguage(option.code)"
+                    >
+                        {{ option.label }}
+                    </button>
+                }
+
             </div>
 
+        </section>
 
-            <!-- SHOW TUTORIALS -->
+        } @else {
+
+        <!-- ===================================================== -->
+        <!-- GAMEPLAY / SOUND / ACCESSIBILITY -->
+        <!-- ===================================================== -->
+
+        <section class="settings-section">
+
+            @for (row of rows(); track row.key) {
+
             <div class="setting-row">
                 <div class="setting-info">
-                    <h2>Show Tutorials</h2>
-                    <p>Display tutorial prompts and introductory guidance.</p>
+                    <h2>{{ text().rows[row.key].title }}</h2>
+                    <p>{{ text().rows[row.key].description }}</p>
                 </div>
 
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.showTutorials"
-                    [attr.aria-pressed]="settings.showTutorials"
-                    aria-label="Toggle Show Tutorials"
-                    (click)="settings.toggleTutorials()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- HINTS -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Hints</h2>
-                    <p>Show contextual hints while playing.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.hints"
-                    [attr.aria-pressed]="settings.hints"
-                    aria-label="Toggle Hints"
-                    (click)="settings.toggleHints()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- DIFFICULTY -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Difficulty</h2>
-                    <p>Adjust the overall challenge level.</p>
-                </div>
+                @if (row.control === 'slider') {
 
                 <div class="constellation-slider">
 
@@ -202,84 +88,32 @@
                         @for (star of [1, 2, 3, 4, 5]; track star) {
                             <span
                                 class="slider-star"
-                                [class.lit]="star * 2 <= settings.difficulty"
+                                [class.lit]="row.isStarLit(star)"
                             ></span>
                         }
                     </div>
 
                     <input
                         type="range"
-                        min="1"
-                        max="10"
+                        [attr.min]="row.min"
+                        [attr.max]="row.max"
                         step="1"
-                        [value]="settings.difficulty"
-                        (input)="settings.setDifficulty(+$any($event.target).value)"
-                        aria-label="Difficulty"
+                        [value]="row.value()"
+                        (input)="row.set(+$any($event.target).value)"
+                        [attr.aria-label]="text().rows[row.key].title"
                     />
 
                 </div>
-            </div>
 
-
-            <!-- ENEMY HEALTH BARS -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Enemy Health Bars</h2>
-                    <p>Display health bars above enemies.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.enemyHealthBars"
-                    [attr.aria-pressed]="settings.enemyHealthBars"
-                    aria-label="Toggle Enemy Health Bars"
-                    (click)="settings.toggleEnemyHealthBars()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- AUTO EQUIP -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Auto Equip</h2>
-                    <p>Automatically equip newly acquired gear.</p>
-                </div>
+                } @else if (row.control === 'binary') {
 
                 <button
                     type="button"
                     class="binary-toggle"
-                    [class.on]="settings.autoEquip"
-                    [attr.aria-pressed]="settings.autoEquip"
-                    aria-label="Toggle Auto Equip"
-                    (click)="settings.toggleAutoEquip()"
+                    [class.on]="row.isOn()"
+                    [attr.aria-pressed]="row.isOn()"
+                    [attr.aria-label]="text().rows[row.key].title"
+                    (click)="row.toggle()"
                 >
                     <span class="binary-star binary-star-left">
                         <span class="binary-star-trail"></span>
@@ -291,686 +125,52 @@
                         <span class="binary-star-core"></span>
                     </span>
                 </button>
-            </div>
 
-
-            <!-- AUTO SAVE -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Auto Save</h2>
-                    <p>Automatically save your progress.</p>
-                </div>
+                } @else {
 
                 <button
                     type="button"
-                    class="binary-toggle"
-                    [class.on]="settings.autoSave"
-                    [attr.aria-pressed]="settings.autoSave"
-                    aria-label="Toggle Auto Save"
-                    (click)="settings.toggleAutoSave()"
+                    class="star-btn"
+                    [class.on]="row.isOn()"
+                    [attr.aria-pressed]="row.isOn()"
+                    [attr.aria-label]="text().rows[row.key].title"
+                    (click)="row.toggle()"
                 >
-                    <span class="binary-star binary-star-left">
-                        <span class="binary-star-trail"></span>
-                        <span class="binary-star-core"></span>
-                    </span>
-
-                    <span class="binary-star binary-star-right">
-                        <span class="binary-star-trail"></span>
-                        <span class="binary-star-core"></span>
-                    </span>
+                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
+                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
+                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
+                            <path
+                                class="star-orbit-path"
+                                d="
+                                    M 42,22
+                                    A 20,11 0 1,1 2,22
+                                    A 20,11 0 1,1 42,22
+                                "
+                            />
+                            <circle class="star-companion" cx="0" cy="0" r="2.5">
+                                <animateMotion
+                                    dur="2.4s"
+                                    repeatCount="indefinite"
+                                    rotate="0"
+                                    path="
+                                        M 42,22
+                                        A 20,11 0 1,1 2,22
+                                        A 20,11 0 1,1 42,22
+                                    "
+                                />
+                            </circle>
+                        </g>
+                        <circle class="star-core" cx="22" cy="22" r="8" />
+                    </svg>
                 </button>
+
+                }
             </div>
+
+            }
 
         </section>
 
-
-        <!-- ===================================================== -->
-        <!-- SOUND -->
-        <!-- ===================================================== -->
-
-        } @else if (activeSection === 'sound') {
-
-        <section class="settings-section">
-
-            <!-- MASTER VOLUME -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Master Volume</h2>
-                    <p>Adjust the overall volume of the game.</p>
-                </div>
-
-                <div class="constellation-slider">
-
-                    <div class="slider-stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <span
-                                class="slider-star"
-                                [class.lit]="star * 20 <= settings.masterVolume"
-                            ></span>
-                        }
-                    </div>
-
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        [value]="settings.masterVolume"
-                        (input)="settings.setMasterVolume(+$any($event.target).value)"
-                        aria-label="Master Volume"
-                    />
-
-                </div>
-            </div>
-
-
-            <!-- MUSIC VOLUME -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Music Volume</h2>
-                    <p>Adjust the volume of background music.</p>
-                </div>
-
-                <div class="constellation-slider">
-
-                    <div class="slider-stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <span
-                                class="slider-star"
-                                [class.lit]="star * 20 <= settings.musicVolume"
-                            ></span>
-                        }
-                    </div>
-
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        [value]="settings.musicVolume"
-                        (input)="settings.setMusicVolume(+$any($event.target).value)"
-                        aria-label="Music Volume"
-                    />
-
-                </div>
-            </div>
-
-
-            <!-- SFX VOLUME -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>SFX Volume</h2>
-                    <p>Adjust the volume of sound effects.</p>
-                </div>
-
-                <div class="constellation-slider">
-
-                    <div class="slider-stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <span
-                                class="slider-star"
-                                [class.lit]="star * 20 <= settings.sfxVolume"
-                            ></span>
-                        }
-                    </div>
-
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        [value]="settings.sfxVolume"
-                        (input)="settings.setSfxVolume(+$any($event.target).value)"
-                        aria-label="SFX Volume"
-                    />
-
-                </div>
-            </div>
-
-
-            <!-- ENVIRONMENT -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Environment</h2>
-                    <p>Adjust the volume of environmental sounds.</p>
-                </div>
-
-                <div class="constellation-slider">
-
-                    <div class="slider-stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <span
-                                class="slider-star"
-                                [class.lit]="star * 20 <= settings.environmentVolume"
-                            ></span>
-                        }
-                    </div>
-
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        [value]="settings.environmentVolume"
-                        (input)="settings.setEnvironmentVolume(+$any($event.target).value)"
-                        aria-label="Environment Volume"
-                    />
-
-                </div>
-            </div>
-
-
-            <!-- MONSTERS -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Monsters</h2>
-                    <p>Adjust the volume of monster sounds.</p>
-                </div>
-
-                <div class="constellation-slider">
-
-                    <div class="slider-stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <span
-                                class="slider-star"
-                                [class.lit]="star * 20 <= settings.monstersVolume"
-                            ></span>
-                        }
-                    </div>
-
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        [value]="settings.monstersVolume"
-                        (input)="settings.setMonstersVolume(+$any($event.target).value)"
-                        aria-label="Monsters Volume"
-                    />
-
-                </div>
-            </div>
-
-
-            <!-- NATURE -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Nature</h2>
-                    <p>Adjust the volume of nature sounds.</p>
-                </div>
-
-                <div class="constellation-slider">
-
-                    <div class="slider-stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <span
-                                class="slider-star"
-                                [class.lit]="star * 20 <= settings.natureVolume"
-                            ></span>
-                        }
-                    </div>
-
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        [value]="settings.natureVolume"
-                        (input)="settings.setNatureVolume(+$any($event.target).value)"
-                        aria-label="Nature Volume"
-                    />
-
-                </div>
-            </div>
-
-
-            <!-- SUBTITLES -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Subtitles</h2>
-                    <p>Display subtitles for spoken dialogue and sounds.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.subtitles"
-                    [attr.aria-pressed]="settings.subtitles"
-                    aria-label="Toggle Subtitles"
-                    (click)="settings.toggleSubtitles()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- MUTE ALL -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Mute All</h2>
-                    <p>Mute all game audio.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.muteAll"
-                    [attr.aria-pressed]="settings.muteAll"
-                    aria-label="Toggle Mute All"
-                    (click)="settings.toggleMuteAll()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-        </section>
-
-
-        <!-- ===================================================== -->
-        <!-- ACCESSIBILITY -->
-        <!-- ===================================================== -->
-
-        } @else if (activeSection === 'accessibility') {
-
-        <section class="settings-section">
-
-            <!-- REDUCE FLASHES -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Reduce Flashes</h2>
-                    <p>Reduce bright flashes and sudden visual effects.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.reduceFlashes"
-                    [attr.aria-pressed]="settings.reduceFlashes"
-                    aria-label="Toggle Reduce Flashes"
-                    (click)="settings.toggleReduceFlashes()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- SCREEN SHAKE -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Screen Shake</h2>
-                    <p>Enable or disable camera shake during gameplay.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.screenShake"
-                    [attr.aria-pressed]="settings.screenShake"
-                    aria-label="Toggle Screen Shake"
-                    (click)="settings.toggleScreenShake()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- MOTION BLUR -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Motion Blur</h2>
-                    <p>Enable or disable motion blur effects.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.motionBlur"
-                    [attr.aria-pressed]="settings.motionBlur"
-                    aria-label="Toggle Motion Blur"
-                    (click)="settings.toggleMotionBlur()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- COLOR BLIND MODE -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Color Blind Mode</h2>
-                    <p>Adjust visual elements to improve color distinction.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.colorBlindMode"
-                    [attr.aria-pressed]="settings.colorBlindMode"
-                    aria-label="Toggle Color Blind Mode"
-                    (click)="settings.toggleColorBlindMode()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- UI SCALE -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>UI Scale</h2>
-                    <p>Adjust the size of interface elements.</p>
-                </div>
-
-                <div class="constellation-slider">
-
-                    <div class="slider-stars" aria-hidden="true">
-                        @for (star of [1, 2, 3, 4, 5]; track star) {
-                            <span
-                                class="slider-star"
-                                [class.lit]="star <= ((settings.uiScale + 1) * 5 / 3)"
-                            ></span>
-                        }
-                    </div>
-
-                    <input
-                        type="range"
-                        min="0"
-                        max="2"
-                        step="1"
-                        [value]="settings.uiScale"
-                        (input)="settings.setUiScale(+$any($event.target).value)"
-                        aria-label="UI Scale"
-                    />
-
-                </div>
-            </div>
-
-
-            <!-- AUTO PICKUP -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Auto Pickup</h2>
-                    <p>Automatically pick up nearby items.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.autoPickup"
-                    [attr.aria-pressed]="settings.autoPickup"
-                    aria-label="Toggle Auto Pickup"
-                    (click)="settings.toggleAutoPickup()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- REDUCED KEYBINDS -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Reduced Keybinds</h2>
-                    <p>Reduce the number of required controls.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.reducedKeybinds"
-                    [attr.aria-pressed]="settings.reducedKeybinds"
-                    aria-label="Toggle Reduced Keybinds"
-                    (click)="settings.toggleReducedKeybinds()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- CLICK TO WALK -->
-            <div class="setting-row">
-                <div class="setting-info">
-                    <h2>Click to Walk</h2>
-                    <p>Move your character by clicking on the ground.</p>
-                </div>
-
-                <button
-                    type="button"
-                    class="star-btn"
-                    [class.on]="settings.clickToWalk"
-                    [attr.aria-pressed]="settings.clickToWalk"
-                    aria-label="Toggle Click to Walk"
-                    (click)="settings.toggleClickToWalk()"
-                >
-                    <svg class="star-system" viewBox="0 0 44 44" aria-hidden="true">
-                        <g class="star-orbit-system" transform="rotate(-25 22 22)">
-                            <ellipse class="star-orbit" cx="22" cy="22" rx="20" ry="11" />
-                            <path
-                                class="star-orbit-path"
-                                d="
-                                    M 42,22
-                                    A 20,11 0 1,1 2,22
-                                    A 20,11 0 1,1 42,22
-                                "
-                            />
-                            <circle class="star-companion" cx="0" cy="0" r="2.5">
-                                <animateMotion
-                                    dur="2.4s"
-                                    repeatCount="indefinite"
-                                    rotate="0"
-                                    path="
-                                        M 42,22
-                                        A 20,11 0 1,1 2,22
-                                        A 20,11 0 1,1 42,22
-                                    "
-                                />
-                            </circle>
-                        </g>
-                        <circle class="star-core" cx="22" cy="22" r="8" />
-                    </svg>
-                </button>
-            </div>
-
-        </section>
         }
 
     </main>
@@ -979,29 +179,15 @@
     <!-- SECTION NAVIGATION -->
     <nav class="section-navigation">
 
-        <button
-            type="button"
-            [class.active]="activeSection === 'gameplay'"
-            (click)="activeSection = 'gameplay'"
-        >
-            Gameplay
-        </button>
-
-        <button
-            type="button"
-            [class.active]="activeSection === 'sound'"
-            (click)="activeSection = 'sound'"
-        >
-            Sound
-        </button>
-
-        <button
-            type="button"
-            [class.active]="activeSection === 'accessibility'"
-            (click)="activeSection = 'accessibility'"
-        >
-            Accessibility
-        </button>
+        @for (section of sections; track section) {
+            <button
+                type="button"
+                [class.active]="activeSection() === section"
+                (click)="selectSection(section)"
+            >
+                {{ text()[section] }}
+            </button>
+        }
 
     </nav>
 

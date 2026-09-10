@@ -20,7 +20,8 @@
     <!-- Player -->
     <app-player
       (shoot)="shootProjectile($event)"
-      (attack)="playerAttack()">
+      (attack)="playerAttack()"
+      (died)="onPlayerDied()">
     </app-player>
 
     <!-- Projectiles -->
@@ -29,9 +30,73 @@
       class="pointer-events-none absolute inset-0">
     </div>
 
-    <!-- Enemy -->
-    <app-enemy></app-enemy>
+    <!-- Enemies -->
+    @for (enemy of enemies(); track enemy.id) {
+      <app-enemy
+        [startX]="enemy.x"
+        [startY]="enemy.y"
+        (died)="onEnemyDied(enemy.id)">
+      </app-enemy>
+    }
 
   </div>
+
+
+  <!-- WAVE TRACKER -->
+  @if (!isGameOver()) {
+    <div class="wave-tracker">
+
+      <span class="wave-tracker-wave">
+        {{ hudText().wave }} {{ wave() }} / {{ maxWave }}
+      </span>
+
+      <span class="wave-tracker-detail">
+        {{ enemiesRemaining() }} {{ hudText().enemiesLeft }}
+      </span>
+
+      <span class="wave-tracker-detail">
+        {{ score() }} {{ hudText().points }}
+      </span>
+
+    </div>
+  }
+
+
+  <!-- ACTIVE BUFFS -->
+  @if (!isGameOver() && activeBuffs().length > 0) {
+    <div class="buff-tray">
+
+      @for (buff of activeBuffs(); track buff.kind) {
+        <span class="buff-chip">
+          {{ itemName(buff.itemId) }}
+          <em>{{ buffSeconds(buff) }}s</em>
+        </span>
+      }
+
+    </div>
+  }
+
+
+  <!-- WAVE BANNER -->
+  @if (waveBanner()) {
+    <div class="wave-banner">
+      {{ waveBanner() }}
+    </div>
+  }
+
+
+  <!-- SCORE BOARD -->
+  @if (isGameOver()) {
+    <app-score-board
+      [wave]="wave()"
+      [maxWave]="maxWave"
+      [kills]="kills()"
+      [seconds]="elapsedSeconds()"
+      [score]="score()"
+      [victory]="isVictory()"
+      (playAgain)="restartRun()"
+      (exit)="exitToMenu()">
+    </app-score-board>
+  }
 
 </div>

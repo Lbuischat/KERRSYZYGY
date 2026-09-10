@@ -1,4 +1,12 @@
-import { Component, Input } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  inject,
+} from '@angular/core';
 
 @Component({
   selector: 'app-enemy',
@@ -6,51 +14,57 @@ import { Component, Input } from '@angular/core';
   templateUrl: './enemy.html',
   styleUrl: './enemy.css',
 })
-export class Enemy {
+export class Enemy implements OnInit {
 
-  private static nextId = 1;
-  private id = Enemy.nextId++;
-
-  constructor() {
-
-  console.log(
-    `🟢 CREATED ENEMY #${this.id}`,
-    'document:',
-    typeof document,
-    'window:',
-    typeof window
-  );
-
-  if (typeof document !== 'undefined') {
-    requestAnimationFrame(() => {
-      this.updateVisualPosition();
-    });
-  }
-
-}
-
-  @Input() x = 600;
-  @Input() y = 400;
+  private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
 
   // =========================
-  // HEALTH
+  // SPAWN CONFIG
   // =========================
 
-  maxHealth = 100;
+  @Input() startX = 600;
+  @Input() startY = 400;
+  @Input() maxHealth = 100;
+  @Input() speed = 1;
+  @Input() size = 40;
+
+  @Output() died = new EventEmitter<void>();
+
+  // =========================
+  // RUNTIME STATE
+  // =========================
+
+  x = 600;
+  y = 400;
   health = 100;
   isDead = false;
+  attackCooldown = 0;
 
-  // =========================
-  // SIZE
-  // =========================
+  private element: HTMLElement | null = null;
 
-  size = 40;
+  ngOnInit(): void {
+    this.x = this.startX;
+    this.y = this.startY;
+    this.health = this.maxHealth;
 
-  // =========================
-  // MOVEMENT
-  // =========================
+    // Enemies only exist in the browser, but ngOnInit also runs on the server.
+    if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(() => {
+        this.updateVisualPosition();
+      });
+    }
+  }
 
-  speed = 1;
+  // Each enemy owns only the element inside its own host,
+  // so a document-wide query would hit the wrong one.
+  private getElement(): HTMLElement | null {
+    if (!this.element) {
+      this.element =
+        this.host.nativeElement.querySelector<HTMLElement>('.enemy');
+    }
+
+    return this.element;
+  }
 
   // =========================
   // DAMAGE
@@ -67,11 +81,6 @@ export class Enemy {
       this.health = 0;
     }
 
-    console.log(
-      `Enemy #${this.id} HP:`,
-      this.health
-    );
-
     this.triggerHitEffect(amount);
 
     if (this.health === 0) {
@@ -82,10 +91,9 @@ export class Enemy {
   private die(): void {
     this.isDead = true;
 
-    const enemy =
-      document.querySelector(
-        '.enemy'
-      ) as HTMLElement | null;
+    this.died.emit();
+
+    const enemy = this.getElement();
     if (!enemy) {
       return;
     }
@@ -117,29 +125,39 @@ export class Enemy {
   }
 
   public updateVisualPosition(): void {
-    const enemy =
-      document.querySelector<HTMLElement>('.enemy');
+    const enemy = this.getElement();
     if (!enemy) {
       return;
     }
-    enemy.style.left =
-      `${this.x}px`;
-    enemy.style.top =
-      `${this.y}px`;
+
+    enemy.style.left = `${this.x}px`;
+    enemy.style.top = `${this.y}px`;
+  }
+
+  public updateHealthBar(): void {
+    const enemy = this.getElement();
+    if (!enemy) {
+      return;
+    }
+
+    const healthBar =
+      enemy.querySelector<HTMLElement>('.health-bar');
+    if (!healthBar) {
+      return;
+    }
+
+    healthBar.style.width = `${this.getHealthPercentage()}%`;
   }
 
   triggerHitEffect(damage: number): void {
-    const enemy =
-      document.querySelector<HTMLElement>('.enemy');
+    const enemy = this.getElement();
     if (!enemy) {
       return;
     }
 
-    enemy.style.backgroundColor =
-      'white';
+    enemy.style.backgroundColor = 'white';
     setTimeout(() => {
-      enemy.style.backgroundColor =
-        'purple';
+      enemy.style.backgroundColor = 'purple';
     }, 80);
 
     // =========================
@@ -164,6 +182,11 @@ export class Enemy {
     // DAMAGE NUMBER
     // =========================
 
+    // The damage number uses world coordinates, so it belongs to the
+    // camera-translated layer — the document body would not follow the camera.
+    const layer =
+      document.getElementById('world-layer') ?? document.body;
+
     const damageNumber =
       document.createElement('div');
     damageNumber.textContent =
@@ -184,7 +207,7 @@ export class Enemy {
       'none';
     damageNumber.style.zIndex =
       '100';
-    document.body.appendChild(
+    layer.appendChild(
       damageNumber
     );
 

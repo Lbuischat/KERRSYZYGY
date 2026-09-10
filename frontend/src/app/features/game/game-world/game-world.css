@@ -10,8 +10,142 @@
 }
 
 app-player,
-app-enemy,
 #projectile-layer {
   position: relative;
   z-index: 10;
+}
+
+/* Every enemy host shares the world origin, so enemy coordinates
+   are world coordinates regardless of how many are alive. */
+app-enemy {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+/* =========================================================
+   WAVE TRACKER
+   ========================================================= */
+
+.wave-tracker {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+
+  padding: 8px 18px;
+
+  border: 1px solid rgba(216, 210, 184, 0.28);
+  border-radius: 999px;
+
+  background: rgba(12, 10, 9, 0.62);
+
+  font-family: 'IM FELL English', Georgia, serif;
+  letter-spacing: 0.14em;
+
+  pointer-events: none;
+  z-index: 500;
+}
+
+.wave-tracker-wave {
+  font-size: 15px;
+  color: #f3e9cf;
+}
+
+.wave-tracker-detail {
+  font-size: 11px;
+  color: rgba(243, 233, 207, 0.55);
+}
+
+/* =========================================================
+   ACTIVE BUFFS
+   ========================================================= */
+
+.buff-tray {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+
+  max-width: min(520px, 80vw);
+
+  pointer-events: none;
+  z-index: 500;
+}
+
+.buff-chip {
+  padding: 5px 12px;
+
+  border: 1px solid rgba(246, 217, 138, 0.45);
+  border-radius: 999px;
+
+  background: rgba(12, 10, 9, 0.66);
+
+  font-family: 'IM FELL English', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+
+  color: #f6d98a;
+}
+
+.buff-chip em {
+  margin-left: 6px;
+
+  font-style: normal;
+
+  color: rgba(243, 233, 207, 0.55);
+}
+
+/* =========================================================
+   WAVE BANNER
+   ========================================================= */
+
+.wave-banner {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+
+  font-family: 'IM FELL English', Georgia, serif;
+  font-size: 58px;
+  letter-spacing: 0.22em;
+
+  color: #f3e9cf;
+  text-shadow: 0 0 24px rgba(0, 0, 0, 0.85);
+
+  pointer-events: none;
+  z-index: 500;
+
+  animation: wave-banner-pulse 1.6s ease-out forwards;
+}
+
+@keyframes wave-banner-pulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.94);
+  }
+
+  25% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  75% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -12px) scale(1);
+  }
 }
