@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/game/game-world/terrain/terrain.css"],
+  "sourcesContent": [".terrain {\n\n  position: absolute;\n\n  top: 0;\n  left: 0;\n\n  width: 2560px;\n  height: 2560px;\n\n  pointer-events: none;\n\n  z-index: 0;\n}\n\n.terrain-tile {\n\n  position: absolute;\n\n  width: 128px;\n  height: 128px;\n\n  background-repeat: no-repeat;\n  background-size: 384px 384px;\n\n  user-select: none;\n  pointer-events: none;\n\n  box-sizing: border-box;\n}\n\n.debug-info {\n\n  position: absolute;\n\n  top: 4px;\n  left: 4px;\n\n  padding: 4px 6px;\n\n  font-family: monospace;\n  font-size: 12px;\n  line-height: 15px;\n\n  background: rgba(0, 0, 0, 0.8);\n  color: white;\n\n  pointer-events: none;\n\n  z-index: 100;\n}"],
+  "mappings": ";AAAA,CAAA;AAEE,YAAA;AAEA,OAAA;AACA,QAAA;AAEA,SAAA;AACA,UAAA;AAEA,kBAAA;AAEA,WAAA;AACF;AAEA,CAAA;AAEE,YAAA;AAEA,SAAA;AACA,UAAA;AAEA,qBAAA;AACA,mBAAA,MAAA;AAEA,uBAAA;AAAA,eAAA;AACA,kBAAA;AAEA,cAAA;AACF;AAEA,CAAA;AAEE,YAAA;AAEA,OAAA;AACA,QAAA;AAEA,WAAA,IAAA;AAEA,eAAA;AACA,aAAA;AACA,eAAA;AAEA,cAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACA,SAAA;AAEA,kBAAA;AAEA,WAAA;AACF;",
+  "names": []
+}

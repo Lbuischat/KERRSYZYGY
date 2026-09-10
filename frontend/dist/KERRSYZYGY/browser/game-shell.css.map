@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/game/game-shell/game-shell.css"],
+  "sourcesContent": [".game-shell {\n    width: 100%;\n    min-height: 100vh;\n}"],
+  "mappings": ";AAAA,CAAA;AACI,SAAA;AACA,cAAA;AACJ;",
+  "names": []
+}

@@ -1,0 +1,11 @@
+{
+  "routes": {
+    "/": {},
+    "/create-account": {},
+    "/game": {},
+    "/playerinfo": {},
+    "/settings": {},
+    "/shop": {},
+    "/start": {}
+  }
+}

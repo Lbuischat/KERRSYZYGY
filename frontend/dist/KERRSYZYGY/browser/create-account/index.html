@@ -1,0 +1,317 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <title>KERRSYZYGY</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://accounts.google.com/gsi/client" async="" defer=""></script>
+<link rel="stylesheet" href="styles.css"><style ng-app-id="ng">
+[_nghost-ng-c2524717865] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: black;
+  color: aliceblue;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.create-account-screen[_ngcontent-ng-c2524717865] {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  overflow: hidden;
+}
+.background-stars[_ngcontent-ng-c2524717865] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.background-star[_ngcontent-ng-c2524717865] {
+  position: absolute;
+  border-radius: 50%;
+  background: rgb(202, 202, 202);
+  opacity: 0;
+  animation: _ngcontent-ng-c2524717865_background-star-reveal 2.5s ease-out forwards;
+}
+@keyframes _ngcontent-ng-c2524717865_background-star-reveal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: var(--star-opacity);
+  }
+}
+.stars[_ngcontent-ng-c2524717865] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.star[_ngcontent-ng-c2524717865] {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: aliceblue;
+  opacity: 0;
+  animation: _ngcontent-ng-c2524717865_star-appear 1.5s ease-out forwards;
+}
+@keyframes _ngcontent-ng-c2524717865_star-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+.star-1[_ngcontent-ng-c2524717865] {
+  left: 8%;
+  top: 20%;
+  animation-delay: 0.8s;
+}
+.star-2[_ngcontent-ng-c2524717865] {
+  left: 18%;
+  top: 72%;
+  animation-delay: 1.1s;
+}
+.star-3[_ngcontent-ng-c2524717865] {
+  left: 29%;
+  top: 15%;
+  animation-delay: 1.4s;
+}
+.star-4[_ngcontent-ng-c2524717865] {
+  left: 42%;
+  top: 10%;
+  animation-delay: 1.7s;
+}
+.star-5[_ngcontent-ng-c2524717865] {
+  left: 57%;
+  top: 18%;
+  animation-delay: 1.05s;
+}
+.star-6[_ngcontent-ng-c2524717865] {
+  left: 72%;
+  top: 29%;
+  animation-delay: 1.55s;
+}
+.star-7[_ngcontent-ng-c2524717865] {
+  left: 87%;
+  top: 65%;
+  animation-delay: 1.25s;
+}
+.star-8[_ngcontent-ng-c2524717865] {
+  left: 75%;
+  top: 84%;
+  animation-delay: 1.8s;
+}
+.star-9[_ngcontent-ng-c2524717865] {
+  left: 48%;
+  top: 88%;
+  animation-delay: 1.45s;
+}
+.star-10[_ngcontent-ng-c2524717865] {
+  left: 27%;
+  top: 84%;
+  animation-delay: 1.95s;
+}
+.star-11[_ngcontent-ng-c2524717865] {
+  left: 12%;
+  top: 45%;
+  animation-delay: 2.1s;
+}
+.star-12[_ngcontent-ng-c2524717865] {
+  left: 91%;
+  top: 16%;
+  animation-delay: 2.3s;
+}
+.create-account-content[_ngcontent-ng-c2524717865] {
+  position: relative;
+  z-index: 5;
+  width: min(360px, 86vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  animation: _ngcontent-ng-c2524717865_create-account-content-appear 1s ease-out forwards;
+}
+@keyframes _ngcontent-ng-c2524717865_create-account-content-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.journey-text[_ngcontent-ng-c2524717865] {
+  position: absolute;
+  z-index: 6;
+  top: 20%;
+  transform: translateX(-50%);
+  margin: 0;
+  width: max-content;
+  font-family: "IM FELL English", serif;
+  font-size: 50px;
+  font-weight: normal;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: aliceblue;
+  opacity: 0.9;
+  animation: _ngcontent-ng-c2524717865_create-account-content-appear 1s ease-out forwards;
+}
+@keyframes _ngcontent-ng-c2524717865_create-account-content-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.credentials[_ngcontent-ng-c2524717865] {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+.field[_ngcontent-ng-c2524717865] {
+  position: relative;
+  width: 100%;
+}
+.field[_ngcontent-ng-c2524717865]   input[_ngcontent-ng-c2524717865] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px 0 8px;
+  border: none;
+  border-bottom: 1px solid rgba(240, 248, 255, 0.25);
+  background: transparent;
+  outline: none;
+  color: aliceblue;
+  font-family: "IM FELL English", serif;
+  font-size: 16px;
+  border-radius: 0;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.field[_ngcontent-ng-c2524717865]   input[_ngcontent-ng-c2524717865]:-webkit-autofill, 
+.field[_ngcontent-ng-c2524717865]   input[_ngcontent-ng-c2524717865]:-webkit-autofill:hover, 
+.field[_ngcontent-ng-c2524717865]   input[_ngcontent-ng-c2524717865]:-webkit-autofill:focus {
+  -webkit-text-fill-color: aliceblue;
+  transition: background-color 9999s ease-out;
+}
+.field[_ngcontent-ng-c2524717865]   label[_ngcontent-ng-c2524717865] {
+  position: absolute;
+  left: 0;
+  top: 15px;
+  pointer-events: none;
+  color: rgba(240, 248, 255, 0.45);
+  font-family: "IM FELL English", serif;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease,
+    font-size 0.25s ease;
+}
+.field[_ngcontent-ng-c2524717865]   input[_ngcontent-ng-c2524717865]:focus {
+  border-bottom-color: rgba(240, 248, 255, 0.7);
+  box-shadow: 0 1px 8px rgba(240, 248, 255, 0.08);
+}
+.field[_ngcontent-ng-c2524717865]   input[_ngcontent-ng-c2524717865]:focus    + label[_ngcontent-ng-c2524717865], 
+.field[_ngcontent-ng-c2524717865]   input[_ngcontent-ng-c2524717865]:not(:placeholder-shown)    + label[_ngcontent-ng-c2524717865] {
+  transform: translateY(-15px);
+  color: rgba(240, 248, 255, 0.8);
+  font-size: 11px;
+}
+.create-button[_ngcontent-ng-c2524717865] {
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(240, 248, 255, 0.45);
+  cursor: pointer;
+  font-family: "IM FELL English", serif;
+  font-size: 17px;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.create-button[_ngcontent-ng-c2524717865]:hover:not(:disabled) {
+  color: aliceblue;
+  transform: scale(1.12);
+}
+.create-button[_ngcontent-ng-c2524717865]:disabled {
+  color: rgba(240, 248, 255, 0.25);
+  cursor: default;
+  transform: none;
+}
+.create-account-error[_ngcontent-ng-c2524717865] {
+  width: 100%;
+  margin: -5px 0 0;
+  font-family: "IM FELL English", serif;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: rgba(255, 190, 190, 0.75);
+}
+.create-account-success[_ngcontent-ng-c2524717865] {
+  width: 100%;
+  margin: -5px 0 0;
+  font-family: "IM FELL English", serif;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: rgba(210, 240, 220, 0.75);
+}
+.login-link[_ngcontent-ng-c2524717865] {
+  margin: 31px 0 0;
+  font-family: "IM FELL English", serif;
+  font-size: 12px;
+  color: rgba(240, 248, 255, 0.38);
+}
+.login-link-button[_ngcontent-ng-c2524717865] {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(240, 248, 255, 0.55);
+  cursor: pointer;
+  font-family: "IM FELL English", serif;
+  font-size: inherit;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.login-link-button[_ngcontent-ng-c2524717865]:hover {
+  color: aliceblue;
+  transform: scale(1.08);
+}
+@media (max-width: 700px) {
+  .create-account-content[_ngcontent-ng-c2524717865] {
+    margin-top: 250px;
+  }
+}
+@media (max-width: 450px) {
+  .create-account-content[_ngcontent-ng-c2524717865] {
+    width: 80vw;
+    margin-top: 225px;
+  }
+}
+/*# sourceMappingURL=/create-account.css.map */</style></head>
+<body><!--nghm--><script type="text/javascript" id="ng-event-dispatch-contract">(()=>{function p(t,n,r,o,e,i,f,m){return{eventType:t,event:n,targetElement:r,eic:o,timeStamp:e,eia:i,eirp:f,eiack:m}}function u(t){let n=[],r=e=>{n.push(e)};return{c:t,q:n,et:[],etc:[],d:r,h:e=>{r(p(e.type,e,e.target,t,Date.now()))}}}function s(t,n,r){for(let o=0;o<n.length;o++){let e=n[o];(r?t.etc:t.et).push(e),t.c.addEventListener(e,t.h,r)}}function c(t,n,r,o,e=window){let i=u(t);e._ejsas||(e._ejsas={}),e._ejsas[n]=i,s(i,r),s(i,o,!0)}window.__jsaction_bootstrap=c;})();
+</script><script>window.__jsaction_bootstrap(document.body,"ng",["submit","input","compositionstart","compositionend","click"],["blur"]);</script>
+  <app-root ng-version="22.1.3" ngh="1" ng-server-context="ssg"><router-outlet></router-outlet><app-create-account _nghost-ng-c2524717865="" ngh="0"><div _ngcontent-ng-c2524717865="" class="create-account-screen"><div _ngcontent-ng-c2524717865="" aria-hidden="true" class="background-stars"><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 12.93664728753271%; top: 12.781611283295957%; width: 1px; height: 1px; --star-opacity: 0.11901746417196482; animation-delay: 2.2836816033170684s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 11.05422746990692%; top: 43.943065680620585%; width: 1px; height: 1px; --star-opacity: 0.16038899842841423; animation-delay: 0.5939450963934484s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 22.104531400289673%; top: 31.771020082476596%; width: 1px; height: 1px; --star-opacity: 0.2424790392966969; animation-delay: 1.9599496069450688s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 64.18613904668166%; top: 27.684022962937206%; width: 1px; height: 1px; --star-opacity: 0.08044559705714126; animation-delay: 0.30523232410582635s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 14.26594534130402%; top: 88.14045015743328%; width: 2px; height: 2px; --star-opacity: 0.10449559826355793; animation-delay: 1.7242945540399166s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 33.623728266960875%; top: 43.638939094257346%; width: 1px; height: 1px; --star-opacity: 0.16089233985730275; animation-delay: 1.175578406229568s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 60.618002462423604%; top: 24.090038188362083%; width: 1px; height: 1px; --star-opacity: 0.17754481775498535; animation-delay: 1.9822776615685402s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 24.620752368259325%; top: 0.054800037628333076%; width: 1px; height: 1px; --star-opacity: 0.1435138274939029; animation-delay: 1.832994106020035s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 91.04355634265124%; top: 16.428285496431773%; width: 1px; height: 1px; --star-opacity: 0.18649330740280562; animation-delay: 1.2454073551482778s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 66.09414177533758%; top: 54.588298361790365%; width: 1px; height: 1px; --star-opacity: 0.23190108593394398; animation-delay: 0.7684324070590987s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 97.81765120436474%; top: 91.07194384024156%; width: 1px; height: 1px; --star-opacity: 0.19354195225773507; animation-delay: 2.416422529438613s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 54.78765749349704%; top: 49.61731453472213%; width: 1px; height: 1px; --star-opacity: 0.22053897356310764; animation-delay: 0.575765865106467s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 4.857157413898882%; top: 3.5336524047577145%; width: 1px; height: 1px; --star-opacity: 0.22607088733647768; animation-delay: 1.8840911929870305s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 38.79614722677493%; top: 80.21219293162682%; width: 1px; height: 1px; --star-opacity: 0.13086718282664794; animation-delay: 2.418514391409362s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 48.04736078921389%; top: 24.42291612428419%; width: 1px; height: 1px; --star-opacity: 0.1192497555925665; animation-delay: 0.4735238673777828s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 40.119581568233876%; top: 94.21826191158547%; width: 1px; height: 1px; --star-opacity: 0.10732298003133227; animation-delay: 0.5923558755247782s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 19.581891953624442%; top: 54.28095480836457%; width: 1px; height: 1px; --star-opacity: 0.08782585147735264; animation-delay: 2.0914146047329094s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 52.83878271689473%; top: 9.73853215170335%; width: 2px; height: 2px; --star-opacity: 0.17902642511958156; animation-delay: 1.609908872465132s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 86.13597067442697%; top: 73.55380971364394%; width: 1px; height: 1px; --star-opacity: 0.08237372335114863; animation-delay: 0.6678724882411049s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 40.34334573511582%; top: 84.22803826310049%; width: 1px; height: 1px; --star-opacity: 0.12238147484132529; animation-delay: 1.1480891026996627s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 20.495420611039005%; top: 38.944865871849146%; width: 1px; height: 1px; --star-opacity: 0.13061088629082573; animation-delay: 0.9611042400076536s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 19.078768721998806%; top: 7.895198769194234%; width: 1px; height: 1px; --star-opacity: 0.10478780663704054; animation-delay: 0.8538184903612883s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 2.1394904367450174%; top: 29.205263817797224%; width: 1px; height: 1px; --star-opacity: 0.21500011114039935; animation-delay: 1.060899505357825s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 90.03830261469625%; top: 50.289214140610596%; width: 1px; height: 1px; --star-opacity: 0.20204634452258585; animation-delay: 2.3561336917798443s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 62.691627765981885%; top: 63.81803687669749%; width: 2px; height: 2px; --star-opacity: 0.17837424575888977; animation-delay: 1.1699131304288963s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 64.88147107729871%; top: 77.30084751813172%; width: 1px; height: 1px; --star-opacity: 0.11529811142678253; animation-delay: 0.7610041058762007s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 13.872484643367466%; top: 8.903664008006285%; width: 1px; height: 1px; --star-opacity: 0.11457004429408665; animation-delay: 1.7869761345186173s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 14.687987017509375%; top: 97.72949709243046%; width: 1px; height: 1px; --star-opacity: 0.21227271169022738; animation-delay: 1.7157015425369595s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 65.45593510654251%; top: 69.34754520893516%; width: 1px; height: 1px; --star-opacity: 0.16323462650057297; animation-delay: 0.5744691564364865s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 73.80020597079037%; top: 97.67841678988916%; width: 1px; height: 1px; --star-opacity: 0.19822327659892236; animation-delay: 1.3593393763178518s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 39.64674902590053%; top: 21.500537976362523%; width: 2px; height: 2px; --star-opacity: 0.12469710351224994; animation-delay: 1.9000466007482846s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 41.04355465613515%; top: 84.5231348596997%; width: 1px; height: 1px; --star-opacity: 0.1781732577861634; animation-delay: 1.6985852494643097s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 83.73286614115474%; top: 62.892971686593434%; width: 1px; height: 1px; --star-opacity: 0.1462008452698484; animation-delay: 1.578193411912354s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 70.20794682042596%; top: 60.93502686680272%; width: 1px; height: 1px; --star-opacity: 0.19950688352108548; animation-delay: 0.46563001372116997s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 13.552412340020359%; top: 8.135260352722117%; width: 1px; height: 1px; --star-opacity: 0.240542969760974; animation-delay: 1.4018260579611739s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 69.3981505884492%; top: 96.32189016290224%; width: 2px; height: 2px; --star-opacity: 0.21813557367048841; animation-delay: 1.2649889922589792s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 34.86702483180728%; top: 91.85047391398868%; width: 1px; height: 1px; --star-opacity: 0.19242709929580454; animation-delay: 0.5638306248350705s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 66.2101533987891%; top: 5.195660775331323%; width: 1px; height: 1px; --star-opacity: 0.1866505372030146; animation-delay: 2.393421997052518s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 17.824285858125656%; top: 8.595213979393257%; width: 1px; height: 1px; --star-opacity: 0.12095070242150915; animation-delay: 1.141664342863966s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 97.37645015306028%; top: 90.2438690258044%; width: 1px; height: 1px; --star-opacity: 0.0980267855937391; animation-delay: 0.3721405671323433s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 80.99573787319297%; top: 33.35439842803333%; width: 1px; height: 1px; --star-opacity: 0.15612821956066913; animation-delay: 1.517893636700545s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 82.35420263928941%; top: 11.834244055826515%; width: 1px; height: 1px; --star-opacity: 0.15079789931747545; animation-delay: 1.3074631268255401s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 48.6623594501847%; top: 91.31429273161383%; width: 1px; height: 1px; --star-opacity: 0.20468059259085697; animation-delay: 1.3788206657230484s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 9.833040082204858%; top: 84.28762275037516%; width: 1px; height: 1px; --star-opacity: 0.0989898599562779; animation-delay: 2.3073255377333117s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 61.46468434100354%; top: 51.5393370261677%; width: 1px; height: 1px; --star-opacity: 0.12356647154892159; animation-delay: 2.450634165932934s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 56.94149931363567%; top: 93.40042491350829%; width: 1px; height: 1px; --star-opacity: 0.1716750778066748; animation-delay: 1.416816244295893s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 36.214223861477876%; top: 94.4791821988708%; width: 2px; height: 2px; --star-opacity: 0.11293246251531106; animation-delay: 0.1551955242478209s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 85.11742239741199%; top: 38.23287151225693%; width: 1px; height: 1px; --star-opacity: 0.2237031230581084; animation-delay: 1.4435124124963439s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 94.02091181964879%; top: 63.287302916162005%; width: 1px; height: 1px; --star-opacity: 0.24506891821035742; animation-delay: 0.9290006778683466s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 39.669296250170085%; top: 54.507990980141344%; width: 1px; height: 1px; --star-opacity: 0.23707096986529863; animation-delay: 2.1462423768094s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 19.490003895293185%; top: 7.719886018040356%; width: 1px; height: 1px; --star-opacity: 0.1929661252693635; animation-delay: 2.09830949064509s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 45.93199534960476%; top: 87.21712224514035%; width: 1px; height: 1px; --star-opacity: 0.1504717447012384; animation-delay: 0.0931361342897502s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 78.97393301731%; top: 58.49377317859001%; width: 1px; height: 1px; --star-opacity: 0.18969636941838144; animation-delay: 1.5717202542331343s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 22.616806447155714%; top: 6.848496600268539%; width: 2px; height: 2px; --star-opacity: 0.20059606969782612; animation-delay: 1.1247009428313666s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 25.252145811918002%; top: 87.43817714730628%; width: 1px; height: 1px; --star-opacity: 0.08509010528344496; animation-delay: 0.02359781579125725s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 67.06401921979365%; top: 7.726713735992963%; width: 1px; height: 1px; --star-opacity: 0.12336509316264375; animation-delay: 2.2113028906190224s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 28.90308996997647%; top: 10.554631826988059%; width: 1px; height: 1px; --star-opacity: 0.23141931345527522; animation-delay: 0.21802203932547753s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 5.757510518581055%; top: 92.04181373623135%; width: 1px; height: 1px; --star-opacity: 0.17903432352945398; animation-delay: 2.409707055540899s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 29.289283281901845%; top: 65.98231889373822%; width: 1px; height: 1px; --star-opacity: 0.10355616024355321; animation-delay: 0.31833332060089037s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 27.18395322856707%; top: 19.391230711268605%; width: 1px; height: 1px; --star-opacity: 0.1362535752798348; animation-delay: 1.3416384148268357s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 62.540608542412635%; top: 79.3568001303266%; width: 1px; height: 1px; --star-opacity: 0.2018269433181922; animation-delay: 2.0663530982923595s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 88.06621458462975%; top: 64.57414141122054%; width: 1px; height: 1px; --star-opacity: 0.23882180899948746; animation-delay: 1.496198718983197s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 7.203333286397817%; top: 11.715633735097608%; width: 2px; height: 2px; --star-opacity: 0.24524681220322214; animation-delay: 2.179035504253495s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 68.1253139662753%; top: 75.59337246937562%; width: 1px; height: 1px; --star-opacity: 0.08246881239408739; animation-delay: 2.2340756157483135s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 60.273811555624114%; top: 88.51917013918128%; width: 1px; height: 1px; --star-opacity: 0.09052263466962243; animation-delay: 0.35590709212238447s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 13.059509302518013%; top: 28.75541804868227%; width: 1px; height: 1px; --star-opacity: 0.0883374415889355; animation-delay: 2.157062715484577s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 87.5091813698129%; top: 51.665600792251745%; width: 1px; height: 1px; --star-opacity: 0.1889057627660996; animation-delay: 0.2942485912395787s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 12.740070990418594%; top: 43.60564132760065%; width: 1px; height: 1px; --star-opacity: 0.2139743355621816; animation-delay: 0.015559516717056632s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 30.71170480531845%; top: 69.98171788578365%; width: 1px; height: 1px; --star-opacity: 0.14446034229461738; animation-delay: 2.493891984082613s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 83.26851480608403%; top: 7.113256689729141%; width: 1px; height: 1px; --star-opacity: 0.24226430937957394; animation-delay: 1.8017503382083835s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 33.31918834776626%; top: 96.38855587447733%; width: 1px; height: 1px; --star-opacity: 0.24304476906358713; animation-delay: 0.0033617573356672925s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 85.61246613754844%; top: 74.78797901562562%; width: 1px; height: 1px; --star-opacity: 0.08040125686581696; animation-delay: 2.3443730602126793s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 9.374188234134206%; top: 35.07450512356345%; width: 1px; height: 1px; --star-opacity: 0.1555377824964813; animation-delay: 0.9443840552789182s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 74.3019662453133%; top: 84.93486679735307%; width: 1px; height: 1px; --star-opacity: 0.21634424371167904; animation-delay: 0.6060891996065548s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 23.019859645856357%; top: 2.8189064835573596%; width: 1px; height: 1px; --star-opacity: 0.22227271388064163; animation-delay: 0.8819755071222755s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 10.866684827365491%; top: 32.26761906901929%; width: 1px; height: 1px; --star-opacity: 0.1910123579640682; animation-delay: 1.5101413902667287s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 20.10128567873396%; top: 42.80763586300091%; width: 1px; height: 1px; --star-opacity: 0.12265065025163316; animation-delay: 1.9646249546124828s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 89.6181751979704%; top: 89.54006179586979%; width: 1px; height: 1px; --star-opacity: 0.24921393447574364; animation-delay: 0.2783138156437523s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 71.64173525678879%; top: 47.207448806420004%; width: 1px; height: 1px; --star-opacity: 0.23323420534894573; animation-delay: 0.03638609565894485s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 85.69943001983674%; top: 17.609238149841545%; width: 2px; height: 2px; --star-opacity: 0.11780908412791315; animation-delay: 0.7861583212473505s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 64.02722352793354%; top: 94.1827417561691%; width: 1px; height: 1px; --star-opacity: 0.11511853977531905; animation-delay: 1.2102398669804948s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 64.9569381621144%; top: 30.186564516205493%; width: 1px; height: 1px; --star-opacity: 0.246488534972244; animation-delay: 1.7389882721430983s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 15.163903611610408%; top: 19.077141773134976%; width: 1px; height: 1px; --star-opacity: 0.12752481129103208; animation-delay: 0.5367455124959928s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 39.8339996403213%; top: 15.454786486169391%; width: 1px; height: 1px; --star-opacity: 0.08342376625646264; animation-delay: 2.2139111572226695s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 98.57809673120265%; top: 62.06517815798536%; width: 1px; height: 1px; --star-opacity: 0.22955228183475834; animation-delay: 2.1590957487008247s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 44.3361556917951%; top: 30.991445656690964%; width: 1px; height: 1px; --star-opacity: 0.17478793067107332; animation-delay: 0.20168881703708008s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 10.930091230148332%; top: 95.32668568814407%; width: 1px; height: 1px; --star-opacity: 0.17904629933760402; animation-delay: 1.7306409573553374s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 3.9041182928151508%; top: 4.601379626364743%; width: 1px; height: 1px; --star-opacity: 0.2317449641625987; animation-delay: 2.4241430215989066s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 45.58703191760524%; top: 10.16977534164154%; width: 1px; height: 1px; --star-opacity: 0.13145356007973338; animation-delay: 1.7606388352820568s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 51.91548456616108%; top: 8.448530968882961%; width: 1px; height: 1px; --star-opacity: 0.14754894176269745; animation-delay: 1.797349004110165s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 10.476121650776914%; top: 11.543533174102116%; width: 1px; height: 1px; --star-opacity: 0.14110458851783672; animation-delay: 1.000638502930621s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 45.82544933713939%; top: 33.032086848272115%; width: 1px; height: 1px; --star-opacity: 0.22007900486515425; animation-delay: 1.895599204232892s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 93.62488981654492%; top: 24.77113096391279%; width: 1px; height: 1px; --star-opacity: 0.17125652952490128; animation-delay: 2.464606506242481s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 23.485210960778367%; top: 21.08817051691645%; width: 1px; height: 1px; --star-opacity: 0.20957397303268638; animation-delay: 1.7814207592810496s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 78.78175661229882%; top: 52.0523426366161%; width: 1px; height: 1px; --star-opacity: 0.10327261429124342; animation-delay: 2.1723005876759505s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 84.28638180478629%; top: 50.15117571883096%; width: 1px; height: 1px; --star-opacity: 0.21853246010822597; animation-delay: 0.24021405296507592s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 77.9875047333044%; top: 95.31601868781426%; width: 1px; height: 1px; --star-opacity: 0.18321475176222102; animation-delay: 0.33911905517086116s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 42.414353287471506%; top: 83.1773353162766%; width: 1px; height: 1px; --star-opacity: 0.14326115527212888; animation-delay: 2.07409145710162s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 67.41274780129622%; top: 76.60499498805055%; width: 1px; height: 1px; --star-opacity: 0.2223821175010055; animation-delay: 0.2578892456923934s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 34.484774818493634%; top: 87.11759583872725%; width: 1px; height: 1px; --star-opacity: 0.10147994214497782; animation-delay: 0.7370802437512697s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 20.76704940034807%; top: 27.768256947082737%; width: 1px; height: 1px; --star-opacity: 0.19346838082407686; animation-delay: 1.2930065260668133s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 74.90919313817403%; top: 41.09319832966034%; width: 1px; height: 1px; --star-opacity: 0.12117873258804521; animation-delay: 2.263882733171683s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 99.46906750348568%; top: 27.444784306207502%; width: 2px; height: 2px; --star-opacity: 0.2352018986197063; animation-delay: 0.5252024930627965s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 67.7662902067583%; top: 49.0747916099999%; width: 1px; height: 1px; --star-opacity: 0.1181872737718541; animation-delay: 0.9160929063559544s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 13.068929558233556%; top: 75.38621110273651%; width: 1px; height: 1px; --star-opacity: 0.13364687148563517; animation-delay: 2.0778311912793654s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 27.99622731544077%; top: 52.76897048905135%; width: 1px; height: 1px; --star-opacity: 0.1859624853269339; animation-delay: 1.9922044544486839s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 59.42758078217947%; top: 39.430692085331046%; width: 1px; height: 1px; --star-opacity: 0.17987162669968568; animation-delay: 0.9364678033679072s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 62.66440646326319%; top: 85.39517098463739%; width: 1px; height: 1px; --star-opacity: 0.2045258876651608; animation-delay: 0.33394897582717575s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 70.12957531249062%; top: 68.59262278936701%; width: 1px; height: 1px; --star-opacity: 0.2306779229766157; animation-delay: 1.0326382939063112s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 32.2986108232197%; top: 45.45939338614813%; width: 1px; height: 1px; --star-opacity: 0.22922554423638408; animation-delay: 1.1900179290371014s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 92.38099404943394%; top: 96.89960990604047%; width: 1px; height: 1px; --star-opacity: 0.14877145182918924; animation-delay: 1.350619865819402s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 74.36854036643616%; top: 40.0796928772481%; width: 1px; height: 1px; --star-opacity: 0.23563089259462616; animation-delay: 0.9375169773343611s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 88.95452515673121%; top: 60.95163969735672%; width: 1px; height: 1px; --star-opacity: 0.24346082779424255; animation-delay: 2.289431504648868s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 16.341199982411027%; top: 35.98706272993453%; width: 1px; height: 1px; --star-opacity: 0.2057403315449941; animation-delay: 0.9036390773641048s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 72.95444435783642%; top: 81.29960551955753%; width: 1px; height: 1px; --star-opacity: 0.16260022303830235; animation-delay: 0.17448703843867652s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 64.00552757082974%; top: 55.960267402059316%; width: 1px; height: 1px; --star-opacity: 0.08403084747521945; animation-delay: 1.0877724877911696s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 62.782225468691124%; top: 91.87761717170525%; width: 1px; height: 1px; --star-opacity: 0.21447753437741274; animation-delay: 1.1326084065346322s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 39.91274681578444%; top: 81.24161782563606%; width: 1px; height: 1px; --star-opacity: 0.20249293688301476; animation-delay: 0.7272768586850484s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 0.2801888963361199%; top: 11.350218567690929%; width: 1px; height: 1px; --star-opacity: 0.12480749605411053; animation-delay: 0.8652879565940885s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 44.70738664130048%; top: 84.57670148569991%; width: 1px; height: 1px; --star-opacity: 0.12546450659718825; animation-delay: 0.22119912126857905s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 42.02720193544884%; top: 98.73476633557051%; width: 1px; height: 1px; --star-opacity: 0.18581860071527975; animation-delay: 1.0485414076762702s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 78.5030035739647%; top: 71.79901694894251%; width: 1px; height: 1px; --star-opacity: 0.15730208557082556; animation-delay: 1.3997326522649516s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 46.34909097119705%; top: 53.127794803704234%; width: 1px; height: 1px; --star-opacity: 0.08796347710471965; animation-delay: 1.7573115097073468s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 68.1494842503557%; top: 26.00050415113739%; width: 1px; height: 1px; --star-opacity: 0.23110301833653246; animation-delay: 0.12421111337290597s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 9.790515440406654%; top: 73.18617920155985%; width: 1px; height: 1px; --star-opacity: 0.10069073368337703; animation-delay: 2.1426627836992123s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 48.45158719865711%; top: 61.84451846413178%; width: 2px; height: 2px; --star-opacity: 0.16829878824434408; animation-delay: 1.958956628631149s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 75.45512380403329%; top: 77.82706984110138%; width: 1px; height: 1px; --star-opacity: 0.14795454977884662; animation-delay: 1.1203619253651715s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 12.712421473089396%; top: 4.96302091161337%; width: 2px; height: 2px; --star-opacity: 0.22803738473321644; animation-delay: 0.6288183854986182s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 87.78926596317834%; top: 66.51651337941128%; width: 1px; height: 1px; --star-opacity: 0.16668253470513622; animation-delay: 1.206362419345052s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 98.39214099966627%; top: 17.9435810782866%; width: 1px; height: 1px; --star-opacity: 0.09899922516217456; animation-delay: 0.9884331684029604s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 73.39825342879027%; top: 86.80630926544698%; width: 1px; height: 1px; --star-opacity: 0.14000561134437609; animation-delay: 0.21329815841834576s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 92.6917628737336%; top: 93.52629296192465%; width: 2px; height: 2px; --star-opacity: 0.08057453082575926; animation-delay: 1.9085306591507565s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 14.77087616874292%; top: 13.516172960094774%; width: 1px; height: 1px; --star-opacity: 0.09653926672377063; animation-delay: 0.7163901394268285s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 86.74286080998074%; top: 69.69102794474513%; width: 1px; height: 1px; --star-opacity: 0.19121146902565156; animation-delay: 1.5391511765927046s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 43.868938585853535%; top: 49.87344231838616%; width: 1px; height: 1px; --star-opacity: 0.16975843602609508; animation-delay: 1.7205411453154258s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 95.73114822102703%; top: 86.69788356907604%; width: 2px; height: 2px; --star-opacity: 0.16157342196332242; animation-delay: 1.6420427519358436s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 83.49748883386049%; top: 83.62755384075183%; width: 1px; height: 1px; --star-opacity: 0.14186334374955792; animation-delay: 0.6890994232580829s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 25.810531977140528%; top: 22.810652800820762%; width: 2px; height: 2px; --star-opacity: 0.23436861497341027; animation-delay: 2.4015655805051304s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 99.80925182451917%; top: 77.15483680027589%; width: 1px; height: 1px; --star-opacity: 0.1370776621932298; animation-delay: 2.328403005701323s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 77.38836396076134%; top: 31.461530596828922%; width: 1px; height: 1px; --star-opacity: 0.11944926739084379; animation-delay: 0.5690441102079347s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 73.90260380089244%; top: 26.560804459456488%; width: 1px; height: 1px; --star-opacity: 0.11917214327535919; animation-delay: 1.3314366032300105s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 59.90981132434984%; top: 90.64422813319261%; width: 1px; height: 1px; --star-opacity: 0.0992086544577526; animation-delay: 1.0849227871648262s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 39.85747201319524%; top: 86.6260270041213%; width: 1px; height: 1px; --star-opacity: 0.14265078650109064; animation-delay: 0.9866616642865134s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 72.98354513602857%; top: 51.178173574327076%; width: 1px; height: 1px; --star-opacity: 0.19307085137745122; animation-delay: 0.8714091450424388s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 84.76466143059318%; top: 16.441150560187666%; width: 1px; height: 1px; --star-opacity: 0.11834135844998189; animation-delay: 0.9912829329796929s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 96.11961441950129%; top: 71.98543752769653%; width: 1px; height: 1px; --star-opacity: 0.1262472788557476; animation-delay: 1.5052639492704565s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 74.95490761449686%; top: 45.502118102322655%; width: 1px; height: 1px; --star-opacity: 0.19011415833464562; animation-delay: 2.4568395315105955s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 32.324922667871256%; top: 50.629641524588486%; width: 1px; height: 1px; --star-opacity: 0.12659258172204185; animation-delay: 1.2777690360386917s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 34.34597938664686%; top: 42.12022716684063%; width: 2px; height: 2px; --star-opacity: 0.17958396325411854; animation-delay: 0.6141648505459132s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 79.6020672128335%; top: 64.33285854775498%; width: 1px; height: 1px; --star-opacity: 0.24468294219314268; animation-delay: 1.00439931610566s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 7.054549602715121%; top: 21.315744625413192%; width: 1px; height: 1px; --star-opacity: 0.09364293066407169; animation-delay: 1.9939088655458748s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 44.25340490123856%; top: 0.5947916247161733%; width: 1px; height: 1px; --star-opacity: 0.08894964102125527; animation-delay: 0.9500356623513673s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 87.95889081051615%; top: 7.776159958359097%; width: 1px; height: 1px; --star-opacity: 0.12544725948803437; animation-delay: 0.8611513689746333s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 43.45262587952183%; top: 34.76689374424684%; width: 1px; height: 1px; --star-opacity: 0.12579225271787112; animation-delay: 0.16234131113557232s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 85.08787815109994%; top: 85.81050722282107%; width: 1px; height: 1px; --star-opacity: 0.1849034319152531; animation-delay: 1.0763959163258865s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 27.45624433886318%; top: 37.684885041668814%; width: 1px; height: 1px; --star-opacity: 0.20154252777066123; animation-delay: 2.4780105391510485s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 50.41904205762208%; top: 16.534034488461526%; width: 1px; height: 1px; --star-opacity: 0.12641254711233807; animation-delay: 0.5387573582578759s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 88.52127270402579%; top: 72.46473339408259%; width: 1px; height: 1px; --star-opacity: 0.1803457187774844; animation-delay: 1.2434624012582276s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 86.76488652436933%; top: 55.41701524433215%; width: 1px; height: 1px; --star-opacity: 0.22451885962521334; animation-delay: 1.6689036173508933s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 86.72569604844156%; top: 48.37396215728346%; width: 1px; height: 1px; --star-opacity: 0.23678503409243917; animation-delay: 2.3355043881630833s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 83.5251073784712%; top: 37.06521261916047%; width: 1px; height: 1px; --star-opacity: 0.1075254997741228; animation-delay: 1.6519537704043799s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 28.520855742847907%; top: 86.42479465720353%; width: 1px; height: 1px; --star-opacity: 0.10406048801439073; animation-delay: 1.9195678266876963s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 60.28898335019379%; top: 31.566131768644958%; width: 1px; height: 1px; --star-opacity: 0.1407350607235196; animation-delay: 0.49425898427473s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 81.2942472267887%; top: 13.606712237644825%; width: 2px; height: 2px; --star-opacity: 0.09182804099511784; animation-delay: 0.3190135219664858s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 50.32380454673974%; top: 78.43062173170678%; width: 1px; height: 1px; --star-opacity: 0.1372504948448483; animation-delay: 0.4826574024282268s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 55.856083782976995%; top: 58.79310560771712%; width: 1px; height: 1px; --star-opacity: 0.1717930684420061; animation-delay: 1.1204581481327551s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 27.10181166911164%; top: 15.89975503326988%; width: 1px; height: 1px; --star-opacity: 0.12606634131468622; animation-delay: 0.5997052537695557s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 73.88913357025774%; top: 68.31830957276284%; width: 1px; height: 1px; --star-opacity: 0.1807773599459741; animation-delay: 0.05946674069241681s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 5.06698625037707%; top: 16.57806786803243%; width: 1px; height: 1px; --star-opacity: 0.19330636630718767; animation-delay: 2.4916581666679214s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 34.768355475710635%; top: 94.35517004027454%; width: 2px; height: 2px; --star-opacity: 0.17322066153672805; animation-delay: 0.3223879119903905s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 8.596130990906959%; top: 28.470462554974073%; width: 1px; height: 1px; --star-opacity: 0.20010380343488054; animation-delay: 1.8566308810974346s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 28.326812492474673%; top: 38.45929600918233%; width: 1px; height: 1px; --star-opacity: 0.13710544624301807; animation-delay: 2.3836489633664653s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 79.41720982291626%; top: 61.260076031664845%; width: 1px; height: 1px; --star-opacity: 0.18259208883095662; animation-delay: 0.12363905853188945s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 74.23784923012853%; top: 62.388076497044295%; width: 1px; height: 1px; --star-opacity: 0.18621616545489633; animation-delay: 0.45332841638719007s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 68.7211289281575%; top: 25.06117530555857%; width: 1px; height: 1px; --star-opacity: 0.21229952134514046; animation-delay: 1.707333586021522s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 51.64304887193427%; top: 4.388298180776539%; width: 1px; height: 1px; --star-opacity: 0.11344731302495978; animation-delay: 0.953015107072695s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 6.368830964006856%; top: 59.952675208107294%; width: 1px; height: 1px; --star-opacity: 0.1543818851324898; animation-delay: 2.129563686508806s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 68.93288020002298%; top: 3.0227235449587164%; width: 1px; height: 1px; --star-opacity: 0.23434613632375534; animation-delay: 1.1519350164803155s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 67.24463932862528%; top: 71.79153478229769%; width: 1px; height: 1px; --star-opacity: 0.12175418432112728; animation-delay: 1.1848220674473162s;"></span><span _ngcontent-ng-c2524717865="" class="background-star" style="left: 34.385551498749855%; top: 31.579172429014335%; width: 1px; height: 1px; --star-opacity: 0.11509659849315262; animation-delay: 1.309319191598396s;"></span><!--container--></div><div _ngcontent-ng-c2524717865="" aria-hidden="true" class="stars"><span _ngcontent-ng-c2524717865="" class="star star-1"></span><span _ngcontent-ng-c2524717865="" class="star star-2"></span><span _ngcontent-ng-c2524717865="" class="star star-3"></span><span _ngcontent-ng-c2524717865="" class="star star-4"></span><span _ngcontent-ng-c2524717865="" class="star star-5"></span><span _ngcontent-ng-c2524717865="" class="star star-6"></span><span _ngcontent-ng-c2524717865="" class="star star-7"></span><span _ngcontent-ng-c2524717865="" class="star star-8"></span><span _ngcontent-ng-c2524717865="" class="star star-9"></span><span _ngcontent-ng-c2524717865="" class="star star-10"></span><span _ngcontent-ng-c2524717865="" class="star star-11"></span><span _ngcontent-ng-c2524717865="" class="star star-12"></span></div><h2 _ngcontent-ng-c2524717865="" class="journey-text"> BEGIN YOUR JOURNEY </h2><main _ngcontent-ng-c2524717865="" class="create-account-content"><form _ngcontent-ng-c2524717865="" novalidate="" class="credentials ng-untouched ng-pristine ng-valid" jsaction="submit:;"><div _ngcontent-ng-c2524717865="" class="field"><input _ngcontent-ng-c2524717865="" id="username" name="username" type="text" placeholder=" " autocomplete="username" class="ng-untouched ng-pristine ng-valid" value="" jsaction="input:;blur:;compositionstart:;compositionend:;"><label _ngcontent-ng-c2524717865="" for="username"> USERNAME </label></div><div _ngcontent-ng-c2524717865="" class="field"><input _ngcontent-ng-c2524717865="" id="email" name="email" type="email" placeholder=" " autocomplete="email" class="ng-untouched ng-pristine ng-valid" value="" jsaction="input:;blur:;compositionstart:;compositionend:;"><label _ngcontent-ng-c2524717865="" for="email"> EMAIL </label></div><div _ngcontent-ng-c2524717865="" class="field"><input _ngcontent-ng-c2524717865="" id="password" name="password" type="password" placeholder=" " autocomplete="new-password" class="ng-untouched ng-pristine ng-valid" value="" jsaction="input:;blur:;compositionstart:;compositionend:;"><label _ngcontent-ng-c2524717865="" for="password"> PASSWORD </label></div><div _ngcontent-ng-c2524717865="" class="field"><input _ngcontent-ng-c2524717865="" id="confirmPassword" name="confirmPassword" type="password" placeholder=" " autocomplete="new-password" class="ng-untouched ng-pristine ng-valid" value="" jsaction="input:;blur:;compositionstart:;compositionend:;"><label _ngcontent-ng-c2524717865="" for="confirmPassword"> CONFIRM PASSWORD </label></div><!--container--><!--container--><button _ngcontent-ng-c2524717865="" type="submit" class="create-button"><!--container--> CREATE ACCOUNT <!--container--></button></form><p _ngcontent-ng-c2524717865="" class="login-link"><span _ngcontent-ng-c2524717865=""> Already have an account? </span><button _ngcontent-ng-c2524717865="" type="button" routerlink="" class="login-link-button" tabindex="0" jsaction="click:;"> LOG IN. </button></p></main></div></app-create-account><!--container--></app-root>
+<script src="main.js" type="module"></script>
+
+<script id="ng-state" type="application/json">{"__nghData__":[{"t":{"3":"t0","37":"t1","38":"t2","40":"t3","41":"t4"},"c":{"3":[{"i":"t0","r":1,"x":180}],"37":[],"38":[],"40":[],"41":[{"i":"t4","r":1}]}},{"c":{"0":[{"i":"c2524717865","r":1}]}}]}</script></body></html>
