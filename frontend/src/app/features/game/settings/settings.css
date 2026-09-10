@@ -1,0 +1,858 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: #000;
+    color: #fff;
+}
+
+.settings-page {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background: #000;
+}
+
+/* -----------------------------
+   STAR FIELD
+----------------------------- */
+
+.star-field {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    display: block;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0.45;
+}
+
+/* Individual positions */
+
+.star-1 {
+    top: 8%;
+    left: 14%;
+    opacity: 0.3;
+}
+
+.star-2 {
+    top: 17%;
+    left: 72%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.6;
+}
+
+.star-3 {
+    top: 28%;
+    left: 38%;
+    opacity: 0.25;
+}
+
+.star-4 {
+    top: 12%;
+    left: 91%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.5;
+}
+
+.star-5 {
+    top: 43%;
+    left: 8%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.35;
+}
+
+.star-6 {
+    top: 52%;
+    left: 82%;
+    opacity: 0.3;
+}
+
+.star-7 {
+    top: 67%;
+    left: 23%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.55;
+}
+
+.star-8 {
+    top: 76%;
+    left: 91%;
+    opacity: 0.25;
+}
+
+.star-9 {
+    top: 84%;
+    left: 47%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.5;
+}
+
+.star-10 {
+    top: 35%;
+    left: 63%;
+    opacity: 0.2;
+}
+
+.star-11 {
+    top: 61%;
+    left: 55%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.4;
+}
+
+.star-12 {
+    top: 91%;
+    left: 12%;
+    opacity: 0.3;
+}
+
+.star-13 {
+    top: 23%;
+    left: 5%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.45;
+}
+
+.star-14 {
+    top: 72%;
+    left: 69%;
+    opacity: 0.25;
+}
+
+.star-15 {
+    top: 48%;
+    left: 31%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.5;
+}
+
+.star-16 {
+    top: 94%;
+    left: 78%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.35;
+}
+
+.star-17 {
+    top: 5%;
+    left: 51%;
+    opacity: 0.2;
+}
+
+.star-18 {
+    top: 57%;
+    left: 95%;
+    width: 1px;
+    height: 1px;
+    opacity: 0.4;
+}
+
+/* -----------------------------
+   BACK BUTTON
+----------------------------- */
+
+.back-button {
+    position: absolute;
+    top: 28px;
+    left: 32px;
+    z-index: 2;
+
+    border: 0;
+    padding: 0;
+
+    background: transparent;
+    color: #666;
+
+    font: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+.back-button:hover {
+    color: #fff;
+    transform: translateX(-3px);
+}
+
+/* -----------------------------
+   HEADER
+----------------------------- */
+
+.settings-header {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    justify-content: center;
+
+    padding-top: 42px;
+}
+
+.settings-header h1 {
+    margin: 0;
+
+    color: #fff;
+
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-align: center;
+}
+
+/* -----------------------------
+   CONTENT
+----------------------------- */
+
+.settings-content {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: calc(100vh - 190px);
+
+    padding: 40px 24px 120px;
+}
+
+.settings-section {
+    width: min(760px, 100%);
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 28px;
+
+    color: #aaa;
+    text-align: center;
+}
+
+.settings-section p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* -----------------------------
+   SETTING ROWS
+----------------------------- */
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 40px;
+    min-height: 64px;
+}
+
+.setting-info {
+    text-align: left;
+}
+
+.setting-info h2 {
+    margin: 0;
+
+    color: #fff;
+
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+}
+
+.setting-info p {
+    margin: 6px 0 0;
+
+    color: #555;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   INDIVIDUAL ORBITING STAR TOGGLE
+   ========================================================= */
+
+.star-btn {
+    position: relative;
+
+    flex: 0 0 44px;
+
+    width: 44px;
+    height: 44px;
+
+    padding: 0;
+    border: 0;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    overflow: visible;
+}
+
+/* =========================================================
+   SVG STAR SYSTEM
+   ========================================================= */
+
+.star-system {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+
+    transform: translate(calc(-50% + 2px), calc(-50% - 1px));
+
+    display: block;
+    overflow: visible;
+    pointer-events: none;
+}
+
+/*
+ * Everything inside this group shares the exact same
+ * coordinate system.
+ *
+ * The rotation is applied around the center of the SVG,
+ * so the visible ellipse and the planet's motion path
+ * rotate together.
+ */
+
+.star-orbit-system {
+    transform-origin: 5px 0px;
+}
+
+/* =========================================================
+   ORBIT
+   ========================================================= */
+
+.star-orbit {
+    fill: none;
+
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 1;
+
+    vector-effect: non-scaling-stroke;
+
+    opacity: 0;
+
+    transition: opacity 180ms ease;
+}
+
+.star-btn.on .star-orbit {
+    opacity: 1;
+}
+
+/*
+ * Invisible path used by <animateMotion>.
+ *
+ * It has the exact same geometry as the visible ellipse:
+ *
+ * center = 22,22
+ * radius X = 20
+ * radius Y = 11
+ */
+
+.star-orbit-path {
+    fill: none;
+    stroke: none;
+
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* =========================================================
+   CENTRAL STAR
+   ========================================================= */
+
+.star-core {
+    fill: #3f3f3f;
+
+    transition:
+        fill 180ms ease,
+        filter 180ms ease;
+}
+
+/* Hover */
+
+.star-btn:hover .star-core {
+    fill: #aaa;
+
+    filter:
+        drop-shadow(0 0 5px rgba(255, 255, 255, 0.25));
+}
+
+/* Enabled */
+
+.star-btn.on .star-core {
+    fill: #fff;
+
+    filter:
+        drop-shadow(0 0 4px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 9px rgba(255, 255, 255, 0.4));
+}
+
+/* =========================================================
+   ORBITING PLANET
+   ========================================================= */
+
+.star-companion {
+    fill: #fff;
+
+    opacity: 0;
+
+    filter:
+        drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+
+    pointer-events: none;
+}
+
+.star-btn.on .star-companion {
+    opacity: 1;
+}
+
+/*
+ * IMPORTANT:
+ *
+ * There is intentionally NO CSS offset-path here.
+ *
+ * The planet is animated by the SVG <animateMotion>
+ * element in the HTML.
+ *
+ * That means the planet follows the exact same mathematical
+ * ellipse that is being drawn on screen.
+ */
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.star-btn:focus-visible {
+    outline: 1px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 3px;
+    border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .star-btn.on .star-companion {
+        opacity: 0;
+    }
+}
+
+/* -----------------------------
+   TWO-STAR ORBIT TOGGLE
+----------------------------- */
+
+.binary-toggle {
+    position: relative;
+    flex: 0 0 64px;
+    width: 64px;
+    height: 40px;
+
+    border: 0;
+    padding: 0;
+
+    background: transparent;
+    cursor: pointer;
+    overflow: visible;
+}
+
+
+/* =========================================================
+   BINARY STAR OBJECT
+   ========================================================= */
+
+/*
+   Each .binary-star is a complete orbiting object.
+
+   The star core and its trail live inside it, so they
+   rotate together as one object.
+*/
+
+.binary-star {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 8px;
+    height: 8px;
+
+    margin: -4px 0 0 -4px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   STAR CORE
+   ========================================================= */
+
+.binary-star-core {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #3d3d3d;
+
+    transition:
+        background 180ms ease,
+        box-shadow 180ms ease;
+}
+
+
+/* =========================================================
+   STARTING POSITIONS
+   ========================================================= */
+
+.binary-star-left {
+    transform: translateX(-18px);
+}
+
+.binary-star-right {
+    transform: translateX(18px);
+}
+
+
+/* =========================================================
+   TRAILS
+   ========================================================= */
+
+.binary-star-trail {
+    position: absolute;
+
+    width: 10px;
+    height: 3px;
+
+    border-radius: 999px;
+
+    background: linear-gradient(
+        to left,
+        rgba(248, 246, 246, 1),
+        rgba(71, 71, 71, 0.5)
+    );
+
+    opacity: 0;
+
+    filter: blur(1px);
+
+    pointer-events: none;
+}
+
+
+.binary-star-left .binary-star-trail {
+    left: -2px;
+    top: 100%;
+
+    transform: translateY(-50%) rotate(270deg);
+}
+
+.binary-star-right .binary-star-trail {
+    left: -2px;
+    bottom: 100%;
+    transform: translateY(50%) rotate(90deg);
+}
+
+/* =========================================================
+   ENABLED STATE
+   ========================================================= */
+
+.binary-toggle.on .binary-star-core {
+    background: #fff;
+
+    box-shadow:
+        0 0 7px rgba(255, 255, 255, 0.8),
+        0 0 14px rgba(255, 255, 255, 0.3);
+}
+
+.binary-toggle.on .binary-star-trail {
+    opacity: 0.75;
+}
+
+
+/* =========================================================
+   ORBITING MOTION
+   ========================================================= */
+
+/*
+   Both objects orbit the exact same center.
+
+   They remain 180 degrees apart throughout the
+   entire animation.
+*/
+
+.binary-toggle.on .binary-star-left {
+    animation:
+        binary-star-orbit-left 2.4s linear infinite;
+}
+
+.binary-toggle.on .binary-star-right {
+    animation:
+        binary-star-orbit-right 2.4s linear infinite;
+}
+
+
+/* =========================================================
+   LEFT STAR
+   ========================================================= */
+
+@keyframes binary-star-orbit-left {
+
+    from {
+        transform:
+            rotate(0deg)
+            translateX(-18px);
+    }
+
+    to {
+        transform:
+            rotate(360deg)
+            translateX(-18px);
+    }
+}
+
+
+/* =========================================================
+   RIGHT STAR
+   ========================================================= */
+
+@keyframes binary-star-orbit-right {
+
+    from {
+        transform:
+            rotate(0deg)
+            translateX(18px);
+    }
+
+    to {
+        transform:
+            rotate(360deg)
+            translateX(18px);
+    }
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.binary-toggle:hover .binary-star-core {
+    background: #aaa;
+}
+
+.binary-toggle.on:hover .binary-star-core {
+    background: #fff;
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.binary-toggle:focus-visible {
+    outline: 1px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 4px;
+    border-radius: 50%;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .binary-toggle.on .binary-star-left,
+    .binary-toggle.on .binary-star-right {
+        animation: none;
+    }
+
+    .binary-toggle.on .binary-star-trail {
+        opacity: 0;
+    }
+}
+
+/* -----------------------------
+   CONSTELLATION SLIDER
+----------------------------- */
+
+.constellation-slider {
+    position: relative;
+
+    flex: 0 0 300px;
+
+    width: 300px;
+    height: 42px;
+}
+
+.slider-stars {
+    position: absolute;
+
+    top: 50%;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: space-between;
+
+    transform: translateY(-50%);
+
+    pointer-events: none;
+}
+
+.slider-star {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #333;
+
+    transition:
+        background 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+.slider-star.lit {
+    background: #fff;
+
+    box-shadow:
+        0 0 7px rgba(255, 255, 255, 0.7),
+        0 0 14px rgba(255, 255, 255, 0.2);
+
+    transform: scale(1.15);
+}
+
+.constellation-slider input {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+
+    opacity: 0;
+
+    cursor: pointer;
+}
+
+.constellation-slider::before {
+    content: '';
+
+    position: absolute;
+
+    top: 50%;
+    left: 4px;
+    right: 4px;
+
+    height: 1px;
+
+    background: #292929;
+
+    transform: translateY(-50%);
+}
+
+/* -----------------------------
+   SECTION NAVIGATION
+----------------------------- */
+
+.section-navigation {
+    position: absolute;
+
+    left: 50%;
+    bottom: 32px;
+
+    z-index: 2;
+
+    display: flex;
+
+    gap: 28px;
+
+    transform: translateX(-50%);
+}
+
+.section-navigation button {
+    border: 0;
+
+    padding: 4px 0;
+
+    background: transparent;
+    color: #555;
+
+    font: inherit;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+
+    cursor: pointer;
+
+    transition:
+        color 160ms ease,
+        opacity 160ms ease;
+}
+
+.section-navigation button:hover {
+    color: #aaa;
+}
+
+.section-navigation button.active {
+    color: #fff;
+}
+
+/* -----------------------------
+   MOBILE
+----------------------------- */
+
+@media (max-width: 600px) {
+    .back-button {
+        top: 20px;
+        left: 20px;
+    }
+
+    .settings-header {
+        padding-top: 70px;
+    }
+
+    .settings-content {
+        padding-inline: 18px;
+    }
+
+    .section-navigation {
+        gap: 16px;
+    }
+
+    .setting-row {
+        gap: 20px;
+    }
+
+    .setting-info h2 {
+        font-size: 15px;
+    }
+
+    .constellation-slider {
+        flex-basis: 220px;
+        width: 220px;
+    }
+}

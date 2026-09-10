@@ -1,0 +1,912 @@
+/* =========================================================
+   BASE
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  --background: #030303;
+
+  --surface: rgba(10, 10, 10, 0.65);
+  --surface-light: rgba(255, 255, 255, 0.04);
+
+  --border: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.4);
+  --border-focus: rgba(255, 255, 255, 0.7);
+
+  --text-primary: #ffffff;
+  --text-secondary: #bdbdbd;
+  --text-muted: rgba(255, 255, 255, 0.5);
+
+  --radius-small: 8px;
+  --radius-medium: 10px;
+  --radius-large: 20px;
+
+  --transition: 0.2s ease;
+}
+
+/* =========================================================
+   START PAGE
+   ========================================================= */
+
+.start-page {
+  position: relative;
+
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  overflow: hidden;
+
+  background: var(--background);
+}
+
+/* =========================================================
+   BACKGROUND STARS
+   STATIC — DO NOT ANIMATE
+   ========================================================= */
+
+.background-stars {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+.background-star {
+  position: absolute;
+
+  border-radius: 50%;
+
+  background: rgb(202, 202, 202);
+
+  opacity: var(--star-opacity);
+}
+
+/* =========================================================
+   RANDOM CELESTIAL EVENTS
+   COMETS / METEORS — THESE ARE THE ONLY MOVING OBJECTS
+   ========================================================= */
+
+.celestial-events {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+  overflow: hidden;
+
+  z-index: 1;
+}
+
+.celestial-event {
+  position: absolute;
+
+  display: block;
+
+  opacity: 0;
+}
+
+/* =========================================================
+   COMETS
+   ========================================================= */
+
+.comet {
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+
+  background: aliceblue;
+
+  box-shadow:
+    0 0 4px rgba(240, 248, 255, 0.8),
+    -25px 15px 8px rgba(240, 248, 255, 0.15),
+    -50px 30px 12px rgba(240, 248, 255, 0.05);
+
+  animation: comet-fly var(--event-duration) ease-in-out var(--event-delay) infinite;
+}
+
+@keyframes comet-fly {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-25deg);
+  }
+
+  10% {
+    opacity: 0.8;
+  }
+
+  30% {
+    opacity: 0.5;
+  }
+
+  45% {
+    opacity: 0;
+    transform: translate(180px, 110px) rotate(-25deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(180px, 110px) rotate(-25deg);
+  }
+}
+
+/* =========================================================
+   METEORS
+   ========================================================= */
+
+.meteor {
+  width: 2px;
+  height: 2px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+
+  animation: meteor-fall var(--event-duration) ease-out var(--event-delay) infinite;
+}
+
+@keyframes meteor-fall {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+
+  8% {
+    opacity: 0.7;
+  }
+
+  35% {
+    opacity: 0;
+    transform: translate(100px, 100px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(100px, 100px);
+  }
+}
+
+/* =========================================================
+   MAIN STATIC STARS
+   STATIC — DO NOT ANIMATE
+   ========================================================= */
+
+.stars {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: 1;
+}
+
+.star {
+  position: absolute;
+
+  width: 2px;
+  height: 2px;
+
+  border-radius: 50%;
+
+  background: aliceblue;
+
+  opacity: 0.4;
+}
+
+/* =========================================================
+   STAR POSITIONS
+   ========================================================= */
+
+.star-1 {
+  left: 8%;
+  top: 20%;
+}
+
+.star-2 {
+  left: 18%;
+  top: 72%;
+}
+
+.star-3 {
+  left: 29%;
+  top: 15%;
+}
+
+.star-4 {
+  left: 42%;
+  top: 10%;
+}
+
+.star-5 {
+  left: 57%;
+  top: 18%;
+}
+
+.star-6 {
+  left: 72%;
+  top: 29%;
+}
+
+.star-7 {
+  left: 87%;
+  top: 65%;
+}
+
+.star-8 {
+  left: 75%;
+  top: 84%;
+}
+
+.star-9 {
+  left: 48%;
+  top: 88%;
+}
+
+.star-10 {
+  left: 27%;
+  top: 84%;
+}
+
+.star-11 {
+  left: 12%;
+  top: 45%;
+}
+
+.star-12 {
+  left: 91%;
+  top: 16%;
+}
+
+/* =========================================================
+   QUESTION CONTAINER
+   ========================================================= */
+
+.question-container {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+  min-height: 100vh;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   QUESTION SCREEN
+   =========================================================
+
+   Every question occupies the exact same position.
+
+   This is important because animate.enter and animate.leave
+   need the old and new screens to overlap while transitioning.
+   ========================================================= */
+
+.question-screen {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: min(700px, calc(100% - 40px));
+
+  text-align: center;
+
+  transform: translate(-50%, -50%);
+}
+
+/* =========================================================
+   ENTER ANIMATION
+   =========================================================
+
+   New question:
+   - starts below
+   - fades in
+   - moves upward into position
+   ========================================================= */
+
+.question-enter {
+  animation: question-enter-animation 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes question-enter-animation {
+  from {
+    opacity: 0;
+
+    transform: translate(-50%, calc(-50% + 110px));
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* =========================================================
+   LEAVE ANIMATION
+   =========================================================
+
+   Previous question:
+   - starts in position
+   - moves upward
+   - fades away
+   ========================================================= */
+
+.question-leave {
+  animation: question-leave-animation 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes question-leave-animation {
+  from {
+    opacity: 1;
+
+    transform: translate(-50%, -50%);
+  }
+
+  to {
+    opacity: 0;
+
+    transform: translate(-50%, calc(-50% - 120px));
+  }
+}
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
+
+.story-screen,
+.choice-screen {
+  text-align: center;
+}
+
+.choice-screen {
+  width: min(650px, calc(100% - 40px));
+}
+
+/* =========================================================
+   CONTENT CARDS
+   ========================================================= */
+
+.story-content,
+.choice-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: var(--radius-large);
+
+  background: var(--surface);
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 255, 255, 0.03);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.story-content {
+  gap: 18px;
+
+  padding: 50px 35px;
+}
+
+.choice-content {
+  padding: 50px 35px;
+}
+
+/* =========================================================
+   STORY
+   ========================================================= */
+
+.story-logo img {
+  display: block;
+
+  width: 100px;
+  height: auto;
+
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8))
+    drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+
+  animation: logoPulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes logoPulse {
+  from {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.story-text {
+  margin: 0;
+
+  color: #dedede;
+
+  font-family: Garamond, Georgia, serif;
+
+  font-size: 20px;
+  line-height: 1.6;
+
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   CHOICE CONTENT
+   ========================================================= */
+
+.eyebrow {
+  margin: 0 0 10px;
+
+  color: var(--text-muted);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 4px;
+}
+
+.choice-content h1 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-family: Garamond, Georgia, serif;
+
+  font-size: 42px;
+  font-weight: 500;
+}
+
+.choice-description {
+  max-width: 450px;
+
+  margin: 15px 0 30px;
+
+  color: var(--text-secondary);
+
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   CHOICE BUTTONS
+   ========================================================= */
+
+.choice-list {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 12px;
+
+  width: 100%;
+  max-width: 500px;
+}
+
+.choice-button {
+  padding: 16px 20px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-medium);
+
+  color: var(--text-primary);
+
+  background: var(--surface-light);
+
+  font-family: inherit;
+  font-size: 15px;
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.choice-button:hover {
+  border-color: var(--border-hover);
+
+  background: rgba(255, 255, 255, 0.08);
+
+  transform: translateY(-2px);
+}
+
+.choice-button.selected {
+  border-color: var(--text-primary);
+
+  background: rgba(255, 255, 255, 0.15);
+
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   USERNAME
+   ========================================================= */
+
+.username-input {
+  width: 100%;
+  max-width: 500px;
+
+  padding: 16px 20px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-medium);
+
+  outline: none;
+
+  color: var(--text-primary);
+
+  background: var(--surface-light);
+
+  font-family: inherit;
+  font-size: 16px;
+
+  text-align: center;
+
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.username-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.username-input:hover {
+  border-color: var(--border-hover);
+}
+
+.username-input:focus {
+  border-color: var(--border-focus);
+
+  background: rgba(255, 255, 255, 0.07);
+
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.06);
+}
+
+/* =========================================================
+   BIRTHDAY
+   ========================================================= */
+
+.birthday-selects {
+  display: flex;
+
+  gap: 12px;
+
+  width: 100%;
+  max-width: 320px;
+
+  margin-top: 10px;
+}
+
+.custom-select {
+  position: relative;
+
+  flex: 1;
+}
+
+.custom-select::after {
+  content: '⌄';
+
+  position: absolute;
+
+  top: 50%;
+  right: 16px;
+
+  color: rgba(255, 255, 255, 0.6);
+
+  font-size: 18px;
+
+  pointer-events: none;
+
+  transform: translateY(-55%);
+}
+
+.custom-select select {
+  width: 100%;
+
+  padding: 16px 42px 16px 18px;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  outline: none;
+
+  color: var(--text-primary);
+
+  background: rgba(20, 20, 20, 0.85);
+
+  font-family: Garamond, Georgia, serif;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.custom-select select:hover {
+  border-color: var(--border-hover);
+
+  background: rgba(30, 30, 30, 0.95);
+}
+
+.custom-select select:focus {
+  border-color: var(--border-focus);
+
+  box-shadow:
+    0 0 15px rgba(255, 255, 255, 0.08),
+    0 0 35px rgba(255, 255, 255, 0.04);
+}
+
+.custom-select select option {
+  color: var(--text-primary);
+
+  background: #101010;
+}
+
+/* =========================================================
+   BIRTHDAY CHECKBOX
+   ========================================================= */
+
+.birthday-checkbox {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+  max-width: 320px;
+
+  margin-top: 22px;
+
+  color: rgba(255, 255, 255, 0.65);
+
+  font-family: Garamond, Georgia, serif;
+
+  font-size: 16px;
+  line-height: 1.3;
+
+  text-align: left;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+.birthday-checkbox input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.checkbox-box {
+  position: relative;
+
+  width: 20px;
+  height: 20px;
+
+  flex: 0 0 20px;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+
+  background: var(--surface-light);
+
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.birthday-checkbox:hover .checkbox-box {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.birthday-checkbox input:checked + .checkbox-box {
+  border-color: var(--text-primary);
+
+  background: var(--text-primary);
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.35),
+    0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+.birthday-checkbox input:checked + .checkbox-box::after {
+  content: '✓';
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  color: #111;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 13px;
+  font-weight: bold;
+
+  transform: translate(-50%, -52%);
+}
+
+/* =========================================================
+   CONTINUE BUTTON
+   ========================================================= */
+
+.continue-button {
+  margin-top: 25px;
+
+  padding: 13px 30px;
+
+  border: 1px solid var(--text-primary);
+  border-radius: var(--radius-small);
+
+  color: #000;
+
+  background: var(--text-primary);
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    transform var(--transition),
+    background-color var(--transition),
+    color var(--transition),
+    box-shadow var(--transition);
+}
+
+.choice-content .continue-button {
+  margin-top: 30px;
+}
+
+.continue-button:hover:not(:disabled) {
+  color: var(--text-primary);
+
+  background: transparent;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.7),
+    0 0 25px rgba(255, 255, 255, 0.15);
+}
+
+.continue-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.continue-button:disabled {
+  opacity: 0.3;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .start-page {
+    padding: 20px;
+  }
+
+  .question-screen {
+    width: calc(100% - 40px);
+  }
+
+  .story-content,
+  .choice-content {
+    padding: 40px 25px;
+  }
+
+  .choice-content h1 {
+    font-size: 34px;
+  }
+
+  .choice-list {
+    grid-template-columns: 1fr;
+  }
+
+  .birthday-selects {
+    flex-direction: column;
+  }
+
+  .birthday-checkbox,
+  .birthday-selects {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 400px) {
+  .start-page {
+    padding: 15px;
+  }
+
+  .question-screen {
+    width: calc(100% - 30px);
+  }
+
+  .story-content,
+  .choice-content {
+    padding: 35px 20px;
+  }
+
+  .story-text {
+    font-size: 18px;
+  }
+
+  .choice-content h1 {
+    font-size: 30px;
+  }
+
+  .choice-description {
+    font-size: 15px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+
+    transition-duration: 0.01ms !important;
+  }
+}

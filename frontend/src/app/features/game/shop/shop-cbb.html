@@ -1,0 +1,87 @@
+<div class="shop-celestial-system" aria-hidden="true">
+
+    <!-- ========================================================= -->
+    <!-- STARS                                                     -->
+    <!-- ========================================================= -->
+
+    <div class="shop-stars">
+
+        @for (star of shopStars; track $index) {
+
+        <span class="shop-star" [style.left.%]="star.left" [style.top.%]="star.top" [style.width.px]="star.size"
+            [style.height.px]="star.size" [style.opacity]="star.opacity">
+        </span>
+
+        }
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- S1                                                        -->
+    <!-- ========================================================= -->
+
+    <div class="shop-s1">
+
+        <div class="shop-s1-glow"></div>
+
+        <div class="shop-s1-core"></div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- S2 ORBIT SYSTEM                                           -->
+    <!-- ========================================================= -->
+
+    <div class="shop-s2-orbit">
+
+        <div class="shop-s2">
+
+            <div class="shop-s2-glow"></div>
+
+            <div class="shop-s2-core"></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="shop-s2-orbit">
+
+        <div class="shop-s2">
+
+            <div class="shop-s2-glow"></div>
+
+            <div class="shop-s2-core"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- LARGE PLANET + MOON                                       -->
+    <!-- ========================================================= -->
+
+    <div class="shop-planet">
+
+        <div class="shop-planet-glow"></div>
+
+        <div class="shop-planet-body">
+
+            <div class="planet-light"></div>
+
+            <div class="planet-shadow"></div>
+
+        </div>
+
+        <div class="shop-moon-orbit">
+
+            <div class="shop-moon-one"></div>
+
+        </div>
+
+    </div>
+
+</div>

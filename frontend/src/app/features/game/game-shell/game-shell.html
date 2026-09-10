@@ -1,0 +1,14 @@
+<div class="relative min-h-screen w-full">
+
+  <app-game-world />
+
+  <app-hud
+    (settingsOpen)="openSettings()"
+    (inventoryOpen)="toggleInventory()"
+  />
+
+  @if (inventoryOpen) {
+    <app-inventory />
+  }
+
+</div>

@@ -1,0 +1,180 @@
+<div class="create-account-screen">
+
+    <!-- =====================================================
+         BACKGROUND STARS
+         ===================================================== -->
+
+    <div class="background-stars" aria-hidden="true">
+
+        @for (star of backgroundStars; track $index) {
+
+        <span class="background-star" [style.left.%]="star.left" [style.top.%]="star.top" [style.width.px]="star.size"
+            [style.height.px]="star.size" [style.--star-opacity]="star.opacity" [style.animation-delay.s]="star.delay">
+        </span>
+
+        }
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN STARS
+         ===================================================== -->
+
+    <div class="stars" aria-hidden="true">
+
+        <span class="star star-1"></span>
+        <span class="star star-2"></span>
+        <span class="star star-3"></span>
+        <span class="star star-4"></span>
+        <span class="star star-5"></span>
+        <span class="star star-6"></span>
+        <span class="star star-7"></span>
+        <span class="star star-8"></span>
+        <span class="star star-9"></span>
+        <span class="star star-10"></span>
+        <span class="star star-11"></span>
+        <span class="star star-12"></span>
+
+    </div>
+
+
+    <!-- =====================================================
+         CREATE ACCOUNT CONTENT
+         ===================================================== -->
+
+    <h2 class="journey-text">
+        BEGIN YOUR JOURNEY
+    </h2>
+    
+    <main class="create-account-content">
+
+        <!-- =================================================
+             CREDENTIALS
+             ================================================= -->
+
+        <form class="credentials" (ngSubmit)="createAccount()">
+
+            <!-- USERNAME -->
+
+            <div class="field">
+
+                <input id="username" name="username" type="text" placeholder=" " autocomplete="username"
+                    [(ngModel)]="username" />
+
+                <label for="username">
+                    USERNAME
+                </label>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="field">
+
+                <input id="email" name="email" type="email" placeholder=" " autocomplete="email" [(ngModel)]="email" />
+
+                <label for="email">
+                    EMAIL
+                </label>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="field">
+
+                <input id="password" name="password" type="password" placeholder=" " autocomplete="new-password"
+                    [(ngModel)]="password" />
+
+                <label for="password">
+                    PASSWORD
+                </label>
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="field">
+
+                <input id="confirmPassword" name="confirmPassword" type="password" placeholder=" "
+                    autocomplete="new-password" [(ngModel)]="confirmPassword" />
+
+                <label for="confirmPassword">
+                    CONFIRM PASSWORD
+                </label>
+
+            </div>
+
+
+            <!-- =================================================
+                 ERROR
+                 ================================================= -->
+
+            @if (errorMessage) {
+
+            <p class="create-account-error">
+                {{ errorMessage }}
+            </p>
+
+            }
+
+
+            <!-- =================================================
+                 SUCCESS
+                 ================================================= -->
+
+            @if (successMessage) {
+
+            <p class="create-account-success">
+                {{ successMessage }}
+            </p>
+
+            }
+
+
+            <!-- =================================================
+                 CREATE
+                 ================================================= -->
+
+            <button type="submit" class="create-button" [disabled]="isCreatingAccount">
+
+                @if (isCreatingAccount) {
+
+                CREATING ACCOUNT...
+
+                }
+
+                @else {
+
+                CREATE ACCOUNT
+
+                }
+
+            </button>
+
+        </form>
+
+
+        <!-- =================================================
+             RETURN TO LOGIN
+             ================================================= -->
+
+        <p class="login-link">
+
+            <span>
+                Already have an account?
+            </span>
+
+            <button type="button" class="login-link-button" (click)="goToLogin()" routerLink="">
+                LOG IN.
+            </button>
+
+        </p>
+
+    </main>
+
+</div>

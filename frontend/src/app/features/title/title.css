@@ -1,0 +1,1229 @@
+/* =========================================================
+   HOST
+   ========================================================= */
+
+:host {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    background: black;
+
+    user-select: none;
+}
+
+
+/* =========================================================
+   TITLE SCREEN
+   ========================================================= */
+
+.title-screen {
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: black;
+
+    overflow: hidden;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   BACKGROUND STARS
+   ========================================================= */
+
+.background-stars {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+.background-star {
+    position: absolute;
+
+    width: auto;
+    height: auto;
+
+    opacity: 0;
+
+    background: rgb(202, 202, 202);
+
+    border-radius: 50%;
+
+    animation:
+        background-star-reveal
+        2.5s
+        ease-out
+        forwards;
+}
+
+@keyframes background-star-reveal {
+
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: var(--star-opacity);
+    }
+
+}
+
+
+/* =========================================================
+   STARS
+   ========================================================= */
+
+.stars {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+.star {
+    position: absolute;
+
+    width: 2px;
+    height: 2px;
+
+    border-radius: 50%;
+
+    background: aliceblue;
+
+    opacity: 0;
+
+    animation:
+        star-appear
+        1.5s
+        ease-out
+        forwards;
+}
+
+
+/* Star positions */
+
+.star-1 {
+    left: 8%;
+    top: 20%;
+    animation-delay: 0.2s;
+}
+
+.star-2 {
+    left: 18%;
+    top: 72%;
+    animation-delay: 0.45s;
+}
+
+.star-3 {
+    left: 29%;
+    top: 15%;
+    animation-delay: 0.7s;
+}
+
+.star-4 {
+    left: 42%;
+    top: 10%;
+    animation-delay: 1s;
+}
+
+.star-5 {
+    left: 57%;
+    top: 18%;
+    animation-delay: 0.35s;
+}
+
+.star-6 {
+    left: 72%;
+    top: 29%;
+    animation-delay: 0.85s;
+}
+
+.star-7 {
+    left: 87%;
+    top: 65%;
+    animation-delay: 0.6s;
+}
+
+.star-8 {
+    left: 75%;
+    top: 84%;
+    animation-delay: 1.1s;
+}
+
+.star-9 {
+    left: 48%;
+    top: 88%;
+    animation-delay: 0.75s;
+}
+
+.star-10 {
+    left: 27%;
+    top: 84%;
+    animation-delay: 1.25s;
+}
+
+.star-11 {
+    left: 12%;
+    top: 45%;
+    animation-delay: 1.4s;
+}
+
+.star-12 {
+    left: 91%;
+    top: 16%;
+    animation-delay: 1.6s;
+}
+
+
+@keyframes star-appear {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(0);
+    }
+
+    60% {
+        opacity: 0.65;
+
+        transform:
+            scale(1);
+    }
+
+    100% {
+        opacity: 0.4;
+
+        transform:
+            scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   RANDOM CELESTIAL EVENTS
+   ========================================================= */
+
+.celestial-events {
+    position: absolute;
+    inset: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+.celestial-event {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: var(--event-size);
+    height: var(--event-size);
+
+    opacity: var(--event-opacity);
+
+    pointer-events: none;
+
+    animation-duration: var(--event-duration);
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+
+    transform-origin: center;
+}
+
+
+/* =========================================================
+   COMET
+   ========================================================= */
+
+.comet {
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: aliceblue;
+
+    filter:
+        drop-shadow(
+            0 0 4px
+            rgba(240, 248, 255, 0.9)
+        );
+
+    animation-name:
+        comet-cross-screen;
+}
+
+.comet::before {
+    content: "";
+
+    position: absolute;
+
+    right: 2px;
+    top: 50%;
+
+    width: 70px;
+    height: 1px;
+
+    transform:
+        translateY(-50%);
+
+    transform-origin:
+        right center;
+
+    background:
+        linear-gradient(
+            to left,
+            rgba(240, 248, 255, 0.75),
+            rgba(240, 248, 255, 0)
+        );
+}
+
+@keyframes comet-cross-screen {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(-20vw);
+    }
+
+    8% {
+        opacity:
+            var(--event-opacity);
+    }
+
+    88% {
+        opacity:
+            var(--event-opacity);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(120vw);
+    }
+
+}
+
+
+/* =========================================================
+   ASTEROID
+   ========================================================= */
+
+.asteroid {
+    border-radius:
+        35% 50% 45% 40%;
+
+    background:
+        rgb(130, 130, 130);
+
+    filter:
+        drop-shadow(
+            0 0 2px
+            rgba(180, 180, 180, 0.5)
+        );
+
+    animation-name:
+        asteroid-cross-screen;
+}
+
+.asteroid::before {
+    content: "";
+
+    position: absolute;
+
+    width: 30%;
+    height: 30%;
+
+    left: 20%;
+    top: 20%;
+
+    border-radius: 50%;
+
+    background:
+        rgba(230, 230, 230, 0.35);
+}
+
+@keyframes asteroid-cross-screen {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(-20vw)
+            rotate(0deg);
+    }
+
+    8% {
+        opacity:
+            var(--event-opacity);
+    }
+
+    92% {
+        opacity:
+            var(--event-opacity);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(120vw)
+            rotate(220deg);
+    }
+
+}
+
+
+/* =========================================================
+   SPECIAL COMET
+   ========================================================= */
+
+.special-comet {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    filter:
+        drop-shadow(
+            0 0 7px
+            rgba(255, 255, 255, 1)
+        )
+        drop-shadow(
+            0 0 18px
+            rgba(200, 220, 255, 0.8)
+        );
+
+    animation-name:
+        special-comet-cross-screen;
+}
+
+.special-comet::before {
+    content: "";
+
+    position: absolute;
+
+    right: 4px;
+    top: 50%;
+
+    width: 180px;
+    height: 2px;
+
+    transform:
+        translateY(-50%);
+
+    background:
+        linear-gradient(
+            to left,
+            rgba(255, 255, 255, 0.95),
+            rgba(210, 225, 255, 0.35),
+            rgba(210, 225, 255, 0)
+        );
+}
+
+.special-comet::after {
+    content: "";
+
+    position: absolute;
+
+    right: 5px;
+    top: 50%;
+
+    width: 100px;
+    height: 6px;
+
+    transform:
+        translateY(-50%);
+
+    background:
+        linear-gradient(
+            to left,
+            rgba(210, 225, 255, 0.2),
+            transparent
+        );
+
+    filter:
+        blur(3px);
+}
+
+@keyframes special-comet-cross-screen {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(-25vw)
+            scale(0.6);
+    }
+
+    10% {
+        opacity: 0.3;
+    }
+
+    20% {
+        opacity: 1;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(0vw)
+            scale(1);
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    92% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            rotate(var(--event-angle))
+            translateX(125vw)
+            scale(1.1);
+    }
+
+}
+
+
+/* =========================================================
+   PERSISTENT SCENE
+   ========================================================= */
+
+/*
+ * THIS is the important wrapper.
+ *
+ * Everything inside this element stays together:
+ *
+ *   - S1
+ *   - S2
+ *   - S3
+ *   - moons
+ *   - SVG orbital paths
+ *   - orbital intersections
+ *   - logo
+ *   - KERRSYZYGY
+ *
+ * When REMEMBER is clicked, this entire composition
+ * becomes smaller and moves upward.
+ */
+
+.persistent-scene {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    transform-origin:
+        center center;
+
+    transition:
+        transform
+        1.2s
+        cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        );
+}
+
+
+/* =========================================================
+   CELESTIAL SYSTEM
+   ========================================================= */
+
+.celestial-system {
+    position: relative;
+
+    width: min(1200px, 96vw);
+    height: min(700px, 68vh);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1;
+
+    overflow: visible;
+}
+
+
+/* =========================================================
+   ORBIT SVG
+   ========================================================= */
+
+.orbit {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    overflow: visible;
+}
+
+
+/* =========================================================
+   STELLAR ORBIT PATHS
+   ========================================================= */
+
+.companion-orbit {
+    fill: none;
+
+    stroke:
+        rgba(240, 248, 255, 0.45);
+
+    stroke-width: 2;
+
+    stroke-linecap: round;
+
+    opacity: 0;
+
+    stroke-dasharray: 1000;
+
+    stroke-dashoffset: 1000;
+
+    animation:
+        stellar-orbit-draw
+        3s
+        cubic-bezier(
+            0.4,
+            0,
+            0.2,
+            1
+        )
+        3.5s
+        forwards;
+}
+
+@keyframes stellar-orbit-draw {
+
+    0% {
+        opacity: 0;
+
+        stroke-dashoffset: 1000;
+    }
+
+    12% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+
+        stroke-dashoffset: 0;
+    }
+
+}
+
+
+/* =========================================================
+   COMPANION STAR SYSTEM
+   ========================================================= */
+
+.companion-star {
+    pointer-events: none;
+
+    opacity: 0;
+
+    /*
+     * TypeScript controls the SVG transform.
+     * CSS does NOT apply transform here.
+     */
+
+    animation:
+        system-star-appear
+        1.2s
+        ease-out
+        8.5s
+        forwards;
+}
+
+@keyframes system-star-appear {
+
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================================
+   COMPANION STAR 1
+   ========================================================= */
+
+.companion-star-one {
+    filter:
+        brightness(1.1);
+}
+
+
+/* =========================================================
+   COMPANION STAR 2
+   ========================================================= */
+
+.companion-star-two {
+    opacity: 0;
+}
+
+
+/* =========================================================
+   STAR GLOW
+   ========================================================= */
+
+.star-glow {
+    fill: white;
+
+    opacity: 0.12;
+
+    filter:
+        blur(5px);
+}
+
+
+/* =========================================================
+   STELLAR BODY
+   ========================================================= */
+
+.stellar-body {
+    fill: white;
+
+    opacity: 1;
+
+    animation:
+        stellar-pulse
+        4s
+        ease-in-out
+        infinite;
+}
+
+@keyframes stellar-pulse {
+
+    0% {
+        filter:
+            drop-shadow(
+                0 0 4px
+                rgba(240, 248, 255, 0.9)
+            )
+            drop-shadow(
+                0 0 10px
+                rgba(200, 220, 255, 0.7)
+            )
+            drop-shadow(
+                0 0 20px
+                rgba(180, 210, 255, 0.3)
+            );
+    }
+
+    50% {
+        filter:
+            drop-shadow(
+                0 0 7px
+                rgba(240, 248, 255, 1)
+            )
+            drop-shadow(
+                0 0 16px
+                rgba(200, 220, 255, 0.9)
+            )
+            drop-shadow(
+                0 0 30px
+                rgba(180, 210, 255, 0.45)
+            );
+    }
+
+    100% {
+        filter:
+            drop-shadow(
+                0 0 4px
+                rgba(240, 248, 255, 0.9)
+            )
+            drop-shadow(
+                0 0 10px
+                rgba(200, 220, 255, 0.7)
+            )
+            drop-shadow(
+                0 0 20px
+                rgba(180, 210, 255, 0.3)
+            );
+    }
+
+}
+
+
+/* =========================================================
+   MOON SYSTEM
+   ========================================================= */
+
+.moon-system {
+    pointer-events: none;
+
+    /*
+     * TypeScript controls the SVG transform.
+     * CSS does NOT apply transform here.
+     */
+}
+
+.moon-1-system {
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   EARTH / MOON SYSTEM BODY
+   ========================================================= */
+
+.star-moon {
+    fill:
+        rgb(145, 145, 145);
+
+    opacity: 0.85;
+
+    pointer-events: none;
+
+    filter: none;
+}
+
+
+/* =========================================================
+   ACTUAL MOON
+   ========================================================= */
+
+.moon-one {
+    opacity: 0.9;
+
+    fill:
+        rgba(100, 100, 100, 0.61);
+}
+
+
+/* =========================================================
+   CENTRAL STAR
+   ========================================================= */
+
+.central-star {
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CENTRAL STELLAR HALO
+   ========================================================= */
+
+.central-star-glow {
+    fill: white;
+
+    opacity: 0;
+
+    filter:
+        blur(100px);
+
+    animation:
+        central-star-support-appear
+        1.2s
+        ease-out
+        2.2s
+        forwards;
+}
+
+
+/* =========================================================
+   CENTRAL STAR RAYS
+   ========================================================= */
+
+.central-star-rays {
+    fill: white;
+
+    opacity: 0;
+
+    filter:
+        blur(2px)
+        drop-shadow(
+            0 0 12px
+            rgba(240, 248, 255, 0.8)
+        );
+
+    animation:
+        central-star-support-appear
+        1.2s
+        ease-out
+        2.2s
+        forwards;
+}
+
+@keyframes central-star-support-appear {
+
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
+
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.game-logo {
+    position: relative;
+
+    z-index: 2;
+
+    width: 25%;
+    height: auto;
+
+    opacity: 0;
+
+    animation:
+        logo-appear
+        1.2s
+        ease-out
+        2.2s
+        forwards;
+}
+
+@keyframes logo-appear {
+
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================================
+   TITLE + BUTTON
+   ========================================================= */
+
+.title-content {
+    position: relative;
+
+    z-index: 3;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 20px;
+
+    color: aliceblue;
+
+    opacity: 0;
+
+    animation:
+        title-appear
+        1s
+        ease-out
+        7.65s
+        forwards;
+}
+
+h1 {
+    margin: 0;
+
+    font-family:
+        'Cormorant Garamond',
+        serif;
+
+    font-size:
+        clamp(48px, 7vw, 100px);
+
+    letter-spacing:
+        0.08em;
+
+    cursor: default;
+}
+
+
+/* =========================================================
+   REMEMBER BUTTON
+   ========================================================= */
+
+#remember {
+    margin-top: 40px;
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-family:
+        'IM FELL English',
+        serif;
+
+    font-size: 18px;
+
+    color: grey;
+
+    opacity: 0;
+
+    animation:
+        button-appear
+        0.8s
+        ease-out
+        8.5s
+        forwards;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease,
+        opacity 0.25s ease;
+}
+
+#remember:hover {
+    color: aliceblue;
+
+    transform:
+        scale(1.2);
+}
+
+
+/* =========================================================
+   REMEMBER LEAVING
+   ========================================================= */
+
+#remember.leaving {
+    opacity: 0 !important;
+
+    pointer-events: none;
+
+    transform:
+        translateY(-30px)
+        scale(0.7);
+}
+
+
+/* =========================================================
+   TITLE ANIMATION
+   ========================================================= */
+
+@keyframes title-appear {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(10px);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   BUTTON ANIMATION
+   ========================================================= */
+
+@keyframes button-appear {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   POINT ANIMATIONS
+   ========================================================= */
+
+@keyframes point-appear {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(-50%)
+            scale(0);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%)
+            scale(1);
+    }
+
+}
+
+@keyframes point-blink {
+
+    0% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%)
+            scale(1);
+
+        box-shadow:
+            0 0 5px
+            rgba(240, 248, 255, 0.7);
+    }
+
+    35% {
+        opacity: 1;
+
+        transform:
+            translateY(-50%)
+            scale(3);
+
+        box-shadow:
+            0 0 18px
+            rgba(240, 248, 255, 1);
+    }
+
+    100% {
+        opacity: 0.55;
+
+        transform:
+            translateY(-50%)
+            scale(1);
+
+        box-shadow:
+            0 0 5px
+            rgba(240, 248, 255, 0.5);
+    }
+
+}
+
+/* =========================================================
+   RESPONSIVE SCALING
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .celestial-system {
+        width: 110vw;
+        height: 65vh;
+    }
+
+    .game-logo {
+        width: 30%;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .celestial-system {
+        width: 125vw;
+        height: 58vh;
+    }
+
+    .game-logo {
+        width: 38%;
+    }
+
+}
+
+/* =========================================================
+   REMEMBER TRANSITION
+   ========================================================= */
+
+.persistent-scene {
+    position: absolute;
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    transform-origin: center center;
+
+    transition:
+        transform 1.2s cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        );
+}
+
+
+.title-screen.zooming-out .persistent-scene {
+    transform:
+        translateY(-20vh)
+        scale(0.5);
+}
+
+.title-screen.zooming-out #remember {
+    opacity: 0;
+    pointer-events: none;
+}

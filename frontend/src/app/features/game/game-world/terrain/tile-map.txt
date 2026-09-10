@@ -1,0 +1,97 @@
+private generateMap(): void {
+
+    const possibilities: Set<TileId>[][] = [];
+
+
+    // ========================================================
+    // START WITH EVERY TILE POSSIBLE EVERYWHERE
+    // ========================================================
+
+    for (let y = 0; y < this.mapHeight; y++) {
+
+      const row: Set<TileId>[] = [];
+
+      for (let x = 0; x < this.mapWidth; x++) {
+
+        row.push(
+          new Set(
+            ALL_TERRAIN_RULES.map(rule => rule.id)
+          )
+        );
+      }
+
+      possibilities.push(row);
+    }
+
+
+    // ========================================================
+    // GENERATE
+    // ========================================================
+
+    const success = this.solve(possibilities);
+
+
+    // ========================================================
+    // IF SOMETHING WENT WRONG
+    // ========================================================
+
+    if (!success) {
+
+      console.error(
+        'Terrain generation failed. The rules contain a contradiction.'
+      );
+
+      this.createFallbackMap();
+
+      return;
+    }
+
+
+    // ========================================================
+    // CONVERT POSSIBILITIES INTO REAL TILES
+    // ========================================================
+
+    this.tiles = [];
+
+    for (let y = 0; y < this.mapHeight; y++) {
+
+      const row: Tile[] = [];
+
+      for (let x = 0; x < this.mapWidth; x++) {
+
+        const possible = [
+          ...possibilities[y][x]
+        ];
+
+        if (possible.length !== 1) {
+
+          console.error(
+            'Cell did not collapse correctly:',
+            x,
+            y,
+            possible
+          );
+
+          row.push(
+            this.makeTile(
+              x,
+              y,
+              'grass:1,1'
+            )
+          );
+
+          continue;
+        }
+
+        row.push(
+          this.makeTile(
+            x,
+            y,
+            possible[0]
+          )
+        );
+      }
+
+      this.tiles.push(row);
+    }
+  }

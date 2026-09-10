@@ -1,0 +1,175 @@
+<div class="login-screen">
+
+    <!-- =====================================================
+         BACKGROUND STARS
+         ===================================================== -->
+
+    <div class="background-stars" aria-hidden="true">
+
+        @for (star of backgroundStars; track $index) {
+
+            <span
+                class="background-star"
+                [style.left.%]="star.left"
+                [style.top.%]="star.top"
+                [style.width.px]="star.size"
+                [style.height.px]="star.size"
+                [style.--star-opacity]="star.opacity"
+                [style.animation-delay.s]="star.delay">
+            </span>
+
+        }
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN STARS
+         ===================================================== -->
+
+    <div class="stars" aria-hidden="true">
+
+        <span class="star star-1"></span>
+        <span class="star star-2"></span>
+        <span class="star star-3"></span>
+        <span class="star star-4"></span>
+        <span class="star star-5"></span>
+        <span class="star star-6"></span>
+        <span class="star star-7"></span>
+        <span class="star star-8"></span>
+        <span class="star star-9"></span>
+        <span class="star star-10"></span>
+        <span class="star star-11"></span>
+        <span class="star star-12"></span>
+
+    </div>
+
+
+    <!-- =====================================================
+         LOGIN CONTENT
+         ===================================================== -->
+
+    <main class="login-content">
+
+        <p class="journey-text">
+            {{ languageService.t().login.journey }}
+        </p>
+
+
+        <!-- =================================================
+             GOOGLE
+             ================================================= -->
+
+        <div class="google-area">
+
+            <div
+                id="google-button"
+                class="google-button">
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             DIVIDER
+             ================================================= -->
+
+        <div class="login-divider" aria-hidden="true">
+
+            <span></span>
+
+            <em>
+                {{ languageService.t().login.or }}
+            </em>
+
+            <span></span>
+
+        </div>
+
+
+        <!-- =================================================
+             EMAIL / PASSWORD
+             ================================================= -->
+
+        <form
+            class="credentials"
+            (ngSubmit)="login()">
+
+            <div class="field">
+
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder=" "
+                    autocomplete="email"
+                    [(ngModel)]="email" />
+
+                <label for="email">
+                    {{ languageService.t().login.email }}
+                </label>
+
+            </div>
+
+
+            <div class="field">
+
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder=" "
+                    autocomplete="current-password"
+                    [(ngModel)]="password" />
+
+                <label for="password">
+                    {{ languageService.t().login.password }}
+                </label>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-button">
+
+                {{ languageService.t().login.submit }}
+
+            </button>
+
+        </form>
+
+
+        @if (errorMessage) {
+
+            <p class="login-error">
+                {{ errorMessage }}
+            </p>
+
+        }
+
+
+        <!-- =================================================
+             CREATE ACCOUNT
+             ================================================= -->
+
+        <p class="create-account">
+
+            <span>
+                {{ languageService.t().login.noAccount }}
+            </span>
+
+            <button
+                type="button"
+                class="create-account-button"
+                routerLink="/create-account">
+
+                {{ languageService.t().login.createAccount }}
+
+            </button>
+
+        </p>
+
+    </main>
+
+</div>

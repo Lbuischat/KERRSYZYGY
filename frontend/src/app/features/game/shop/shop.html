@@ -1,0 +1,239 @@
+<!-- ========================================================= -->
+<!-- CELESTIAL BACKGROUND                                      -->
+<!-- ========================================================= -->
+
+<app-shop-cbb></app-shop-cbb>
+
+<!-- ========================================================= -->
+<!-- SHOP                                                       -->
+<!-- ========================================================= -->
+
+<main class="global-shop">
+
+  <!-- ========================================================= -->
+  <!-- UI                                                        -->
+  <!-- ========================================================= -->
+
+  <div class="shop-ui">
+
+    <section class="shop-shell">
+
+      <button type="button" class="shop-back-button" (click)="voltarParaOJogo()" aria-label="Voltar para o jogo">
+        <span class="back-arrow">←</span>
+      </button>
+
+      <!-- HEADER -->
+      <header class="shop-header">
+
+        <div class="shop-title">
+          <span class="shop-title-kicker">SYSTEM // ECONOMY</span>
+
+          <h1>SHOP</h1>
+
+          <span class="shop-title-line"></span>
+        </div>
+
+        <div class="shop-currencies">
+
+          <div class="currency">
+            <span class="currency-icon currency-icon-credits">◈</span>
+
+            <div class="currency-info">
+              <span>CREDITS</span>
+              <strong>{{ credits }}</strong>
+            </div>
+          </div>
+
+          <div class="currency">
+            <span class="currency-icon currency-icon-xp">✦</span>
+
+            <div class="currency-info">
+              <span>XP</span>
+              <strong>{{ xp }}</strong>
+            </div>
+          </div>
+
+        </div>
+
+      </header>
+
+
+      <!-- CATEGORY NAVIGATION -->
+      <nav class="shop-navigation" aria-label="Shop categories">
+
+        <button type="button" class="shop-category" [class.active]="selectedCategory === 'recommended'"
+          (click)="selecionarCategoria('recommended')">
+          <span class="category-symbol">✦</span>
+          <span>RECOMMENDED</span>
+        </button>
+
+        <button type="button" class="shop-category" [class.active]="selectedCategory === 'characters'"
+          (click)="selecionarCategoria('characters')">
+          <span class="category-symbol">◇</span>
+          <span>CHARACTERS</span>
+        </button>
+
+        <button type="button" class="shop-category" [class.active]="selectedCategory === 'weapons'"
+          (click)="selecionarCategoria('weapons')">
+          <span class="category-symbol">⌁</span>
+          <span>WEAPONS</span>
+        </button>
+
+        <button type="button" class="shop-category" [class.active]="selectedCategory === 'abilities'"
+          (click)="selecionarCategoria('abilities')">
+          <span class="category-symbol">✧</span>
+          <span>ABILITIES</span>
+        </button>
+
+        <button type="button" class="shop-category" [class.active]="selectedCategory === 'materials'"
+          (click)="selecionarCategoria('materials')">
+          <span class="category-symbol">◆</span>
+          <span>MATERIALS</span>
+        </button>
+
+        <button type="button" class="shop-category" [class.active]="selectedCategory === 'consumables'"
+          (click)="selecionarCategoria('consumables')">
+          <span class="category-symbol">○</span>
+          <span>CONSUMABLES</span>
+        </button>
+
+        <button type="button" class="shop-category shop-category-wishes" [class.active]="selectedCategory === 'wishes'"
+          (click)="selecionarCategoria('wishes')">
+          <span class="category-symbol">✦</span>
+          <span>WISHES</span>
+        </button>
+
+      </nav>
+
+
+      @if (mensagem) {
+      <div class="shop-feedback" [class.success]="tipoMensagem === 'sucesso'" [class.error]="tipoMensagem === 'erro'">
+        <span class="feedback-icon">
+
+          @if (tipoMensagem === 'sucesso') {
+          ✓
+          }
+
+          @if (tipoMensagem === 'erro') {
+          !
+          }
+
+        </span>
+
+        <span>{{ mensagem }}</span>
+      </div>
+      }
+
+
+      <!-- CONTENT -->
+      <section class="shop-content">
+
+        <div class="section-heading">
+
+          <div>
+            <span class="section-kicker">
+              CURRENT SELECTION
+            </span>
+
+            <h2>
+              PROGRESSION RESOURCES
+            </h2>
+
+            <p>
+              Strengthen your characters, weapons, and abilities
+              using the available resources.
+            </p>
+          </div>
+
+          <div class="section-status">
+            <span class="status-dot"></span>
+            AVAILABLE
+          </div>
+
+        </div>
+
+
+        <div class="shop-grid">
+
+          @for (boost of itensVisiveis; track boost.id) {
+
+          <article class="shop-item">
+
+            <div class="item-art">
+
+              <div class="item-art-glow"></div>
+
+              <div class="item-symbol">
+                {{ boost.icone }}
+              </div>
+
+              @if (boost.quantidade > 0) {
+              <span class="item-owned-badge">
+                x{{ boost.quantidade }}
+              </span>
+              }
+
+            </div>
+
+            <div class="item-body">
+
+              <div class="item-heading">
+
+                <h3>
+                  {{ boost.nome }}
+                </h3>
+
+                @if (boost.quantidade > 0) {
+                <span class="item-owned">
+                  OWNED {{ boost.quantidade }}
+                </span>
+                }
+
+              </div>
+
+              <p class="item-description">
+                {{ boost.descricao }}
+              </p>
+
+            </div>
+
+            <div class="item-footer">
+
+              <div class="item-price">
+
+                <span class="price-icon">✦</span>
+
+                <div>
+                  <span class="price-label">
+                    PRICE
+                  </span>
+
+                  <strong>
+                    {{ boost.preco }}
+                  </strong>
+                </div>
+
+              </div>
+
+              <button type="button" class="item-buy" (pointerdown)="iniciarCompraContinua(boost)"
+                (pointerup)="pararAcaoContinua()" (pointerleave)="pararAcaoContinua()"
+                (pointercancel)="pararAcaoContinua()">
+                <span>BUY</span>
+                <span class="buy-symbol">+</span>
+              </button>
+
+            </div>
+
+          </article>
+
+          }
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </div>
+
+</main>

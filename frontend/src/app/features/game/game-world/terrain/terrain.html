@@ -1,0 +1,34 @@
+<div class="terrain">
+
+  @for (row of tiles; track $index) {
+
+  @for (tile of row; track tile.x + '-' + tile.y) {
+
+  <div class="terrain-tile" [style.left.px]="tile.x * tileSize" [style.top.px]="tile.y * tileSize"
+    [style.background-image]="'url(' + getSheetPath(tile) + ')'"
+    [style.background-position]="getBackgroundPosition(tile)">
+
+    @if (debug) {
+    <div class="debug-info">
+
+      <strong>{{ tile.terrain }}</strong>
+
+      <br>
+
+      sprite:
+      {{ tile.sheetColumn }},{{ tile.sheetRow }}
+
+      <br>
+
+      neighbors:
+      {{ getNeighborDebug(tile) }}
+    </div>
+    }
+
+  </div>
+
+  }
+
+  }
+
+</div>
