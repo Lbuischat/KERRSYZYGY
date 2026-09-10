@@ -1,0 +1,373 @@
+/* =====================================================
+   TASK PANEL
+===================================================== */
+
+.task-panel {
+  width: 300px;
+  box-sizing: border-box;
+
+  padding: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(12, 12, 14, 0.94),
+      rgba(4, 4, 5, 0.75)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  box-shadow:
+    inset 0 0 35px rgba(255, 255, 255, 0.015),
+    0 18px 45px rgba(0, 0, 0, 0.45);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  position: relative;
+  top: 35px;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.task-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding-bottom: 15px;
+  margin-bottom: 12px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.task-kicker {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+
+  text-transform: uppercase;
+}
+
+.task-header h2 {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.task-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+
+  box-sizing: border-box;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  font-size: 10px;
+  letter-spacing: 0.1em;
+
+  background: rgba(255, 255, 255, 0.025);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+
+/* =====================================================
+   TASK LIST
+===================================================== */
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+/* =====================================================
+   TASK ITEM
+===================================================== */
+
+.task-item {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-height: 60px;
+
+  padding: 9px 10px;
+
+  box-sizing: border-box;
+
+  color: white;
+  text-align: left;
+
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+
+  cursor: pointer;
+
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.task-item::before {
+  content: '';
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 2px;
+  height: 100%;
+
+  background: transparent;
+
+  transition: background 180ms ease;
+}
+
+.task-item:hover {
+  background: rgba(255, 255, 255, 0.045);
+
+  border-color: rgba(255, 255, 255, 0.16);
+
+  transform: translateX(2px);
+
+  box-shadow:
+    inset 0 0 18px rgba(255, 255, 255, 0.015);
+}
+
+.task-item:hover::before {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.task-item:active {
+  transform: translateX(1px);
+}
+
+
+/* =====================================================
+   TASK ICON
+===================================================== */
+
+.task-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  margin-right: 11px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  font-size: 15px;
+
+  transition:
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.task-item:hover .task-icon {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+
+/* =====================================================
+   TASK INFORMATION
+===================================================== */
+
+.task-info {
+  display: flex;
+  flex: 1;
+
+  flex-direction: column;
+  gap: 4px;
+
+  min-width: 0;
+}
+
+.task-name {
+  overflow: hidden;
+
+  color: rgba(255, 255, 255, 0.82);
+
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-reward {
+  color: rgba(255, 255, 255, 0.38);
+
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+
+  text-transform: uppercase;
+}
+
+
+/* =====================================================
+   ARROW
+===================================================== */
+
+.task-arrow {
+  flex-shrink: 0;
+
+  margin-left: 8px;
+
+  color: rgba(255, 255, 255, 0.22);
+
+  font-size: 18px;
+  font-weight: 300;
+
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.task-item:hover .task-arrow {
+  color: rgba(255, 255, 255, 0.65);
+
+  transform: translateX(2px);
+}
+
+
+/* =====================================================
+   COMPLETED TASK
+===================================================== */
+
+.task-item.completed {
+  background: rgba(60, 130, 100, 0.035);
+
+  border-color: rgba(100, 190, 150, 0.12);
+
+  cursor: default;
+}
+
+.task-item.completed::before {
+  background: rgba(90, 190, 145, 0.55);
+}
+
+.task-item.completed .task-name {
+  color: rgba(180, 210, 195, 0.5);
+
+  text-decoration: line-through;
+}
+
+.task-item.completed .task-reward {
+  color: rgba(100, 190, 150, 0.55);
+}
+
+.task-item.completed .task-arrow {
+  color: rgba(100, 205, 155, 0.75);
+
+  font-size: 14px;
+}
+
+.task-item.completed .task-icon {
+  background: rgba(70, 160, 110, 0.06);
+  border-color: rgba(90, 180, 130, 0.1);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.task-footer {
+  display: grid;
+
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+
+  gap: 9px;
+
+  margin-top: 16px;
+  padding-top: 13px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+  color: rgba(255, 255, 255, 0.28);
+
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+}
+
+
+/* =====================================================
+   PROGRESS BAR
+===================================================== */
+
+.task-progress {
+  position: relative;
+
+  height: 2px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.task-progress-bar {
+  width: 0;
+  height: 100%;
+
+  background: rgba(255, 255, 255, 0.55);
+
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 0.12);
+
+  transition: width 300ms ease;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 560px) {
+
+  .task-panel {
+    width: 100%;
+    max-width: 300px;
+  }
+
+}

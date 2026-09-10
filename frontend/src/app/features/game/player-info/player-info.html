@@ -1,797 +1,497 @@
 <main class="profile-page">
 
+  <div class="profile-ui">
 
-  <!-- =====================================================
-       TÍTULO
-  ===================================================== -->
+    <div class="profile-shell">
 
-  <header class="profile-header">
+      <!-- =====================================================
+           HEADER
+      ===================================================== -->
 
-    <h1 class="profile-title">
-      Informações do Perfil
-    </h1>
+      <header class="profile-header">
 
-  </header>
+        <div class="profile-title">
 
+          <span class="profile-kicker">
+            PLAYER PROFILE
+          </span>
 
+          <h1>
+            Personal Dossier
+          </h1>
 
-  <!-- =====================================================
-       CONTEÚDO PRINCIPAL
-  ===================================================== -->
+          <span class="profile-title-line"></span>
 
-  <div class="profile-content">
-
-
-    <!-- =====================================================
-         FORMULÁRIO
-    ===================================================== -->
-
-    <section class="profile-card form-card">
+        </div>
 
 
-      <div class="section-heading">
+        <div class="profile-status">
 
-        <span class="small-star">
-          ✦
-        </span>
+          <span class="status-dot"></span>
 
+          <span>
+            PROFILE ACTIVE
+          </span>
 
-        <h2>
-          Nos ensine sobre você
-        </h2>
+        </div>
 
-
-        <span class="small-star">
-          ✦
-        </span>
-
-      </div>
-
-
-
-      <p class="form-description">
-
-        Preencha todas as informações para começar sua jornada.
-
-      </p>
+      </header>
 
 
 
       <!-- =====================================================
-           FORM
+           CONTENT
       ===================================================== -->
 
-      <form
-        class="profile-form"
-        #profileForm="ngForm"
-        (ngSubmit)="criarPerfil(profileForm)"
-      >
+      <div class="profile-content">
 
 
-        <!-- =================================================
-             NOME
-        ================================================== -->
+        <!-- ===================================================
+             IDENTITY
+        ==================================================== -->
 
-        <div class="form-group">
+        <section class="profile-section identity-section">
 
-          <label for="name">
-            Nome
-          </label>
+          <div class="section-heading">
 
+            <div>
+              <span class="section-kicker">
+                IDENTITY
+              </span>
 
-          <input
-            id="name"
-            name="name"
-            type="text"
+              <h2>
+                Personal Information
+              </h2>
 
-            placeholder="Digite seu nome"
-
-            ngModel
-            required
-
-            #name="ngModel"
-          >
-
-
-          @if (name.invalid && name.touched) {
-
-            <span class="field-error">
-
-              Preencha seu nome.
-
-            </span>
-
-          }
-
-        </div>
-
-
-
-        <!-- =================================================
-             USERNAME
-        ================================================== -->
-
-        <div class="form-group">
-
-          <label for="username">
-            Nome de usuário
-          </label>
-
-
-          <input
-            id="username"
-            name="username"
-            type="text"
-
-            placeholder="Digite seu username"
-
-            ngModel
-            required
-
-            #username="ngModel"
-          >
-
-
-          @if (username.invalid && username.touched) {
-
-            <span class="field-error">
-
-              Escolha um nome de usuário.
-
-            </span>
-
-          }
-
-        </div>
-
-
-
-        <!-- =================================================
-             GÊNERO
-        ================================================== -->
-
-        <div class="form-group">
-
-          <label for="gender">
-            Gênero
-          </label>
-
-
-          <select
-            id="gender"
-            name="gender"
-
-            ngModel
-            required
-
-            #gender="ngModel"
-          >
-
-            <option value="">
-              Selecione
-            </option>
-
-
-            <option value="masculino">
-              Masculino
-            </option>
-
-
-            <option value="feminino">
-              Feminino
-            </option>
-
-
-            <option value="outro">
-              Outro
-            </option>
-
-
-            <option value="nao-informar">
-              Prefiro não informar
-            </option>
-
-          </select>
-
-
-          @if (gender.invalid && gender.touched) {
-
-            <span class="field-error">
-
-              Selecione uma opção.
-
-            </span>
-
-          }
-
-        </div>
-
-
-
-        <!-- =================================================
-             PRONOMES
-        ================================================== -->
-
-        <div class="form-group">
-
-          <label for="pronouns">
-            Pronomes
-          </label>
-
-
-          <select
-            id="pronouns"
-            name="pronouns"
-
-            ngModel
-            required
-
-            #pronouns="ngModel"
-          >
-
-            <option value="">
-              Selecione
-            </option>
-
-
-            <option value="ele">
-              Ele / Dele
-            </option>
-
-
-            <option value="ela">
-              Ela / Dela
-            </option>
-
-
-            <option value="elu">
-              Elu / Delu
-            </option>
-
-
-            <option value="outro">
-              Outro
-            </option>
-
-          </select>
-
-
-          @if (pronouns.invalid && pronouns.touched) {
-
-            <span class="field-error">
-
-              Selecione seus pronomes.
-
-            </span>
-
-          }
-
-        </div>
-
-
-
-        <!-- =================================================
-             ANIVERSÁRIO
-        ================================================== -->
-
-        <div class="form-group">
-
-          <label for="birthday">
-            Aniversário
-          </label>
-
-
-          <input
-            id="birthday"
-            name="birthday"
-            type="date"
-
-            ngModel
-            required
-
-            #birthday="ngModel"
-          >
-
-
-          @if (birthday.invalid && birthday.touched) {
-
-            <span class="field-error">
-
-              Informe sua data de aniversário.
-
-            </span>
-
-          }
-
-        </div>
-
-
-
-        <!-- =================================================
-             IDIOMA
-        ================================================== -->
-
-        <div class="form-group">
-
-          <label for="language">
-            Idioma
-          </label>
-
-
-          <select
-            id="language"
-            name="language"
-
-            ngModel
-            required
-
-            #language="ngModel"
-          >
-
-            <option value="">
-              Selecione
-            </option>
-
-
-            <option value="pt">
-              Português
-            </option>
-
-
-            <option value="en">
-              English
-            </option>
-
-
-            <option value="ja">
-              日本語
-            </option>
-
-
-            <option value="es">
-              Español
-            </option>
-
-          </select>
-
-
-          @if (language.invalid && language.touched) {
-
-            <span class="field-error">
-
-              Selecione um idioma.
-
-            </span>
-
-          }
-
-        </div>
-
-
-
-        <!-- =================================================
-             BIOGRAFIA
-        ================================================== -->
-
-        <div class="form-group">
-
-          <label for="bio">
-            Biografia
-          </label>
-
-
-          <textarea
-            id="bio"
-            name="bio"
-
-            placeholder="Conte um pouco sobre você..."
-
-            ngModel
-            required
-
-            #bio="ngModel"
-          ></textarea>
-
-
-          @if (bio.invalid && bio.touched) {
-
-            <span class="field-error">
-
-              Escreva uma pequena biografia.
-
-            </span>
-
-          }
-
-        </div>
-
-
-
-        <!-- =================================================
-             CRIAR PERFIL
-        ================================================== -->
-
-        <button
-          class="create-profile-button"
-          type="submit"
-        >
-
-          Criar Perfil
-
-        </button>
-
-
-
-        <!-- =================================================
-             ERRO GERAL
-        ================================================== -->
-
-        @if (formIncompleto) {
-
-          <div class="feedback-error">
-
-            <span class="feedback-error-icon">
-              !
-            </span>
-
-
-            <span>
-
-              Complete todas as informações antes de criar o perfil.
-
-            </span>
+              <p>
+                Information selected during your journey.
+              </p>
+            </div>
 
           </div>
 
-        }
+
+          <div class="identity-layout">
+
+
+            <!-- PROFILE DATA -->
+
+            <div class="identity-data">
+
+
+              <div class="profile-field">
+
+                <span class="field-label">
+                  USERNAME
+                </span>
+
+                <strong>
+                  {{ playerService.profile.username || '—' }}
+                </strong>
+
+              </div>
 
 
 
-        <!-- =================================================
-             SUCESSO
-        ================================================== -->
+              <div class="profile-field">
 
-        <div
-          class="feedback-success"
-          [class.show]="mostrarSucesso"
-        >
+                <span class="field-label">
+                  GENDER
+                </span>
 
-          <span class="feedback-icon">
-            ✓
+                <strong>
+                  {{ playerService.profile.gender || '—' }}
+                </strong>
+
+              </div>
+
+
+
+              <div class="profile-field">
+
+                <span class="field-label">
+                  PRONOUNS
+                </span>
+
+                <strong>
+                  {{ playerService.profile.pronouns || '—' }}
+                </strong>
+
+              </div>
+
+
+
+              <div class="profile-field">
+
+                <span class="field-label">
+                  BIRTHDAY
+                </span>
+
+                <strong>
+                  {{ playerService.profile.birthday || '—' }}
+                </strong>
+
+              </div>
+
+
+
+              <div class="profile-field">
+
+                <span class="field-label">
+                  LANGUAGE
+                </span>
+
+                <strong>
+                  {{ playerService.profile.language || 'Português' }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- CHARACTER PREVIEW -->
+
+            <div class="profile-character-preview">
+
+              <div class="character-preview-header">
+
+                <span class="field-label">
+                  CURRENT AVATAR
+                </span>
+
+                <span class="character-index">
+                  {{ personagemSelecionado + 1 }}
+                  /
+                  {{ personagens.length }}
+                </span>
+
+              </div>
+
+
+              <div class="character-preview-frame">
+
+                <div class="character-glow"></div>
+
+                <img
+                  [src]="personagemAtual.imagem"
+                  [alt]="personagemAtual.nome"
+                >
+
+              </div>
+
+
+              <div class="character-preview-info">
+
+                <h3>
+                  {{ personagemAtual.nome }}
+                </h3>
+
+                <span>
+                  {{ personagemAtual.classe }}
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- ===================================================
+             ABOUT
+        ==================================================== -->
+
+        <section class="profile-section about-section">
+
+          <div class="section-heading">
+
+            <div>
+
+              <span class="section-kicker">
+                ABOUT
+              </span>
+
+              <h2>
+                About You
+              </h2>
+
+              <p>
+                Add something that represents who you are.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <form
+            class="profile-form"
+            #profileForm="ngForm"
+            (ngSubmit)="criarPerfil(profileForm)"
+          >
+
+            <div class="profile-field bio-field">
+
+              <label
+                class="field-label"
+                for="bio"
+              >
+                BIOGRAPHY
+              </label>
+
+
+              <textarea
+                id="bio"
+                name="bio"
+                placeholder="Tell something about yourself..."
+                [(ngModel)]="playerService.profile.bio"
+                required
+                #bio="ngModel"
+              ></textarea>
+
+
+              @if (bio.invalid && bio.touched) {
+
+                <span class="field-error">
+                  Write a short biography.
+                </span>
+
+              }
+
+            </div>
+
+
+            <!-- =================================================
+                 CHARACTER SELECTOR
+            ================================================== -->
+
+            <div class="character-selector-section">
+
+              <div class="character-selector-header">
+
+                <div>
+
+                  <span class="section-kicker">
+                    REPRESENTATION
+                  </span>
+
+                  <h2>
+                    Character
+                  </h2>
+
+                </div>
+
+
+                <div class="character-controls">
+
+                  <button
+                    type="button"
+                    class="character-arrow"
+                    (click)="personagemAnterior()"
+                    aria-label="Previous character"
+                  >
+                    ←
+                  </button>
+
+                  <button
+                    type="button"
+                    class="character-arrow"
+                    (click)="proximoPersonagem()"
+                    aria-label="Next character"
+                  >
+                    →
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              <div class="character-dossier">
+
+                <div class="character-art">
+
+                  <div class="character-glow"></div>
+
+                  <img
+                    [src]="personagemAtual.imagem"
+                    [alt]="personagemAtual.nome"
+                  >
+
+                </div>
+
+
+                <div class="character-information">
+
+                  <span class="field-label">
+                    CHARACTER
+                  </span>
+
+                  <h3>
+                    {{ personagemAtual.nome }}
+                  </h3>
+
+                  <span class="character-class">
+                    {{ personagemAtual.classe }}
+                  </span>
+
+
+                  <p class="character-quote">
+                    {{ personagemAtual.frase }}
+                  </p>
+
+
+                  <div class="character-tags">
+
+                    <span>
+                      {{ personagemAtual.estilo }}
+                    </span>
+
+                    <span>
+                      {{ personagemAtual.tema }}
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="character-navigation">
+
+                <div class="character-dots">
+
+                  @for (
+                    personagem of personagens;
+                    track $index
+                  ) {
+
+                    <button
+                      type="button"
+                      class="character-dot"
+                      [class.active]="
+                        personagemSelecionado === $index
+                      "
+                      (click)="selecionarPersonagem($index)"
+                      [attr.aria-label]="
+                        'Character ' + ($index + 1)
+                      "
+                    ></button>
+
+                  }
+
+                </div>
+
+
+                <span>
+                  CHARACTER {{ personagemSelecionado + 1 }}
+                  /
+                  {{ personagens.length }}
+                </span>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+            <div class="profile-actions">
+
+              <button
+                class="save-profile-button"
+                type="submit"
+              >
+                <span>
+                  SAVE PROFILE
+                </span>
+
+                <span class="button-arrow">
+                  →
+                </span>
+              </button>
+
+
+              @if (formIncompleto) {
+
+                <div class="profile-feedback error">
+
+                  <span>!</span>
+
+                  Complete all required information.
+
+                </div>
+
+              }
+
+
+              @if (mostrarSucesso) {
+
+                <div class="profile-feedback success">
+
+                  <span>✓</span>
+
+                  Profile saved successfully.
+
+                </div>
+
+              }
+
+
+              @if (perfilCriado) {
+
+                <button
+                  class="shop-button"
+                  type="button"
+                  routerLink="/shop"
+                >
+                  GO TO SHOP
+                  <span>→</span>
+                </button>
+
+              }
+
+            </div>
+
+          </form>
+
+        </section>
+
+
+
+        <!-- ===================================================
+             FOOTER
+        ==================================================== -->
+
+        <footer class="profile-footer">
+
+          <span>
+            PLAYER PROFILE
           </span>
 
-
-          Perfil criado com sucesso!
-
-        </div>
-
-
-
-        <!-- =================================================
-             IR PARA A LOJA
-
-             Só aparece depois de criar o perfil
-        ================================================== -->
-
-        @if (perfilCriado) {
-
-          <button
-            class="shop-button"
-            type="button"
-            routerLink="/shop"
-          >
-
-            Ir para a Loja →
-
-          </button>
-
-        }
-
-
-      </form>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         PERSONAGEM
-    ===================================================== -->
-
-    <section class="profile-card character-card">
-
-
-      <div class="section-heading">
-
-        <span class="small-star">
-          ✦
-        </span>
-
-
-        <h2>
-          Seu Personagem
-        </h2>
-
-
-        <span class="small-star">
-          ✦
-        </span>
-
-      </div>
-
-
-
-      <!-- =====================================================
-           SELETOR DE PERSONAGEM
-      ===================================================== -->
-
-      <div class="character-selector">
-
-
-        <!-- SETA ESQUERDA -->
-
-        <button
-          class="arrow-button arrow-left"
-          type="button"
-
-          (click)="personagemAnterior()"
-
-          aria-label="Personagem anterior"
-        >
-
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/109/109617.png"
-            alt=""
-          >
-
-        </button>
-
-
-
-        <!-- =================================================
-             PERSONAGEM
-        ================================================== -->
-
-        <div class="character-frame">
-
-
-          <div class="character-glow"></div>
-
-
-          <img
-            class="character-image"
-
-            [src]="personagemAtual.imagem"
-
-            [alt]="personagemAtual.nome"
-          >
-
-
-        </div>
-
-
-
-        <!-- SETA DIREITA -->
-
-        <button
-          class="arrow-button"
-          type="button"
-
-          (click)="proximoPersonagem()"
-
-          aria-label="Próximo personagem"
-        >
-
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/109/109617.png"
-            alt=""
-          >
-
-        </button>
-
-
-      </div>
-
-
-
-      <!-- =====================================================
-           INFORMAÇÕES DO PERSONAGEM
-      ===================================================== -->
-
-      <div class="character-details">
-
-
-        <h3 class="character-name">
-
-          {{ personagemAtual.nome }}
-
-        </h3>
-
-
-
-        <div class="character-class">
-
-          ★ {{ personagemAtual.classe }}
-
-        </div>
-
-
-
-        <p class="character-quote">
-
-          {{ personagemAtual.frase }}
-
-        </p>
-
-
-
-        <div class="character-divider"></div>
-
-
-
-        <!-- TAGS -->
-
-        <div class="character-tags">
-
-
-          <span class="character-tag">
-
-            {{ personagemAtual.estilo }}
-
+          <span class="footer-separator">
+            //
           </span>
 
-
-          <span class="character-tag">
-
-            {{ personagemAtual.tema }}
-
+          <span>
+            CELESTIAL JOURNEY
           </span>
 
-
-        </div>
-
-
-
-        <!-- =================================================
-             CONTADOR
-        ================================================== -->
-
-        <p class="character-counter">
-
-          Character
-
-          <strong>
-
-            {{ personagemSelecionado + 1 }}
-
-          </strong>
-
-          /
-
-          {{ personagens.length }}
-
-        </p>
-
-
-
-        <!-- =================================================
-             BOLINHAS
-        ================================================== -->
-
-        <div class="character-dots">
-
-
-          <button
-            type="button"
-
-            class="character-dot"
-
-            [class.active]="personagemSelecionado === 0"
-
-            (click)="selecionarPersonagem(0)"
-
-            aria-label="Personagem 1"
-          ></button>
-
-
-
-          <button
-            type="button"
-
-            class="character-dot"
-
-            [class.active]="personagemSelecionado === 1"
-
-            (click)="selecionarPersonagem(1)"
-
-            aria-label="Personagem 2"
-          ></button>
-
-
-
-          <button
-            type="button"
-
-            class="character-dot"
-
-            [class.active]="personagemSelecionado === 2"
-
-            (click)="selecionarPersonagem(2)"
-
-            aria-label="Personagem 3"
-          ></button>
-
-
-
-          <button
-            type="button"
-
-            class="character-dot"
-
-            [class.active]="personagemSelecionado === 3"
-
-            (click)="selecionarPersonagem(3)"
-
-            aria-label="Personagem 4"
-          ></button>
-
-
-
-          <button
-            type="button"
-
-            class="character-dot"
-
-            [class.active]="personagemSelecionado === 4"
-
-            (click)="selecionarPersonagem(4)"
-
-            aria-label="Personagem 5"
-          ></button>
-
-
-        </div>
-
+        </footer>
 
       </div>
 
-
-
-      <!-- =====================================================
-           CHARACTER INFO
-      ===================================================== -->
-
-      <div class="character-info">
-
-        <span class="info-star">
-          ✦
-        </span>
-
-
-        <div>
-
-          <h4>
-            Character Info
-          </h4>
-
-
-          <p>
-
-            Escolha o personagem que irá representar você durante sua jornada.
-
-          </p>
-
-        </div>
-
-
-      </div>
-
-
-    </section>
-
+    </div>
 
   </div>
-
 
 </main>

@@ -8,6 +8,7 @@ export interface PlayerProfile {
   birthday: string;
   language: string;
   characterName: string;
+  bio: string;
   level: number;
   xp: number;
   worldLevel: number;
@@ -29,6 +30,7 @@ export class PlayerService {
     birthday: '',
     language: '',
     characterName: '',
+    bio: '',
     level: 1,
     xp: 0,
     worldLevel: 1,
@@ -128,6 +130,7 @@ export class PlayerService {
       birthday: '',
       language: '',
       characterName: '',
+      bio: '',
       level: 1,
       xp: 0,
       worldLevel: 1,

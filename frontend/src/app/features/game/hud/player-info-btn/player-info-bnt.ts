@@ -23,7 +23,7 @@ export class PlayerInfoBnt {
   ) {}
 
   openProfile(): void {
-    this.router.navigate(['/player-info']);
+    this.router.navigate(['/playerinfo']);
   }
 
   get worldLevel(): number {
