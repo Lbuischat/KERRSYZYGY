@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 
+import { PlayerService } from '../../../services/player.service';
+import { TaskService } from '../../../services/tasks/task.service';
+import { Task } from '../../../features/tasks/task-panel/task.model';
+
 
 interface Personagem {
   nome: string;
@@ -27,6 +31,20 @@ interface Personagem {
 
 
 export class PlayerInfo {
+
+  constructor(
+    public playerService: PlayerService,
+    private taskService: TaskService
+  ) {
+    this.tasks = this.taskService.getRandomTasks(3);
+  }
+
+
+  /* =====================================================
+     TASKS
+  ===================================================== */
+
+  tasks: Task[] = [];
 
 
   /* =====================================================
@@ -127,6 +145,55 @@ export class PlayerInfo {
 
 
   /* =====================================================
+     TASKS COMPLETADAS
+  ===================================================== */
+
+  get completedTasks(): number {
+
+    return this.tasks.filter(
+      task => task.completed
+    ).length;
+
+  }
+
+
+  /* =====================================================
+     PROGRESSO DAS TASKS
+  ===================================================== */
+
+  get taskProgress(): number {
+
+    if (!this.tasks.length) {
+      return 0;
+    }
+
+    return (
+      this.completedTasks / this.tasks.length
+    ) * 100;
+
+  }
+
+
+  /* =====================================================
+     COMPLETAR TASK
+  ===================================================== */
+
+  completeTask(task: Task): void {
+
+    if (task.completed) {
+      return;
+    }
+
+    task.completed = true;
+
+    this.playerService.profile.xp += task.reward;
+
+    this.playerService.saveProfile();
+
+  }
+
+
+  /* =====================================================
      PRÓXIMO PERSONAGEM
   ===================================================== */
 
@@ -168,13 +235,12 @@ export class PlayerInfo {
 
 
   /* =====================================================
-     CRIAR PERFIL
+     CRIAR / SALVAR PERFIL
   ===================================================== */
 
   criarPerfil(form: NgForm): void {
 
-
-    /* Se algum campo estiver incompleto */
+    /* Se o formulário estiver incompleto */
 
     if (form.invalid) {
 
@@ -182,18 +248,14 @@ export class PlayerInfo {
 
       this.mostrarSucesso = false;
 
-
-      /* Mostra os erros nos campos */
-
       form.control.markAllAsTouched();
-
 
       return;
 
     }
 
 
-    /* Se estiver tudo preenchido */
+    /* Perfil válido */
 
     this.formIncompleto = false;
 
@@ -202,9 +264,17 @@ export class PlayerInfo {
     this.mostrarSucesso = true;
 
 
+    /*
+     * Salva as informações que já foram escolhidas
+     * durante o onboarding.
+     */
+
+    this.playerService.saveProfile();
+
+
     console.log(
       'Informações do perfil:',
-      form.value
+      this.playerService.profile
     );
 
 
@@ -214,7 +284,7 @@ export class PlayerInfo {
     );
 
 
-    /* Esconde somente a mensagem depois de 3 segundos */
+    /* Esconde a mensagem depois de 3 segundos */
 
     setTimeout(() => {
 

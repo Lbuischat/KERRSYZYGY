@@ -88,7 +88,7 @@ export class GameWorld implements AfterViewInit, OnDestroy {
   readonly maxWave = 6;
   private readonly enemyDamage = 10;
   private readonly enemyAttackDelay = 0.75;
-  private readonly meleeRange = 60;
+  private readonly meleeRange = 70;
   private readonly meleeDamage = 10;
   private readonly killScore = 100;
   private readonly waveClearScore = 50;
@@ -487,10 +487,20 @@ export class GameWorld implements AfterViewInit, OnDestroy {
     }
 
     const playerPosition = this.player.getPosition();
+    const playerSize = this.player.getSize();
+    const playerCenterX = playerPosition.x + playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
 
     for (const enemy of this.aliveEnemies()) {
-      const dx = playerPosition.x - enemy.x;
-      const dy = playerPosition.y - enemy.y;
+      // Enemies only chase a player they can see.
+      if (!enemy.checkPlayerInView(playerPosition.x, playerPosition.y, playerSize)) {
+        continue;
+      }
+
+      const enemyCenterX = enemy.x + enemy.size / 2;
+      const enemyCenterY = enemy.y + enemy.size / 2;
+      const dx = playerCenterX - enemyCenterX;
+      const dy = playerCenterY - enemyCenterY;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       // Don't move if we're already touching the player

@@ -40,6 +40,14 @@ export class Enemy implements OnInit {
   isDead = false;
   attackCooldown = 0;
 
+  // =========================
+  // VIEW RANGE
+  // =========================
+
+  viewRange = 300;
+  isPlayerInView = false;
+  attackRange = 70;
+
   private element: HTMLElement | null = null;
 
   ngOnInit(): void {
@@ -235,6 +243,42 @@ export class Enemy implements OnInit {
     setTimeout(() => {
       damageNumber.remove();
     }, 600);
+  }
+
+  public checkPlayerInView(
+    playerX: number,
+    playerY: number,
+    playerSize: number
+  ): boolean {
+
+    const playerCenterX =
+      playerX + playerSize / 2;
+
+    const playerCenterY =
+      playerY + playerSize / 2;
+
+    const enemyCenterX =
+      this.x + this.size / 2;
+
+    const enemyCenterY =
+      this.y + this.size / 2;
+
+    const dx =
+      playerCenterX - enemyCenterX;
+
+    const dy =
+      playerCenterY - enemyCenterY;
+
+    const distance =
+      Math.sqrt(
+        dx * dx +
+        dy * dy
+      );
+
+    this.isPlayerInView =
+      distance <= this.viewRange;
+
+    return this.isPlayerInView;
   }
 
 }

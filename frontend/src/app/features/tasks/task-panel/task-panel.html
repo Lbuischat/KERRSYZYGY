@@ -1,25 +1,90 @@
-<div class="w-64 rounded-2xl bg-amber-900 p-4">
+<!-- TASK PANEL -->
 
-  <h2 class="mb-3 font-bold text-white">
-    Tasks
-  </h2>
+<div class="task-panel">
 
-  <div class="space-y-2">
+  <!-- HEADER -->
+  <div class="task-header">
 
-    <button class="flex w-full items-center justify-between rounded-xl bg-black/20 p-2 text-left text-white">
-      <span>💧 Drink Water</span>
-      <span class="text-sm">+20</span>
+    <div>
+      <span class="task-kicker">
+        DAILY OBJECTIVES
+      </span>
+
+      <h2>
+        Tasks
+      </h2>
+    </div>
+
+    <span class="task-count">
+      {{ tasks.length }}
+    </span>
+
+  </div>
+
+
+  <!-- TASK LIST -->
+  <div class="task-list">
+
+    @for (task of tasks; track task.id) {
+
+    <button type="button" class="task-item" [class.completed]="task.completed" (click)="completeTask(task)">
+
+      <!-- ICON -->
+      <span class="task-icon">
+        {{ task.icon }}
+      </span>
+
+
+      <!-- TASK INFORMATION -->
+      <span class="task-info">
+
+        <span class="task-name">
+          {{ task.name }}
+        </span>
+
+        <span class="task-reward">
+          +{{ task.reward }} XP
+        </span>
+
+      </span>
+
+
+      <!-- COMPLETION / ARROW -->
+      <span class="task-arrow">
+
+        @if (task.completed) {
+        ✓
+        } @else {
+        ›
+        }
+
+      </span>
+
     </button>
 
-    <button class="flex w-full items-center justify-between rounded-xl bg-black/20 p-2 text-left text-white">
-      <span>📚 Study</span>
-      <span class="text-sm">+100</span>
-    </button>
+    }
 
-    <button class="flex w-full items-center justify-between rounded-xl bg-black/20 p-2 text-left text-white">
-      <span>🏃 Exercise</span>
-      <span class="text-sm">+50</span>
-    </button>
+  </div>
+
+
+  <!-- FOOTER / PROGRESS -->
+  <div class="task-footer">
+
+    <span>
+      COMPLETION
+    </span>
+
+
+    <div class="task-progress">
+
+      <div class="task-progress-bar" [style.width.%]="taskProgress"></div>
+
+    </div>
+
+
+    <span>
+      {{ completedTasks }} / {{ tasks.length }}
+    </span>
 
   </div>
 

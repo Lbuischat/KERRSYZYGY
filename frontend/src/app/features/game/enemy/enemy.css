@@ -26,3 +26,14 @@
   background: red;
   transition: width 0.08s linear;
 }
+
+.enemy-view-range {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px dashed white;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.25;
+}
