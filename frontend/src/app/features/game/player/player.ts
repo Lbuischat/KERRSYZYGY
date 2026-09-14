@@ -1,12 +1,17 @@
 import {
     Component,
     Inject,
+    OnDestroy,
     PLATFORM_ID,
     Output,
-    EventEmitter
+    EventEmitter,
+    inject
 } from '@angular/core';
 
 import { isPlatformBrowser } from '@angular/common';
+
+import { BuffService } from '../buffs/buff.service';
+import { GameStateService } from '../../../services/game-state/game-state.service';
 
 @Component({
     selector: 'app-player',
@@ -14,7 +19,10 @@ import { isPlatformBrowser } from '@angular/common';
     templateUrl: './player.html',
     styleUrl: './player.css',
 })
-export class Player {
+export class Player implements OnDestroy {
+
+    private readonly buffService = inject(BuffService);
+    private readonly gameStateService = inject(GameStateService);
 
     @Output() shoot = new EventEmitter<{
         mouseX: number;
@@ -22,6 +30,9 @@ export class Player {
     }>();
 
     @Output() attack =
+        new EventEmitter<void>();
+
+    @Output() died =
         new EventEmitter<void>();
 
     // =========================
@@ -54,19 +65,45 @@ export class Player {
     }
 
     public takeDamage(amount: number): void {
-        console.log('⚠️ PLAYER TAKE DAMAGE CALLED', amount);
-        this.health -= amount;
+        if (this.isDead) {
+            return;
+        }
+        this.health -= Math.round(
+            amount * this.buffService.defenseMultiplier()
+        );
         if (this.health < 0) {
             this.health = 0;
         }
-        console.log(
-            'Player HP:',
-            this.health
-        );
         this.showDamageEffect();
         if (this.health === 0) {
             this.die();
         }
+    }
+
+    public heal(amount: number): void {
+        if (this.isDead || amount <= 0) {
+            return;
+        }
+        this.health = Math.min(
+            this.maxHealth,
+            this.health + amount
+        );
+        // The health bar refreshes inside the loop, which is frozen while
+        // the inventory is open, so update it here too.
+        this.updatePlayerPosition();
+    }
+
+    public reset(): void {
+        this.isDead = false;
+        this.health = this.maxHealth;
+        this.stamina = this.maxStamina;
+        this.playerX = 300;
+        this.playerY = 300;
+        this.keys.clear();
+        this.isHoldingAttack = false;
+        this.isHoldingShoot = false;
+        this.changePlayerColor('red');
+        this.updatePlayerPosition();
     }
 
     public getHealthPercentage(): number {
@@ -100,6 +137,8 @@ export class Player {
     private maxHealth = 100;
     private health = 100;
 
+    public isDead = false;
+
     // =========================
     // MOVEMENT
     // =========================
@@ -113,6 +152,17 @@ export class Player {
 
     private holdTimer?: ReturnType<typeof setTimeout>;
     private isHoldingAttack = false;
+
+    // =========================
+    // CONTINUOUS FIRE
+    // =========================
+
+    private isHoldingShoot = false;
+    private shootCooldown = 0;
+    private readonly fireRate = 0.18;
+
+    private lastMouseX = 0;
+    private lastMouseY = 0;
 
     // =========================
     // CONSTRUCTOR
@@ -150,7 +200,72 @@ export class Player {
             'contextmenu',
             this.preventContextMenu
         );
+
+        // Aim follows the cursor while the right button is held down.
+        window.addEventListener(
+            'mousemove',
+            this.handleMouseMove
+        );
+
+        // The button can be released outside the game world.
+        window.addEventListener(
+            'mouseup',
+            this.handleWindowMouseUp
+        );
     }
+
+    ngOnDestroy(): void {
+
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
+        }
+
+        cancelAnimationFrame(this.animationFrameId);
+
+        window.removeEventListener(
+            'keydown',
+            this.handleKeyDown
+        );
+
+        window.removeEventListener(
+            'keyup',
+            this.handleKeyUp
+        );
+
+        window.removeEventListener(
+            'contextmenu',
+            this.preventContextMenu
+        );
+
+        window.removeEventListener(
+            'mousemove',
+            this.handleMouseMove
+        );
+
+        window.removeEventListener(
+            'mouseup',
+            this.handleWindowMouseUp
+        );
+    }
+
+    private handleMouseMove = (
+        event: MouseEvent
+    ): void => {
+
+        this.lastMouseX = event.clientX;
+        this.lastMouseY = event.clientY;
+
+    };
+
+    private handleWindowMouseUp = (
+        event: MouseEvent
+    ): void => {
+
+        if (event.button === 2) {
+            this.isHoldingShoot = false;
+        }
+
+    };
 
     private preventContextMenu = (
         event: MouseEvent
@@ -167,6 +282,10 @@ export class Player {
     private handleKeyDown = (
         event: KeyboardEvent
     ): void => {
+
+        if (this.isDead || this.gameStateService.paused()) {
+            return;
+        }
 
         const key =
             event.key.toLowerCase();
@@ -229,6 +348,10 @@ export class Player {
         event: MouseEvent
     ): void => {
 
+        if (this.isDead || this.gameStateService.paused()) {
+            return;
+        }
+
         // LEFT MOUSE — NORMAL ATTACK
         if (event.button === 0) {
             this.isHoldingAttack = true;
@@ -258,6 +381,13 @@ export class Player {
 
             event.preventDefault();
 
+            this.lastMouseX = event.clientX;
+            this.lastMouseY = event.clientY;
+
+            // First shot is immediate, the loop keeps firing while held.
+            this.isHoldingShoot = true;
+            this.shootCooldown = this.fireRate;
+
             this.shoot.emit({
                 mouseX: event.clientX,
                 mouseY: event.clientY
@@ -270,6 +400,11 @@ export class Player {
     handleMouseUp = (
         event: MouseEvent
     ): void => {
+
+        if (event.button === 2) {
+            this.isHoldingShoot = false;
+            return;
+        }
 
         if (event.button !== 0) {
             return;
@@ -382,6 +517,19 @@ export class Player {
 
             lastTime = currentTime;
 
+            if (
+                this.isDead ||
+                this.gameStateService.paused()
+            ) {
+
+                this.animationFrameId =
+                    requestAnimationFrame(update);
+
+                return;
+            }
+
+            this.updateContinuousFire(deltaTime);
+
             let horizontal = 0;
             let vertical = 0;
 
@@ -486,10 +634,11 @@ export class Player {
             // =========================
 
             const currentSpeed =
-                isSprinting
+                (isSprinting
                     ? this.speed *
                     this.sprintMultiplier
-                    : this.speed;
+                    : this.speed) *
+                this.buffService.speedMultiplier();
 
             // =========================
             // MOVE
@@ -542,6 +691,36 @@ export class Player {
     }
 
     // =========================
+    // CONTINUOUS FIRE
+    // =========================
+
+    private updateContinuousFire(
+        deltaTime: number
+    ): void {
+
+        if (this.shootCooldown > 0) {
+
+            this.shootCooldown -= deltaTime;
+
+        }
+
+        if (
+            !this.isHoldingShoot ||
+            this.shootCooldown > 0
+        ) {
+            return;
+        }
+
+        this.shoot.emit({
+            mouseX: this.lastMouseX,
+            mouseY: this.lastMouseY
+        });
+
+        this.shootCooldown = this.fireRate;
+
+    }
+
+    // =========================
     // UPDATE PLAYER
     // =========================
 
@@ -585,9 +764,10 @@ export class Player {
     }
 
     private die(): void {
-        console.log(
-            'PLAYER DIED'
-        );
+        this.isDead = true;
+        this.keys.clear();
+        this.isHoldingShoot = false;
+        this.died.emit();
     }
 
     private updatePlayerPosition(): void {

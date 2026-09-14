@@ -1,0 +1,61 @@
+<div class="score-overlay" (mousedown)="$event.stopPropagation()">
+
+  <div class="score-frame" [class.victory]="victory">
+
+    <div class="score-plate">
+      {{ victory ? text().victoryTitle : text().defeatTitle }}
+    </div>
+
+    <div class="score-panel">
+
+      <p class="score-eyebrow">{{ subtitle }}</p>
+
+      <div class="score-divider"></div>
+
+      <dl class="score-stats">
+
+        <div class="score-row">
+          <dt>{{ text().waveReached }}</dt>
+          <dd>{{ wave }} / {{ maxWave }}</dd>
+        </div>
+
+        <div class="score-row">
+          <dt>{{ text().enemiesDefeated }}</dt>
+          <dd>{{ kills }}</dd>
+        </div>
+
+        <div class="score-row">
+          <dt>{{ text().timeSurvived }}</dt>
+          <dd>{{ formattedTime }}</dd>
+        </div>
+
+      </dl>
+
+      <div class="score-total">
+        <span class="score-total-label">{{ text().score }}</span>
+        <span class="score-total-value">{{ score }}</span>
+      </div>
+
+      <div class="score-actions">
+
+        <button
+          type="button"
+          class="score-button primary"
+          (click)="playAgain.emit()">
+          {{ text().playAgain }}
+        </button>
+
+        <button
+          type="button"
+          class="score-button"
+          (click)="exit.emit()">
+          {{ text().leave }}
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

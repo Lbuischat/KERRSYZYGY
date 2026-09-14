@@ -1,22 +1,5 @@
 /* =========================================================
-   Overlay
-   ========================================================= */
-
-.overlay {
-  position: fixed;
-  inset: 0;
-
-  background: rgba(0, 0, 0, 0.582);
-
-  /*
-    Overlay is behind the settings panel,
-    but still above the game.
-  */
-  z-index: 0;
-}
-
-/* =========================================================
-   Settings Component / Transition
+   HOST
    ========================================================= */
 
 :host {
@@ -24,183 +7,577 @@
   position: fixed;
   inset: 0;
 
-  /* Keep the settings above the game */
+  /* Keep the inventory above the game and the HUD */
   z-index: 1000;
 
-  /* Fade/scale when opening */
-  animation: settings-fade-in 180ms ease-out both;
+  font-family: 'IM FELL English', Georgia, serif;
+
+  animation: inventory-fade-in 180ms ease-out both;
 }
 
-:host(.settings-closing) {
-  animation: settings-fade-out 180ms ease-in both;
+@keyframes inventory-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
 
-  /* Don't allow interaction while closing */
-  pointer-events: none;
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
+
+/* =========================================================
+   OVERLAY
+   ========================================================= */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(6, 5, 4, 0.72);
+
+  z-index: 0;
+}
+
+/* =========================================================
+   STONE FRAME
+   ========================================================= */
 
 .inventory {
-  z-index: 999999;
-
-  /* Size */
-  width: min(1020px, 90vw);
-  height: min(900px, calc(100vh - 65px));
-
-  /* Positioning */
   position: absolute;
-  transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
 
-  /* Appearance */
-  background: #fffbea;
-  border-radius: 55px;
-}
+  width: min(980px, 92vw);
+  height: min(760px, calc(100vh - 70px));
 
-/* =========================================================
-   Settings Fade Animations
-   ========================================================= */
+  padding: 16px;
 
-@keyframes settings-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes settings-fade-out {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  to {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-}
-
-/* =========================================================
-   Inventory Filters
-   ========================================================= */
-
-.filters {
-  position: absolute;
-
-  left: 0;
-  top: 90px;
-  bottom: 100px;
-
-  width: 165px;
-
-  display: flex;
-  flex-direction: column;
-
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* =========================================================
-   Filter Buttons
-   ========================================================= */
-
-.filters button {
-  width: 100px;
-  height: 45px;
-
-  border: none;
   border-radius: 12px;
 
-  cursor: pointer;
+  background:
+    linear-gradient(160deg, #6f685f 0%, #4b4640 45%, #5f584f 100%);
 
-  background: #b7b2a9;
-  color: #000;
+  box-shadow:
+    0 26px 60px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
 
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease;
+  box-sizing: border-box;
+
+  z-index: 1;
 }
 
-.filters button:hover {
-  background: #cbc3bc;
-}
+/* Corner brackets */
 
-.filters button.active {
-  background: #d8d2b8;
-  transform: scale(1.05);
-}
-
-/* =========================================================
-   Inventory Grid
-   ========================================================= */
-
-.inventory-grid {
+.corner {
   position: absolute;
 
-  left: 165px;
+  width: 34px;
+  height: 34px;
 
-  top: 55px;
+  border-radius: 9px;
 
-  display: grid;
+  background: linear-gradient(150deg, #837b72, #4a453f);
 
-  grid-template-columns: repeat(5, 120px);
-  grid-template-rows: repeat(6, 120px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 3px 6px rgba(0, 0, 0, 0.4);
+}
 
-  gap: 12px;
+.corner-top-left {
+  top: -8px;
+  left: -8px;
+}
+
+.corner-top-right {
+  top: -8px;
+  right: -8px;
+}
+
+.corner-bottom-left {
+  bottom: -8px;
+  left: -8px;
+}
+
+.corner-bottom-right {
+  bottom: -8px;
+  right: -8px;
+}
+
+/* Side clamps */
+
+.clamp {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 18px;
+  height: 84px;
+
+  border-radius: 9px;
+
+  background: linear-gradient(150deg, #837b72, #4a453f);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.clamp-left {
+  left: -9px;
+}
+
+.clamp-right {
+  right: -9px;
 }
 
 /* =========================================================
-   Inventory Slot
+   TITLE PLATE
    ========================================================= */
 
-.inventory-item {
-  width: 120px;
-  height: 120px;
+.title-plate {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 7px 42px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(180deg, #8a8279, #57514b);
+
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+
+  font-size: 14px;
+  letter-spacing: 0.26em;
+
+  color: #f3e9cf;
+
+  white-space: nowrap;
+
+  z-index: 2;
+}
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.close-button {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+
+  width: 34px;
+  height: 34px;
 
   padding: 0;
 
   border: none;
-  border-radius: 15px;
+  border-radius: 9px;
 
-  background: #d8d2b8;
+  background: linear-gradient(150deg, #837b72, #4a453f);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 3px 6px rgba(0, 0, 0, 0.4);
+
+  cursor: pointer;
+
+  font-size: 14px;
+  line-height: 1;
+
+  color: #e8dcbf;
+
+  transition:
+    color 0.2s ease,
+    transform 0.15s ease;
+
+  z-index: 3;
+}
+
+.close-button:hover {
+  color: #fff;
+  transform: scale(1.06);
+}
+
+/* =========================================================
+   INNER PANEL
+   ========================================================= */
+
+.panel {
+  height: 100%;
+
+  padding: 26px 20px 20px;
+
+  border-radius: 6px;
+
+  background:
+    radial-gradient(120% 80% at 50% 0%, #322722 0%, #1e1714 72%);
+
+  box-shadow: inset 0 0 34px rgba(0, 0, 0, 0.8);
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filters button {
+  padding: 7px 16px;
+
+  border: 1px solid rgba(198, 178, 140, 0.42);
+  border-radius: 7px;
+
+  background: rgba(255, 251, 234, 0.04);
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+
+  color: rgba(243, 233, 207, 0.62);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.filters button:hover {
+  background: rgba(255, 251, 234, 0.1);
+  color: #f3e9cf;
+}
+
+.filters button.active {
+  border-color: rgba(246, 217, 138, 0.8);
+  background: rgba(246, 217, 138, 0.14);
+  color: #f6d98a;
+}
+
+.panel-divider {
+  height: 1px;
+
+  margin: 14px 0 18px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(216, 210, 184, 0.05),
+    rgba(216, 210, 184, 0.5),
+    rgba(216, 210, 184, 0.05)
+  );
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.panel-content {
+  flex: 1;
+
+  display: flex;
+  gap: 18px;
+
+  min-height: 0;
+}
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.inventory-grid {
+  flex: 1;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  gap: 12px;
+
+  padding-right: 6px;
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   SLOT
+   ========================================================= */
+
+.inventory-item {
+  aspect-ratio: 1;
+
+  padding: 0;
+
+  border: 1px solid rgba(198, 178, 140, 0.45);
+  border-radius: 14px;
+
+  background: linear-gradient(160deg, #4a4541 0%, #3a3531 100%);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
   cursor: pointer;
 
   box-sizing: border-box;
 
   transition:
+    border-color 0.15s ease,
     background-color 0.15s ease,
     transform 0.15s ease;
 }
 
-.inventory-item:hover {
-  background: #c8c1a5;
-  transform: scale(1.03);
+.inventory-item.filled {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #f3e9cf;
+}
+
+.inventory-item:hover:not(:disabled) {
+  border-color: rgba(246, 217, 138, 0.85);
+  background: linear-gradient(160deg, #575049 0%, #423c37 100%);
+  transform: translateY(-2px);
+}
+
+.inventory-item:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.inventory-item.selected {
+  border-color: #f6d98a;
+  box-shadow: 0 0 0 1px rgba(246, 217, 138, 0.45);
+}
+
+.item-glyph {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.item-quantity {
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+
+  font-size: 11px;
+  letter-spacing: 0.04em;
+
+  color: rgba(243, 233, 207, 0.7);
 }
 
 /* =========================================================
-   Inventory Selected Screen
+   DETAILS
    ========================================================= */
 
 .inventory-selected {
-  position: absolute;
+  width: 260px;
+  flex-shrink: 0;
 
-  top: 55px;
-  right: 55px;
+  padding: 18px 16px;
 
-  width: 300px;
-  height: 780px;
+  border: 1px solid rgba(198, 178, 140, 0.35);
+  border-radius: 14px;
 
-  background: #d8d2b8;
-
-  border-color: #fffbea;
-  border-width: 12px;
-
-  border-radius: 25px;
+  background: rgba(255, 251, 234, 0.03);
 
   box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.selected-title {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+
+  color: rgba(243, 233, 207, 0.55);
+}
+
+.selected-empty {
+  margin: 0;
+
+  font-size: 13px;
+  line-height: 1.6;
+
+  color: rgba(243, 233, 207, 0.35);
+}
+
+.selected-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  text-align: center;
+}
+
+.selected-glyph {
+  align-self: center;
+
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(198, 178, 140, 0.45);
+  border-radius: 14px;
+
+  background: linear-gradient(160deg, #4a4541 0%, #3a3531 100%);
+
+  font-size: 30px;
+
+  color: #f3e9cf;
+}
+
+.selected-name {
+  margin: 6px 0 0;
+
+  font-size: 17px;
+  font-weight: normal;
+  letter-spacing: 0.06em;
+
+  color: #f6d98a;
+}
+
+.selected-category {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  color: rgba(243, 233, 207, 0.4);
+}
+
+.selected-description {
+  margin: 6px 0 0;
+
+  font-size: 13px;
+  line-height: 1.6;
+
+  color: rgba(243, 233, 207, 0.65);
+}
+
+.selected-count {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+
+  color: rgba(243, 233, 207, 0.4);
+}
+
+.selected-message {
+  margin: 0;
+  padding: 8px 10px;
+
+  border: 1px solid rgba(246, 217, 138, 0.35);
+  border-radius: 9px;
+
+  background: rgba(246, 217, 138, 0.1);
+
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-align: center;
+
+  color: #f6d98a;
+}
+
+.selected-actions {
+  display: flex;
+  gap: 8px;
+
+  margin-top: 4px;
+}
+
+.inventory-selected .selected-message {
+  margin-top: auto;
+}
+
+.selected-button {
+  flex: 1;
+
+  padding: 9px 10px;
+
+  border: 1px solid rgba(198, 178, 140, 0.35);
+  border-radius: 9px;
+
+  background: rgba(255, 251, 234, 0.05);
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+
+  color: rgba(243, 233, 207, 0.72);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.selected-button:hover:not(:disabled) {
+  background: rgba(255, 251, 234, 0.12);
+  border-color: rgba(216, 210, 184, 0.55);
+  color: #f3e9cf;
+}
+
+.selected-button.primary:not(:disabled) {
+  border-color: rgba(246, 217, 138, 0.55);
+  background: rgba(246, 217, 138, 0.12);
+  color: #f6d98a;
+}
+
+.selected-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .inventory-selected {
+    display: none;
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .inventory {
+    padding: 12px;
+  }
+
+  .panel {
+    padding: 22px 14px 14px;
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .filters button {
+    padding: 6px 11px;
+    font-size: 11px;
+  }
 }

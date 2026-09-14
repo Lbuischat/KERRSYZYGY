@@ -8,7 +8,7 @@
   />
 
   @if (inventoryOpen) {
-    <app-inventory />
+    <app-inventory (closeInventory)="toggleInventory()" />
   }
 
 </div>
