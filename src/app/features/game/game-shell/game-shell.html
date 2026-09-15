@@ -2,13 +2,18 @@
 
   <app-game-world />
 
-  <app-hud (settingsOpen)="openSettings()" />
+  <app-hud
+    (settingsOpen)="openSettings()"
+    (inventoryOpen)="toggleInventory()"
+  />
 
-  @if (settingsOpen) {
-    <app-settings
-      [class]="'settings-host' + (settingsClosing ? ' settings-closing' : '')"
-      (closeSettings)="closeSettings()"
-    />
+  @if (inventoryOpen) {
+    <app-inventory />
   }
+
+  <app-game-tutorial
+    [open]="tutorialOpen"
+    (finished)="completeTutorial()"
+  />
 
 </div>
