@@ -5,6 +5,10 @@
   (mouseup)="handleMouseUp($event)"
 >
 
+  <div class="objective-banner">
+    {{ objectiveMessage }}
+  </div>
+
   <!-- CAMERA / WORLD -->
   <div
     id="world-layer"
@@ -20,9 +24,7 @@
     <!-- Player -->
     <app-player
       (shoot)="shootProjectile($event)"
-      (attack)="playerAttack()"
-      (skill2)="dodgeAway()"
-      (skill3)="dashPushStun()">
+      (attack)="playerAttack()">
     </app-player>
 
     <!-- Projectiles -->
