@@ -13,7 +13,20 @@ interface TutorialStep {
   styleUrl: './tutorial.css',
 })
 export class GameTutorial {
-  @Input() open = false;
+  private _open = false;
+
+  @Input()
+  get open(): boolean {
+    return this._open;
+  }
+
+  set open(value: boolean) {
+    this._open = value;
+
+    if (value) {
+      this.currentStep = 0;
+    }
+  }
 
   @Output() finished = new EventEmitter<void>();
 
@@ -49,9 +62,11 @@ export class GameTutorial {
       title: 'Mate o inimigo',
       description: 'Seu objetivo agora é derrotar o inimigo que aparece na arena.',
       details: [
-        'Aproxime-se do inimigo com movimento suave.',
-        'Ataque até que a vida dele chegue a zero.',
-        'Quando vencer, o jogo continua e você pode explorar mais a fase.',
+        '-Aproxime-se do inimigo.',
+        '-O inimigo só te persegue quando te tem no campo de visão.',
+        '-Ataque até que a vida dele chegue a zero.',
+        '-Quando vencer, o jogo continua e você pode explorar mais a fase.',
+        'Boa sorte!'
       ],
     },
   ];
@@ -60,13 +75,18 @@ export class GameTutorial {
     return this.steps[this.currentStep];
   }
 
-  nextStep(): void {
+  nextStep(event?: MouseEvent): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     if (this.currentStep < this.steps.length - 1) {
       this.currentStep += 1;
       return;
     }
 
-    this.finished.emit();
     this.currentStep = 0;
+    this.finished.emit();
   }
 }
