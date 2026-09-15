@@ -5,7 +5,11 @@
   (mouseup)="handleMouseUp($event)"
 >
 
-  <div class="objective-banner">
+  <div
+    class="objective-banner"
+    [class.hidden]="!objectiveVisible"
+    [class.success]="objectiveMessage.includes('concluído')"
+  >
     {{ objectiveMessage }}
   </div>
 
