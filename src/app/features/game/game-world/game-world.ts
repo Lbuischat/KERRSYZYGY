@@ -1,15 +1,24 @@
-import { Component, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
-
 import { isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  Inject,
+  PLATFORM_ID,
+  ViewChild
+} from '@angular/core';
 
+import { Enemy } from '../enemy/enemy';
 import { Player } from '../player/player';
 import { ProjectileService } from '../projectile/projectile.service';
-import { Enemy } from '../enemy/enemy';
+import { GameStateService } from '../../../services/game-state/game-state.service';
 import { Terrain } from './terrain/terrain';
 
 @Component({
   selector: 'app-game-world',
-  imports: [Player, Enemy, Terrain],
+  imports: [
+    Player,
+    Enemy,
+    Terrain
+  ],
   templateUrl: './game-world.html',
   styleUrl: './game-world.css',
 })
@@ -23,14 +32,12 @@ export class GameWorld {
   private animationFrameId = 0;
   private projectileElements = new Map<number, HTMLElement>();
   private enemyAttackCooldown = 0;
-  private enemyRangedAttackCooldown = 0;
-  private dashCooldownUntil = 0;
-  private dodgeCooldownUntil = 0;
   cameraX = 0;
   cameraY = 0;
+  objectiveMessage = 'Objetivo: finalize o inimigo para continuar.';
 
-  private readonly worldWidth = 20 * 128;
-  private readonly worldHeight = 20 * 128;
+  readonly worldWidth = 20 * 128;
+  readonly worldHeight = 20 * 128;
 
   handleMouseDown(event: MouseEvent): void {
     if (event.button === 0) {
@@ -54,6 +61,8 @@ export class GameWorld {
     private platformId: object,
 
     private projectileService: ProjectileService,
+
+    private gameStateService: GameStateService,
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.startGameLoop();
@@ -65,34 +74,16 @@ export class GameWorld {
 
     const update = (currentTime: number): void => {
       const deltaTime = (currentTime - lastTime) / 1000;
-
       lastTime = currentTime;
-      // Update camera
 
       this.updateCamera();
-
-      // Update projectile physics
       this.projectileService.update(deltaTime);
-
-      // Update enemy movement
       this.updateEnemyMovement();
-
-      // Enemy attacks player
       this.updateEnemyAttack(deltaTime);
-
-      // While far away, the enemy shoots as it approaches.
-      this.updateEnemyRangedAttack(deltaTime);
-
-      // Player <-> Enemy collision
       this.resolvePlayerEnemyCollision();
-
-      // Check projectile collisions
       this.checkProjectileCollisions();
-      this.checkEnemyProjectileCollisions();
-
       this.updateEnemyHealthBar();
-
-      // Update projectile visuals
+      this.updateMiniMap(); // <-- IMPORTANT
       this.renderProjectiles();
 
       this.animationFrameId = requestAnimationFrame(update);
@@ -101,11 +92,7 @@ export class GameWorld {
     this.animationFrameId = requestAnimationFrame(update);
   }
 
-  shootProjectile(event: {
-    mouseX: number;
-    mouseY: number;
-    isCharged: boolean;
-  }): void {
+  shootProjectile(event: { mouseX: number; mouseY: number }): void {
 
     const position = this.player.getPosition();
 
@@ -120,7 +107,6 @@ export class GameWorld {
       position.y,
       worldMouseX,
       worldMouseY,
-      event.isCharged,
     );
   }
 
@@ -143,113 +129,13 @@ export class GameWorld {
     const dy = playerCenterY - enemyCenterY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     console.log('Attack distance:', distance);
-    const attackRange = 60;
+    const attackRange = 70; // Adjust this value as needed
     if (distance <= attackRange) {
       this.enemy.takeDamage(10);
       console.log('MELEE HIT! Damage: 10');
     } else {
       console.log('Attack missed — enemy too far away');
     }
-  }
-
-  // Habilidade do Q: avança em direção ao inimigo, empurra-o e o
-  // deixa sem andar ou atacar durante 2 segundos.
-  dashPushStun(): void {
-    if (!this.player || !this.enemy || this.enemy.isDead) {
-      return;
-    }
-
-    // Impede que segurar Q execute a habilidade várias vezes.
-    if (Date.now() < this.dashCooldownUntil) {
-      return;
-    }
-    this.dashCooldownUntil = Date.now() + 5000;
-
-    const playerPosition = this.player.getPosition();
-    const playerSize = this.player.getSize();
-    const playerCenterX = playerPosition.x + playerSize / 2;
-    const playerCenterY = playerPosition.y + playerSize / 2;
-    const enemyCenterX = this.enemy.x + this.enemy.size / 2;
-    const enemyCenterY = this.enemy.y + this.enemy.size / 2;
-
-    // A seta imaginária que sai do jogador e aponta para o inimigo.
-    const dx = enemyCenterX - playerCenterX;
-    const dy = enemyCenterY - playerCenterY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance === 0) {
-      return;
-    }
-
-    const directionX = dx / distance;
-    const directionY = dy / distance;
-
-    // DASH: avança no máximo 120 pixels, mas para antes de atravessar o inimigo.
-    const dashDistance = Math.min(120, Math.max(0, distance - 45));
-    this.player.setPosition(
-      playerPosition.x + directionX * dashDistance,
-      playerPosition.y + directionY * dashDistance,
-    );
-
-    // O empurrão só acontece se o inimigo estava perto o bastante.
-    if (distance <= 165) {
-      this.enemy.x += directionX * 100;
-      this.enemy.y += directionY * 100;
-      this.enemy.updateVisualPosition();
-      this.enemy.takeDamage(15);
-      this.enemy.stun(2000);
-    }
-  }
-
-  // Habilidade do F: salta para longe do inimigo e evita dano por um instante.
-  dodgeAway(): void {
-    if (!this.player || !this.enemy || this.enemy.isDead) {
-      return;
-    }
-
-    if (Date.now() < this.dodgeCooldownUntil) {
-      return;
-    }
-    this.dodgeCooldownUntil = Date.now() + 5000;
-
-    const playerPosition = this.player.getPosition();
-    const playerSize = this.player.getSize();
-    const playerCenterX = playerPosition.x + playerSize / 2;
-    const playerCenterY = playerPosition.y + playerSize / 2;
-    const enemyCenterX = this.enemy.x + this.enemy.size / 2;
-    const enemyCenterY = this.enemy.y + this.enemy.size / 2;
-
-    // Esta direcao aponta do inimigo para o jogador: e o lado seguro.
-    const dx = playerCenterX - enemyCenterX;
-    const dy = playerCenterY - enemyCenterY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance === 0) {
-      return;
-    }
-
-    const directionX = dx / distance;
-    const directionY = dy / distance;
-    const dodgeDistance = 35;
-
-    // Mantem o jogador dentro do mapa depois da esquiva.
-    const nextX = Math.max(
-      0,
-      Math.min(
-        playerPosition.x + directionX * dodgeDistance,
-        this.worldWidth - playerSize,
-      ),
-    );
-    const nextY = Math.max(
-      0,
-      Math.min(
-        playerPosition.y + directionY * dodgeDistance,
-        this.worldHeight - playerSize,
-      ),
-    );
-
-    this.player.setPosition(nextX, nextY);
-    this.player.startDodge(400);
   }
 
   private resolvePlayerEnemyCollision(): void {
@@ -304,13 +190,47 @@ export class GameWorld {
   }
 
   private updateEnemyMovement(): void {
-    if (!this.player || !this.enemy || this.enemy.isDead || this.enemy.isStunned) {
+    if (!this.player || !this.enemy || this.enemy.isDead) {
       return;
     }
     const playerPosition = this.player.getPosition();
-    const dx = playerPosition.x - this.enemy.x;
-    const dy = playerPosition.y - this.enemy.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const playerSize = this.player.getSize();
+
+    this.enemy.checkPlayerInView(
+      playerPosition.x,
+      playerPosition.y,
+      playerSize
+    );
+
+    if (!this.enemy.isPlayerInView) {
+      return;
+    }
+
+    const playerCenterX =
+      playerPosition.x +
+      playerSize / 2;
+
+    const playerCenterY =
+      playerPosition.y +
+      playerSize / 2;
+
+    const enemyCenterX =
+      this.enemy.x +
+      this.enemy.size / 2;
+
+    const enemyCenterY =
+      this.enemy.y +
+      this.enemy.size / 2;
+
+    const dx =
+      playerCenterX - enemyCenterX;
+
+    const dy =
+      playerCenterY - enemyCenterY;
+
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
+
     // Don't move if we're already touching the player
     if (distance === 0) {
       return;
@@ -323,7 +243,7 @@ export class GameWorld {
   }
 
   private updateEnemyAttack(deltaTime: number): void {
-    if (!this.player || !this.enemy || this.enemy.isDead || this.enemy.isStunned) {
+    if (!this.player || !this.enemy || this.enemy.isDead) {
       return;
     }
     if (this.enemyAttackCooldown > 0) {
@@ -335,13 +255,30 @@ export class GameWorld {
     const enemyX = this.enemy.x;
     const enemyY = this.enemy.y;
     const enemySize = this.enemy.size;
-    const playerCenterX = playerPosition.x + playerSize / 2;
-    const playerCenterY = playerPosition.y + playerSize / 2;
-    const enemyCenterX = enemyX + enemySize / 2;
-    const enemyCenterY = enemyY + enemySize / 2;
-    const dx = playerCenterX - enemyCenterX;
-    const dy = playerCenterY - enemyCenterY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const playerCenterX =
+      playerPosition.x +
+      playerSize / 2;
+
+    const playerCenterY =
+      playerPosition.y +
+      playerSize / 2;
+
+    const enemyCenterX =
+      this.enemy.x +
+      this.enemy.size / 2;
+
+    const enemyCenterY =
+      this.enemy.y +
+      this.enemy.size / 2;
+
+    const dx =
+      playerCenterX - enemyCenterX;
+
+    const dy =
+      playerCenterY - enemyCenterY;
+
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
     const collisionDistance = playerSize / 2 + enemySize / 2;
     if (distance <= collisionDistance) {
       console.log('🚨 ENEMY ATTACKING', 'isDead:', this.enemy.isDead, 'health:', this.enemy.health);
@@ -349,41 +286,6 @@ export class GameWorld {
       this.enemyAttackCooldown = 0.75;
       console.log('Skunk attacked player!');
     }
-  }
-
-  private updateEnemyRangedAttack(deltaTime: number): void {
-    if (!this.player || !this.enemy || this.enemy.isDead || this.enemy.isStunned) {
-      return;
-    }
-
-    if (this.enemyRangedAttackCooldown > 0) {
-      this.enemyRangedAttackCooldown -= deltaTime;
-      return;
-    }
-
-    const playerPosition = this.player.getPosition();
-    const playerSize = this.player.getSize();
-    const playerCenterX = playerPosition.x + playerSize / 2;
-    const playerCenterY = playerPosition.y + playerSize / 2;
-    const enemyCenterX = this.enemy.x + this.enemy.size / 2;
-    const enemyCenterY = this.enemy.y + this.enemy.size / 2;
-    const dx = playerCenterX - enemyCenterX;
-    const dy = playerCenterY - enemyCenterY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // When close, the existing melee attack is the only attack used.
-    if (distance <= 250) {
-      return;
-    }
-
-    this.projectileService.spawnProjectile(
-      'enemy',
-      enemyCenterX,
-      enemyCenterY,
-      playerCenterX,
-      playerCenterY,
-    );
-    this.enemyRangedAttackCooldown = 1.5;
   }
 
   private checkProjectileCollisions(): void {
@@ -399,10 +301,6 @@ export class GameWorld {
     const enemyCenterY = enemyY + enemySize / 2;
 
     for (const projectile of projectiles) {
-      if (projectile.ownerId !== 'player') {
-        continue;
-      }
-
       const projectileCenterX = projectile.x + projectile.size / 2;
       const projectileCenterY = projectile.y + projectile.size / 2;
       const dx = projectileCenterX - enemyCenterX;
@@ -412,52 +310,22 @@ export class GameWorld {
 
       if (distance <= collisionDistance) {
         this.enemy.takeDamage(projectile.damage);
-
-        // O tiro carregado empurra o inimigo na mesma direcao do tiro.
-        if (projectile.type === 'charged') {
-          this.enemy.x += projectile.directionX * 60;
-          this.enemy.y += projectile.directionY * 60;
-          this.enemy.updateVisualPosition();
-        }
-
-        this.projectileService.removeProjectile(projectile.id);
-      }
-    }
-  }
-
-  private checkEnemyProjectileCollisions(): void {
-    if (!this.player) {
-      return;
-    }
-
-    const playerPosition = this.player.getPosition();
-    const playerSize = this.player.getSize();
-    const playerCenterX = playerPosition.x + playerSize / 2;
-    const playerCenterY = playerPosition.y + playerSize / 2;
-
-    for (const projectile of this.projectileService.getProjectiles()) {
-      if (projectile.ownerId !== 'enemy') {
-        continue;
-      }
-
-      const projectileCenterX = projectile.x + projectile.size / 2;
-      const projectileCenterY = projectile.y + projectile.size / 2;
-      const dx = projectileCenterX - playerCenterX;
-      const dy = projectileCenterY - playerCenterY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const collisionDistance = playerSize / 2 + projectile.size / 2;
-
-      if (distance <= collisionDistance) {
-        this.player.takeDamage(projectile.damage);
         this.projectileService.removeProjectile(projectile.id);
       }
     }
   }
 
   private updateEnemyHealthBar(): void {
-    if (!this.enemy || this.enemy.isDead) {
+    if (!this.enemy) {
       return;
     }
+
+    if (this.enemy.isDead) {
+      this.objectiveMessage = 'Objetivo concluído: inimigo derrotado.';
+      return;
+    }
+
+    this.objectiveMessage = 'Objetivo: finalize o inimigo para continuar.';
 
     const healthBar = document.getElementById('enemy-health-bar');
     if (!healthBar) {
@@ -498,6 +366,28 @@ export class GameWorld {
         element.remove();
         this.projectileElements.delete(id);
       }
+    }
+  }
+
+  private updateMiniMap(): void {
+    if (this.player) {
+      const position = this.player.getPosition();
+
+      this.gameStateService.setPlayerPosition({
+        x: position.x,
+        y: position.y,
+      });
+    }
+
+    if (this.enemy && !this.enemy.isDead) {
+      this.gameStateService.setEnemyPositions([
+        {
+          x: this.enemy.x,
+          y: this.enemy.y,
+        },
+      ]);
+    } else {
+      this.gameStateService.setEnemyPositions([]);
     }
   }
 
