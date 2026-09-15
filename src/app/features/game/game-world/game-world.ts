@@ -32,9 +32,12 @@ export class GameWorld {
   private animationFrameId = 0;
   private projectileElements = new Map<number, HTMLElement>();
   private enemyAttackCooldown = 0;
+  private objectiveHideTimeout?: ReturnType<typeof setTimeout>;
+  private objectiveCompleted = false;
   cameraX = 0;
   cameraY = 0;
   objectiveMessage = 'Objetivo: finalize o inimigo para continuar.';
+  objectiveVisible = true;
 
   readonly worldWidth = 20 * 128;
   readonly worldHeight = 20 * 128;
@@ -315,17 +318,36 @@ export class GameWorld {
     }
   }
 
+  private setObjectiveMessage(message: string, autoHideAfterMs?: number): void {
+    this.objectiveMessage = message;
+    this.objectiveVisible = true;
+
+    if (this.objectiveHideTimeout) {
+      clearTimeout(this.objectiveHideTimeout);
+    }
+
+    if (autoHideAfterMs !== undefined) {
+      this.objectiveHideTimeout = setTimeout(() => {
+        this.objectiveVisible = false;
+      }, autoHideAfterMs);
+    }
+  }
+
   private updateEnemyHealthBar(): void {
     if (!this.enemy) {
       return;
     }
 
     if (this.enemy.isDead) {
-      this.objectiveMessage = 'Objetivo concluído: inimigo derrotado.';
+      if (!this.objectiveCompleted) {
+        this.objectiveCompleted = true;
+        this.setObjectiveMessage('Objetivo concluído: inimigo derrotado.', 1800);
+      }
       return;
     }
 
-    this.objectiveMessage = 'Objetivo: finalize o inimigo para continuar.';
+    this.objectiveCompleted = false;
+    this.setObjectiveMessage('Objetivo: finalize o inimigo para continuar.');
 
     const healthBar = document.getElementById('enemy-health-bar');
     if (!healthBar) {
