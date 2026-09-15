@@ -1,0 +1,21 @@
+@if (open) {
+  <div class="tutorial-backdrop" aria-live="polite">
+    <div class="tutorial-card" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+      <p class="tutorial-kicker">Tutorial obrigatório</p>
+      <h2 id="tutorial-title">{{ current.title }}</h2>
+      <p class="tutorial-description">{{ current.description }}</p>
+
+      <ul class="tutorial-list">
+        @for (item of current.details; track $index) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+
+      <div class="tutorial-actions">
+        <button type="button" class="tutorial-button primary" (click)="nextStep()">
+          {{ currentStep === steps.length - 1 ? 'Começar a jogar' : 'Próximo' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
