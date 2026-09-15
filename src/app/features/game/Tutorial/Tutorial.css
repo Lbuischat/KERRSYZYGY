@@ -1,0 +1,74 @@
+.tutorial-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(4, 9, 20, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.tutorial-card {
+  width: min(560px, 100%);
+  background: rgba(16, 24, 40, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 20px;
+  box-shadow: 0 28px 90px rgba(15, 23, 42, 0.9);
+  padding: 28px 26px 20px;
+  color: #f8fafc;
+}
+
+.tutorial-kicker {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+}
+
+.tutorial-card h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1.1;
+}
+
+.tutorial-description {
+  margin: 14px 0 18px;
+  color: #dbeafe;
+  line-height: 1.6;
+}
+
+.tutorial-list {
+  margin: 0 0 22px;
+  padding-left: 18px;
+  color: #e2e8f0;
+  display: grid;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.tutorial-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tutorial-button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.tutorial-button:hover {
+  transform: translateY(-1px);
+}
+
+.tutorial-button.primary {
+  background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+  color: white;
+  box-shadow: 0 10px 24px rgba(56, 189, 248, 0.35);
+}
