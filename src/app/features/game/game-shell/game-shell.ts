@@ -1,49 +1,60 @@
 import { Component, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Hud } from '../hud/hud';
 import { GameWorld } from '../game-world/game-world';
-import { Settings } from '../settings/settings';
+import { Inventory } from '../hud/inventory/inventory';
+import { GameTutorial } from '../tutorial/tutorial';
 
 @Component({
-  imports: [Hud, GameWorld, Settings],
+  imports: [
+    Hud,
+    GameWorld,
+    Inventory,
+    GameTutorial,
+  ],
   selector: 'app-game-shell',
   styleUrl: './game-shell.css',
   templateUrl: './game-shell.html',
 })
 export class GameShell {
 
-  settingsOpen = false;
-  settingsClosing = false;
+  inventoryOpen = false;
+  tutorialOpen = true;
+
+  constructor(private router: Router) {}
 
   openSettings(): void {
-    this.settingsOpen = true;
-    console.log('⚙️ SETTINGS OPEN:', this.settingsOpen);
+    this.router.navigate(['/settings']);
   }
 
-  closeSettings(): void {
-    if (!this.settingsOpen || this.settingsClosing) {
+  toggleInventory(): void {
+    if (this.tutorialOpen) {
       return;
     }
 
-    console.log('⚙️ SETTINGS CLOSING');
+    this.inventoryOpen = !this.inventoryOpen;
 
-    this.settingsClosing = true;
+    console.log('🎒 INVENTORY OPEN:', this.inventoryOpen);
+  }
 
-    setTimeout(() => {
-      this.settingsOpen = false;
-      this.settingsClosing = false;
-
-      console.log('⚙️ SETTINGS CLOSED');
-    }, 180);
+  completeTutorial(): void {
+    this.tutorialOpen = false;
   }
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: Event): void {
     const keyboardEvent = event as KeyboardEvent;
 
-    if (keyboardEvent.key === 'Escape' && this.settingsOpen) {
-      console.log('🚪 ESC PRESSED - CLOSING SETTINGS');
-      this.closeSettings();
+    if (this.tutorialOpen) {
+      keyboardEvent.preventDefault();
+      return;
+    }
+
+    if (
+      keyboardEvent.key.toLowerCase() === 'i'
+    ) {
+      this.toggleInventory();
     }
   }
 }
