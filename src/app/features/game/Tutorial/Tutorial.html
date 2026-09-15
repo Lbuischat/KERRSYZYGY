@@ -12,7 +12,11 @@
       </ul>
 
       <div class="tutorial-actions">
-        <button type="button" class="tutorial-button primary" (click)="nextStep()">
+        <button
+          type="button"
+          class="tutorial-button primary"
+          (click)="nextStep($event)"
+        >
           {{ currentStep === steps.length - 1 ? 'Começar a jogar' : 'Próximo' }}
         </button>
       </div>
