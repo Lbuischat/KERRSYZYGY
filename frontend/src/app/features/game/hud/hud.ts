@@ -46,8 +46,8 @@ export class Hud implements OnInit, OnDestroy {
   worldHeight = 20 * 128;
 
   playerPosition: MiniMapEntity = {
-    x: 300,
-    y: 300,
+    x: 1255,
+    y: 1255,
   };
 
   enemies: MiniMapEntity[] = [];

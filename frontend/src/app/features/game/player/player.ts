@@ -3,7 +3,8 @@ import {
     Inject,
     PLATFORM_ID,
     Output,
-    EventEmitter
+    EventEmitter,
+    OnDestroy
 } from '@angular/core';
 
 import { isPlatformBrowser } from '@angular/common';
@@ -14,22 +15,97 @@ import { isPlatformBrowser } from '@angular/common';
     templateUrl: './player.html',
     styleUrl: './player.css',
 })
-export class Player {
+export class Player implements OnDestroy {
 
-    @Output() shoot = new EventEmitter<{
+    // ================================================================
+    // EVENTS
+    // ================================================================
+
+    @Output() tutorialBoundary = new EventEmitter<void>();
+
+    @Output()
+    shoot = new EventEmitter<{
         mouseX: number;
         mouseY: number;
     }>();
 
-    @Output() attack =
-        new EventEmitter<void>();
+    @Output()
+    attack = new EventEmitter<void>();
 
-    // =========================
+
+    // ================================================================
+    // MAP / PLAYER CONSTANTS
+    // ================================================================
+
+    private readonly MAP_WIDTH = 2560;
+    private readonly MAP_HEIGHT = 2560;
+
+    // Maximum position the player is allowed to reach.
+    private readonly PLAYABLE_BOUNDARY = 2500;
+
+    private readonly PLAYER_SIZE = 40;
+
+    private readonly TILE_SIZE = 128;
+
+    private readonly riverTiles = new Set([
+        // Row 0
+        '11,0',
+        '12,0',
+
+        // Row 1
+        '12,1',
+        '13,1',
+
+        // Row 2
+        '12,2',
+        '13,2',
+
+        // Row 3
+        '12,3',
+        '13,3',
+        '14,3',
+
+        // Row 4
+        '12,4',
+        '13,4',
+        '14,4',
+        '15,4',
+
+        // Row 5
+        '12,5',
+        '13,5',
+        '14,5',
+        '15,5',
+
+        // Row 6
+        '14,6',
+        '15,6',
+        '16,6',
+
+        // Row 7
+        '16,7',
+        '17,7',
+        '18,7',
+
+        // Row 8
+        '16,8',
+        '17,8',
+        '18,8',
+        '19,8',
+
+        // Row 9
+        '17,9',
+        '18,9',
+        '19,9',
+    ]);
+
+
+    // ================================================================
     // POSITION
-    // =========================
+    // ================================================================
 
-    private playerX = 300;
-    private playerY = 300;
+    private playerX = 1255;
+    private playerY = 1255;
 
     public getPosition(): {
         x: number;
@@ -50,20 +126,133 @@ export class Player {
     }
 
     public getSize(): number {
-        return 40;
+        return this.PLAYER_SIZE;
     }
 
+    private isRiverTile(
+        x: number,
+        y: number
+    ): boolean {
+
+        const column =
+            Math.floor(
+                x / this.TILE_SIZE
+            ) + 1;
+
+        const row =
+            Math.floor(
+                y / this.TILE_SIZE
+            );
+
+        return this.riverTiles.has(
+            `${column},${row}`
+        );
+    }
+
+    private canMoveTo(
+        x: number,
+        y: number
+    ): boolean {
+
+        const size =
+            this.PLAYER_SIZE;
+
+        const topLeft =
+            this.isRiverTile(
+                x,
+                y
+            );
+
+        const topRight =
+            this.isRiverTile(
+                x + size - 1,
+                y
+            );
+
+        const bottomLeft =
+            this.isRiverTile(
+                x,
+                y + size - 1
+            );
+
+        const bottomRight =
+            this.isRiverTile(
+                x + size - 1,
+                y + size - 1
+            );
+
+        return !(
+            topLeft ||
+            topRight ||
+            bottomLeft ||
+            bottomRight
+        );
+    }
+
+
+    // ================================================================
+    // SPEED
+    // ================================================================
+
+    private speed = 4;
+    private sprintMultiplier = 1.5;
+
+
+    // ================================================================
+    // STAMINA
+    // ================================================================
+
+    private maxStamina = 100;
+    private stamina = 100;
+
+    private staminaDrain = 20;
+    private staminaRegen = 15;
+
+    // ================================================================
+    // DASH
+    // ================================================================
+
+    private isDashing = false;
+
+    private dashSpeed = 14;
+    private dashStaminaCost = 30;
+    private readonly DASH_DISTANCE = this.TILE_SIZE * 2.5;
+
+    private dashRemaining = 0;
+
+    // Last direction the player moved.
+    // Used when Q is pressed without movement input.
+    private lastMoveHorizontal = 1;
+    private lastMoveVertical = 0;
+
+
+    // ================================================================
+    // HEALTH
+    // ================================================================
+
+    private maxHealth = 100;
+    private health = 100;
+
     public takeDamage(amount: number): void {
-        console.log('⚠️ PLAYER TAKE DAMAGE CALLED', amount);
+
+        console.log(
+            '⚠️ PLAYER TAKE DAMAGE CALLED',
+            amount
+        );
+
         this.health -= amount;
+
         if (this.health < 0) {
             this.health = 0;
         }
+
         console.log(
             'Player HP:',
             this.health
         );
+
         this.showDamageEffect();
+
         if (this.health === 0) {
             this.die();
         }
@@ -76,63 +265,53 @@ export class Player {
         ) * 100;
     }
 
-    // =========================
-    // SPEED
-    // =========================
 
-    private speed = 4;
-    private sprintMultiplier = 1.5
-
-    // =========================
-    // STAMINA
-    // =========================
-
-    private maxStamina = 100;
-    private stamina = 100;
-
-    private staminaDrain = 20;
-    private staminaRegen = 15;
-
-    // =========================
-    // HEALTH
-    // =========================
-
-    private maxHealth = 100;
-    private health = 100;
-
-    // =========================
+    // ================================================================
     // MOVEMENT
-    // =========================
+    // ================================================================
 
     private keys = new Set<string>();
-    private animationFrameId = 0;
 
-    // =========================
+    private animationFrameId = 0;
+    private qHeld = false;
+
+    // Keeps track of whether the player was already
+    // touching the boundary on the previous frame.
+    private wasAtBoundary = false;
+
+
+    // ================================================================
     // COMBAT
-    // =========================
+    // ================================================================
 
     private holdTimer?: ReturnType<typeof setTimeout>;
+
     private isHoldingAttack = false;
 
-    // =========================
+
+    // ================================================================
     // CONSTRUCTOR
-    // =========================
+    // ================================================================
 
     constructor(
-        @Inject(PLATFORM_ID) private platformId: object
+        @Inject(PLATFORM_ID)
+        private platformId: object
     ) {
+        console.log('🟢 PLAYER COMPONENT CREATED');
 
         if (isPlatformBrowser(this.platformId)) {
+            window.addEventListener('keydown', this.handleKeyDown);
+            window.addEventListener('keyup', this.handleKeyUp);
+            window.addEventListener('contextmenu', this.preventContextMenu);
 
-            this.setupControls();
             this.startGameLoop();
-
         }
     }
 
-    // =========================
+
+    // ================================================================
     // CONTROLS
-    // =========================
+    // ================================================================
 
     private setupControls(): void {
 
@@ -160,9 +339,10 @@ export class Player {
 
     };
 
-    // =========================
+
+    // ================================================================
     // KEYBOARD
-    // =========================
+    // ================================================================
 
     private handleKeyDown = (
         event: KeyboardEvent
@@ -171,7 +351,11 @@ export class Player {
         const key =
             event.key.toLowerCase();
 
-        // Skill 2 — F
+
+        // ------------------------------------------------------------
+        // SKILL 2 — F
+        // ------------------------------------------------------------
+
         if (key === 'f') {
 
             event.preventDefault();
@@ -181,17 +365,32 @@ export class Player {
             return;
         }
 
-        // Skill 3 — Q
+
+        // ------------------------------------------------------------
+        // SKILL 3 — Q
+        // ------------------------------------------------------------
+
         if (key === 'q') {
 
             event.preventDefault();
 
-            this.useSkill3();
+            // Only trigger once when Q is initially pressed.
+            if (!this.qHeld) {
+
+                this.qHeld = true;
+
+                this.useSkill3();
+
+            }
 
             return;
         }
 
-        // Movement + Shift
+
+        // ------------------------------------------------------------
+        // MOVEMENT + SHIFT
+        // ------------------------------------------------------------
+
         if (
             key === 'w' ||
             key === 'a' ||
@@ -215,45 +414,72 @@ export class Player {
         event: KeyboardEvent
     ): void => {
 
-        this.keys.delete(
-            event.key.toLowerCase()
-        );
+        const key =
+            event.key.toLowerCase();
+
+        this.keys.delete(key);
+
+        if (key === 'q') {
+
+            this.qHeld = false;
+
+        }
 
     };
 
-    // =========================
+
+    // ================================================================
     // MOUSE / ATTACK
-    // =========================
+    // ================================================================
 
     handleMouseDown = (
         event: MouseEvent
     ): void => {
 
+
+        // ------------------------------------------------------------
         // LEFT MOUSE — NORMAL ATTACK
+        // ------------------------------------------------------------
+
         if (event.button === 0) {
+
             this.isHoldingAttack = true;
 
-            this.setButtonActive('attack-btn');
+            this.setButtonActive(
+                'attack-btn'
+            );
 
             this.changePlayerColor(
                 'yellow'
             );
 
-            console.log('PLAYER EMITTING ATTACK');
+            console.log(
+                'PLAYER EMITTING ATTACK'
+            );
 
             this.attack.emit();
 
             this.holdTimer =
                 setTimeout(() => {
-                    if (this.isHoldingAttack) {
+
+                    if (
+                        this.isHoldingAttack
+                    ) {
+
                         this.useSkill1();
+
                     }
+
                 }, 2000);
 
             return;
         }
 
+
+        // ------------------------------------------------------------
         // RIGHT MOUSE — PROJECTILE
+        // ------------------------------------------------------------
+
         if (event.button === 2) {
 
             event.preventDefault();
@@ -267,6 +493,7 @@ export class Player {
         }
     };
 
+
     handleMouseUp = (
         event: MouseEvent
     ): void => {
@@ -277,8 +504,13 @@ export class Player {
 
         this.isHoldingAttack = false;
 
-        this.setButtonInactive('attack-btn');
-        this.setButtonInactive('skill1-btn');
+        this.setButtonInactive(
+            'attack-btn'
+        );
+
+        this.setButtonInactive(
+            'skill1-btn'
+        );
 
         if (this.holdTimer) {
 
@@ -294,13 +526,16 @@ export class Player {
 
     };
 
-    // =========================
+
+    // ================================================================
     // SKILL 1
-    // =========================
+    // ================================================================
 
     private useSkill1(): void {
 
-        this.setButtonActive('skill1-btn');
+        this.setButtonActive(
+            'skill1-btn'
+        );
 
         this.changePlayerColor(
             'turquoise'
@@ -308,13 +543,16 @@ export class Player {
 
     }
 
-    // =========================
+
+    // ================================================================
     // SKILL 2
-    // =========================
+    // ================================================================
 
     private useSkill2(): void {
 
-        this.setButtonActive('skill2-btn');
+        this.setButtonActive(
+            'skill2-btn'
+        );
 
         this.changePlayerColor(
             'purple'
@@ -322,7 +560,9 @@ export class Player {
 
         setTimeout(() => {
 
-            this.setButtonInactive('skill2-btn');
+            this.setButtonInactive(
+                'skill2-btn'
+            );
 
             if (!this.isHoldingAttack) {
 
@@ -336,54 +576,74 @@ export class Player {
 
     }
 
-    // =========================
+
+    // ================================================================
     // SKILL 3
-    // =========================
+    // ================================================================
 
     private useSkill3(): void {
 
-        this.setButtonActive('skill3-btn');
+        if (this.isDashing) {
+            return;
+        }
+
+        if (
+            this.stamina <
+            this.dashStaminaCost
+        ) {
+            return;
+        }
+
+        this.stamina -=
+            this.dashStaminaCost;
+
+        this.isDashing = true;
+
+        this.dashRemaining =
+            this.DASH_DISTANCE;
+
+        this.setButtonActive(
+            'skill3-btn'
+        );
 
         this.changePlayerColor(
             'white'
         );
 
-        setTimeout(() => {
-
-            this.setButtonInactive('skill3-btn');
-
-            if (!this.isHoldingAttack) {
-
-                this.changePlayerColor(
-                    'red'
-                );
-
-            }
-
-        }, 500);
-
     }
 
-    // =========================
+
+    // ================================================================
     // GAME LOOP
-    // =========================
+    // ================================================================
 
     private startGameLoop(): void {
 
         let lastTime =
             performance.now();
 
+
         const update = (
             currentTime: number
         ): void => {
 
             const deltaTime =
-                (currentTime - lastTime) / 1000;
+                (
+                    currentTime -
+                    lastTime
+                ) / 1000;
 
-            lastTime = currentTime;
+            lastTime =
+                currentTime;
+
+
+            // ========================================================
+            // MOVEMENT INPUT
+            // ========================================================
 
             let horizontal = 0;
             let vertical = 0;
+
 
             // UP
             if (
@@ -395,6 +655,7 @@ export class Player {
 
             }
 
+
             // DOWN
             if (
                 this.keys.has('s') ||
@@ -404,6 +665,7 @@ export class Player {
                 vertical += 1;
 
             }
+
 
             // LEFT
             if (
@@ -415,6 +677,7 @@ export class Player {
 
             }
 
+
             // RIGHT
             if (
                 this.keys.has('d') ||
@@ -425,32 +688,51 @@ export class Player {
 
             }
 
-            // Normalize diagonal movement
+
+            // ========================================================
+            // NORMALIZE DIAGONAL MOVEMENT
+            // ========================================================
+
             if (
                 horizontal !== 0 &&
                 vertical !== 0
             ) {
 
                 horizontal *= 0.7071;
+
                 vertical *= 0.7071;
 
             }
+
 
             const isMoving =
                 horizontal !== 0 ||
                 vertical !== 0;
 
+            if (isMoving) {
+
+                this.lastMoveHorizontal =
+                    horizontal;
+
+                this.lastMoveVertical =
+                    vertical;
+
+            }
+
+
             const wantsToSprint =
                 this.keys.has('shift') &&
                 isMoving;
+
 
             const isSprinting =
                 wantsToSprint &&
                 this.stamina > 0;
 
-            // =========================
+
+            // ========================================================
             // STAMINA
-            // =========================
+            // ========================================================
 
             if (isSprinting) {
 
@@ -458,7 +740,9 @@ export class Player {
                     this.staminaDrain *
                     deltaTime;
 
-                if (this.stamina <= 0) {
+                if (
+                    this.stamina <= 0
+                ) {
 
                     this.stamina = 0;
 
@@ -481,9 +765,10 @@ export class Player {
                 }
             }
 
-            // =========================
+
+            // ========================================================
             // SPEED
-            // =========================
+            // ========================================================
 
             const currentSpeed =
                 isSprinting
@@ -491,41 +776,215 @@ export class Player {
                     this.sprintMultiplier
                     : this.speed;
 
-            // =========================
-            // MOVE
-            // =========================
 
-            this.playerX +=
-                horizontal *
-                currentSpeed;
+            // ========================================================
+            // MOVEMENT
+            // ========================================================
 
-            this.playerY +=
-                vertical *
-                currentSpeed;
+            if (this.isDashing) {
+
+                /*
+                 * Dash always travels in the direction that was
+                 * recorded when Q was pressed.
+                 *
+                 * It ignores river collision.
+                 */
+
+                const dashStep =
+                    Math.min(
+                        this.dashSpeed,
+                        this.dashRemaining
+                    );
+
+                const nextX =
+                    this.playerX +
+                    this.lastMoveHorizontal *
+                    dashStep;
+
+                const nextY =
+                    this.playerY +
+                    this.lastMoveVertical *
+                    dashStep;
+
+                this.playerX =
+                    nextX;
+
+                this.playerY =
+                    nextY;
+
+                this.dashRemaining -=
+                    dashStep;
+
+                if (
+                    this.dashRemaining <= 0
+                ) {
+
+                    this.dashRemaining = 0;
+
+                    this.isDashing = false;
+
+                    this.setButtonInactive(
+                        'skill3-btn'
+                    );
+
+                    if (!this.isHoldingAttack) {
+
+                        this.changePlayerColor(
+                            'red'
+                        );
+
+                    }
+
+                }
+
+            }
+
+            else {
+
+                const nextX =
+                    this.playerX +
+                    horizontal *
+                    currentSpeed;
+
+                const nextY =
+                    this.playerY +
+                    vertical *
+                    currentSpeed;
+
+                if (
+                    this.canMoveTo(
+                        nextX,
+                        this.playerY
+                    )
+                ) {
+
+                    this.playerX =
+                        nextX;
+                }
+
+                if (
+                    this.canMoveTo(
+                        this.playerX,
+                        nextY
+                    )
+                ) {
+
+                    this.playerY =
+                        nextY;
+
+                }
+
+            }
 
 
-            // Keep player inside the world
+            // ========================================================
+            // BOUNDARIES
+            // ========================================================
 
-            const worldWidth = 20 * 128;
-            const worldHeight = 20 * 128;
+            let hitMapBoundary = false;
 
-            this.playerX = Math.max(
-                0,
-                Math.min(
-                    this.playerX,
-                    worldWidth - this.getSize()
-                )
-            );
 
-            this.playerY = Math.max(
-                0,
-                Math.min(
-                    this.playerY,
-                    worldHeight - this.getSize()
-                )
-            );
+            // --------------------------------------------------------
+            // LEFT EDGE
+            // --------------------------------------------------------
+
+            if (this.playerX < 0) {
+
+                this.playerX = 0;
+
+                hitMapBoundary = true;
+
+            }
+
+
+            // --------------------------------------------------------
+            // RIGHT / 2500px BOUNDARY
+            // --------------------------------------------------------
+
+            if (
+                this.playerX >=
+                this.PLAYABLE_BOUNDARY
+            ) {
+
+                this.playerX =
+                    this.PLAYABLE_BOUNDARY;
+
+                hitMapBoundary = true;
+
+            }
+
+
+            // --------------------------------------------------------
+            // TOP EDGE
+            // --------------------------------------------------------
+
+            if (this.playerY < 0) {
+
+                this.playerY = 0;
+
+                hitMapBoundary = true;
+
+            }
+
+
+            // --------------------------------------------------------
+            // BOTTOM / 2500px BOUNDARY
+            // --------------------------------------------------------
+
+            if (
+                this.playerY >=
+                this.PLAYABLE_BOUNDARY
+            ) {
+
+                this.playerY =
+                    this.PLAYABLE_BOUNDARY;
+
+                hitMapBoundary = true;
+
+            }
+
+
+            // ========================================================
+            // BOUNDARY MESSAGE
+            // ========================================================
+
+            /*
+             * Only emit the event when the player FIRST reaches
+             * the boundary.
+             *
+             * Without this check, the event would fire every
+             * single animation frame while the player is holding
+             * the movement key against the wall.
+             */
+
+            if (
+                hitMapBoundary &&
+                !this.wasAtBoundary
+            ) {
+
+                console.log(
+                    'PLAYER REACHED MAP BOUNDARY'
+                );
+
+                this.tutorialBoundary.emit();
+
+            }
+
+
+            this.wasAtBoundary =
+                hitMapBoundary;
+
+
+            // ========================================================
+            // UPDATE VISUAL PLAYER
+            // ========================================================
 
             this.updatePlayerPosition();
+
+
+            // ========================================================
+            // NEXT FRAME
+            // ========================================================
 
             this.animationFrameId =
                 requestAnimationFrame(
@@ -534,6 +993,7 @@ export class Player {
 
         };
 
+
         this.animationFrameId =
             requestAnimationFrame(
                 update
@@ -541,40 +1001,56 @@ export class Player {
 
     }
 
-    // =========================
-    // UPDATE PLAYER
-    // =========================
+
+    // ================================================================
+    // DAMAGE EFFECT
+    // ================================================================
 
     private showDamageEffect(): void {
+
         const player =
             document.getElementById(
                 'player-character'
             );
+
         if (!player) {
             return;
         }
+
+
         player.style.backgroundColor =
             'white';
+
+
         setTimeout(() => {
+
             player.style.backgroundColor =
                 'red';
+
         }, 80);
+
+
         player.animate(
             [
                 {
-                    transform: 'translate(0px, 0px)'
+                    transform:
+                        'translate(0px, 0px)'
                 },
                 {
-                    transform: 'translate(-4px, 0px)'
+                    transform:
+                        'translate(-4px, 0px)'
                 },
                 {
-                    transform: 'translate(4px, 0px)'
+                    transform:
+                        'translate(4px, 0px)'
                 },
                 {
-                    transform: 'translate(-3px, 0px)'
+                    transform:
+                        'translate(-3px, 0px)'
                 },
                 {
-                    transform: 'translate(0px, 0px)'
+                    transform:
+                        'translate(0px, 0px)'
                 }
             ],
             {
@@ -582,13 +1058,26 @@ export class Player {
                 easing: 'linear'
             }
         );
+
     }
 
+
+    // ================================================================
+    // DEATH
+    // ================================================================
+
     private die(): void {
+
         console.log(
             'PLAYER DIED'
         );
+
     }
+
+
+    // ================================================================
+    // UPDATE PLAYER POSITION / HUD
+    // ================================================================
 
     private updatePlayerPosition(): void {
 
@@ -612,7 +1101,11 @@ export class Player {
                 'player-health-bar'
             );
 
-        // Move player
+
+        // ------------------------------------------------------------
+        // MOVE PLAYER
+        // ------------------------------------------------------------
+
         if (player) {
 
             player.style.transform =
@@ -623,7 +1116,11 @@ export class Player {
 
         }
 
-        // Show stamina while Shift is held
+
+        // ------------------------------------------------------------
+        // STAMINA VISIBILITY
+        // ------------------------------------------------------------
+
         if (staminaContainer) {
 
             const shiftHeld =
@@ -636,29 +1133,42 @@ export class Player {
 
         }
 
-        // Update stamina
+
+        // ------------------------------------------------------------
+        // STAMINA BAR
+        // ------------------------------------------------------------
+
         if (staminaBar) {
 
             const staminaPercentage =
-                (this.stamina /
-                    this.maxStamina) *
-                100;
+                (
+                    this.stamina /
+                    this.maxStamina
+                ) * 100;
 
             staminaBar.style.width =
                 `${staminaPercentage}%`;
 
         }
 
+
+        // ------------------------------------------------------------
+        // HEALTH BAR
+        // ------------------------------------------------------------
+
         if (healthBar) {
+
             healthBar.style.width =
                 `${this.getHealthPercentage()}%`;
+
         }
 
     }
 
-    // =========================
-    // CHANGE COLOR
-    // =========================
+
+    // ================================================================
+    // PLAYER COLOR
+    // ================================================================
 
     private changePlayerColor(
         color: string
@@ -678,26 +1188,93 @@ export class Player {
 
     }
 
+
+    // ================================================================
+    // BUTTON STATE
+    // ================================================================
+
     private setButtonActive(
         buttonId: string
     ): void {
+
         const button =
-            document.getElementById(buttonId);
+            document.getElementById(
+                buttonId
+            );
 
         if (button) {
-            button.classList.add('active');
+
+            button.classList.add(
+                'active'
+            );
+
         }
+
     }
+
 
     private setButtonInactive(
         buttonId: string
     ): void {
+
         const button =
-            document.getElementById(buttonId);
+            document.getElementById(
+                buttonId
+            );
 
         if (button) {
-            button.classList.remove('active');
+
+            button.classList.remove(
+                'active'
+            );
+
         }
+
+    }
+
+
+    // ================================================================
+    // CLEANUP
+    // ================================================================
+
+    ngOnDestroy(): void {
+
+        // SSR does not have access to window.
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
+        }
+
+        if (this.animationFrameId) {
+
+            cancelAnimationFrame(
+                this.animationFrameId
+            );
+
+        }
+
+        window.removeEventListener(
+            'keydown',
+            this.handleKeyDown
+        );
+
+        window.removeEventListener(
+            'keyup',
+            this.handleKeyUp
+        );
+
+        window.removeEventListener(
+            'contextmenu',
+            this.preventContextMenu
+        );
+
+        if (this.holdTimer) {
+
+            clearTimeout(
+                this.holdTimer
+            );
+
+        }
+
     }
 
 }

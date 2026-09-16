@@ -4,64 +4,41 @@
 
     <div class="profile-shell">
 
-      <!-- =====================================================
-           HEADER
-      ===================================================== -->
-
+      <!-- HEADER -->
       <header class="profile-header">
 
         <div class="profile-title">
+          <span class="profile-kicker">PLAYER PROFILE</span>
 
-          <span class="profile-kicker">
-            PLAYER PROFILE
-          </span>
-
-          <h1>
-            Personal Dossier
-          </h1>
+          <h1>Personal Dossier</h1>
 
           <span class="profile-title-line"></span>
-
         </div>
 
-
         <div class="profile-status">
-
           <span class="status-dot"></span>
-
-          <span>
-            PROFILE ACTIVE
-          </span>
-
+          <span>PROFILE ACTIVE</span>
         </div>
 
       </header>
 
 
-
-      <!-- =====================================================
-           CONTENT
-      ===================================================== -->
-
+      <!-- CONTENT -->
       <div class="profile-content">
 
 
-        <!-- ===================================================
-             IDENTITY
-        ==================================================== -->
+        <!-- ========================================================= -->
+        <!-- IDENTITY -->
+        <!-- ========================================================= -->
 
         <section class="profile-section identity-section">
 
           <div class="section-heading">
 
             <div>
-              <span class="section-kicker">
-                IDENTITY
-              </span>
+              <span class="section-kicker">IDENTITY</span>
 
-              <h2>
-                Personal Information
-              </h2>
+              <h2>Personal Information</h2>
 
               <p>
                 Information selected during your journey.
@@ -74,84 +51,59 @@
           <div class="identity-layout">
 
 
-            <!-- PROFILE DATA -->
-
+            <!-- PLAYER INFORMATION -->
             <div class="identity-data">
 
-
               <div class="profile-field">
-
-                <span class="field-label">
-                  USERNAME
-                </span>
+                <span class="field-label">USERNAME</span>
 
                 <strong>
                   {{ playerService.profile.username || '—' }}
                 </strong>
-
               </div>
 
 
-
               <div class="profile-field">
-
-                <span class="field-label">
-                  GENDER
-                </span>
+                <span class="field-label">GENDER</span>
 
                 <strong>
                   {{ playerService.profile.gender || '—' }}
                 </strong>
-
               </div>
 
 
-
               <div class="profile-field">
-
-                <span class="field-label">
-                  PRONOUNS
-                </span>
+                <span class="field-label">PRONOUNS</span>
 
                 <strong>
                   {{ playerService.profile.pronouns || '—' }}
                 </strong>
-
               </div>
 
 
-
               <div class="profile-field">
-
-                <span class="field-label">
-                  BIRTHDAY
-                </span>
+                <span class="field-label">BIRTHDAY</span>
 
                 <strong>
                   {{ playerService.profile.birthday || '—' }}
                 </strong>
-
               </div>
 
 
-
               <div class="profile-field">
-
-                <span class="field-label">
-                  LANGUAGE
-                </span>
+                <span class="field-label">LANGUAGE</span>
 
                 <strong>
                   {{ playerService.profile.language || 'Português' }}
                 </strong>
-
               </div>
 
             </div>
 
 
-
-            <!-- CHARACTER PREVIEW -->
+            <!-- ===================================================== -->
+            <!-- CURRENT AVATAR -->
+            <!-- ===================================================== -->
 
             <div class="profile-character-preview">
 
@@ -174,10 +126,10 @@
 
                 <div class="character-glow"></div>
 
-                <img
-                  [src]="personagemAtual.imagem"
-                  [alt]="personagemAtual.nome"
-                >
+
+                <!-- THE ACTUAL CHARACTER -->
+                <div id="profile-character" class="profile-character" [style.background-color]="personagemAtual.colour">
+                </div>
 
               </div>
 
@@ -202,9 +154,9 @@
 
 
 
-        <!-- ===================================================
-             ABOUT
-        ==================================================== -->
+        <!-- ========================================================= -->
+        <!-- ABOUT -->
+        <!-- ========================================================= -->
 
         <section class="profile-section about-section">
 
@@ -229,48 +181,43 @@
           </div>
 
 
-          <form
-            class="profile-form"
-            #profileForm="ngForm"
-            (ngSubmit)="criarPerfil(profileForm)"
-          >
+
+          <form class="profile-form" #profileForm="ngForm" (ngSubmit)="criarPerfil(profileForm)">
+
+
+            <!-- ===================================================== -->
+            <!-- BIO -->
+            <!-- ===================================================== -->
 
             <div class="profile-field bio-field">
 
-              <label
-                class="field-label"
-                for="bio"
-              >
+              <label class="field-label" for="bio">
                 BIOGRAPHY
               </label>
 
 
-              <textarea
-                id="bio"
-                name="bio"
-                placeholder="Tell something about yourself..."
-                [(ngModel)]="playerService.profile.bio"
-                required
-                #bio="ngModel"
-              ></textarea>
+              <textarea id="bio" name="bio" placeholder="Tell something about yourself..."
+                [(ngModel)]="playerService.profile.bio" required #bio="ngModel"></textarea>
 
 
               @if (bio.invalid && bio.touched) {
 
-                <span class="field-error">
-                  Write a short biography.
-                </span>
+              <span class="field-error">
+                Write a short biography.
+              </span>
 
               }
 
             </div>
 
 
-            <!-- =================================================
-                 CHARACTER SELECTOR
-            ================================================== -->
+
+            <!-- ===================================================== -->
+            <!-- CHARACTER SELECTOR -->
+            <!-- ===================================================== -->
 
             <div class="character-selector-section">
+
 
               <div class="character-selector-header">
 
@@ -287,23 +234,17 @@
                 </div>
 
 
+                <!-- ARROWS -->
                 <div class="character-controls">
 
-                  <button
-                    type="button"
-                    class="character-arrow"
-                    (click)="personagemAnterior()"
-                    aria-label="Previous character"
-                  >
+                  <button type="button" class="character-arrow" (click)="personagemAnterior()"
+                    aria-label="Previous character">
                     ←
                   </button>
 
-                  <button
-                    type="button"
-                    class="character-arrow"
-                    (click)="proximoPersonagem()"
-                    aria-label="Next character"
-                  >
+
+                  <button type="button" class="character-arrow" (click)="proximoPersonagem()"
+                    aria-label="Next character">
                     →
                   </button>
 
@@ -312,29 +253,39 @@
               </div>
 
 
+
+              <!-- =================================================== -->
+              <!-- CHARACTER DOSSIER -->
+              <!-- =================================================== -->
+
               <div class="character-dossier">
 
+
+                <!-- CHARACTER -->
                 <div class="character-art">
 
                   <div class="character-glow"></div>
 
-                  <img
-                    [src]="personagemAtual.imagem"
-                    [alt]="personagemAtual.nome"
-                  >
+
+                  <!-- ACTUAL CSS PLAYER -->
+                  <div class="profile-character" [style.background-color]="personagemAtual.colour"></div>
 
                 </div>
 
 
+
+                <!-- CHARACTER INFORMATION -->
                 <div class="character-information">
 
                   <span class="field-label">
                     CHARACTER
                   </span>
 
+
                   <h3>
                     {{ personagemAtual.nome }}
                   </h3>
+
 
                   <span class="character-class">
                     {{ personagemAtual.classe }}
@@ -363,26 +314,25 @@
               </div>
 
 
+
+              <!-- =================================================== -->
+              <!-- CHARACTER NAVIGATION -->
+              <!-- =================================================== -->
+
               <div class="character-navigation">
 
                 <div class="character-dots">
 
                   @for (
-                    personagem of personagens;
-                    track $index
+                  personagem of personagens;
+                  track $index
                   ) {
 
-                    <button
-                      type="button"
-                      class="character-dot"
-                      [class.active]="
+                  <button type="button" class="character-dot" [class.active]="
                         personagemSelecionado === $index
-                      "
-                      (click)="selecionarPersonagem($index)"
-                      [attr.aria-label]="
+                      " (click)="selecionarPersonagem($index)" [attr.aria-label]="
                         'Character ' + ($index + 1)
-                      "
-                    ></button>
+                      "></button>
 
                   }
 
@@ -390,7 +340,8 @@
 
 
                 <span>
-                  CHARACTER {{ personagemSelecionado + 1 }}
+                  CHARACTER
+                  {{ personagemSelecionado + 1 }}
                   /
                   {{ personagens.length }}
                 </span>
@@ -401,16 +352,15 @@
 
 
 
-            <!-- =================================================
-                 ACTIONS
-            ================================================== -->
+            <!-- ===================================================== -->
+            <!-- ACTIONS -->
+            <!-- ===================================================== -->
 
             <div class="profile-actions">
 
-              <button
-                class="save-profile-button"
-                type="submit"
-              >
+
+              <button class="save-profile-button" type="submit">
+
                 <span>
                   SAVE PROFILE
                 </span>
@@ -418,45 +368,48 @@
                 <span class="button-arrow">
                   →
                 </span>
+
               </button>
+
 
 
               @if (formIncompleto) {
 
-                <div class="profile-feedback error">
+              <div class="profile-feedback error">
 
-                  <span>!</span>
+                <span>!</span>
 
-                  Complete all required information.
+                Complete all required information.
 
-                </div>
+              </div>
 
               }
+
 
 
               @if (mostrarSucesso) {
 
-                <div class="profile-feedback success">
+              <div class="profile-feedback success">
 
-                  <span>✓</span>
+                <span>✓</span>
 
-                  Profile saved successfully.
+                Profile saved successfully.
 
-                </div>
+              </div>
 
               }
 
 
+
               @if (perfilCriado) {
 
-                <button
-                  class="shop-button"
-                  type="button"
-                  routerLink="/shop"
-                >
-                  GO TO SHOP
-                  <span>→</span>
-                </button>
+              <button class="shop-button" type="button" routerLink="/shop">
+
+                GO TO SHOP
+
+                <span>→</span>
+
+              </button>
 
               }
 
@@ -468,10 +421,7 @@
 
 
 
-        <!-- ===================================================
-             FOOTER
-        ==================================================== -->
-
+        <!-- FOOTER -->
         <footer class="profile-footer">
 
           <span>

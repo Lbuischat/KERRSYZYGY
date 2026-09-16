@@ -19,7 +19,11 @@ export class GameShell {
 
   inventoryOpen = false;
 
-  constructor(private router: Router) {}
+  tutorialMessageVisible = false;
+
+  private tutorialMessageTimer?: ReturnType<typeof setTimeout>;
+
+  constructor(private router: Router) { }
 
   openSettings(): void {
     this.router.navigate(['/settings']);
@@ -28,7 +32,22 @@ export class GameShell {
   toggleInventory(): void {
     this.inventoryOpen = !this.inventoryOpen;
 
-    console.log('🎒 INVENTORY OPEN:', this.inventoryOpen);
+    console.log(
+      '🎒 INVENTORY OPEN:',
+      this.inventoryOpen
+    );
+  }
+
+  showTutorialMessage(): void {
+    this.tutorialMessageVisible = true;
+
+    if (this.tutorialMessageTimer) {
+      clearTimeout(this.tutorialMessageTimer);
+    }
+
+    this.tutorialMessageTimer = setTimeout(() => {
+      this.tutorialMessageVisible = false;
+    }, 2500);
   }
 
   @HostListener('document:keydown', ['$event'])
