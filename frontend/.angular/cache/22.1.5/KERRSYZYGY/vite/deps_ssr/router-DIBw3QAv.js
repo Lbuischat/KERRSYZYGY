@@ -1,14 +1,16 @@
-import { $n as Output, Bc as PendingTasksInternal, Bt as computed, Ec as Injector, Ei as provideAppInitializer, El as ɵɵdefineInjector, En as ElementRef, Er as ViewContainerRef, Fn as Injectable, Hc as RuntimeError, In as Input, Io as ɵɵinjectAttribute, Jo as ɵɵlistener, Kc as Version, Mn as IS_HYDRATION_DOM_REUSE_ENABLED, Mr as afterNextRender, Ns as ɵɵsanitizeUrlOrResourceUrl, O as booleanAttribute, Pc as NgZone, Ta as ɵɵcontentQuery, Tc as InjectionToken, Ti as performanceMarkFeature, Tl as ɵɵdefineInjectable, Ui as setClassMetadata, Wt as linkedSignal, X as input, Xc as assertInInjectionContext, Yn as NgModuleFactory$1, Yo as ɵɵloadQuery, Yt as APP_BOOTSTRAP_LISTENER, _c as EnvironmentInjector, _i as isNgModule, _s as ɵɵqueryRefresh, a as ContentChildren, an as ChangeDetectionStrategy, ao as ɵɵdirectiveInject, bl as signal, ca as ɵɵNgOnChangesFeature, cl as isInjectable, cn as Component, dr as Service, el as effect, eo as ɵɵdefineComponent, et as maybeUnwrapDefaultExport, f as HostAttributeToken, fl as makeEnvironmentProviders, fn as Console, ft as reflectComponentType, gl as provideEnvironmentInitializer, hc as ENVIRONMENT_INITIALIZER, ho as ɵɵelement, io as ɵɵdefineService, ir as Renderer2, ji as publishNonCoreGlobalUtil, jn as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION, kl as ɵɵinject, kn as HostListener, mc as DestroyRef, ml as promiseWithResolvers, nn as Attribute, no as ɵɵdefineNgModule, ol as inject, on as Compiler, pc as DOCUMENT, pt as resourceFromSnapshots, qn as NgModule, qo as ɵɵinvalidFactory, qr as createEnvironmentInjector, qt as untracked, r as ChangeDetectorRef, tl as formatRuntimeError, tn as ApplicationRef, to as ɵɵdefineDirective, ul as isStandalone, va as ɵɵattribute, vi as isPromise, vl as runInInjectionContext, wc as INTERNAL_APPLICATION_ERROR_HANDLER, wn as Directive, yc as EventEmitter } from "./core-DK4zC9WD.js";
-import { An as throwError, Ct as take, Dn as isObservable, En as EmptyError, In as EMPTY, Lt as catchError, Mn as from, Qn as Subject, Xt as filter, Zn as BehaviorSubject, b as switchMap, dn as concat, et as takeLast, g as takeUntil, hn as combineLatest, ir as pipe, jn as of, jt as concatMap, m as tap, mn as mergeMap, ot as finalize, pn as mergeAll, rr as Observable, rt as first, un as defer, ur as Subscription, vn as map, x as startWith } from "./esm5-ChK3bs0s.js";
-import { a as LOCATION_INITIALIZED, o as PlatformLocation } from "./_xhr-chunk-DKtJTjzJ.js";
-import { Mt as LocationStrategy, Pt as PathLocationStrategy, jt as Location, k as HashLocationStrategy, l as ViewportScroller, n as NavigationAdapterForLocation, v as PRECOMMIT_HANDLER_SUPPORTED, y as PlatformNavigation } from "./common-gjtnEUjL.js";
-import { s as Title } from "./platform-browser-BgFAXzy1.js";
+import { $n as Output, Al as ɵɵinject, Bt as computed, Dc as Injector, Dl as ɵɵdefineInjector, Ec as InjectionToken, Ei as provideAppInitializer, El as ɵɵdefineInjectable, En as ElementRef, Er as ViewContainerRef, Fc as NgZone, Fn as Injectable, In as Input, Io as ɵɵinjectAttribute, Jo as ɵɵlistener, Mn as IS_HYDRATION_DOM_REUSE_ENABLED, Mr as afterNextRender, Ns as ɵɵsanitizeUrlOrResourceUrl, O as booleanAttribute, Ta as ɵɵcontentQuery, Tc as INTERNAL_APPLICATION_ERROR_HANDLER, Ti as performanceMarkFeature, Uc as RuntimeError, Ui as setClassMetadata, Vc as PendingTasksInternal, Wt as linkedSignal, X as input, Yn as NgModuleFactory$1, Yo as ɵɵloadQuery, Yt as APP_BOOTSTRAP_LISTENER, Zc as assertInInjectionContext, _i as isNgModule, _l as provideEnvironmentInitializer, _s as ɵɵqueryRefresh, a as ContentChildren, an as ChangeDetectionStrategy, ao as ɵɵdirectiveInject, bc as EventEmitter, ca as ɵɵNgOnChangesFeature, cc as require_operators, cn as Component, dl as isStandalone, dr as Service, eo as ɵɵdefineComponent, et as maybeUnwrapDefaultExport, f as HostAttributeToken, fn as Console, ft as reflectComponentType, gc as ENVIRONMENT_INITIALIZER, hc as DestroyRef, hl as promiseWithResolvers, ho as ɵɵelement, io as ɵɵdefineService, ir as Renderer2, ji as publishNonCoreGlobalUtil, jn as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION, kn as HostListener, ll as isInjectable, mc as DOCUMENT, nl as formatRuntimeError, nn as Attribute, no as ɵɵdefineNgModule, on as Compiler, pl as makeEnvironmentProviders, pt as resourceFromSnapshots, qc as Version, qn as NgModule, qo as ɵɵinvalidFactory, qr as createEnvironmentInjector, qt as untracked, r as ChangeDetectorRef, sl as inject, tl as effect, tn as ApplicationRef, to as ɵɵdefineDirective, va as ɵɵattribute, vc as EnvironmentInjector, vi as isPromise, wn as Directive, xl as signal, yl as runInInjectionContext } from "./core-Cf1yj7rw.js";
+import { t as require_cjs } from "./rxjs.js";
+import { a as LOCATION_INITIALIZED, o as PlatformLocation } from "./_xhr-chunk-BucWBGOi.js";
+import { Mt as LocationStrategy, Pt as PathLocationStrategy, jt as Location, k as HashLocationStrategy, l as ViewportScroller, n as NavigationAdapterForLocation, v as PRECOMMIT_HANDLER_SUPPORTED, y as PlatformNavigation } from "./common-BHXmEbnO.js";
+import { s as Title } from "./platform-browser-DGuOGdG3.js";
 //#region node_modules/@angular/router/fesm2022/_router-chunk.mjs
 /**
 * @license Angular v22.1.3
 * (c) 2010-2026 Google LLC. https://angular.dev/
 * License: MIT
 */
+var import_cjs = require_cjs();
+var import_operators = require_operators();
 var PRIMARY_OUTLET = "primary";
 var RouteTitleKey = /* @__PURE__ */ Symbol("RouteTitle");
 var ParamsAsMap = class {
@@ -78,7 +80,7 @@ function defaultUrlMatcher(segments, segmentGroup, route) {
 }
 function firstValueFrom(source) {
 	return new Promise((resolve, reject) => {
-		source.pipe(first()).subscribe({
+		source.pipe((0, import_operators.first)()).subscribe({
 			next: (value) => resolve(value),
 			error: (err) => reject(err)
 		});
@@ -115,12 +117,12 @@ function last(a) {
 	return a.length > 0 ? a[a.length - 1] : null;
 }
 function wrapIntoObservable(value) {
-	if (isObservable(value)) return value;
-	if (isPromise(value)) return from(Promise.resolve(value));
-	return of(value);
+	if ((0, import_cjs.isObservable)(value)) return value;
+	if (isPromise(value)) return (0, import_cjs.from)(Promise.resolve(value));
+	return (0, import_cjs.of)(value);
 }
 function wrapIntoPromise(value) {
-	if (isObservable(value)) return firstValueFrom(value);
+	if ((0, import_cjs.isObservable)(value)) return firstValueFrom(value);
 	return Promise.resolve(value);
 }
 var pathCompareMap = {
@@ -1182,10 +1184,10 @@ var RouterState = class extends Tree {
 };
 function createEmptyState(rootComponent, injector) {
 	const snapshot = createEmptyStateSnapshot(rootComponent, injector);
-	const emptyUrl = new BehaviorSubject([new UrlSegment("", {})]);
-	const emptyParams = new BehaviorSubject({});
-	const emptyData = new BehaviorSubject({});
-	const activated = new ActivatedRoute(emptyUrl, emptyParams, new BehaviorSubject({}), new BehaviorSubject(""), emptyData, PRIMARY_OUTLET, rootComponent, snapshot.root);
+	const emptyUrl = new import_cjs.BehaviorSubject([new UrlSegment("", {})]);
+	const emptyParams = new import_cjs.BehaviorSubject({});
+	const emptyData = new import_cjs.BehaviorSubject({});
+	const activated = new ActivatedRoute(emptyUrl, emptyParams, new import_cjs.BehaviorSubject({}), new import_cjs.BehaviorSubject(""), emptyData, PRIMARY_OUTLET, rootComponent, snapshot.root);
 	activated.snapshot = snapshot.root;
 	return new RouterState(new TreeNode(activated, []), snapshot);
 }
@@ -1229,7 +1231,7 @@ var ActivatedRoute = class {
 		this.outlet = outlet;
 		this.component = component;
 		this._futureSnapshot = futureSnapshot;
-		this.title = this.dataSubject?.pipe(map((d) => d[RouteTitleKey])) ?? of(void 0);
+		this.title = this.dataSubject?.pipe((0, import_operators.map)((d) => d[RouteTitleKey])) ?? (0, import_cjs.of)(void 0);
 		this.url = urlSubject;
 		this.params = paramsSubject;
 		this.queryParams = queryParamsSubject;
@@ -1255,11 +1257,11 @@ var ActivatedRoute = class {
 		return this._routerState.pathFromRoot(this);
 	}
 	get paramMap() {
-		this._paramMap ??= this.params.pipe(map((p) => convertToParamMap(p)));
+		this._paramMap ??= this.params.pipe((0, import_operators.map)((p) => convertToParamMap(p)));
 		return this._paramMap;
 	}
 	get queryParamMap() {
-		this._queryParamMap ??= this.queryParams.pipe(map((p) => convertToParamMap(p)));
+		this._queryParamMap ??= this.queryParams.pipe((0, import_operators.map)((p) => convertToParamMap(p)));
 		return this._queryParamMap;
 	}
 	toString() {
@@ -1612,17 +1614,17 @@ var RoutedComponentInputBinder = class RoutedComponentInputBinder {
 	}
 	subscribeToRouteData(outlet) {
 		const { activatedRoute } = outlet;
-		const dataSubscription = combineLatest([
-			this.options.queryParams ? activatedRoute.queryParams : of({}),
+		const dataSubscription = (0, import_cjs.combineLatest)([
+			this.options.queryParams ? activatedRoute.queryParams : (0, import_cjs.of)({}),
 			activatedRoute.params,
 			activatedRoute.data
-		]).pipe(switchMap(([queryParams, params, data], index) => {
+		]).pipe((0, import_operators.switchMap)(([queryParams, params, data], index) => {
 			data = {
 				...queryParams,
 				...params,
 				...data
 			};
-			if (index === 0) return of(data);
+			if (index === 0) return (0, import_cjs.of)(data);
 			return Promise.resolve(data);
 		})).subscribe((data) => {
 			if (!outlet.isActivated || !outlet.activatedComponentRef || outlet.activatedRoute !== activatedRoute || activatedRoute.component === null) {
@@ -1732,7 +1734,7 @@ function createOrReuseChildren(routeReuseStrategy, curr, prevState, newlyCreated
 	});
 }
 function createActivatedRoute(c) {
-	return new ActivatedRoute(new BehaviorSubject(c.url), new BehaviorSubject(c.params), new BehaviorSubject(c.queryParams), new BehaviorSubject(c.fragment), new BehaviorSubject(c.data), c.outlet, c.component, c);
+	return new ActivatedRoute(new import_cjs.BehaviorSubject(c.url), new import_cjs.BehaviorSubject(c.params), new import_cjs.BehaviorSubject(c.queryParams), new import_cjs.BehaviorSubject(c.fragment), new import_cjs.BehaviorSubject(c.data), c.outlet, c.component, c);
 }
 var RedirectCommand = class {
 	redirectTo;
@@ -1999,25 +2001,25 @@ function isCanMatch(guard) {
 	return guard && isFunction(guard.canMatch);
 }
 function isEmptyError(e) {
-	return e instanceof EmptyError || e?.name === "EmptyError";
+	return e instanceof import_cjs.EmptyError || e?.name === "EmptyError";
 }
 var INITIAL_VALUE = /* @__PURE__ */ Symbol("INITIAL_VALUE");
 function prioritizedGuardValue() {
-	return switchMap((obs) => {
-		return combineLatest(obs.map((o) => o.pipe(take(1), startWith(INITIAL_VALUE)))).pipe(map((results) => {
+	return (0, import_operators.switchMap)((obs) => {
+		return (0, import_cjs.combineLatest)(obs.map((o) => o.pipe((0, import_operators.take)(1), (0, import_operators.startWith)(INITIAL_VALUE)))).pipe((0, import_operators.map)((results) => {
 			for (const result of results) if (result === true) continue;
 			else if (result === INITIAL_VALUE) return INITIAL_VALUE;
 			else if (result === false || isRedirect(result)) return result;
 			return true;
-		}), filter((item) => item !== INITIAL_VALUE), take(1));
+		}), (0, import_operators.filter)((item) => item !== INITIAL_VALUE), (0, import_operators.take)(1));
 	});
 }
 function isRedirect(val) {
 	return isUrlTree(val) || val instanceof RedirectCommand;
 }
 function abortSignalToObservable(signal) {
-	if (signal.aborted) return of(void 0).pipe(take(1));
-	return new Observable((subscriber) => {
+	if (signal.aborted) return (0, import_cjs.of)(void 0).pipe((0, import_operators.take)(1));
+	return new import_cjs.Observable((subscriber) => {
 		const handler = () => {
 			subscriber.next();
 			subscriber.complete();
@@ -2027,94 +2029,94 @@ function abortSignalToObservable(signal) {
 	});
 }
 function takeUntilAbort(signal) {
-	return takeUntil(abortSignalToObservable(signal));
+	return (0, import_operators.takeUntil)(abortSignalToObservable(signal));
 }
 function checkGuards(forwardEvent) {
-	return mergeMap((t) => {
+	return (0, import_operators.mergeMap)((t) => {
 		const { targetSnapshot, currentSnapshot, guards: { canActivateChecks, canDeactivateChecks } } = t;
-		if (canDeactivateChecks.length === 0 && canActivateChecks.length === 0) return of({
+		if (canDeactivateChecks.length === 0 && canActivateChecks.length === 0) return (0, import_cjs.of)({
 			...t,
 			guardsResult: true
 		});
-		return runCanDeactivateChecks(canDeactivateChecks, targetSnapshot, currentSnapshot).pipe(mergeMap((canDeactivate) => {
-			return canDeactivate && isBoolean(canDeactivate) ? runCanActivateChecks(targetSnapshot, canActivateChecks, forwardEvent) : of(canDeactivate);
-		}), map((guardsResult) => ({
+		return runCanDeactivateChecks(canDeactivateChecks, targetSnapshot, currentSnapshot).pipe((0, import_operators.mergeMap)((canDeactivate) => {
+			return canDeactivate && isBoolean(canDeactivate) ? runCanActivateChecks(targetSnapshot, canActivateChecks, forwardEvent) : (0, import_cjs.of)(canDeactivate);
+		}), (0, import_operators.map)((guardsResult) => ({
 			...t,
 			guardsResult
 		})));
 	});
 }
 function runCanDeactivateChecks(checks, futureRSS, currRSS) {
-	return from(checks).pipe(mergeMap((check) => runCanDeactivate(check.component, check.route, currRSS, futureRSS)), first((result) => {
+	return (0, import_cjs.from)(checks).pipe((0, import_operators.mergeMap)((check) => runCanDeactivate(check.component, check.route, currRSS, futureRSS)), (0, import_operators.first)((result) => {
 		return result !== true;
 	}, true));
 }
 function runCanActivateChecks(futureSnapshot, checks, forwardEvent) {
-	return from(checks).pipe(concatMap((check) => {
-		return concat(fireChildActivationStart(check.route.parent, forwardEvent), fireActivationStart(check.route, forwardEvent), runCanActivateChild(futureSnapshot, check.path), runCanActivate(futureSnapshot, check.route));
-	}), first((result) => {
+	return (0, import_cjs.from)(checks).pipe((0, import_operators.concatMap)((check) => {
+		return (0, import_cjs.concat)(fireChildActivationStart(check.route.parent, forwardEvent), fireActivationStart(check.route, forwardEvent), runCanActivateChild(futureSnapshot, check.path), runCanActivate(futureSnapshot, check.route));
+	}), (0, import_operators.first)((result) => {
 		return result !== true;
 	}, true));
 }
 function fireActivationStart(snapshot, forwardEvent) {
 	if (snapshot !== null && forwardEvent) forwardEvent(new ActivationStart(snapshot));
-	return of(true);
+	return (0, import_cjs.of)(true);
 }
 function fireChildActivationStart(snapshot, forwardEvent) {
 	if (snapshot !== null && forwardEvent) forwardEvent(new ChildActivationStart(snapshot));
-	return of(true);
+	return (0, import_cjs.of)(true);
 }
 function runCanActivate(futureRSS, futureARS) {
 	const canActivate = futureARS.routeConfig ? futureARS.routeConfig.canActivate : null;
-	if (!canActivate || canActivate.length === 0) return of(true);
-	return of(canActivate.map((canActivate) => {
-		return defer(() => {
+	if (!canActivate || canActivate.length === 0) return (0, import_cjs.of)(true);
+	return (0, import_cjs.of)(canActivate.map((canActivate) => {
+		return (0, import_cjs.defer)(() => {
 			const closestInjector = futureARS._environmentInjector;
 			const guard = getTokenOrFunctionIdentity(canActivate, closestInjector);
-			return wrapIntoObservable(isCanActivate(guard) ? guard.canActivate(futureARS, futureRSS) : runInInjectionContext(closestInjector, () => guard(futureARS, futureRSS))).pipe(first());
+			return wrapIntoObservable(isCanActivate(guard) ? guard.canActivate(futureARS, futureRSS) : runInInjectionContext(closestInjector, () => guard(futureARS, futureRSS))).pipe((0, import_operators.first)());
 		});
 	})).pipe(prioritizedGuardValue());
 }
 function runCanActivateChild(futureRSS, path) {
 	const futureARS = path[path.length - 1];
-	return of(path.slice(0, path.length - 1).reverse().map((p) => getCanActivateChild(p)).filter((_) => _ !== null).map((d) => {
-		return defer(() => {
-			return of(d.guards.map((canActivateChild) => {
+	return (0, import_cjs.of)(path.slice(0, path.length - 1).reverse().map((p) => getCanActivateChild(p)).filter((_) => _ !== null).map((d) => {
+		return (0, import_cjs.defer)(() => {
+			return (0, import_cjs.of)(d.guards.map((canActivateChild) => {
 				const closestInjector = d.node._environmentInjector;
 				const guard = getTokenOrFunctionIdentity(canActivateChild, closestInjector);
-				return wrapIntoObservable(isCanActivateChild(guard) ? guard.canActivateChild(futureARS, futureRSS) : runInInjectionContext(closestInjector, () => guard(futureARS, futureRSS))).pipe(first());
+				return wrapIntoObservable(isCanActivateChild(guard) ? guard.canActivateChild(futureARS, futureRSS) : runInInjectionContext(closestInjector, () => guard(futureARS, futureRSS))).pipe((0, import_operators.first)());
 			})).pipe(prioritizedGuardValue());
 		});
 	})).pipe(prioritizedGuardValue());
 }
 function runCanDeactivate(component, currARS, currRSS, futureRSS) {
 	const canDeactivate = currARS && currARS.routeConfig ? currARS.routeConfig.canDeactivate : null;
-	if (!canDeactivate || canDeactivate.length === 0) return of(true);
-	return of(canDeactivate.map((c) => {
+	if (!canDeactivate || canDeactivate.length === 0) return (0, import_cjs.of)(true);
+	return (0, import_cjs.of)(canDeactivate.map((c) => {
 		const closestInjector = currARS._environmentInjector;
 		const guard = getTokenOrFunctionIdentity(c, closestInjector);
-		return wrapIntoObservable(isCanDeactivate(guard) ? guard.canDeactivate(component, currARS, currRSS, futureRSS) : runInInjectionContext(closestInjector, () => guard(component, currARS, currRSS, futureRSS))).pipe(first());
+		return wrapIntoObservable(isCanDeactivate(guard) ? guard.canDeactivate(component, currARS, currRSS, futureRSS) : runInInjectionContext(closestInjector, () => guard(component, currARS, currRSS, futureRSS))).pipe((0, import_operators.first)());
 	})).pipe(prioritizedGuardValue());
 }
 function runCanLoadGuards(injector, route, segments, urlSerializer, abortSignal) {
 	const canLoad = route.canLoad;
-	if (canLoad === void 0 || canLoad.length === 0) return of(true);
-	return of(canLoad.map((injectionToken) => {
+	if (canLoad === void 0 || canLoad.length === 0) return (0, import_cjs.of)(true);
+	return (0, import_cjs.of)(canLoad.map((injectionToken) => {
 		const guard = getTokenOrFunctionIdentity(injectionToken, injector);
 		const obs$ = wrapIntoObservable(isCanLoad(guard) ? guard.canLoad(route, segments) : runInInjectionContext(injector, () => guard(route, segments)));
 		return abortSignal ? obs$.pipe(takeUntilAbort(abortSignal)) : obs$;
 	})).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));
 }
 function redirectIfUrlTree(urlSerializer) {
-	return pipe(tap((result) => {
+	return (0, import_cjs.pipe)((0, import_operators.tap)((result) => {
 		if (typeof result === "boolean") return;
 		throw redirectingNavigationError(urlSerializer, result);
-	}), map((result) => result === true));
+	}), (0, import_operators.map)((result) => result === true));
 }
 function runCanMatchGuards(injector, route, segments, urlSerializer, currentSnapshot, abortSignal) {
 	const canMatch = route.canMatch;
-	if (!canMatch || canMatch.length === 0) return of(true);
-	return of(canMatch.map((injectionToken) => {
+	if (!canMatch || canMatch.length === 0) return (0, import_cjs.of)(true);
+	return (0, import_cjs.of)(canMatch.map((injectionToken) => {
 		const guard = getTokenOrFunctionIdentity(injectionToken, injector);
 		return wrapIntoObservable(isCanMatch(guard) ? guard.canMatch(route, segments, currentSnapshot) : runInInjectionContext(injector, () => guard(route, segments, currentSnapshot))).pipe(takeUntilAbort(abortSignal));
 	})).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));
@@ -2295,10 +2297,10 @@ function createPreMatchRouteSnapshot(snapshot) {
 }
 function matchWithChecks(segmentGroup, route, segments, injector, urlSerializer, createSnapshot, abortSignal) {
 	const result = match(segmentGroup, route, segments);
-	if (!result.matched) return of(result);
+	if (!result.matched) return (0, import_cjs.of)(result);
 	const currentSnapshot = createPreMatchRouteSnapshot(createSnapshot(result));
 	injector = getOrCreateRouteInjectorIfNeeded(route, injector);
-	return runCanMatchGuards(injector, route, segments, urlSerializer, currentSnapshot, abortSignal).pipe(map((v) => v === true ? result : { ...noMatch }));
+	return runCanMatchGuards(injector, route, segments, urlSerializer, currentSnapshot, abortSignal).pipe((0, import_operators.map)((v) => v === true ? result : { ...noMatch }));
 }
 function match(segmentGroup, route, segments) {
 	if (route.path === "") {
@@ -2597,7 +2599,7 @@ function getResolve(route) {
 	return route.resolve || {};
 }
 function recognize(injector, configLoader, rootComponentType, config, serializer, paramsInheritanceStrategy, abortSignal) {
-	return mergeMap(async (t) => {
+	return (0, import_operators.mergeMap)(async (t) => {
 		const { state: targetSnapshot, tree: urlAfterRedirects } = await recognize$1(injector, configLoader, rootComponentType, config, t.extractedUrl, serializer, paramsInheritanceStrategy, abortSignal);
 		return {
 			...t,
@@ -2607,9 +2609,9 @@ function recognize(injector, configLoader, rootComponentType, config, serializer
 	});
 }
 function resolveData(paramsInheritanceStrategy) {
-	return mergeMap((t) => {
+	return (0, import_operators.mergeMap)((t) => {
 		const { targetSnapshot, guards: { canActivateChecks } } = t;
-		if (!canActivateChecks.length) return of(t);
+		if (!canActivateChecks.length) return (0, import_cjs.of)(t);
 		const routesWithResolversToRun = new Set(canActivateChecks.map((check) => check.route));
 		const routesNeedingDataUpdates = /* @__PURE__ */ new Set();
 		for (const route of routesWithResolversToRun) {
@@ -2617,13 +2619,13 @@ function resolveData(paramsInheritanceStrategy) {
 			for (const newRoute of flattenRouteTree(route)) routesNeedingDataUpdates.add(newRoute);
 		}
 		let routesProcessed = 0;
-		return from(routesNeedingDataUpdates).pipe(concatMap((route) => {
+		return (0, import_cjs.from)(routesNeedingDataUpdates).pipe((0, import_operators.concatMap)((route) => {
 			if (routesWithResolversToRun.has(route)) return runResolve(route, targetSnapshot, paramsInheritanceStrategy);
 			else {
 				route.data = getInherited(route, route.parent, paramsInheritanceStrategy).resolve;
-				return of(void 0);
+				return (0, import_cjs.of)(void 0);
 			}
-		}), tap(() => routesProcessed++), takeLast(1), mergeMap((_) => routesProcessed === routesNeedingDataUpdates.size ? of(t) : EMPTY));
+		}), (0, import_operators.tap)(() => routesProcessed++), (0, import_operators.takeLast)(1), (0, import_operators.mergeMap)((_) => routesProcessed === routesNeedingDataUpdates.size ? (0, import_cjs.of)(t) : import_cjs.EMPTY));
 	});
 }
 function flattenRouteTree(route) {
@@ -2633,9 +2635,9 @@ function runResolve(futureARS, futureRSS, paramsInheritanceStrategy) {
 	const config = futureARS.routeConfig;
 	const resolve = futureARS._resolve;
 	if (config?.title !== void 0 && !hasStaticTitle(config)) resolve[RouteTitleKey] = config.title;
-	return defer(() => {
+	return (0, import_cjs.defer)(() => {
 		futureARS.data = getInherited(futureARS, futureARS.parent, paramsInheritanceStrategy).resolve;
-		return resolveNode(resolve, futureARS, futureRSS).pipe(map((resolvedData) => {
+		return resolveNode(resolve, futureARS, futureRSS).pipe((0, import_operators.map)((resolvedData) => {
 			futureARS._resolvedData = resolvedData;
 			futureARS.data = {
 				...futureARS.data,
@@ -2647,12 +2649,12 @@ function runResolve(futureARS, futureRSS, paramsInheritanceStrategy) {
 }
 function resolveNode(resolve, futureARS, futureRSS) {
 	const keys = getDataKeys(resolve);
-	if (keys.length === 0) return of({});
+	if (keys.length === 0) return (0, import_cjs.of)({});
 	const data = {};
-	return from(keys).pipe(mergeMap((key) => getResolver(resolve[key], futureARS, futureRSS).pipe(first(), tap((value) => {
+	return (0, import_cjs.from)(keys).pipe((0, import_operators.mergeMap)((key) => getResolver(resolve[key], futureARS, futureRSS).pipe((0, import_operators.first)(), (0, import_operators.tap)((value) => {
 		if (value instanceof RedirectCommand) throw redirectingNavigationError(new DefaultUrlSerializer(), value);
 		data[key] = value;
-	}))), takeLast(1), map(() => data), catchError((e) => isEmptyError(e) ? EMPTY : throwError(e)));
+	}))), (0, import_operators.takeLast)(1), (0, import_operators.map)(() => data), (0, import_operators.catchError)((e) => isEmptyError(e) ? import_cjs.EMPTY : (0, import_cjs.throwError)(e)));
 }
 function getResolver(injectionToken, futureARS, futureRSS) {
 	const closestInjector = futureARS._environmentInjector;
@@ -2661,10 +2663,10 @@ function getResolver(injectionToken, futureARS, futureRSS) {
 }
 var ROUTER_RESOURCES_FEATURE = new InjectionToken(typeof ngDevMode === "undefined" || ngDevMode ? "Router Resources Feature" : "");
 function switchTap(next) {
-	return switchMap((v) => {
+	return (0, import_operators.switchMap)((v) => {
 		const nextResult = next(v);
-		if (nextResult) return from(nextResult).pipe(map(() => v));
-		return of(v);
+		if (nextResult) return (0, import_cjs.from)(nextResult).pipe((0, import_operators.map)(() => v));
+		return (0, import_cjs.of)(v);
 	});
 }
 var TitleStrategy = class TitleStrategy {
@@ -2893,8 +2895,8 @@ var NavigationTransitions = class NavigationTransitions {
 	});
 	currentTransition = null;
 	lastSuccessfulNavigation = signal(null, ...ngDevMode ? [{ debugName: "lastSuccessfulNavigation" }] : []);
-	events = new Subject();
-	transitionAbortWithErrorSubject = new Subject();
+	events = new import_cjs.Subject();
+	transitionAbortWithErrorSubject = new import_cjs.Subject();
 	configLoader = inject(RouterConfigLoader);
 	environmentInjector = inject(EnvironmentInjector);
 	destroyRef = inject(DestroyRef);
@@ -2914,7 +2916,7 @@ var NavigationTransitions = class NavigationTransitions {
 		return this.navigationId !== 0;
 	}
 	transitions;
-	afterPreactivation = () => of(void 0);
+	afterPreactivation = () => (0, import_cjs.of)(void 0);
 	rootComponentType = null;
 	destroyed = false;
 	constructor() {
@@ -2949,19 +2951,19 @@ var NavigationTransitions = class NavigationTransitions {
 		});
 	}
 	setupNavigations(router) {
-		this.transitions = new BehaviorSubject(null);
-		return this.transitions.pipe(filter((t) => t !== null), switchMap((overallTransitionState) => {
+		this.transitions = new import_cjs.BehaviorSubject(null);
+		return this.transitions.pipe((0, import_operators.filter)((t) => t !== null), (0, import_operators.switchMap)((overallTransitionState) => {
 			let abortable = true;
 			let completedOrAborted = false;
 			const abortController = new AbortController();
 			const shouldContinueNavigation = () => {
 				return !completedOrAborted && this.currentTransition?.id === overallTransitionState.id;
 			};
-			return of(overallTransitionState).pipe(switchMap((t) => {
+			return (0, import_cjs.of)(overallTransitionState).pipe((0, import_operators.switchMap)((t) => {
 				if (this.navigationId > overallTransitionState.id) {
 					const cancellationReason = typeof ngDevMode === "undefined" || ngDevMode ? `Navigation ID ${overallTransitionState.id} is not equal to the current navigation id ${this.navigationId}` : "";
 					this.cancelNavigationTransition(overallTransitionState, cancellationReason, NavigationCancellationCode.SupersededByNewNavigation);
-					return EMPTY;
+					return import_cjs.EMPTY;
 				}
 				this.currentTransition = overallTransitionState;
 				const lastSuccessfulNavigation = this.lastSuccessfulNavigation();
@@ -2986,13 +2988,13 @@ var NavigationTransitions = class NavigationTransitions {
 					const reason = typeof ngDevMode === "undefined" || ngDevMode ? `Navigation to ${t.rawUrl} was ignored because it is the same as the current Router URL.` : "";
 					this.events.next(new NavigationSkipped(t.id, this.urlSerializer.serialize(t.rawUrl), reason, NavigationSkippedCode.IgnoredSameUrlNavigation));
 					t.resolve(false);
-					return EMPTY;
+					return import_cjs.EMPTY;
 				}
-				if (this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl)) return of(t).pipe(switchMap((t) => {
+				if (this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl)) return (0, import_cjs.of)(t).pipe((0, import_operators.switchMap)((t) => {
 					this.events.next(new NavigationStart(t.id, this.urlSerializer.serialize(t.extractedUrl), t.source, t.restoredState));
-					if (t.id !== this.navigationId) return EMPTY;
+					if (t.id !== this.navigationId) return import_cjs.EMPTY;
 					return Promise.resolve(t);
-				}), recognize(this.environmentInjector, this.configLoader, this.rootComponentType, router.config, this.urlSerializer, this.paramsInheritanceStrategy, abortController.signal), tap((t) => {
+				}), recognize(this.environmentInjector, this.configLoader, this.rootComponentType, router.config, this.urlSerializer, this.paramsInheritanceStrategy, abortController.signal), (0, import_operators.tap)((t) => {
 					overallTransitionState.targetSnapshot = t.targetSnapshot;
 					overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
 					this.currentNavigation.update((nav) => {
@@ -3000,7 +3002,7 @@ var NavigationTransitions = class NavigationTransitions {
 						return nav;
 					});
 					this.events.next(new BeforeRoutesRecognized());
-				}), switchMap((value) => from(overallTransitionState.routesRecognizeHandler.deferredHandle ?? of(void 0)).pipe(map(() => value))), tap(() => {
+				}), (0, import_operators.switchMap)((value) => (0, import_cjs.from)(overallTransitionState.routesRecognizeHandler.deferredHandle ?? (0, import_cjs.of)(void 0)).pipe((0, import_operators.map)(() => value))), (0, import_operators.tap)(() => {
 					const routesRecognized = new RoutesRecognized(t.id, this.urlSerializer.serialize(t.extractedUrl), this.urlSerializer.serialize(t.urlAfterRedirects), t.targetSnapshot);
 					this.events.next(routesRecognized);
 				}));
@@ -3023,14 +3025,14 @@ var NavigationTransitions = class NavigationTransitions {
 						nav.finalUrl = extractedUrl;
 						return nav;
 					});
-					return of(overallTransitionState);
+					return (0, import_cjs.of)(overallTransitionState);
 				} else {
 					const reason = typeof ngDevMode === "undefined" || ngDevMode ? `Navigation was ignored because the UrlHandlingStrategy indicated neither the current URL ${t.currentRawUrl} nor target URL ${t.rawUrl} should be processed.` : "";
 					this.events.next(new NavigationSkipped(t.id, this.urlSerializer.serialize(t.extractedUrl), reason, NavigationSkippedCode.IgnoredByUrlHandlingStrategy));
 					t.resolve(false);
-					return EMPTY;
+					return import_cjs.EMPTY;
 				}
-			}), map((t) => {
+			}), (0, import_operators.map)((t) => {
 				const guardsStart = new GuardsCheckStart(t.id, this.urlSerializer.serialize(t.extractedUrl), this.urlSerializer.serialize(t.urlAfterRedirects), t.targetSnapshot);
 				this.events.next(guardsStart);
 				this.currentTransition = overallTransitionState = {
@@ -3038,22 +3040,22 @@ var NavigationTransitions = class NavigationTransitions {
 					guards: getAllRouteGuards(t.targetSnapshot, t.currentSnapshot, this.rootContexts)
 				};
 				return overallTransitionState;
-			}), checkGuards((evt) => this.events.next(evt)), switchMap((t) => {
+			}), checkGuards((evt) => this.events.next(evt)), (0, import_operators.switchMap)((t) => {
 				overallTransitionState.guardsResult = t.guardsResult;
 				if (t.guardsResult && typeof t.guardsResult !== "boolean") throw redirectingNavigationError(this.urlSerializer, t.guardsResult);
 				const guardsEnd = new GuardsCheckEnd(t.id, this.urlSerializer.serialize(t.extractedUrl), this.urlSerializer.serialize(t.urlAfterRedirects), t.targetSnapshot, !!t.guardsResult);
 				this.events.next(guardsEnd);
-				if (!shouldContinueNavigation()) return EMPTY;
+				if (!shouldContinueNavigation()) return import_cjs.EMPTY;
 				if (!t.guardsResult) {
 					this.cancelNavigationTransition(t, "", NavigationCancellationCode.GuardRejected);
-					return EMPTY;
+					return import_cjs.EMPTY;
 				}
-				if (t.guards.canActivateChecks.length === 0) return of(t);
+				if (t.guards.canActivateChecks.length === 0) return (0, import_cjs.of)(t);
 				const resolveStart = new ResolveStart(t.id, this.urlSerializer.serialize(t.extractedUrl), this.urlSerializer.serialize(t.urlAfterRedirects), t.targetSnapshot);
 				this.events.next(resolveStart);
-				if (!shouldContinueNavigation()) return EMPTY;
+				if (!shouldContinueNavigation()) return import_cjs.EMPTY;
 				let dataResolved = false;
-				return of(t).pipe(resolveData(this.paramsInheritanceStrategy), tap({
+				return (0, import_cjs.of)(t).pipe(resolveData(this.paramsInheritanceStrategy), (0, import_operators.tap)({
 					next: () => {
 						dataResolved = true;
 						const resolveEnd = new ResolveEnd(t.id, this.urlSerializer.serialize(t.extractedUrl), this.urlSerializer.serialize(t.urlAfterRedirects), t.targetSnapshot);
@@ -3077,8 +3079,8 @@ var NavigationTransitions = class NavigationTransitions {
 					return loaders;
 				};
 				const loaders = loadComponents(t.targetSnapshot.root);
-				return loaders.length === 0 ? of(t) : from(Promise.all(loaders).then(() => t));
-			}), switchMap((t) => {
+				return loaders.length === 0 ? (0, import_cjs.of)(t) : (0, import_cjs.from)(Promise.all(loaders).then(() => t));
+			}), (0, import_operators.switchMap)((t) => {
 				const { newlyCreatedRoutes, state } = createRouterState(router.routeReuseStrategy, t.targetSnapshot, t.currentRouterState);
 				this.currentTransition = overallTransitionState = t = {
 					...t,
@@ -3089,17 +3091,17 @@ var NavigationTransitions = class NavigationTransitions {
 					nav.targetRouterState = state;
 					return nav;
 				});
-				return of(t);
-			}), this.routerResourcesFeature?.setupAndRunResources(abortController.signal) ?? ((t) => t), switchTap(() => this.afterPreactivation()), switchMap(() => {
+				return (0, import_cjs.of)(t);
+			}), this.routerResourcesFeature?.setupAndRunResources(abortController.signal) ?? ((t) => t), switchTap(() => this.afterPreactivation()), (0, import_operators.switchMap)(() => {
 				const { currentSnapshot, targetSnapshot } = overallTransitionState;
 				const viewTransitionStarted = this.createViewTransition?.(this.environmentInjector, currentSnapshot.root, targetSnapshot.root);
-				return viewTransitionStarted ? from(viewTransitionStarted).pipe(map(() => overallTransitionState)) : of(overallTransitionState);
-			}), take(1), switchMap((t) => {
+				return viewTransitionStarted ? (0, import_cjs.from)(viewTransitionStarted).pipe((0, import_operators.map)(() => overallTransitionState)) : (0, import_cjs.of)(overallTransitionState);
+			}), (0, import_operators.take)(1), (0, import_operators.switchMap)((t) => {
 				abortable = false;
 				this.events.next(new BeforeActivateRoutes());
 				const deferred = overallTransitionState.beforeActivateHandler.deferredHandle;
-				return deferred ? from(deferred.then(() => t)) : of(t);
-			}), tap((t) => {
+				return deferred ? (0, import_cjs.from)(deferred.then(() => t)) : (0, import_cjs.of)(t);
+			}), (0, import_operators.tap)((t) => {
 				new ActivateRoutes(router.routeReuseStrategy, overallTransitionState.targetRouterState, overallTransitionState.currentRouterState, (evt) => this.events.next(evt), this.inputBindingEnabled).activate(this.rootContexts);
 				t.newlyCreatedRoutes?.clear();
 				if (!shouldContinueNavigation()) return;
@@ -3113,13 +3115,13 @@ var NavigationTransitions = class NavigationTransitions {
 				this.events.next(new NavigationEnd(t.id, this.urlSerializer.serialize(t.extractedUrl), this.urlSerializer.serialize(t.urlAfterRedirects)));
 				this.titleStrategy?.updateTitle(t.targetRouterState.snapshot);
 				t.resolve(true);
-			}), takeUntil(abortSignalToObservable(abortController.signal).pipe(filter(() => !completedOrAborted && abortable), tap(() => {
+			}), (0, import_operators.takeUntil)(abortSignalToObservable(abortController.signal).pipe((0, import_operators.filter)(() => !completedOrAborted && abortable), (0, import_operators.tap)(() => {
 				this.cancelNavigationTransition(overallTransitionState, abortController.signal.reason + "", NavigationCancellationCode.Aborted);
-			}))), tap({ complete: () => {
+			}))), (0, import_operators.tap)({ complete: () => {
 				completedOrAborted = true;
-			} }), takeUntil(this.transitionAbortWithErrorSubject.pipe(tap((err) => {
+			} }), (0, import_operators.takeUntil)(this.transitionAbortWithErrorSubject.pipe((0, import_operators.tap)((err) => {
 				throw err;
-			}))), finalize(() => {
+			}))), (0, import_operators.finalize)(() => {
 				abortController.abort();
 				if (!completedOrAborted) {
 					const cancelationReason = typeof ngDevMode === "undefined" || ngDevMode ? `Navigation ID ${overallTransitionState.id} is not equal to the current navigation id ${this.navigationId}` : "";
@@ -3129,12 +3131,12 @@ var NavigationTransitions = class NavigationTransitions {
 					this.currentNavigation.set(null);
 					this.currentTransition = null;
 				}
-			}), catchError((e) => {
+			}), (0, import_operators.catchError)((e) => {
 				completedOrAborted = true;
 				rollbackState(overallTransitionState);
 				if (this.destroyed) {
 					overallTransitionState.resolve(false);
-					return EMPTY;
+					return import_cjs.EMPTY;
 				}
 				if (isNavigationCancelingError(e)) {
 					this.events.next(new NavigationCancel(overallTransitionState.id, this.urlSerializer.serialize(overallTransitionState.extractedUrl), e.message, e.cancellationCode));
@@ -3157,7 +3159,7 @@ var NavigationTransitions = class NavigationTransitions {
 						else overallTransitionState.reject(ee);
 					}
 				}
-				return EMPTY;
+				return import_cjs.EMPTY;
 			}));
 		}));
 	}
@@ -3451,10 +3453,10 @@ var HistoryStateManager = class HistoryStateManager extends StateManager {
 	(typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(HistoryStateManager, [{ type: Service }], null, null);
 })();
 function afterNextNavigation(router, action) {
-	router.events.pipe(filter((e) => e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError || e instanceof NavigationSkipped), map((e) => {
+	router.events.pipe((0, import_operators.filter)((e) => e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError || e instanceof NavigationSkipped), (0, import_operators.map)((e) => {
 		if (e instanceof NavigationEnd || e instanceof NavigationSkipped) return 0;
 		return (e instanceof NavigationCancel ? e.code === NavigationCancellationCode.Redirect || e.code === NavigationCancellationCode.SupersededByNewNavigation : false) ? 2 : 1;
-	}), filter((result) => result !== 2), take(1)).subscribe(() => {
+	}), (0, import_operators.filter)((result) => result !== 2), (0, import_operators.take)(1)).subscribe(() => {
 		action();
 	});
 }
@@ -3477,7 +3479,7 @@ var Router = class Router {
 	location = inject(Location);
 	urlHandlingStrategy = inject(UrlHandlingStrategy);
 	injector = inject(EnvironmentInjector);
-	_events = new Subject();
+	_events = new import_cjs.Subject();
 	get events() {
 		return this._events;
 	}
@@ -3496,7 +3498,7 @@ var Router = class Router {
 		this.navigationTransitions.setupNavigations(this).subscribe({ error: (e) => {} });
 		this.subscribeToNavigationEvents();
 	}
-	eventsSubscription = new Subscription();
+	eventsSubscription = new import_cjs.Subscription();
 	subscribeToNavigationEvents() {
 		const subscription = this.navigationTransitions.events.subscribe((e) => {
 			try {
@@ -3840,7 +3842,7 @@ var RouterLink = class RouterLink {
 	_replaceUrl = signal(false, ...ngDevMode ? [{ debugName: "_replaceUrl" }] : []);
 	browserUrl = input(void 0, ...ngDevMode ? [{ debugName: "browserUrl" }] : []);
 	isAnchorElement;
-	onChanges = new Subject();
+	onChanges = new import_cjs.Subject();
 	applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 	options = inject(ROUTER_CONFIGURATION, { optional: true });
 	reactiveRouterState = inject(ReactiveRouterState);
@@ -4067,7 +4069,7 @@ var RouterLinkActive = class RouterLinkActive {
 		});
 	}
 	ngAfterContentInit() {
-		of(this.links.changes, of(null)).pipe(mergeAll()).subscribe((_) => {
+		(0, import_cjs.of)(this.links.changes, (0, import_cjs.of)(null)).pipe((0, import_operators.mergeAll)()).subscribe((_) => {
 			this.update();
 			this.subscribeToEachLinkOnChanges();
 		});
@@ -4075,7 +4077,7 @@ var RouterLinkActive = class RouterLinkActive {
 	subscribeToEachLinkOnChanges() {
 		this.linkInputChangesSubscription?.unsubscribe();
 		const allLinkChanges = [...this.links.toArray(), this.link].filter((link) => !!link).map((link) => link.onChanges);
-		this.linkInputChangesSubscription = from(allLinkChanges).pipe(mergeAll()).subscribe((link) => {
+		this.linkInputChangesSubscription = (0, import_cjs.from)(allLinkChanges).pipe((0, import_operators.mergeAll)()).subscribe((link) => {
 			if (this._isActive !== this.isLinkActive(this.router)(link)) this.update();
 		});
 	}
@@ -4232,7 +4234,7 @@ function createTransactionalSnapshot(source, router, injector) {
 	};
 }
 function setupAndRunResources(abortSignal) {
-	return pipe(switchTap(({ newlyCreatedRoutes, targetRouterState }) => {
+	return (0, import_cjs.pipe)(switchTap(({ newlyCreatedRoutes, targetRouterState }) => {
 		if (!newlyCreatedRoutes || !targetRouterState) return;
 		const resourceSetupPromises = [];
 		const traverse = (stateNode) => {
@@ -4301,7 +4303,7 @@ function prohibitBlockingResources(route, resourceResult) {
 var PreloadingStrategy = class {};
 var PreloadAllModules = class PreloadAllModules {
 	preload(route, fn) {
-		return fn().pipe(catchError(() => of(null)));
+		return fn().pipe((0, import_operators.catchError)(() => (0, import_cjs.of)(null)));
 	}
 	static ɵfac = function PreloadAllModules_Factory(__ngFactoryType__) {
 		return new (__ngFactoryType__ || PreloadAllModules)();
@@ -4316,7 +4318,7 @@ var PreloadAllModules = class PreloadAllModules {
 })();
 var NoPreloading = class NoPreloading {
 	preload(route, fn) {
-		return of(null);
+		return (0, import_cjs.of)(null);
 	}
 	static ɵfac = function NoPreloading_Factory(__ngFactoryType__) {
 		return new (__ngFactoryType__ || NoPreloading)();
@@ -4342,7 +4344,7 @@ var RouterPreloader = class RouterPreloader {
 		this.loader = loader;
 	}
 	setUpPreloading() {
-		this.subscription = this.router.events.pipe(filter((e) => e instanceof NavigationEnd), concatMap(() => this.preload())).subscribe(() => {});
+		this.subscription = this.router.events.pipe((0, import_operators.filter)((e) => e instanceof NavigationEnd), (0, import_operators.concatMap)(() => this.preload())).subscribe(() => {});
 	}
 	preload() {
 		return this.processRoutes(this.injector, this.router.config);
@@ -4360,22 +4362,22 @@ var RouterPreloader = class RouterPreloader {
 			if (route.loadChildren && !route._loadedRoutes && route.canLoad === void 0 || route.loadComponent && !route._loadedComponent) res.push(this.preloadConfig(injectorForCurrentRoute, route));
 			if (route.children || route._loadedRoutes) res.push(this.processRoutes(injectorForChildren, route.children ?? route._loadedRoutes));
 		}
-		return from(res).pipe(mergeAll());
+		return (0, import_cjs.from)(res).pipe((0, import_operators.mergeAll)());
 	}
 	preloadConfig(injector, route) {
 		return this.preloadingStrategy.preload(route, () => {
-			if (injector.destroyed) return of(null);
+			if (injector.destroyed) return (0, import_cjs.of)(null);
 			let loadedChildren$;
-			if (route.loadChildren && route.canLoad === void 0) loadedChildren$ = from(this.loader.loadChildren(injector, route));
-			else loadedChildren$ = of(null);
-			const recursiveLoadChildren$ = loadedChildren$.pipe(mergeMap((config) => {
-				if (config === null) return of(void 0);
+			if (route.loadChildren && route.canLoad === void 0) loadedChildren$ = (0, import_cjs.from)(this.loader.loadChildren(injector, route));
+			else loadedChildren$ = (0, import_cjs.of)(null);
+			const recursiveLoadChildren$ = loadedChildren$.pipe((0, import_operators.mergeMap)((config) => {
+				if (config === null) return (0, import_cjs.of)(void 0);
 				route._loadedRoutes = config.routes;
 				route._loadedInjector = config.injector;
 				route._loadedNgModuleFactory = config.factory;
 				return this.processRoutes(config.injector ?? injector, config.routes);
 			}));
-			if (route.loadComponent && !route._loadedComponent) return from([recursiveLoadChildren$, this.loader.loadComponent(injector, route)]).pipe(mergeAll());
+			if (route.loadComponent && !route._loadedComponent) return (0, import_cjs.from)([recursiveLoadChildren$, this.loader.loadComponent(injector, route)]).pipe((0, import_operators.mergeAll)());
 			else return recursiveLoadChildren$;
 		});
 	}
@@ -4500,7 +4502,7 @@ var NavigationStateManager = class NavigationStateManager extends StateManager {
 	precommitHandlerSupported = inject(PRECOMMIT_HANDLER_SUPPORTED);
 	activeHistoryEntry = this.navigation.currentEntry;
 	currentNavigation = {};
-	nonRouterCurrentEntryChangeSubject = new Subject();
+	nonRouterCurrentEntryChangeSubject = new import_cjs.Subject();
 	nonRouterEntryChangeListener;
 	get registered() {
 		return this.nonRouterEntryChangeListener !== void 0 && !this.nonRouterEntryChangeListener.closed;
@@ -4808,7 +4810,7 @@ function getBootstrapListener() {
 	};
 }
 var BOOTSTRAP_DONE = new InjectionToken(typeof ngDevMode === "undefined" || ngDevMode ? "bootstrap done indicator" : "", { factory: () => {
-	return new Subject();
+	return new import_cjs.Subject();
 } });
 var INITIAL_NAVIGATION = new InjectionToken(typeof ngDevMode === "undefined" || ngDevMode ? "initial navigation" : "", { factory: () => 1 });
 function withEnabledBlockingInitialNavigation() {
@@ -4832,7 +4834,7 @@ function withEnabledBlockingInitialNavigation() {
 					});
 					injector.get(NavigationTransitions).afterPreactivation = () => {
 						resolve(true);
-						return bootstrapDone.closed ? of(void 0) : bootstrapDone;
+						return bootstrapDone.closed ? (0, import_cjs.of)(void 0) : bootstrapDone;
 					};
 					router.initialNavigation();
 				});
@@ -5090,4 +5092,4 @@ function mapToResolve(provider) {
 }
 var VERSION = /* @__PURE__ */ new Version("22.1.3");
 //#endregion
-export { ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, BaseRouteReuseStrategy, ChildActivationEnd, ChildActivationStart, ChildrenOutletContexts, DefaultTitleStrategy, DefaultUrlSerializer, EventType, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NoPreloading, OutletContext, PRIMARY_OUTLET, PreloadAllModules, PreloadingStrategy, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, ROUTER_OUTLET_DATA, ROUTES, RedirectCommand, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterLink, RouterLink as RouterLinkWithHref, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterState, RouterStateSnapshot, RoutesRecognized, Scroll, TitleStrategy, UrlHandlingStrategy, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree, VERSION, convertToParamMap, createUrlTreeFromSnapshot, defaultUrlMatcher, destroyDetachedRouteHandle, isActive, mapToCanActivate, mapToCanActivateChild, mapToCanDeactivate, mapToCanMatch, mapToResolve, provideRouter, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withExperimentalAutoCleanupInjectors, withExperimentalPlatformNavigation, withHashLocation, withInMemoryScrolling, withNavigationErrorHandler, withPreloading, withRouterConfig, withViewTransitions, ɵEmptyOutletComponent, ROUTER_PROVIDERS as ɵROUTER_PROVIDERS, afterNextNavigation as ɵafterNextNavigation, loadChildren as ɵloadChildren, nonBlocking as ɵnonBlocking, withRouterResources as ɵwithRouterResources };
+export { ROUTER_CONFIGURATION as $, withViewTransitions as A, DefaultUrlSerializer as B, withExperimentalPlatformNavigation as C, createUrlTreeFromSnapshot as Ct, withPreloading as D, loadChildren as Dt, withNavigationErrorHandler as E, isActive as Et, BaseRouteReuseStrategy as F, NavigationCancellationCode as G, GuardsCheckEnd as H, ChildActivationEnd as I, NavigationSkipped as J, NavigationEnd as K, ChildActivationStart as L, ActivatedRouteSnapshot as M, ActivationEnd as N, withRouterConfig as O, ɵEmptyOutletComponent as Ot, ActivationStart as P, PRIMARY_OUTLET as Q, ChildrenOutletContexts as R, withExperimentalAutoCleanupInjectors as S, convertToParamMap as St, withInMemoryScrolling as T, destroyDetachedRouteHandle as Tt, GuardsCheckStart as U, EventType as V, NavigationCancel as W, NavigationStart as X, NavigationSkippedCode as Y, OutletContext as Z, provideRouter as _, UrlSegment as _t, mapToCanMatch as a, RouteConfigLoadEnd as at, withDisabledInitialNavigation as b, UrlTree as bt, PreloadAllModules as c, Router as ct, ROUTER_PROVIDERS as d, RouterState as dt, ROUTER_OUTLET_DATA as et, RouterLink as f, RouterStateSnapshot as ft, nonBlocking as g, UrlHandlingStrategy as gt, RouterPreloader as h, TitleStrategy as ht, mapToCanDeactivate as i, ResolveStart as it, ActivatedRoute as j, withRouterResources as k, PreloadingStrategy as l, RouterEvent as lt, RouterModule as m, Scroll as mt, mapToCanActivate as n, RedirectCommand as nt, mapToResolve as o, RouteConfigLoadStart as ot, RouterLinkActive as p, RoutesRecognized as pt, NavigationError as q, mapToCanActivateChild as r, ResolveEnd as rt, NoPreloading as s, RouteReuseStrategy as st, VERSION as t, ROUTES as tt, ROUTER_INITIALIZER as u, RouterOutlet as ut, withComponentInputBinding as v, UrlSegmentGroup as vt, withHashLocation as w, defaultUrlMatcher as wt, withEnabledBlockingInitialNavigation as x, afterNextNavigation as xt, withDebugTracing as y, UrlSerializer as yt, DefaultTitleStrategy as z };

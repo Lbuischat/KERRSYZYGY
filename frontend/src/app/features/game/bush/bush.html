@@ -1,0 +1,12 @@
+<div
+  id="bush"
+  class="absolute"
+  [style.left.px]="x"
+  [style.top.px]="y"
+>
+  @if (isHarvested) {
+    <p>🌿 HARVESTED</p>
+  } @else {
+    <p>🫐 FULL OF BERRIES</p>
+  }
+</div>

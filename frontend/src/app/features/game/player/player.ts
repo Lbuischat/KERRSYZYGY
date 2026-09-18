@@ -32,6 +32,9 @@ export class Player implements OnDestroy {
     @Output()
     attack = new EventEmitter<void>();
 
+    @Output()
+    interact = new EventEmitter<void>();
+
 
     // ================================================================
     // MAP / PLAYER CONSTANTS
@@ -383,6 +386,18 @@ export class Player implements OnDestroy {
 
             }
 
+            return;
+        }
+
+
+        // ------------------------------------------------------------
+        // INTERACT — E
+        // ------------------------------------------------------------
+
+        if (key === 'e') {
+
+            event.preventDefault();
+            this.interact.emit();
             return;
         }
 

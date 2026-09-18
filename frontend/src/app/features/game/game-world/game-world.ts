@@ -5,9 +5,12 @@ import {
   Inject,
   Output,
   PLATFORM_ID,
-  ViewChild
+  ViewChild,
+  ViewChildren,
+  QueryList,
 } from '@angular/core';
 
+import { Bush } from '../bush/bush';
 import { Enemy } from '../enemy/enemy';
 import { Player } from '../player/player';
 import { ProjectileService } from '../projectile/projectile.service';
@@ -15,10 +18,7 @@ import { GameStateService } from '../../../services/game-state/game-state.servic
 
 @Component({
   selector: 'app-game-world',
-  imports: [
-    Player,
-    Enemy,
-  ],
+  imports: [Player, Enemy, Bush],
   templateUrl: './game-world.html',
   styleUrl: './game-world.css',
 })
@@ -31,6 +31,19 @@ export class GameWorld {
 
   @ViewChild(Enemy)
   enemy!: Enemy;
+
+  @ViewChildren(Bush)
+  bushComponents!: QueryList<Bush>;
+
+  private readonly bushTiles = [
+    { column: 2, row: 12 },
+    { column: 17, row: 5 },
+    { column: 14, row: 17 },
+  ];
+
+  get bushes() {
+    return this.bushTiles;
+  }
 
   private animationFrameId = 0;
   private projectileElements = new Map<number, HTMLElement>();
@@ -105,11 +118,7 @@ export class GameWorld {
   // PROJECTILES
   // ================================================================
 
-  shootProjectile(event: {
-    mouseX: number;
-    mouseY: number;
-  }): void {
-
+  shootProjectile(event: { mouseX: number; mouseY: number }): void {
     if (!this.player) {
       return;
     }
@@ -125,11 +134,9 @@ export class GameWorld {
      *
      * world position = screen position - camera position
      */
-    const worldMouseX =
-      event.mouseX - this.cameraX;
+    const worldMouseX = event.mouseX - this.cameraX;
 
-    const worldMouseY =
-      event.mouseY - this.cameraY;
+    const worldMouseY = event.mouseY - this.cameraY;
 
     this.projectileService.spawnProjectile(
       'player',
@@ -159,26 +166,19 @@ export class GameWorld {
     const enemyY = this.enemy.y;
     const enemySize = this.enemy.size;
 
-    const playerCenterX =
-      playerPosition.x + playerSize / 2;
+    const playerCenterX = playerPosition.x + playerSize / 2;
 
-    const playerCenterY =
-      playerPosition.y + playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
 
-    const enemyCenterX =
-      enemyX + enemySize / 2;
+    const enemyCenterX = enemyX + enemySize / 2;
 
-    const enemyCenterY =
-      enemyY + enemySize / 2;
+    const enemyCenterY = enemyY + enemySize / 2;
 
-    const dx =
-      playerCenterX - enemyCenterX;
+    const dx = playerCenterX - enemyCenterX;
 
-    const dy =
-      playerCenterY - enemyCenterY;
+    const dy = playerCenterY - enemyCenterY;
 
-    const distance =
-      Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
     console.log('Attack distance:', distance);
 
@@ -192,6 +192,43 @@ export class GameWorld {
     }
   }
 
+  playerInteract(): void {
+    if (!this.player || !this.bushComponents) {
+      return;
+    }
+
+    const playerPosition = this.player.getPosition();
+    const playerSize = this.player.getSize();
+
+    const playerCenterX = playerPosition.x + playerSize / 2;
+
+    const playerCenterY = playerPosition.y + playerSize / 2;
+
+    const interactionRange = 85;
+
+    for (const bush of this.bushComponents) {
+      const bushPosition = bush.getPosition();
+
+      const bushCenterX = bushPosition.x + 128 / 2;
+
+      const bushCenterY = bushPosition.y + 128 / 2;
+
+      const dx = playerCenterX - bushCenterX;
+
+      const dy = playerCenterY - bushCenterY;
+
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      console.log('🌳 Bush distance:', distance);
+
+      if (distance <= interactionRange) {
+        console.log('🌳 PLAYER IS NEAR A BUSH!');
+        bush.harvest();
+        return;
+      }
+    }
+  }
+
   // ================================================================
   // PLAYER / ENEMY COLLISION
   // ================================================================
@@ -201,68 +238,48 @@ export class GameWorld {
       return;
     }
 
-    const playerPosition =
-      this.player.getPosition();
+    const playerPosition = this.player.getPosition();
 
-    const playerSize =
-      this.player.getSize();
+    const playerSize = this.player.getSize();
 
     const enemyPosition = {
       x: this.enemy.x,
       y: this.enemy.y,
     };
 
-    const enemySize =
-      this.enemy.size;
+    const enemySize = this.enemy.size;
 
-    const playerCenterX =
-      playerPosition.x + playerSize / 2;
+    const playerCenterX = playerPosition.x + playerSize / 2;
 
-    const playerCenterY =
-      playerPosition.y + playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
 
-    const enemyCenterX =
-      enemyPosition.x + enemySize / 2;
+    const enemyCenterX = enemyPosition.x + enemySize / 2;
 
-    const enemyCenterY =
-      enemyPosition.y + enemySize / 2;
+    const enemyCenterY = enemyPosition.y + enemySize / 2;
 
-    const dx =
-      playerCenterX - enemyCenterX;
+    const dx = playerCenterX - enemyCenterX;
 
-    const dy =
-      playerCenterY - enemyCenterY;
+    const dy = playerCenterY - enemyCenterY;
 
-    const overlapX =
-      playerSize / 2 +
-      enemySize / 2 -
-      Math.abs(dx);
+    const overlapX = playerSize / 2 + enemySize / 2 - Math.abs(dx);
 
-    const overlapY =
-      playerSize / 2 +
-      enemySize / 2 -
-      Math.abs(dy);
+    const overlapY = playerSize / 2 + enemySize / 2 - Math.abs(dy);
 
     if (overlapX <= 0 || overlapY <= 0) {
       return;
     }
 
-    let correctedX =
-      playerPosition.x;
+    let correctedX = playerPosition.x;
 
-    let correctedY =
-      playerPosition.y;
+    let correctedY = playerPosition.y;
 
     if (overlapX < overlapY) {
-
       if (dx > 0) {
         correctedX += overlapX;
       } else {
         correctedX -= overlapX;
       }
-
     } else {
-
       if (dy > 0) {
         correctedY += overlapY;
       } else {
@@ -270,10 +287,7 @@ export class GameWorld {
       }
     }
 
-    this.player.setPosition(
-      correctedX,
-      correctedY
-    );
+    this.player.setPosition(correctedX, correctedY);
   }
 
   // ================================================================
@@ -285,64 +299,41 @@ export class GameWorld {
       return;
     }
 
-    const playerPosition =
-      this.player.getPosition();
+    const playerPosition = this.player.getPosition();
 
-    const playerSize =
-      this.player.getSize();
+    const playerSize = this.player.getSize();
 
-    this.enemy.checkPlayerInView(
-      playerPosition.x,
-      playerPosition.y,
-      playerSize
-    );
+    this.enemy.checkPlayerInView(playerPosition.x, playerPosition.y, playerSize);
 
     if (!this.enemy.isPlayerInView) {
       return;
     }
 
-    const playerCenterX =
-      playerPosition.x +
-      playerSize / 2;
+    const playerCenterX = playerPosition.x + playerSize / 2;
 
-    const playerCenterY =
-      playerPosition.y +
-      playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
 
-    const enemyCenterX =
-      this.enemy.x +
-      this.enemy.size / 2;
+    const enemyCenterX = this.enemy.x + this.enemy.size / 2;
 
-    const enemyCenterY =
-      this.enemy.y +
-      this.enemy.size / 2;
+    const enemyCenterY = this.enemy.y + this.enemy.size / 2;
 
-    const dx =
-      playerCenterX -
-      enemyCenterX;
+    const dx = playerCenterX - enemyCenterX;
 
-    const dy =
-      playerCenterY -
-      enemyCenterY;
+    const dy = playerCenterY - enemyCenterY;
 
-    const distance =
-      Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance === 0) {
       return;
     }
 
-    const directionX =
-      dx / distance;
+    const directionX = dx / distance;
 
-    const directionY =
-      dy / distance;
+    const directionY = dy / distance;
 
-    this.enemy.x +=
-      directionX * this.enemy.speed;
+    this.enemy.x += directionX * this.enemy.speed;
 
-    this.enemy.y +=
-      directionY * this.enemy.speed;
+    this.enemy.y += directionY * this.enemy.speed;
 
     this.enemy.updateVisualPosition();
   }
@@ -351,10 +342,7 @@ export class GameWorld {
   // ENEMY ATTACK
   // ================================================================
 
-  private updateEnemyAttack(
-    deltaTime: number
-  ): void {
-
+  private updateEnemyAttack(deltaTime: number): void {
     if (!this.player || !this.enemy || this.enemy.isDead) {
       return;
     }
@@ -364,55 +352,30 @@ export class GameWorld {
       return;
     }
 
-    const playerPosition =
-      this.player.getPosition();
+    const playerPosition = this.player.getPosition();
 
-    const playerSize =
-      this.player.getSize();
+    const playerSize = this.player.getSize();
 
-    const enemySize =
-      this.enemy.size;
+    const enemySize = this.enemy.size;
 
-    const playerCenterX =
-      playerPosition.x +
-      playerSize / 2;
+    const playerCenterX = playerPosition.x + playerSize / 2;
 
-    const playerCenterY =
-      playerPosition.y +
-      playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
 
-    const enemyCenterX =
-      this.enemy.x +
-      enemySize / 2;
+    const enemyCenterX = this.enemy.x + enemySize / 2;
 
-    const enemyCenterY =
-      this.enemy.y +
-      enemySize / 2;
+    const enemyCenterY = this.enemy.y + enemySize / 2;
 
-    const dx =
-      playerCenterX -
-      enemyCenterX;
+    const dx = playerCenterX - enemyCenterX;
 
-    const dy =
-      playerCenterY -
-      enemyCenterY;
+    const dy = playerCenterY - enemyCenterY;
 
-    const distance =
-      Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
-    const collisionDistance =
-      playerSize / 2 +
-      enemySize / 2;
+    const collisionDistance = playerSize / 2 + enemySize / 2;
 
     if (distance <= collisionDistance) {
-
-      console.log(
-        '🚨 ENEMY ATTACKING',
-        'isDead:',
-        this.enemy.isDead,
-        'health:',
-        this.enemy.health
-      );
+      console.log('🚨 ENEMY ATTACKING', 'isDead:', this.enemy.isDead, 'health:', this.enemy.health);
 
       this.player.takeDamage(10);
 
@@ -431,60 +394,35 @@ export class GameWorld {
       return;
     }
 
-    const projectiles =
-      this.projectileService.getProjectiles();
+    const projectiles = this.projectileService.getProjectiles();
 
-    const enemyX =
-      this.enemy.x;
+    const enemyX = this.enemy.x;
 
-    const enemyY =
-      this.enemy.y;
+    const enemyY = this.enemy.y;
 
-    const enemySize =
-      this.enemy.size;
+    const enemySize = this.enemy.size;
 
-    const enemyCenterX =
-      enemyX +
-      enemySize / 2;
+    const enemyCenterX = enemyX + enemySize / 2;
 
-    const enemyCenterY =
-      enemyY +
-      enemySize / 2;
+    const enemyCenterY = enemyY + enemySize / 2;
 
     for (const projectile of projectiles) {
+      const projectileCenterX = projectile.x + projectile.size / 2;
 
-      const projectileCenterX =
-        projectile.x +
-        projectile.size / 2;
+      const projectileCenterY = projectile.y + projectile.size / 2;
 
-      const projectileCenterY =
-        projectile.y +
-        projectile.size / 2;
+      const dx = projectileCenterX - enemyCenterX;
 
-      const dx =
-        projectileCenterX -
-        enemyCenterX;
+      const dy = projectileCenterY - enemyCenterY;
 
-      const dy =
-        projectileCenterY -
-        enemyCenterY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
-      const distance =
-        Math.sqrt(dx * dx + dy * dy);
-
-      const collisionDistance =
-        enemySize / 2 +
-        projectile.size / 2;
+      const collisionDistance = enemySize / 2 + projectile.size / 2;
 
       if (distance <= collisionDistance) {
+        this.enemy.takeDamage(projectile.damage);
 
-        this.enemy.takeDamage(
-          projectile.damage
-        );
-
-        this.projectileService.removeProjectile(
-          projectile.id
-        );
+        this.projectileService.removeProjectile(projectile.id);
       }
     }
   }
@@ -498,17 +436,13 @@ export class GameWorld {
       return;
     }
 
-    const healthBar =
-      document.getElementById(
-        'enemy-health-bar'
-      );
+    const healthBar = document.getElementById('enemy-health-bar');
 
     if (!healthBar) {
       return;
     }
 
-    healthBar.style.width =
-      `${this.enemy.getHealthPercentage()}%`;
+    healthBar.style.width = `${this.enemy.getHealthPercentage()}%`;
   }
 
   // ================================================================
@@ -516,75 +450,49 @@ export class GameWorld {
   // ================================================================
 
   private renderProjectiles(): void {
-    const layer =
-      document.getElementById(
-        'projectile-layer'
-      );
+    const layer = document.getElementById('projectile-layer');
 
     if (!layer) {
       return;
     }
 
-    const projectiles =
-      this.projectileService.getProjectiles();
+    const projectiles = this.projectileService.getProjectiles();
 
-    const activeIds =
-      new Set<number>();
+    const activeIds = new Set<number>();
 
     for (const projectile of projectiles) {
-
       activeIds.add(projectile.id);
 
-      let element =
-        this.projectileElements.get(
-          projectile.id
-        );
+      let element = this.projectileElements.get(projectile.id);
 
       // Create visual only once
       if (!element) {
+        element = document.createElement('div');
 
-        element =
-          document.createElement('div');
+        element.style.position = 'absolute';
 
-        element.style.position =
-          'absolute';
+        element.style.borderRadius = '50%';
 
-        element.style.borderRadius =
-          '50%';
-
-        element.style.pointerEvents =
-          'none';
+        element.style.pointerEvents = 'none';
 
         layer.appendChild(element);
 
-        this.projectileElements.set(
-          projectile.id,
-          element
-        );
+        this.projectileElements.set(projectile.id, element);
       }
 
       // Update visual
-      element.style.width =
-        `${projectile.size}px`;
+      element.style.width = `${projectile.size}px`;
 
-      element.style.height =
-        `${projectile.size}px`;
+      element.style.height = `${projectile.size}px`;
 
-      element.style.backgroundColor =
-        projectile.color;
+      element.style.backgroundColor = projectile.color;
 
-      element.style.transform =
-        `translate(${projectile.x}px, ${projectile.y}px)`;
+      element.style.transform = `translate(${projectile.x}px, ${projectile.y}px)`;
     }
 
     // Remove visuals for dead projectiles
-    for (
-      const [id, element]
-      of this.projectileElements
-    ) {
-
+    for (const [id, element] of this.projectileElements) {
       if (!activeIds.has(id)) {
-
         element.remove();
 
         this.projectileElements.delete(id);
@@ -597,11 +505,8 @@ export class GameWorld {
   // ================================================================
 
   private updateMiniMap(): void {
-
     if (this.player) {
-
-      const position =
-        this.player.getPosition();
+      const position = this.player.getPosition();
 
       this.gameStateService.setPlayerPosition({
         x: position.x,
@@ -610,16 +515,13 @@ export class GameWorld {
     }
 
     if (this.enemy && !this.enemy.isDead) {
-
       this.gameStateService.setEnemyPositions([
         {
           x: this.enemy.x,
           y: this.enemy.y,
         },
       ]);
-
     } else {
-
       this.gameStateService.setEnemyPositions([]);
     }
   }
@@ -629,31 +531,23 @@ export class GameWorld {
   // ================================================================
 
   private updateCamera(): void {
-
-    const camera =
-      document.getElementById('camera');
+    const camera = document.getElementById('camera');
 
     if (!camera || !this.player) {
       return;
     }
 
-    const playerPosition =
-      this.player.getPosition();
+    const playerPosition = this.player.getPosition();
 
-    const playerSize =
-      this.player.getSize();
+    const playerSize = this.player.getSize();
 
     // ------------------------------------------------
     // Player center in WORLD coordinates
     // ------------------------------------------------
 
-    const playerCenterX =
-      playerPosition.x +
-      playerSize / 2;
+    const playerCenterX = playerPosition.x + playerSize / 2;
 
-    const playerCenterY =
-      playerPosition.y +
-      playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
 
     // ------------------------------------------------
     // Map dimensions
@@ -666,57 +560,33 @@ export class GameWorld {
     // Screen dimensions
     // ------------------------------------------------
 
-    const screenWidth =
-      window.innerWidth;
+    const screenWidth = window.innerWidth;
 
-    const screenHeight =
-      window.innerHeight;
+    const screenHeight = window.innerHeight;
 
     // ------------------------------------------------
     // Try to place the player in the center
     // ------------------------------------------------
 
-    let cameraX =
-      screenWidth / 2 -
-      playerCenterX;
+    let cameraX = screenWidth / 2 - playerCenterX;
 
-    let cameraY =
-      screenHeight / 2 -
-      playerCenterY;
+    let cameraY = screenHeight / 2 - playerCenterY;
 
     // ------------------------------------------------
     // Don't let the camera show outside the MAP
     // ------------------------------------------------
 
-    const minCameraX =
-      screenWidth -
-      mapWidth;
+    const minCameraX = screenWidth - mapWidth;
 
     const maxCameraX = 0;
 
-    cameraX =
-      Math.max(
-        minCameraX,
-        Math.min(
-          cameraX,
-          maxCameraX
-        )
-      );
+    cameraX = Math.max(minCameraX, Math.min(cameraX, maxCameraX));
 
-    const minCameraY =
-      screenHeight -
-      mapHeight;
+    const minCameraY = screenHeight - mapHeight;
 
     const maxCameraY = 0;
 
-    cameraY =
-      Math.max(
-        minCameraY,
-        Math.min(
-          cameraY,
-          maxCameraY
-        )
-      );
+    cameraY = Math.max(minCameraY, Math.min(cameraY, maxCameraY));
 
     // ------------------------------------------------
     // Save camera position
@@ -732,8 +602,7 @@ export class GameWorld {
     // Move the entire world
     // ------------------------------------------------
 
-    camera.style.transform =
-      `translate(${cameraX}px, ${cameraY}px)`;
+    camera.style.transform = `translate(${cameraX}px, ${cameraY}px)`;
   }
 
   private checkTutorialBoundary(): void {
@@ -746,20 +615,14 @@ export class GameWorld {
     const boundary = 2500;
 
     const atBoundary =
-      position.x >= boundary ||
-      position.y >= boundary ||
-      position.x <= 0 ||
-      position.y <= 0;
+      position.x >= boundary || position.y >= boundary || position.x <= 0 || position.y <= 0;
 
     if (atBoundary && !this.playerWasAtBoundary) {
-      console.log(
-        '🚧 GAME WORLD DETECTED PLAYER AT BOUNDARY'
-      );
+      console.log('🚧 GAME WORLD DETECTED PLAYER AT BOUNDARY');
 
       this.tutorialBoundary.emit();
     }
 
     this.playerWasAtBoundary = atBoundary;
   }
-
 }

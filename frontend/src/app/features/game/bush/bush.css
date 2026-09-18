@@ -1,0 +1,14 @@
+#bush {
+  width: 128px;
+  height: 128px;
+  z-index: 5;
+}
+
+#bush img {
+  display: block;
+  width: 128px;
+  height: 128px;
+  pointer-events: none;
+  user-select: none;
+}
+
