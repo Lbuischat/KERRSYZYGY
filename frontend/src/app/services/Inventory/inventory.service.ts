@@ -28,6 +28,32 @@ export class InventoryService {
 
   private items: InventoryItem[] = [
 
+    {
+      id: 'berry',
+
+      name: 'Crimson Jewel',
+
+      category: 'items',
+
+      description:
+        'A fresh berry gathered from a wild bush. Restores a small amount of health.',
+
+      icon:
+        '/assets/berry.png',
+
+      quantity: 1,
+
+      usable: true,
+
+      maxStack: 99,
+
+      buff: {
+        type: 'health',
+        value: 10
+      }
+    },
+
+
     // ------------------------------------------------------------
     // EXAMPLE POTION
     // ------------------------------------------------------------
@@ -90,7 +116,7 @@ export class InventoryService {
 
   constructor(
     private buffService: BuffService
-  ) {}
+  ) { }
 
 
   // ==============================================================
@@ -299,6 +325,24 @@ export class InventoryService {
 
 
     return true;
+
+  }
+
+  addBerry(amount: number): void {
+
+    const berry = this.getItem('berry');
+
+    if (!berry) {
+
+      console.warn(
+        'Berry item does not exist in inventory.'
+      );
+
+      return;
+
+    }
+
+    berry.quantity += amount;
 
   }
 

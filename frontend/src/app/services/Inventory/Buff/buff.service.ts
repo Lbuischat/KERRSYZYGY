@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 import {
   BuffType,
@@ -34,6 +35,18 @@ export class BuffService {
 
   private activeBuffs: ActiveBuff[] = [];
 
+  /*
+   * Fires once for buffs with NO duration (e.g. a berry's
+   * instant +10 health). These are never added to
+   * `activeBuffs` — they're a one-shot effect, not something
+   * that needs to be tracked or ticked down over time.
+   *
+   * Consumers (like Player) subscribe to this and apply the
+   * effect immediately.
+   */
+  private instantBuff$ = new Subject<ActiveBuff>();
+  readonly instantBuffApplied$ = this.instantBuff$.asObservable();
+
 
   // ==============================================================
   // ADD BUFF
@@ -46,8 +59,7 @@ export class BuffService {
     const buffId =
       `${buff.type}-${Date.now()}-${Math.random()}`;
 
-
-    this.activeBuffs.push({
+    const activeBuff: ActiveBuff = {
 
       id: buffId,
 
@@ -58,7 +70,36 @@ export class BuffService {
       remainingDuration:
         buff.duration
 
-    });
+    };
+
+
+    // ------------------------------------------------------------
+    // INSTANT BUFF (no duration) — apply once, don't track it.
+    // ------------------------------------------------------------
+
+    if (buff.duration === undefined) {
+
+      this.instantBuff$.next(
+        activeBuff
+      );
+
+      console.log(
+        '✨ INSTANT BUFF APPLIED:',
+        buff
+      );
+
+      return;
+
+    }
+
+
+    // ------------------------------------------------------------
+    // ONGOING BUFF (has a duration) — track it, tick it down.
+    // ------------------------------------------------------------
+
+    this.activeBuffs.push(
+      activeBuff
+    );
 
     console.log(
       '✨ BUFF ADDED:',
@@ -125,6 +166,10 @@ export class BuffService {
 
   // ==============================================================
   // UPDATE BUFFS
+  //
+  // Must be called every frame by SOMETHING (Player's game loop
+  // does this now) or `remainingDuration` never decreases and
+  // ongoing buffs never expire.
   // ==============================================================
 
   update(

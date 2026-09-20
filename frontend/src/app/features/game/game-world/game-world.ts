@@ -6,8 +6,7 @@ import {
   Output,
   PLATFORM_ID,
   ViewChild,
-  ViewChildren,
-  QueryList,
+  signal,
 } from '@angular/core';
 
 import { Bush } from '../bush/bush';
@@ -15,6 +14,7 @@ import { Enemy } from '../enemy/enemy';
 import { Player } from '../player/player';
 import { ProjectileService } from '../projectile/projectile.service';
 import { GameStateService } from '../../../services/game-state/game-state.service';
+import { InventoryService } from '../../../services/Inventory/inventory.service';
 
 @Component({
   selector: 'app-game-world',
@@ -26,29 +26,39 @@ export class GameWorld {
   @Output()
   tutorialBoundary = new EventEmitter<void>();
 
+  /*
+   * Fired whenever the player performs a basic attack, regardless of
+   * whether it actually lands on the enemy. Tutorial.onBasicAttack()
+   * only cares that the action happened.
+   */
+  @Output()
+  playerAttacked = new EventEmitter<void>();
+
+  /*
+   * Fired once, the moment the tutorial enemy transitions to dead.
+   */
+  @Output()
+  enemyDefeated = new EventEmitter<void>();
+
   @ViewChild(Player)
   player!: Player;
 
   @ViewChild(Enemy)
   enemy!: Enemy;
 
-  @ViewChildren(Bush)
-  bushComponents!: QueryList<Bush>;
+  private readonly TILE = 128;
 
-  private readonly bushTiles = [
-    { column: 2, row: 12 },
-    { column: 17, row: 5 },
-    { column: 14, row: 17 },
-  ];
-
-  get bushes() {
-    return this.bushTiles;
-  }
+  readonly bushes = signal([
+    { id: 1, column: 2, row: 12, harvested: false },
+    { id: 2, column: 17, row: 5, harvested: false },
+    { id: 3, column: 14, row: 17, harvested: false },
+  ]);
 
   private animationFrameId = 0;
   private projectileElements = new Map<number, HTMLElement>();
   private enemyAttackCooldown = 0;
   private playerWasAtBoundary = false;
+  private enemyWasDead = false;
 
   // Current camera position in world/screen coordinates.
   // These are used to convert mouse coordinates into world coordinates.
@@ -79,6 +89,9 @@ export class GameWorld {
     private projectileService: ProjectileService,
 
     private gameStateService: GameStateService,
+
+    private inventoryService: InventoryService,
+    
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.startGameLoop();
@@ -100,6 +113,7 @@ export class GameWorld {
       this.updateEnemyAttack(deltaTime);
       this.resolvePlayerEnemyCollision();
       this.checkProjectileCollisions();
+      this.checkEnemyDefeated();
       this.updateEnemyHealthBar();
       this.updateMiniMap();
 
@@ -154,6 +168,12 @@ export class GameWorld {
   playerAttack(): void {
     console.log('PLAYER ATTACK RECEIVED');
 
+    /*
+     * Let the tutorial know an attack happened, independent of
+     * whether it hits the enemy below.
+     */
+    this.playerAttacked.emit();
+
     if (!this.player || !this.enemy) {
       console.log('Player or enemy not found');
       return;
@@ -192,8 +212,12 @@ export class GameWorld {
     }
   }
 
+  // ================================================================
+  // BUSH INTERACTION
+  // ================================================================
+
   playerInteract(): void {
-    if (!this.player || !this.bushComponents) {
+    if (!this.player) {
       return;
     }
 
@@ -206,12 +230,14 @@ export class GameWorld {
 
     const interactionRange = 85;
 
-    for (const bush of this.bushComponents) {
-      const bushPosition = bush.getPosition();
+    for (const bush of this.bushes()) {
+      if (bush.harvested) {
+        continue;
+      }
 
-      const bushCenterX = bushPosition.x + 128 / 2;
+      const bushCenterX = bush.column * this.TILE + this.TILE / 2;
 
-      const bushCenterY = bushPosition.y + 128 / 2;
+      const bushCenterY = bush.row * this.TILE + this.TILE / 2;
 
       const dx = playerCenterX - bushCenterX;
 
@@ -222,8 +248,16 @@ export class GameWorld {
       console.log('🌳 Bush distance:', distance);
 
       if (distance <= interactionRange) {
-        console.log('🌳 PLAYER IS NEAR A BUSH!');
-        bush.harvest();
+        const berries = Math.floor(Math.random() * 4) + 1;
+
+        console.log(`🫐 YOU GOT ${berries} BERRIES!`);
+
+        this.inventoryService.addBerry(berries);
+
+        this.bushes.update((list) =>
+          list.map((b) => (b.id === bush.id ? { ...b, harvested: true } : b)),
+        );
+
         return;
       }
     }
@@ -425,6 +459,22 @@ export class GameWorld {
         this.projectileService.removeProjectile(projectile.id);
       }
     }
+  }
+
+  // ================================================================
+  // ENEMY DEFEATED (for the tutorial)
+  // ================================================================
+
+  private checkEnemyDefeated(): void {
+    if (!this.enemy) {
+      return;
+    }
+
+    if (this.enemy.isDead && !this.enemyWasDead) {
+      this.enemyDefeated.emit();
+    }
+
+    this.enemyWasDead = this.enemy.isDead;
   }
 
   // ================================================================

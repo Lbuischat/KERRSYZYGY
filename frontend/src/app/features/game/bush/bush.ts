@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
+import { InventoryService } from '../../../services/Inventory/inventory.service';
 
 @Component({
   selector: 'app-bush',
@@ -7,29 +8,28 @@ import { Component, Input } from '@angular/core';
   styleUrl: './bush.css',
 })
 export class Bush {
-  @Input() x = 0;
-  @Input() y = 0;
 
-  isHarvested = false;
+  readonly x = input(0);
+  readonly y = input(0);
+  readonly harvested = input(false);
+
+  constructor(
+    private inventoryService: InventoryService
+  ) { }
 
   getPosition(): { x: number; y: number } {
+
     return {
-      x: this.x,
-      y: this.y,
+      x: this.x(),
+      y: this.y(),
     };
+
   }
 
-  harvest(): void {
-    if (this.isHarvested) {
-      return;
-    }
+  harvest(berries: number): void {
 
-    const berries = Math.floor(Math.random() * 4) + 1;
+    this.inventoryService.addBerry(berries);
 
-    console.log(`🫐 YOU GOT ${berries} BERRIES!`);
-
-    this.isHarvested = true;
-
-    console.log('🌳 isHarvested:', this.isHarvested);
   }
+
 }

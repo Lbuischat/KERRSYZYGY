@@ -1,0 +1,78 @@
+.tutorial-window {
+  position: fixed;
+
+  top: 90px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 360px;
+
+  padding: 20px 24px;
+
+  background: rgba(10, 12, 22, 0.88);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  border-radius: 10px;
+
+  backdrop-filter: blur(8px);
+
+  color: white;
+
+  text-align: center;
+
+  z-index: 9999;
+
+  pointer-events: none;
+}
+
+.tutorial-window h2 {
+  margin: 0 0 8px;
+
+  font-family: 'Cormorant Garamond', serif;
+
+  font-size: 28px;
+}
+
+.tutorial-window p {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.75);
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.progress-container {
+  width: 100%;
+
+  height: 5px;
+
+  margin-top: 18px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: rgba(255, 255, 255, 0.8);
+
+  transition: width 0.15s ease;
+}
+
+.checkmark {
+  margin-top: 10px;
+
+  font-size: 18px;
+
+  color: white;
+}

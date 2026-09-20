@@ -1,12 +1,7 @@
-<div
-  id="bush"
-  class="absolute"
-  [style.left.px]="x"
-  [style.top.px]="y"
->
-  @if (isHarvested) {
-    <p>🌿 HARVESTED</p>
+<div class="bush absolute" [style.left.px]="x()" [style.top.px]="y()">
+  @if (harvested()) {
+  <img src="assets/Bush1-B.png" alt="Harvested berry bush" draggable="false" />
   } @else {
-    <p>🫐 FULL OF BERRIES</p>
+  <img src="assets/Bush1-F.png" alt="Berry bush" draggable="false" />
   }
 </div>

@@ -1,21 +1,33 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Hud } from '../hud/hud';
 import { GameWorld } from '../game-world/game-world';
 import { Inventory } from '../hud/inventory/inventory';
+import { tutorial } from '../tutorial/tutorial';
 
 @Component({
   imports: [
     Hud,
     GameWorld,
     Inventory,
+    tutorial,
   ],
   selector: 'app-game-shell',
   styleUrl: './game-shell.css',
   templateUrl: './game-shell.html',
 })
 export class GameShell {
+
+  @ViewChild(GameWorld)
+  gameWorld!: GameWorld;
+
+  /*
+   * Reference to the Tutorial component so events coming up from
+   * GameWorld (attack, enemy defeated) can be forwarded into it.
+   */
+  @ViewChild(tutorial)
+  tutorialCmp!: tutorial;
 
   inventoryOpen = false;
 
@@ -48,6 +60,30 @@ export class GameShell {
     this.tutorialMessageTimer = setTimeout(() => {
       this.tutorialMessageVisible = false;
     }, 2500);
+  }
+
+  // ================================================================
+  // TUTORIAL EVENT FORWARDING
+  // ================================================================
+
+  onPlayerAttack(): void {
+
+    if (!this.tutorialCmp) {
+      return;
+    }
+
+    this.tutorialCmp.onBasicAttack();
+
+  }
+
+  onEnemyDefeated(): void {
+
+    if (!this.tutorialCmp) {
+      return;
+    }
+
+    this.tutorialCmp.onTutorialEnemyDefeated();
+
   }
 
   @HostListener('document:keydown', ['$event'])

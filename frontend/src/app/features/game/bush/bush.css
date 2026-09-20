@@ -1,10 +1,10 @@
-#bush {
+.bush {
   width: 128px;
   height: 128px;
   z-index: 5;
 }
 
-#bush img {
+.bush img {
   display: block;
   width: 128px;
   height: 128px;

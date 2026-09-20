@@ -1,0 +1,115 @@
+@if (currentStep !== 'complete') {
+
+  <div class="tutorial-window">
+
+    @if (currentStep === 'movement') {
+
+      <h2>Movement</h2>
+
+      <p>
+        Use <strong>WASD</strong> or the
+        <strong>Arrow Keys</strong> to move around the world.
+      </p>
+
+      <div class="progress-container">
+
+        <div
+          class="progress-bar"
+          [style.width.%]="movementProgress">
+        </div>
+
+      </div>
+
+      @if (movementProgress >= 100) {
+        <div class="checkmark">
+          ✓
+        </div>
+      }
+
+    }
+
+    @if (currentStep === 'sprint') {
+
+      <h2>Sprint</h2>
+
+      <p>
+        Hold <strong>SHIFT</strong> while moving to sprint.
+      </p>
+
+      <div class="progress-container">
+
+        <div
+          class="progress-bar"
+          [style.width.%]="sprintProgress">
+        </div>
+
+      </div>
+
+      @if (sprintProgress >= 100) {
+        <div class="checkmark">
+          ✓
+        </div>
+      }
+
+    }
+
+    @if (currentStep === 'stamina') {
+
+      <h2>Stamina</h2>
+
+      <p>
+        Keep sprinting until your <strong>Stamina</strong> runs out.
+      </p>
+
+      <div class="progress-container">
+
+        <div
+          class="progress-bar"
+          [style.width.%]="staminaProgress">
+        </div>
+
+      </div>
+
+      @if (staminaProgress >= 100) {
+        <div class="checkmark">
+          ✓
+        </div>
+      }
+
+    }
+
+    @if (currentStep === 'attack') {
+
+      <h2>Attack</h2>
+
+      <p>
+        Use the <strong>Left Mouse Button</strong> to attack.
+      </p>
+
+      @if (attackPerformed) {
+        <div class="checkmark">
+          ✓
+        </div>
+      }
+
+    }
+
+    @if (currentStep === 'attackEnemy') {
+
+      <h2>Defeat the Enemy</h2>
+
+      <p>
+        Attack the nearby enemy until it's defeated.
+      </p>
+
+      @if (tutorialEnemyDefeated) {
+        <div class="checkmark">
+          ✓
+        </div>
+      }
+
+    }
+
+  </div>
+
+}

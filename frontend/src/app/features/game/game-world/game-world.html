@@ -1,24 +1,16 @@
-<div
-  id="game-world"
-  class="relative h-screen w-full overflow-hidden bg-green-900"
-  (mousedown)="handleMouseDown($event)"
-  (mouseup)="handleMouseUp($event)"
->
+<div id="game-world" class="relative h-screen w-full overflow-hidden bg-green-900" (mousedown)="handleMouseDown($event)"
+  (mouseup)="handleMouseUp($event)">
   <!-- Camera / World -->
   <div id="camera">
     <!-- 2048x2048 Map -->
     <div id="map-background"></div>
 
     <!-- BUSHESSSS -->
-    @for (bush of bushes; track $index) {
-      <app-bush [x]="(bush.column - 1) * 128" [y]="bush.row * 128"> </app-bush>
+    @for (bush of bushes(); track bush.id) {
+    <app-bush [x]="bush.column * 128" [y]="bush.row * 128" [harvested]="bush.harvested" />
     }
     <!-- Player -->
-    <app-player
-      (shoot)="shootProjectile($event)"
-      (attack)="playerAttack()"
-      (interact)="playerInteract()"
-    >
+    <app-player (shoot)="shootProjectile($event)" (attack)="playerAttack()" (interact)="playerInteract()">
     </app-player>
     <!-- Projectiles -->
     <div id="projectile-layer" class="pointer-events-none"></div>

@@ -1,8 +1,13 @@
 <div class="relative min-h-screen w-full">
 
-  <app-game-world (tutorialBoundary)="showTutorialMessage()" />
+  <app-game-world
+    (tutorialBoundary)="showTutorialMessage()"
+    (playerAttacked)="onPlayerAttack()"
+    (enemyDefeated)="onEnemyDefeated()" />
 
   <app-hud (settingsOpen)="openSettings()" (inventoryOpen)="toggleInventory()" />
+
+  <app-tutorial [player]="gameWorld?.player" />
 
   @if (inventoryOpen) {
   <app-inventory (closeInventory)="toggleInventory()" />
