@@ -10,6 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
 
+import { AudioService } from '../../../services/audio/audio.service';
 import { BuffService } from '../../../services/Inventory/Buff/buff.service';
 
 @Component({
@@ -152,6 +153,80 @@ export class Player implements OnDestroy {
         return this.riverTiles.has(
             `${column},${row}`
         );
+    }
+
+    private getDistanceToRiver(): number {
+
+        const playerCenterX =
+            this.playerX + this.PLAYER_SIZE / 2;
+
+        const playerCenterY =
+            this.playerY + this.PLAYER_SIZE / 2;
+
+        let closestDistance = Infinity;
+
+        for (const tile of this.riverTiles) {
+
+            const [columnString, rowString] =
+                tile.split(',');
+
+            const column =
+                Number(columnString);
+
+            const row =
+                Number(rowString);
+
+            // isRiverTile() uses column = floor(x / TILE_SIZE) + 1
+            // so we reverse that here.
+            const tileX =
+                (column - 1) * this.TILE_SIZE;
+
+            const tileY =
+                row * this.TILE_SIZE;
+
+            const tileRight =
+                tileX + this.TILE_SIZE;
+
+            const tileBottom =
+                tileY + this.TILE_SIZE;
+
+            // Find the closest point on the tile rectangle.
+            const closestX =
+                Math.max(
+                    tileX,
+                    Math.min(
+                        playerCenterX,
+                        tileRight
+                    )
+                );
+
+            const closestY =
+                Math.max(
+                    tileY,
+                    Math.min(
+                        playerCenterY,
+                        tileBottom
+                    )
+                );
+
+            const dx =
+                playerCenterX - closestX;
+
+            const dy =
+                playerCenterY - closestY;
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+            if (distance < closestDistance) {
+                closestDistance = distance;
+            }
+        }
+
+        return closestDistance;
     }
 
     private canMoveTo(
@@ -375,8 +450,8 @@ export class Player implements OnDestroy {
     constructor(
         @Inject(PLATFORM_ID)
         private platformId: object,
-
-        private buffService: BuffService
+        private buffService: BuffService,
+        private audioService: AudioService
     ) {
 
         console.log(
@@ -730,6 +805,8 @@ export class Player implements OnDestroy {
             this.dashStaminaCost;
 
         this.isDashing = true;
+
+        this.audioService.playSfx('player.dash');
 
         this.dashRemaining =
             this.DASH_DISTANCE;
@@ -1115,6 +1192,17 @@ export class Player implements OnDestroy {
             this.wasAtBoundary =
                 hitMapBoundary;
 
+
+            // ========================================================
+            // RIVER AUDIO
+            // ========================================================
+
+            const riverDistance =
+                this.getDistanceToRiver();
+
+            this.audioService.updateRiverVolume(
+                riverDistance
+            );
 
             // ========================================================
             // UPDATE PLAYER

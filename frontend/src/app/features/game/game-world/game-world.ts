@@ -15,6 +15,7 @@ import { Player } from '../player/player';
 import { ProjectileService } from '../projectile/projectile.service';
 import { GameStateService } from '../../../services/game-state/game-state.service';
 import { InventoryService } from '../../../services/Inventory/inventory.service';
+import { AudioService } from '../../../services/audio/audio.service';
 
 @Component({
   selector: 'app-game-world',
@@ -85,13 +86,10 @@ export class GameWorld {
   constructor(
     @Inject(PLATFORM_ID)
     private platformId: object,
-
     private projectileService: ProjectileService,
-
     private gameStateService: GameStateService,
-
     private inventoryService: InventoryService,
-    
+    private audioService: AudioService,
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.startGameLoop();
@@ -253,6 +251,8 @@ export class GameWorld {
         console.log(`🫐 YOU GOT ${berries} BERRIES!`);
 
         this.inventoryService.addBerry(berries);
+
+        this.audioService.playItemPickup();
 
         this.bushes.update((list) =>
           list.map((b) => (b.id === bush.id ? { ...b, harvested: true } : b)),
