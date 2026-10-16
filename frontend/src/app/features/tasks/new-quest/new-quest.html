@@ -1,0 +1,516 @@
+
+<div class="new-quest-page">
+  <div class="stars stars-one"></div>
+  <div class="stars stars-two"></div>
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <button type="button" class="back-button" (click)="backToGame()">
+      ← BACK TO GAME
+    </button>
+
+    <div class="header-title">
+      <span>MISSION ARCHIVE</span>
+      <h1>NEW QUEST</h1>
+      <p>Create missions, complete objectives and build your journey.</p>
+    </div>
+
+    <div class="header-decoration">✦</div>
+  </header>
+
+  <main class="quest-layout">
+
+    <!-- QUEST CREATOR -->
+    <section class="creator-card">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">QUEST CREATOR</span>
+          <h2>Mission Parameters</h2>
+        </div>
+        <span class="section-number">01</span>
+      </div>
+
+      <form #questForm="ngForm" (ngSubmit)="saveQuest(questForm)">
+
+        <!-- QUEST NAME -->
+        <div class="field">
+          <label for="questName">
+            QUEST NAME
+            <span>REQUIRED</span>
+          </label>
+
+          <input
+            id="questName"
+            name="questName"
+            type="text"
+            maxlength="60"
+            required
+            [(ngModel)]="model.name"
+            #questName="ngModel"
+            placeholder="Example: Finish Angular exercise"
+          />
+
+          <small
+            class="field-error"
+            *ngIf="questName.invalid && questName.touched"
+          >
+            Give your quest a name.
+          </small>
+        </div>
+
+        <!-- DETAILS -->
+        <div class="field">
+          <label for="details">
+            DETAILS
+            <span>OPTIONAL</span>
+          </label>
+
+          <textarea
+            id="details"
+            name="details"
+            maxlength="240"
+            rows="4"
+            [(ngModel)]="model.details"
+            placeholder="Add notes, context or your objective..."
+          ></textarea>
+
+          <div class="character-count">
+            {{ model.details.length }}/240
+          </div>
+        </div>
+
+        <!-- QUEST TYPE -->
+        <div class="field">
+          <label>QUEST TYPE</label>
+
+          <div class="choice-grid">
+            <button
+              type="button"
+              class="choice-card"
+              [class.selected]="model.mode === 'normal'"
+              (click)="model.mode = 'normal'"
+            >
+              <span class="choice-icon">✦</span>
+              <span class="choice-copy">
+                <strong>NORMAL</strong>
+                <small>
+                  Complete the mission whenever you are ready.
+                </small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              class="choice-card"
+              [class.selected]="model.mode === 'focus'"
+              (click)="model.mode = 'focus'"
+            >
+              <span class="choice-icon focus">◉</span>
+              <span class="choice-copy">
+                <strong>FOCUS</strong>
+                <small>
+                  A timed mission for focused work sessions.
+                </small>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- FOCUS DURATION -->
+        <div class="field focus-field" *ngIf="model.mode === 'focus'">
+          <label>FOCUS DURATION</label>
+
+          <div class="duration-grid">
+            <button
+              type="button"
+              *ngFor="let minute of focusOptions"
+              [class.selected]="model.focusMinutes === minute"
+              (click)="model.focusMinutes = minute"
+            >
+              {{ minute }} MIN
+            </button>
+          </div>
+
+          <p class="field-info">
+            Focus Mode will lock the game while the timer is running.
+          </p>
+        </div>
+
+        <!-- DIFFICULTY -->
+        <div class="field">
+          <label>DIFFICULTY</label>
+
+          <div class="difficulty-grid">
+            <button
+              type="button"
+              class="difficulty-button easy"
+              [class.selected]="model.difficulty === 'easy'"
+              (click)="selectDifficulty('easy')"
+            >
+              <strong>EASY</strong>
+              <span>Light mission</span>
+            </button>
+
+            <button
+              type="button"
+              class="difficulty-button medium"
+              [class.selected]="model.difficulty === 'medium'"
+              (click)="selectDifficulty('medium')"
+            >
+              <strong>MEDIUM</strong>
+              <span>Standard challenge</span>
+            </button>
+
+            <button
+              type="button"
+              class="difficulty-button hard"
+              [class.selected]="model.difficulty === 'hard'"
+              (click)="selectDifficulty('hard')"
+            >
+              <strong>HARD</strong>
+              <span>Major objective</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- QUEST REWARDS -->
+        <div class="reward-preview">
+          <div class="reward-title">
+            <div>
+              <span>✦</span>
+              QUEST REWARDS
+            </div>
+            <small>{{ model.difficulty | uppercase }}</small>
+          </div>
+
+          <div class="reward-values">
+            <div>
+              <span>XP</span>
+              <strong>+{{ rewardPreview.xp }}</strong>
+            </div>
+
+            <div>
+              <span>CREDITS</span>
+              <strong>+{{ rewardPreview.credits }}</strong>
+            </div>
+
+            <div>
+              <span>SHOP XP</span>
+              <strong>+{{ rewardPreview.shopXp }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHEN -->
+        <div class="field when-field">
+          <label>WHEN?</label>
+
+          <div class="date-options">
+            <button
+              type="button"
+              [class.selected]="model.dateMode === 'today'"
+              (click)="model.dateMode = 'today'"
+            >
+              TODAY
+            </button>
+
+            <button
+              type="button"
+              [class.selected]="model.dateMode === 'specific'"
+              (click)="model.dateMode = 'specific'"
+            >
+              SPECIFIC DATE
+            </button>
+          </div>
+
+          <input
+            *ngIf="model.dateMode === 'specific'"
+            class="date-input"
+            type="date"
+            name="dueDate"
+            [min]="minDate"
+            [(ngModel)]="model.dueDate"
+          />
+        </div>
+
+        <!-- FORM ACTIONS -->
+        <div class="form-actions">
+          <button
+            *ngIf="editingId !== null"
+            type="button"
+            class="cancel-button"
+            (click)="cancelEdit()"
+          >
+            CANCEL EDIT
+          </button>
+
+          <button type="submit" class="create-button">
+            <span>✦</span>
+            {{ editingId !== null ? 'UPDATE QUEST' : 'CREATE QUEST' }}
+          </button>
+        </div>
+      </form>
+
+      <div class="success-message" *ngIf="successMessage">
+        ✦ {{ successMessage }}
+      </div>
+    </section>
+
+    <!-- QUEST JOURNAL -->
+    <section class="journal-card">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">QUEST JOURNAL</span>
+          <h2>Mission Log</h2>
+        </div>
+        <span class="section-number">02</span>
+      </div>
+
+      <!-- WEEKLY SUMMARY -->
+      <div class="weekly-summary">
+        <div class="weekly-title">
+          <span>LAST 7 DAYS</span>
+          <strong>{{ weeklySummary.completed }} COMPLETED</strong>
+        </div>
+
+        <div class="weekly-rewards">
+          <div>
+            <small>XP</small>
+            <strong>+{{ weeklySummary.xp }}</strong>
+          </div>
+
+          <div>
+            <small>CREDITS</small>
+            <strong>+{{ weeklySummary.credits }}</strong>
+          </div>
+
+          <div>
+            <small>SHOP XP</small>
+            <strong>+{{ weeklySummary.shopXp }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- JOURNAL TABS -->
+      <div class="journal-tabs">
+        <button
+          type="button"
+          [class.active]="selectedJournal === 'active'"
+          (click)="selectJournal('active')"
+        >
+          ON THE WAY
+          <span>{{ activeQuests.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          [class.active]="selectedJournal === 'fulfilled'"
+          (click)="selectJournal('fulfilled')"
+        >
+          FULFILLED
+          <span>{{ fulfilledQuests.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          [class.active]="selectedJournal === 'wrapped'"
+          (click)="selectJournal('wrapped')"
+        >
+          WRAPPED UP
+          <span>{{ wrappedQuests.length }}</span>
+        </button>
+      </div>
+
+      <!-- EMPTY JOURNAL -->
+      <div class="empty-journal" *ngIf="journalQuests.length === 0">
+        <div class="empty-planet">◌</div>
+
+        <h3 *ngIf="selectedJournal === 'active'">
+          NO ACTIVE MISSIONS
+        </h3>
+
+        <h3 *ngIf="selectedJournal === 'fulfilled'">
+          NOTHING FULFILLED YET
+        </h3>
+
+        <h3 *ngIf="selectedJournal === 'wrapped'">
+          ARCHIVE IS EMPTY
+        </h3>
+
+        <p *ngIf="selectedJournal === 'active'">
+          Create a quest and it will appear here.
+        </p>
+
+        <p *ngIf="selectedJournal === 'fulfilled'">
+          Completed missions will appear here.
+        </p>
+
+        <p *ngIf="selectedJournal === 'wrapped'">
+          Archived missions will be stored here.
+        </p>
+      </div>
+
+      <!-- QUEST LIST -->
+      <div class="journal-list">
+        <article
+          class="journal-quest"
+          *ngFor="let quest of journalQuests"
+          [class.expanded]="expandedQuestId === quest.id"
+        >
+          <div
+            class="quest-click-zone"
+            (click)="toggleQuestDetails(quest.id)"
+          >
+            <div class="journal-icon">
+              {{ quest.icon }}
+            </div>
+
+            <div class="journal-content">
+              <div class="journal-top">
+                <div>
+                  <span
+                    class="journal-difficulty"
+                    [class.easy]="quest.difficulty === 'easy'"
+                    [class.medium]="quest.difficulty === 'medium'"
+                    [class.hard]="quest.difficulty === 'hard'"
+                  >
+                    {{ quest.difficulty | uppercase }}
+                  </span>
+
+                  <span class="journal-mode">
+                    {{ quest.mode | uppercase }}
+                  </span>
+                </div>
+
+                <span class="expand-icon">
+                  {{ expandedQuestId === quest.id ? '−' : '+' }}
+                </span>
+              </div>
+
+              <h3>{{ quest.name }}</h3>
+
+              <div class="journal-meta">
+                <span>✦ {{ quest.reward }} XP</span>
+                <span>◈ {{ quest.credits }}</span>
+                <span>★ {{ quest.shopXp }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- EXPANDED QUEST -->
+          <div
+            class="quest-expanded-content"
+            *ngIf="expandedQuestId === quest.id"
+          >
+            <p class="expanded-description" *ngIf="quest.details">
+              {{ quest.details }}
+            </p>
+
+            <p
+              class="expanded-description muted"
+              *ngIf="!quest.details"
+            >
+              No additional quest details.
+            </p>
+
+            <div class="expanded-info">
+              <span>
+                TYPE:
+                <strong>{{ quest.mode | uppercase }}</strong>
+              </span>
+
+              <span>
+                DATE:
+                <strong>{{ quest.dueDate || 'NONE' }}</strong>
+              </span>
+
+              <span *ngIf="quest.mode === 'focus'">
+                TIMER:
+                <strong>
+                  {{ (quest.durationSeconds || 0) / 60 }} MIN
+                </strong>
+              </span>
+            </div>
+
+            <!-- ACTIVE ACTIONS -->
+            <div
+              class="quest-expanded-actions"
+              *ngIf="selectedJournal === 'active'"
+            >
+              <button
+                type="button"
+                class="edit-action"
+                (click)="editQuest(quest)"
+              >
+                ✎ EDIT
+              </button>
+
+              <button
+                type="button"
+                class="delete-action"
+                (click)="deleteQuest(quest.id)"
+              >
+                × DELETE
+              </button>
+            </div>
+
+            <!-- COMPLETED ACTIONS -->
+            <div
+              class="quest-expanded-actions"
+              *ngIf="selectedJournal === 'fulfilled'"
+            >
+              <button
+                type="button"
+                class="archive-action"
+                (click)="archiveQuest(quest.id)"
+              >
+                ARCHIVE →
+              </button>
+            </div>
+
+            <!-- ARCHIVED ACTIONS -->
+            <div
+              class="quest-expanded-actions"
+              *ngIf="selectedJournal === 'wrapped'"
+            >
+              <button
+                type="button"
+                class="restore-action"
+                (click)="restoreQuest(quest.id)"
+              >
+                ← RESTORE
+              </button>
+
+              <button
+                type="button"
+                class="delete-action"
+                (click)="deleteHistoryQuest(quest.id)"
+              >
+                × DELETE HISTORY
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- VIEW ALL -->
+      <button
+        type="button"
+        class="view-all-button"
+        *ngIf="currentJournalTotal > 5"
+        (click)="toggleShowAll()"
+      >
+        {{ showAll ? 'SHOW LESS' : 'VIEW ALL' }}
+      </button>
+
+      <div class="journal-footer">
+        <span>✦</span>
+        <p>
+          On The Way contains active missions.
+          Fulfilled contains completed missions.
+          Wrapped Up is your mission archive.
+        </p>
+      </div>
+    </section>
+  </main>
+</div>

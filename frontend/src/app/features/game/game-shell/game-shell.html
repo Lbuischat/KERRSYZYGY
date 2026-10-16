@@ -1,14 +1,67 @@
+
 <div class="relative min-h-screen w-full">
 
-  <app-game-world />
+  <!-- GAME WORLD -->
+  <app-game-world
+    (tutorialBoundary)="showTutorialMessage()"
+    (playerAttacked)="onPlayerAttack()"
+    (enemyDefeated)="onEnemyDefeated()"
+  />
 
+  <!-- HUD -->
   <app-hud
     (settingsOpen)="openSettings()"
     (inventoryOpen)="toggleInventory()"
   />
 
-  @if (inventoryOpen) {
-    <app-inventory />
+  <!-- TUTORIAL -->
+  <app-tutorial
+    [player]="gameWorld?.player"
+  />
+
+  <!-- INVENTORY -->
+  @if (inventoryOpen && !focusService.session()) {
+    <app-inventory
+      (closeInventory)="toggleInventory()"
+    />
   }
+
+  <!-- TUTORIAL FEEDBACK -->
+  @if (tutorialMessageVisible && !focusService.session()) {
+    <div
+      class="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center"
+    >
+      <div class="tutorial-message">
+        <div class="tutorial-message-line"></div>
+
+        <div class="tutorial-message-content">
+          <span class="tutorial-message-label">
+            TUTORIAL
+          </span>
+
+          <h2>
+            You can't leave yet.
+          </h2>
+
+          <p>
+            Complete the tutorial before exploring beyond this area.
+          </p>
+        </div>
+
+        <div class="tutorial-message-line"></div>
+      </div>
+    </div>
+  }
+
+  <!-- FOCUS MODE -->
+  <!--
+    Sempre renderizamos o componente, mas ele
+    só mostra a tela quando existe uma sessão ativa.
+
+    Quando o cronômetro termina:
+    session() -> null
+    a tela desaparece automaticamente.
+  -->
+  <app-focus-mode />
 
 </div>

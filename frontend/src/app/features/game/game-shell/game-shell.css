@@ -2,3 +2,80 @@
     width: 100%;
     min-height: 100vh;
 }
+
+.tutorial-message {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    min-width: 420px;
+    max-width: 650px;
+
+    padding: 20px 28px;
+
+    background: rgba(5, 8, 18, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+
+    box-shadow:
+        0 0 30px rgba(0, 0, 0, 0.65),
+        0 0 80px rgba(255, 255, 255, 0.05);
+
+    backdrop-filter: blur(8px);
+
+    animation: tutorialMessageIn 0.25s ease-out;
+}
+
+.tutorial-message-content {
+    text-align: center;
+    flex: 1;
+}
+
+.tutorial-message-label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.tutorial-message h2 {
+    margin: 0;
+
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.tutorial-message p {
+    margin: 5px 0 0;
+
+    font-size: 13px;
+    letter-spacing: 0.02em;
+
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.tutorial-message-line {
+    width: 45px;
+    height: 1px;
+
+    background: rgba(255, 255, 255, 0.35);
+}
+
+@keyframes tutorialMessageIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

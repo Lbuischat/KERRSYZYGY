@@ -1,105 +1,111 @@
 {
-  "hash": "e41a4c08",
-  "configHash": "92e91c07",
-  "lockfileHash": "76ea4016",
-  "browserHash": "f4703d81",
+  "hash": "ad94d955",
+  "configHash": "eb67619f",
+  "lockfileHash": "b21d9f7e",
+  "browserHash": "c862e1f4",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "6479e383",
+      "fileHash": "af99ff80",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "fe96164e",
+      "fileHash": "88a15351",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "17f5c033",
+      "fileHash": "956698dd",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-      "fileHash": "a7e6bd23",
+      "fileHash": "5147656c",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "11800bcc",
+      "fileHash": "9bfa5396",
       "needsInterop": false
     },
     "@angular/platform-server/init": {
       "src": "../../../../../../node_modules/@angular/platform-server/fesm2022/init.mjs",
       "file": "@angular_platform-server_init.js",
-      "fileHash": "c9dc8937",
+      "fileHash": "b8aec9f2",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "f9e08a83",
+      "fileHash": "ac87b0ce",
       "needsInterop": false
     },
     "@angular/ssr": {
       "src": "../../../../../../node_modules/@angular/ssr/fesm2022/ssr.mjs",
       "file": "@angular_ssr.js",
-      "fileHash": "51de8824",
+      "fileHash": "90117a5c",
       "needsInterop": false
     },
     "@angular/ssr/node": {
       "src": "../../../../../../node_modules/@angular/ssr/fesm2022/node.mjs",
       "file": "@angular_ssr_node.js",
-      "fileHash": "1410e834",
+      "fileHash": "a875437b",
       "needsInterop": false
     },
     "express": {
       "src": "../../../../../../node_modules/express/index.js",
       "file": "express.js",
-      "fileHash": "9024197c",
+      "fileHash": "f14a13de",
+      "needsInterop": true
+    },
+    "rxjs": {
+      "src": "../../../../../../node_modules/rxjs/dist/cjs/index.js",
+      "file": "rxjs.js",
+      "fileHash": "49a5264d",
       "needsInterop": true
     }
   },
   "chunks": {
-    "_xhr-chunk-x_ich5Fj": {
-      "file": "_xhr-chunk-x_ich5Fj.js",
+    "_xhr-chunk-BucWBGOi": {
+      "file": "_xhr-chunk-BucWBGOi.js",
       "isDynamicEntry": false
     },
     "bundled-domino-BARLrWmf": {
       "file": "bundled-domino-BARLrWmf.js",
       "isDynamicEntry": false
     },
-    "common-CkCm11Qg": {
-      "file": "common-CkCm11Qg.js",
+    "common-BHXmEbnO": {
+      "file": "common-BHXmEbnO.js",
       "isDynamicEntry": false
     },
-    "core-DI804xF1": {
-      "file": "core-DI804xF1.js",
+    "core-Cf1yj7rw": {
+      "file": "core-Cf1yj7rw.js",
       "isDynamicEntry": false
     },
-    "http-B5uTw26h": {
-      "file": "http-B5uTw26h.js",
+    "http-BImcKN0x": {
+      "file": "http-BImcKN0x.js",
       "isDynamicEntry": false
     },
-    "platform-browser-HE23bS-0": {
-      "file": "platform-browser-HE23bS-0.js",
+    "platform-browser-DGuOGdG3": {
+      "file": "platform-browser-DGuOGdG3.js",
       "isDynamicEntry": false
     },
     "rolldown-runtime-C7HZzL1F": {
       "file": "rolldown-runtime-C7HZzL1F.js",
       "isDynamicEntry": false
     },
-    "router-B0ZBdK1J": {
-      "file": "router-B0ZBdK1J.js",
+    "router-DIBw3QAv": {
+      "file": "router-DIBw3QAv.js",
       "isDynamicEntry": false
     },
-    "ssr-CiuFcoiV": {
-      "file": "ssr-CiuFcoiV.js",
+    "ssr-BBXYrObz": {
+      "file": "ssr-BBXYrObz.js",
       "isDynamicEntry": false
     },
     "xhr2-BpIBBfsG": {

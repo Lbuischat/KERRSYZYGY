@@ -13,21 +13,21 @@ export class Enemy {
 
   constructor() {
 
-  console.log(
-    `🟢 CREATED ENEMY #${this.id}`,
-    'document:',
-    typeof document,
-    'window:',
-    typeof window
-  );
+    console.log(
+      `🟢 CREATED ENEMY #${this.id}`,
+      'document:',
+      typeof document,
+      'window:',
+      typeof window
+    );
 
-  if (typeof document !== 'undefined') {
-    requestAnimationFrame(() => {
-      this.updateVisualPosition();
-    });
+    if (typeof document !== 'undefined') {
+      requestAnimationFrame(() => {
+        this.updateVisualPosition();
+      });
+    }
+
   }
-
-}
 
   @Input() x = 600;
   @Input() y = 400;
@@ -51,6 +51,14 @@ export class Enemy {
   // =========================
 
   speed = 1;
+
+  // =========================
+  // VIEW RANGE
+  // =========================
+
+  viewRange = 300;
+  isPlayerInView = false;
+  attackRange = 70;
 
   // =========================
   // DAMAGE
@@ -214,4 +222,40 @@ export class Enemy {
     }, 600);
   }
 
+
+  public checkPlayerInView(
+    playerX: number,
+    playerY: number,
+    playerSize: number
+  ): boolean {
+
+    const playerCenterX =
+      playerX + playerSize / 2;
+
+    const playerCenterY =
+      playerY + playerSize / 2;
+
+    const enemyCenterX =
+      this.x + this.size / 2;
+
+    const enemyCenterY =
+      this.y + this.size / 2;
+
+    const dx =
+      playerCenterX - enemyCenterX;
+
+    const dy =
+      playerCenterY - enemyCenterY;
+
+    const distance =
+      Math.sqrt(
+        dx * dx +
+        dy * dy
+      );
+
+    this.isPlayerInView =
+      distance <= this.viewRange;
+
+    return this.isPlayerInView;
+  }
 }

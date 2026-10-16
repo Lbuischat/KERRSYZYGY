@@ -5,6 +5,12 @@
   [style.width.px]="size"
   [style.height.px]="size"
 >
+  <div
+    class="enemy-view-range"
+    [style.width.px]="viewRange * 2"
+    [style.height.px]="viewRange * 2"
+  ></div>
+
   <div class="health-container">
     <div
       id="enemy-health-bar"

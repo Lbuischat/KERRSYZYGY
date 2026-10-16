@@ -1,8 +1,12 @@
-<button
-  class="inventory-bnt"
-  aria-label="Open inventory"
-  (mousedown)="$event.stopPropagation()"
-  (click)="openInventory()"
->
-  <img src="icons/Inventory.png" alt="Inventory Button" />
-</button>
+<div class="inventory-control">
+
+  <button
+    class="inventory-button"
+    aria-label="Open inventory"
+    (mousedown)="$event.stopPropagation()"
+    (click)="openInventory()"
+  >
+    <img src="assets/inventory.png" alt="Inventory Button" />
+  </button>
+
+</div>

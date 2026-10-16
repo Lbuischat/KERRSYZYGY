@@ -5,14 +5,14 @@ import {
   PLATFORM_ID,
   afterNextRender,
   inject,
-  signal
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-
+import { LanguageService } from '../../../services/language/language.service';
 
 interface BackgroundStar {
   left: number;
@@ -26,10 +26,9 @@ interface BackgroundStar {
   selector: 'app-login',
   imports: [RouterLink, FormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrl: './login.css',
 })
 export class Login implements AfterViewInit, OnDestroy {
-
   // =========================================================
   // DEPENDENCIES
   // =========================================================
@@ -85,16 +84,18 @@ export class Login implements AfterViewInit, OnDestroy {
   // CONSTRUCTOR
   // =========================================================
 
-  constructor() {
+  constructor(public readonly languageService: LanguageService) {
     this.createBackgroundStars();
 
     // Everything below is browser-only
+
     afterNextRender(() => {
       if (!isPlatformBrowser(this.platformId)) {
         return;
       }
 
       // Let the visual entrance happen before starting the continuous motion
+
       setTimeout(() => {
         this.startAnimation();
       }, 3_000);
@@ -137,32 +138,25 @@ export class Login implements AfterViewInit, OnDestroy {
 
     this.isLoggingIn = true;
 
-    this.http.post(
-      'http://localhost:3000/users/login',
-      {
+    this.http
+      .post('http://localhost:3000/users/login', {
         email: this.email,
-        password: this.password
-      }
-    )
+        password: this.password,
+      })
       .subscribe({
         next: (user) => {
-
-          console.log(
-            '✅ LOGIN SUCCESSFUL:',
-            user
-          );
+          console.log('✅ LOGIN SUCCESSFUL:', user);
 
           this.isLoggingIn = false;
 
           this.router.navigate(['/start']);
-
         },
 
         error: (error) => {
           console.error('❌ LOGIN FAILED:', error);
           this.isLoggingIn = false;
           this.errorMessage = 'Invalid email or password.';
-        }
+        },
       });
   }
 
@@ -179,29 +173,22 @@ export class Login implements AfterViewInit, OnDestroy {
       callback: (response: any) => {
         console.log('🎉 GOOGLE LOGIN SUCCESS!');
 
-        this.http.post(
-          'http://localhost:3000/users/google',
-          { credential: response.credential }
-        )
+        this.http
+          .post('http://localhost:3000/users/google', { credential: response.credential })
           .subscribe({
             next: (user) => {
-
-              console.log(
-                '✅ LOGIN SUCCESSFUL:',
-                user
-              );
+              console.log('✅ LOGIN SUCCESSFUL:', user);
 
               this.isLoggingIn = false;
 
               this.router.navigate(['/start']);
-
             },
 
             error: (error) => {
               console.error('❌ BACKEND REJECTED GOOGLE TOKEN:', error);
-            }
+            },
           });
-      }
+      },
     });
 
     const button = document.getElementById('google-button');
@@ -211,14 +198,11 @@ export class Login implements AfterViewInit, OnDestroy {
       return;
     }
 
-    google.accounts.id.renderButton(
-      button,
-      {
-        theme: 'outline',
-        size: 'large',
-        text: 'continue_with'
-      }
-    );
+    google.accounts.id.renderButton(button, {
+      theme: 'outline',
+      size: 'large',
+      text: 'continue_with',
+    });
   }
 
   // =========================================================
@@ -235,7 +219,7 @@ export class Login implements AfterViewInit, OnDestroy {
         size: Math.random() < 0.9 ? 1 : 2,
         opacity: 0.08 + Math.random() * 0.17,
         // Login begins with the stars, so their delays are much earlier than on the title screen
-        delay: Math.random() * 2.5
+        delay: Math.random() * 2.5,
       });
     }
   }
@@ -252,9 +236,7 @@ export class Login implements AfterViewInit, OnDestroy {
 
     this.updatePlanetPosition();
 
-    this.animationFrameId = requestAnimationFrame(
-      (time) => this.animate(time)
-    );
+    this.animationFrameId = requestAnimationFrame((time) => this.animate(time));
   }
 
   // =========================================================
@@ -266,22 +248,18 @@ export class Login implements AfterViewInit, OnDestroy {
     this.previousTime = time;
 
     // Planet orbit
-    this.planetAngle +=
-      (Math.PI * 2) / this.planetPeriod * deltaTime;
+    this.planetAngle += ((Math.PI * 2) / this.planetPeriod) * deltaTime;
 
     this.updatePlanetPosition();
 
     // Moon orbit
-    this.moonAngle +=
-      (Math.PI * 2) / this.moonPeriod * deltaTime;
+    this.moonAngle += ((Math.PI * 2) / this.moonPeriod) * deltaTime;
 
     this.moonX.set(17 * Math.cos(this.moonAngle));
     this.moonY.set(11 * Math.sin(this.moonAngle));
 
     // Continue forever
-    this.animationFrameId = requestAnimationFrame(
-      (nextTime) => this.animate(nextTime)
-    );
+    this.animationFrameId = requestAnimationFrame((nextTime) => this.animate(nextTime));
   }
 
   // =========================================================
@@ -289,15 +267,9 @@ export class Login implements AfterViewInit, OnDestroy {
   // =========================================================
 
   private updatePlanetPosition(): void {
-    this.planetX.set(
-      this.orbitCenterX +
-      this.orbitRadiusX * Math.cos(this.planetAngle)
-    );
+    this.planetX.set(this.orbitCenterX + this.orbitRadiusX * Math.cos(this.planetAngle));
 
-    this.planetY.set(
-      this.orbitCenterY +
-      this.orbitRadiusY * Math.sin(this.planetAngle)
-    );
+    this.planetY.set(this.orbitCenterY + this.orbitRadiusY * Math.sin(this.planetAngle));
   }
 
   // =========================================================

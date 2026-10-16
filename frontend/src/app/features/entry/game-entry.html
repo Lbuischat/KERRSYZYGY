@@ -15,3 +15,64 @@
     </div>
 
 </div>
+
+<div class="language-container">
+
+    <button
+        type="button"
+        class="language-button"
+        (click)="toggleLanguages()">
+
+        🌐 {{ currentLanguageLabel() }}
+
+    </button>
+
+    @if (showLanguages()) {
+
+        <div class="language-menu">
+
+            <button
+                type="button"
+                (click)="changeLanguage('en')">
+
+                {{ languageService.t().language.english }}
+
+            </button>
+
+            <button
+                type="button"
+                (click)="changeLanguage('pt')">
+
+                {{ languageService.t().language.portuguese }}
+
+            </button>
+
+            <button
+                type="button"
+                (click)="changeLanguage('es')">
+
+                {{ languageService.t().language.spanish }}
+
+            </button>
+
+            <button
+                type="button"
+                (click)="changeLanguage('fr')">
+
+                {{ languageService.t().language.french }}
+
+            </button>
+
+            <button
+                type="button"
+                (click)="changeLanguage('de')">
+
+                {{ languageService.t().language.german }}
+
+            </button>
+
+        </div>
+
+    }
+
+</div>

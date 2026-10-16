@@ -1,44 +1,167 @@
-import { Component, HostListener } from '@angular/core';
+
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  ViewChild,
+  effect,
+  inject
+} from '@angular/core';
+
 import { Router } from '@angular/router';
 
 import { Hud } from '../hud/hud';
 import { GameWorld } from '../game-world/game-world';
 import { Inventory } from '../hud/inventory/inventory';
+import { tutorial } from '../tutorial/tutorial';
+
+import { FocusMode } from '../../tasks/focus-mode/focus-mode';
+
+import {
+  FocusSessionService
+} from '../../../services/tasks/focus-session';
 
 @Component({
+  selector: 'app-game-shell',
+  standalone: true,
   imports: [
     Hud,
     GameWorld,
     Inventory,
+    tutorial,
+    FocusMode
   ],
-  selector: 'app-game-shell',
-  styleUrl: './game-shell.css',
   templateUrl: './game-shell.html',
+  styleUrl: './game-shell.css'
 })
-export class GameShell {
+export class GameShell implements OnDestroy {
+  private readonly router = inject(Router);
+
+  readonly focusService = inject(FocusSessionService);
+
+  @ViewChild(GameWorld)
+  gameWorld!: GameWorld;
+
+  @ViewChild(tutorial)
+  tutorialCmp!: tutorial;
 
   inventoryOpen = false;
+  tutorialMessageVisible = false;
 
-  constructor(private router: Router) {}
+  private tutorialMessageTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    // Quando o Focus começar, fecha o inventário.
+    effect(() => {
+      const focus = this.focusService.session();
+
+      if (focus) {
+        this.inventoryOpen = false;
+        this.tutorialMessageVisible = false;
+      }
+    });
+  }
+
+  // =========================================
+  // SETTINGS
+  // =========================================
 
   openSettings(): void {
-    this.router.navigate(['/settings']);
+    if (this.focusService.active) return;
+
+    void this.router.navigate(['/settings']);
   }
+
+  // =========================================
+  // INVENTORY
+  // =========================================
 
   toggleInventory(): void {
-    this.inventoryOpen = !this.inventoryOpen;
+    if (this.focusService.active) return;
 
-    console.log('🎒 INVENTORY OPEN:', this.inventoryOpen);
+    this.inventoryOpen = !this.inventoryOpen;
   }
 
-  @HostListener('document:keydown', ['$event'])
-  onKeyDown(event: Event): void {
-    const keyboardEvent = event as KeyboardEvent;
+  // =========================================
+  // TUTORIAL
+  // =========================================
 
-    if (
-      keyboardEvent.key.toLowerCase() === 'i'
-    ) {
+  showTutorialMessage(): void {
+    if (this.focusService.active) return;
+
+    this.tutorialMessageVisible = true;
+
+    if (this.tutorialMessageTimer) {
+      clearTimeout(this.tutorialMessageTimer);
+    }
+
+    this.tutorialMessageTimer = setTimeout(() => {
+      this.tutorialMessageVisible = false;
+    }, 2500);
+  }
+
+  onPlayerAttack(): void {
+    if (this.focusService.active) return;
+    if (!this.tutorialCmp) return;
+
+    this.tutorialCmp.onBasicAttack();
+  }
+
+  onEnemyDefeated(): void {
+    if (this.focusService.active) return;
+    if (!this.tutorialCmp) return;
+
+    this.tutorialCmp.onTutorialEnemyDefeated();
+  }
+
+  // =========================================
+  // KEYBOARD
+  // =========================================
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    const key = event.key.toLowerCase();
+
+    if (this.focusService.active) {
+      // Não bloqueia atualização da página.
+      // O cronômetro é salvo pelo FocusSessionService.
+      if (
+        event.key === 'F5' ||
+        (event.ctrlKey && key === 'r')
+      ) {
+        return;
+      }
+
+      const blockedKeys = [
+        'w', 'a', 's', 'd',
+        'i', 'q', 'e', 'f',
+        'shift', ' ',
+        'arrowup',
+        'arrowdown',
+        'arrowleft',
+        'arrowright',
+        'escape'
+      ];
+
+      if (blockedKeys.includes(key)) {
+        event.preventDefault();
+      }
+
+      return;
+    }
+
+    if (key === 'i') {
       this.toggleInventory();
+    }
+  }
+
+  // =========================================
+  // CLEANUP
+  // =========================================
+
+  ngOnDestroy(): void {
+    if (this.tutorialMessageTimer) {
+      clearTimeout(this.tutorialMessageTimer);
     }
   }
 }

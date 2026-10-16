@@ -1,0 +1,1242 @@
+
+/* =========================================
+   BASE
+========================================= */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #070812;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button, input, textarea {
+  font: inherit;
+}
+
+:host::-webkit-scrollbar {
+  width: 8px;
+}
+
+:host::-webkit-scrollbar-track {
+  background: #070812;
+}
+
+:host::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(126, 115, 220, .35);
+}
+
+:host::-webkit-scrollbar-thumb:hover {
+  background: rgba(126, 115, 220, .55);
+}
+
+/* =========================================
+   PAGE AND BACKGROUND
+========================================= */
+
+.new-quest-page {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  padding: 32px 40px 70px;
+  overflow-x: hidden;
+  color: #f5f6ff;
+
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(102, 82, 220, .22),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 25%,
+      rgba(51, 125, 225, .16),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(88, 54, 180, .1),
+      transparent 35%
+    ),
+    linear-gradient(
+      180deg,
+      #070812,
+      #0a0c19 55%,
+      #05060c
+    );
+}
+
+.stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.stars-one {
+  opacity: .2;
+  background-image:
+    radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 75px 75px;
+}
+
+.stars-two {
+  opacity: .12;
+  background-image:
+    radial-gradient(circle, #b8c1ff 1px, transparent 1px);
+  background-size: 120px 120px;
+  background-position: 35px 45px;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.page-header {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 20px;
+
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto 30px;
+}
+
+.back-button {
+  justify-self: start;
+  padding: 10px 15px;
+
+  border: 1px solid rgba(165, 174, 255, .2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .04);
+  color: rgba(235, 237, 255, .75);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+
+  transition:
+    transform .2s,
+    border-color .2s,
+    background .2s,
+    color .2s;
+}
+
+.back-button:hover {
+  transform: translateX(-3px);
+  border-color: rgba(165, 174, 255, .45);
+  background: rgba(255, 255, 255, .065);
+  color: white;
+}
+
+.header-title {
+  min-width: 0;
+  text-align: center;
+}
+
+.header-title > span {
+  display: block;
+  margin-bottom: 6px;
+  color: #8e95d8;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.header-title h1 {
+  margin: 0;
+  color: white;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  letter-spacing: 6px;
+}
+
+.header-title p {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, .4);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.header-decoration {
+  justify-self: end;
+  color: #9a8dff;
+  font-size: 30px;
+  text-shadow: 0 0 20px rgba(154, 141, 255, .7);
+}
+
+/* =========================================
+   LAYOUT
+========================================= */
+
+.quest-layout {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(360px, .9fr);
+  align-items: start;
+  gap: 24px;
+
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.creator-card,
+.journal-card {
+  position: relative;
+  min-width: 0;
+  padding: 26px;
+
+  border: 1px solid rgba(160, 170, 255, .14);
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 23, 48, .96),
+      rgba(8, 10, 24, .97)
+    );
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, .4),
+    inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+.creator-card::before,
+.journal-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(107, 93, 230, .08),
+      transparent 35%
+    );
+
+  pointer-events: none;
+}
+
+/* =========================================
+   SECTION HEADING
+========================================= */
+
+.section-heading {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: #747cbf;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: white;
+  font-size: 19px;
+}
+
+.section-number {
+  color: rgba(180, 186, 255, .3);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* =========================================
+   FORM FIELDS
+========================================= */
+
+form {
+  position: relative;
+  z-index: 1;
+}
+
+.field {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.field > label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+
+  color: rgba(240, 241, 255, .75);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+.field > label span {
+  color: rgba(255, 255, 255, .3);
+  font-size: 7px;
+}
+
+input,
+textarea {
+  display: block;
+  width: 100%;
+  border: 1px solid rgba(160, 170, 255, .14);
+  outline: none;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, .035);
+  color: white;
+
+  transition:
+    border-color .18s,
+    box-shadow .18s,
+    background .18s;
+}
+
+input {
+  height: 46px;
+  padding: 0 14px;
+}
+
+textarea {
+  min-height: 110px;
+  padding: 13px 14px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #6f67d7;
+  background: rgba(255, 255, 255, .045);
+  box-shadow: 0 0 0 3px rgba(111, 103, 215, .1);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, .25);
+}
+
+.character-count {
+  margin-top: 5px;
+  color: rgba(255, 255, 255, .25);
+  font-size: 8px;
+  text-align: right;
+}
+
+.field-error {
+  display: block;
+  margin-top: 6px;
+  color: #ff89a6;
+  font-size: 9px;
+}
+
+/* =========================================
+   NORMAL / FOCUS
+========================================= */
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.choice-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 85px;
+  padding: 14px;
+
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .025);
+  color: white;
+
+  text-align: left;
+  cursor: pointer;
+
+  transition: transform .18s, border-color .18s, background .18s;
+}
+
+.choice-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(145, 155, 255, .28);
+}
+
+.choice-card.selected {
+  border-color: #7469dc;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(104, 89, 230, .16),
+      rgba(54, 109, 200, .08)
+    );
+}
+
+.choice-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+
+  border-radius: 10px;
+  background: rgba(120, 104, 255, .1);
+  color: #aaa0ff;
+  font-size: 19px;
+}
+
+.choice-icon.focus {
+  color: #75d1ff;
+}
+
+.choice-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+}
+
+.choice-copy strong {
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.choice-copy small {
+  color: rgba(255, 255, 255, .36);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+/* =========================================
+   FOCUS DURATION
+========================================= */
+
+.focus-field {
+  padding: 14px;
+  border: 1px solid rgba(83, 176, 255, .14);
+  border-radius: 12px;
+  background: rgba(63, 132, 200, .04);
+}
+
+.duration-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.duration-grid button {
+  min-height: 36px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .03);
+  color: rgba(255, 255, 255, .5);
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+
+.duration-grid button:hover {
+  border-color: rgba(75, 167, 232, .3);
+}
+
+.duration-grid button.selected {
+  border-color: #4ba7e8;
+  background: rgba(75, 167, 232, .12);
+  color: white;
+}
+
+.field-info {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, .3);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   DIFFICULTY
+========================================= */
+
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.difficulty-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+
+  min-height: 82px;
+  height: auto;
+  padding: 14px 12px;
+
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .025);
+  color: white;
+
+  text-align: left;
+  cursor: pointer;
+
+  transition: transform .16s, border-color .16s, background .16s;
+}
+
+.difficulty-button:hover {
+  transform: translateY(-2px);
+}
+
+.difficulty-button strong {
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.difficulty-button span {
+  color: rgba(255, 255, 255, .3);
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.difficulty-button.easy.selected {
+  border-color: rgba(90, 245, 170, .55);
+  background: rgba(90, 245, 170, .07);
+}
+
+.difficulty-button.medium.selected {
+  border-color: rgba(255, 205, 85, .55);
+  background: rgba(255, 205, 85, .07);
+}
+
+.difficulty-button.hard.selected {
+  border-color: rgba(255, 95, 140, .55);
+  background: rgba(255, 95, 140, .07);
+}
+
+/* Esconde recompensas antigas dentro dos cards. */
+.difficulty-rewards {
+  display: none !important;
+}
+
+/* =========================================
+   QUEST REWARDS
+========================================= */
+
+.reward-preview {
+  margin-top: 34px;
+  margin-bottom: 26px;
+  padding: 18px;
+
+  border: 1px solid rgba(145, 130, 255, .32);
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(101, 88, 222, .08),
+      rgba(45, 100, 170, .04)
+    );
+}
+
+.reward-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.reward-title > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.reward-title > div span {
+  color: #aaa0ff;
+}
+
+.reward-title small {
+  color: rgba(255, 255, 255, .35);
+  font-size: 8px;
+}
+
+.reward-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reward-values > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .035);
+}
+
+.reward-values span {
+  color: rgba(255, 255, 255, .3);
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.reward-values strong {
+  color: white;
+  font-size: 13px;
+}
+
+/* =========================================
+   DATE
+========================================= */
+
+.when-field {
+  padding-top: 2px;
+}
+
+.date-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+
+.date-options button {
+  min-height: 40px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .025);
+  color: rgba(255, 255, 255, .5);
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .7px;
+  cursor: pointer;
+
+  transition: border-color .16s, background .16s, color .16s;
+}
+
+.date-options button:hover {
+  border-color: rgba(125, 115, 225, .28);
+}
+
+.date-options button.selected {
+  border-color: #6f64d6;
+  background: rgba(111, 100, 214, .12);
+  color: white;
+}
+
+.date-input {
+  margin-top: 8px;
+}
+
+/* =========================================
+   FORM ACTIONS
+========================================= */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.create-button,
+.cancel-button {
+  min-height: 43px;
+  padding: 0 20px;
+  border-radius: 9px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 1px solid #7b70e3;
+  background: linear-gradient(135deg, #6658df, #426cd1);
+  color: white;
+
+  transition: transform .16s, filter .16s;
+}
+
+.create-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+
+.cancel-button {
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .03);
+  color: rgba(255, 255, 255, .55);
+}
+
+.success-message {
+  position: relative;
+  z-index: 2;
+  margin-top: 14px;
+  padding: 10px;
+
+  border: 1px solid rgba(90, 255, 170, .18);
+  border-radius: 8px;
+  background: rgba(90, 255, 170, .05);
+  color: #95ffc9;
+  font-size: 9px;
+}
+
+/* =========================================
+   WEEKLY SUMMARY
+========================================= */
+
+.weekly-summary {
+  position: relative;
+  z-index: 1;
+  padding: 13px;
+  margin-bottom: 14px;
+
+  border: 1px solid rgba(145, 150, 255, .14);
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(105, 90, 225, .08),
+      rgba(60, 115, 190, .04)
+    );
+}
+
+.weekly-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.weekly-title span,
+.weekly-title strong {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.weekly-title span {
+  color: #777eba;
+}
+
+.weekly-title strong {
+  color: rgba(255, 255, 255, .68);
+}
+
+.weekly-rewards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.weekly-rewards > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.weekly-rewards small {
+  color: rgba(255, 255, 255, .28);
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.weekly-rewards strong {
+  font-size: 10px;
+}
+
+/* =========================================
+   JOURNAL TABS
+========================================= */
+
+.journal-tabs {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+
+  margin-bottom: 15px;
+  padding: 5px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.journal-tabs button {
+  min-width: 0;
+  min-height: 38px;
+  padding: 5px;
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+  color: rgba(255, 255, 255, .38);
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+
+  transition: background .16s, color .16s;
+}
+
+.journal-tabs button.active {
+  background: rgba(110, 95, 225, .14);
+  color: white;
+  box-shadow:
+    inset 0 0 0 1px rgba(140, 130, 255, .18);
+}
+
+.journal-tabs span {
+  margin-left: 3px;
+  opacity: .55;
+}
+
+/* =========================================
+   EMPTY JOURNAL
+========================================= */
+
+.empty-journal {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 250px;
+  padding: 20px;
+  text-align: center;
+}
+
+.empty-planet {
+  margin-bottom: 10px;
+  color: #8f83ec;
+  font-size: 42px;
+  text-shadow: 0 0 20px rgba(143, 131, 236, .3);
+}
+
+.empty-journal h3 {
+  margin: 0 0 6px;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.empty-journal p {
+  margin: 0;
+  max-width: 230px;
+  color: rgba(255, 255, 255, .32);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   JOURNAL LIST
+========================================= */
+
+.journal-list {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.journal-quest {
+  overflow: hidden;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .02);
+  transition: border-color .16s, background .16s;
+}
+
+.journal-quest:hover {
+  border-color: rgba(130, 140, 240, .17);
+}
+
+.journal-quest.expanded {
+  border-color: rgba(125, 110, 230, .3);
+  background: rgba(100, 85, 210, .05);
+}
+
+.quest-click-zone {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.journal-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(150, 160, 255, .12);
+  border-radius: 9px;
+
+  background: rgba(110, 95, 225, .08);
+  color: #aaa0ff;
+}
+
+.journal-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.journal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.journal-difficulty,
+.journal-mode {
+  display: inline-block;
+  margin-right: 5px;
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.journal-difficulty.easy {
+  color: #78f6b5;
+}
+
+.journal-difficulty.medium {
+  color: #ffd76c;
+}
+
+.journal-difficulty.hard {
+  color: #ff88a5;
+}
+
+.journal-mode {
+  color: #6f77b0;
+}
+
+.expand-icon {
+  flex: 0 0 auto;
+  color: #777fab;
+  font-size: 15px;
+}
+
+.journal-content h3 {
+  margin: 6px 0;
+  overflow: hidden;
+  color: white;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.journal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: rgba(205, 210, 255, .48);
+  font-size: 7px;
+}
+
+/* =========================================
+   EXPANDED QUEST
+========================================= */
+
+.quest-expanded-content {
+  padding: 0 12px 13px 61px;
+  border-top: 1px solid rgba(255, 255, 255, .035);
+}
+
+.expanded-description {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+  color: rgba(255, 255, 255, .45);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.expanded-description.muted {
+  color: rgba(255, 255, 255, .25);
+  font-style: italic;
+}
+
+.expanded-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.expanded-info span {
+  padding: 5px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .03);
+  color: rgba(255, 255, 255, .32);
+  font-size: 6px;
+}
+
+.expanded-info strong {
+  color: rgba(255, 255, 255, .7);
+}
+
+/* =========================================
+   QUEST ACTIONS
+========================================= */
+
+.quest-expanded-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quest-expanded-actions button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .025);
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+
+  transition: transform .15s, border-color .15s;
+}
+
+.quest-expanded-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.edit-action {
+  border: 1px solid rgba(130, 145, 255, .18);
+  color: #aab4ff;
+}
+
+.delete-action {
+  border: 1px solid rgba(255, 95, 135, .18);
+  color: #ff91aa;
+}
+
+.archive-action {
+  border: 1px solid rgba(140, 130, 255, .18);
+  color: #b8b0ff;
+}
+
+.restore-action {
+  border: 1px solid rgba(80, 195, 255, .18);
+  color: #8ed8ff;
+}
+
+/* =========================================
+   VIEW ALL
+========================================= */
+
+.view-all-button {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  min-height: 36px;
+  margin-top: 10px;
+
+  border: 1px solid rgba(150, 160, 255, .1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .02);
+  color: rgba(255, 255, 255, .5);
+
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* =========================================
+   JOURNAL FOOTER
+========================================= */
+
+.journal-footer {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  margin-top: 17px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(255, 255, 255, .05);
+}
+
+.journal-footer span {
+  color: #9086f5;
+}
+
+.journal-footer p {
+  margin: 0;
+  color: rgba(255, 255, 255, .28);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+  .quest-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 650px) {
+  .new-quest-page {
+    padding: 20px 12px 50px;
+  }
+
+  .page-header {
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+  }
+
+  .header-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .header-decoration {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .header-title h1 {
+    font-size: 28px;
+    letter-spacing: 4px;
+  }
+
+  .creator-card,
+  .journal-card {
+    padding: 18px;
+  }
+
+  .choice-grid,
+  .difficulty-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .duration-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .journal-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .create-button,
+  .cancel-button {
+    width: 100%;
+  }
+
+  .quest-expanded-content {
+    padding: 0 12px 12px;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 420px) {
+  .reward-values,
+  .weekly-rewards {
+    grid-template-columns: 1fr;
+  }
+
+  .duration-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .date-options {
+    grid-template-columns: 1fr;
+  }
+
+  .weekly-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .back-button,
+  .choice-card,
+  .difficulty-button,
+  .duration-grid button,
+  .date-options button,
+  .create-button,
+  .journal-quest,
+  .quest-expanded-actions button {
+    transition: none;
+  }
+}

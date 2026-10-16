@@ -1,0 +1,73 @@
+
+<ng-container *ngIf="focusService.session() as focus">
+
+  <div
+    class="focus-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Focus Mode"
+    (click)="blockMouse($event)"
+  >
+
+    <div class="focus-stars"></div>
+
+    <section class="focus-card">
+
+      <div class="focus-symbol">
+        ✦
+      </div>
+
+      <div class="focus-eyebrow">
+        FOCUS MODE
+      </div>
+
+      <h1>
+        {{ focus.questTitle }}
+      </h1>
+
+      <p class="focus-description">
+        Stay focused until the session ends.
+        Your quest will complete automatically.
+      </p>
+
+      <!-- TIMER -->
+      <div class="focus-clock">
+        <span>{{ minutes }}</span>
+        <span class="clock-separator">:</span>
+        <span>{{ seconds }}</span>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="focus-progress-track">
+        <div
+          class="focus-progress-fill"
+          [style.width.%]="progress"
+        ></div>
+      </div>
+
+      <div class="focus-progress-labels">
+        <span>SESSION ACTIVE</span>
+        <span>{{ progress | number:'1.0-0' }}%</span>
+      </div>
+
+      <!-- STATUS -->
+      <div class="focus-status">
+        <span class="focus-status-icon">◉</span>
+
+        <div>
+          <strong>GAME CONTROLS LOCKED</strong>
+          <small>
+            The mission completes automatically
+            when the timer reaches zero.
+          </small>
+        </div>
+      </div>
+
+      <p class="focus-footer">
+        Your timer continues even if you refresh the page.
+      </p>
+
+    </section>
+  </div>
+
+</ng-container>

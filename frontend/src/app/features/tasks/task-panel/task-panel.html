@@ -1,26 +1,269 @@
-<div class="w-64 rounded-2xl bg-amber-900 p-4">
 
-  <h2 class="mb-3 font-bold text-white">
-    Tasks
-  </h2>
+<section class="quest-panel" aria-label="Quest panel">
 
-  <div class="space-y-2">
+  <!-- HEADER -->
+  <header class="quest-topbar">
+    <div>
+      <span class="quest-kicker">MISSION CONTROL</span>
+      <h2>QUESTS</h2>
+    </div>
 
-    <button class="flex w-full items-center justify-between rounded-xl bg-black/20 p-2 text-left text-white">
-      <span>💧 Drink Water</span>
-      <span class="text-sm">+20</span>
-    </button>
+    <div
+      class="daily-count"
+      [class.daily-limit]="dailyCompletedCount >= maxDaily"
+    >
+      <span>DAILY</span>
+      <strong>{{ dailyCompletedCount }}/{{ maxDaily }}</strong>
+    </div>
+  </header>
 
-    <button class="flex w-full items-center justify-between rounded-xl bg-black/20 p-2 text-left text-white">
-      <span>📚 Study</span>
-      <span class="text-sm">+100</span>
-    </button>
+  <!-- QUEST REWARD FEEDBACK -->
+  <div
+    class="reward-toast"
+    *ngIf="feedback"
+    role="status"
+  >
+    <div class="toast-star">✦</div>
 
-    <button class="flex w-full items-center justify-between rounded-xl bg-black/20 p-2 text-left text-white">
-      <span>🏃 Exercise</span>
-      <span class="text-sm">+50</span>
-    </button>
+    <div class="toast-copy">
+      <strong>{{ feedback.title }}</strong>
 
+      <div class="toast-rewards">
+        <span>+{{ feedback.xp }} XP</span>
+        <span>+{{ feedback.credits }} Credits</span>
+        <span>+{{ feedback.shopXp }} Shop XP</span>
+      </div>
+    </div>
   </div>
 
-</div>
+  <!-- DAILY COMPLETED -->
+  <div
+    class="daily-limit-message"
+    *ngIf="dailyCompletedCount >= maxDaily"
+  >
+    <span class="limit-star">✓</span>
+
+    <div>
+      <strong>COMPLETED TODAY</strong>
+      <small>
+        You completed all 10 daily missions.
+        New missions arrive tomorrow.
+      </small>
+    </div>
+  </div>
+
+  <!-- DAILY QUEST -->
+  <article
+    class="quest-card daily-card"
+    *ngIf="dailyQuest as daily"
+  >
+    <div class="quest-card-orbit"></div>
+
+    <div class="quest-header-row">
+      <div class="quest-tags">
+        <span class="quest-badge daily">
+          DAILY QUEST
+        </span>
+      </div>
+
+      <span
+        class="quest-difficulty"
+        [attr.data-difficulty]="daily.difficulty"
+      >
+        {{ difficultyLabel(daily.difficulty) }}
+      </span>
+    </div>
+
+    <div class="quest-title-row">
+      <span class="quest-symbol">{{ daily.icon }}</span>
+
+      <div>
+        <h3>{{ daily.name }}</h3>
+        <p>{{ daily.details }}</p>
+      </div>
+    </div>
+
+    <div class="reward-strip">
+      <span>✦ +{{ daily.reward }} XP</span>
+      <span>◈ +{{ daily.credits }} Credits</span>
+      <span>✧ +{{ daily.shopXp }} Shop XP</span>
+    </div>
+
+    <div class="quest-actions">
+      <button
+        type="button"
+        class="quest-action primary"
+        [disabled]="focusActive"
+        (click)="completeDaily()"
+      >
+        COMPLETE
+      </button>
+
+      <button
+        type="button"
+        class="quest-action secondary"
+        [disabled]="
+          focusActive ||
+          dailyChanges >= maxDailyChanges ||
+          dailyCompletedCount >= 9
+        "
+        (click)="changeDailyQuest()"
+      >
+        ↻ CHANGE {{ dailyChanges }}/{{ maxDailyChanges }}
+      </button>
+    </div>
+  </article>
+
+  <!-- PLAYER QUESTS -->
+  <div class="player-section-title">
+    <span>YOUR QUESTS</span>
+    <i></i>
+  </div>
+
+  <div class="player-quest-layout">
+    <ng-container
+      *ngFor="let quest of playerSlots; let slot = index"
+    >
+      <!-- ACTIVE PLAYER QUEST -->
+      <article
+        class="quest-card player-card"
+        *ngIf="quest; else emptyQuest"
+      >
+        <div class="quest-header-row">
+          <div class="quest-tags">
+            <span class="quest-badge player">PLAYER</span>
+
+            <span
+              class="quest-badge focus"
+              *ngIf="quest.mode === 'focus'"
+            >
+              FOCUS
+            </span>
+          </div>
+
+          <span
+            class="quest-difficulty"
+            [attr.data-difficulty]="quest.difficulty"
+          >
+            {{ difficultyLabel(quest.difficulty) }}
+          </span>
+        </div>
+
+        <div class="quest-title-row">
+          <span class="quest-symbol">{{ quest.icon }}</span>
+
+          <div>
+            <h4>{{ quest.name }}</h4>
+            <p>{{ quest.details || 'Personal mission.' }}</p>
+          </div>
+        </div>
+
+        <!-- FOCUS DURATION -->
+        <div
+          class="focus-duration"
+          *ngIf="quest.mode === 'focus'"
+        >
+          <span>FOCUS DURATION</span>
+
+          <strong>
+            {{ (quest.durationSeconds || 120) / 60 | number:'1.0-0' }}
+            MIN
+          </strong>
+        </div>
+
+        <!-- REWARDS -->
+        <div class="reward-strip">
+          <span>✦ +{{ quest.reward }} XP</span>
+          <span>◈ +{{ quest.credits }} Credits</span>
+          <span>✧ +{{ quest.shopXp }} Shop XP</span>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="quest-actions">
+          <button
+            type="button"
+            class="quest-action primary"
+            *ngIf="quest.mode === 'normal'"
+            [disabled]="focusActive"
+            (click)="completePlayerQuest(quest)"
+          >
+            COMPLETE
+          </button>
+
+          <button
+            type="button"
+            class="quest-action primary"
+            *ngIf="
+              quest.mode === 'focus' &&
+              activeFocusQuestId !== quest.id
+            "
+            [disabled]="focusActive"
+            (click)="startFocusQuest(quest)"
+          >
+            START FOCUS
+          </button>
+
+          <button
+            type="button"
+            class="quest-action focus-state"
+            *ngIf="
+              quest.mode === 'focus' &&
+              activeFocusQuestId === quest.id
+            "
+            disabled
+          >
+            FOCUS ACTIVE
+          </button>
+
+          <button
+            type="button"
+            class="quest-action secondary icon-action"
+            [disabled]="focusActive"
+            (click)="showAnother(slot)"
+            aria-label="Show another quest"
+          >
+            ↻
+          </button>
+        </div>
+      </article>
+
+      <!-- EMPTY SLOT -->
+      <ng-template #emptyQuest>
+        <article class="quest-card empty-card">
+          <div class="empty-star-ring">
+            <span>＋</span>
+          </div>
+
+          <h4>NO QUEST</h4>
+
+          <p>Create a personal mission.</p>
+
+          <button
+            type="button"
+            class="mini-create"
+            [disabled]="focusActive"
+            (click)="openNewQuest()"
+          >
+            + NEW QUEST
+          </button>
+        </article>
+      </ng-template>
+    </ng-container>
+  </div>
+
+  <!-- JOURNAL -->
+  <button
+    type="button"
+    class="journal-button"
+    [disabled]="focusActive"
+    (click)="openNewQuest()"
+  >
+    <span class="journal-icon">☰</span>
+
+    <span class="journal-copy">
+      <strong>MISSION JOURNAL</strong>
+      <small>Create, review and manage quests</small>
+    </span>
+  </button>
+
+</section>

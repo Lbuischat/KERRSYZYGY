@@ -2,27 +2,40 @@
   display: block;
 }
 
+
 /* =========================================================
    PLAYER CARD
-   ========================================================= */
+========================================================= */
 
 .player-card {
+  position: relative;
+
   display: block;
+
   width: fit-content;
   min-width: 310px;
+
   padding: 0;
   margin: 0;
+
   border: none;
+
   background: none;
+
   color: white;
-  font-family: Garamond, Georgia, serif;
+
+  font-family:
+    Garamond,
+    Georgia,
+    serif;
+
   cursor: pointer;
 }
 
 
 /* =========================================================
    MAIN CARD
-   ========================================================= */
+========================================================= */
 
 .player-details {
   position: relative;
@@ -32,145 +45,478 @@
 
   width: 100%;
   min-height: 78px;
-  padding: 9px 12px 9px 10px;
 
-  box-sizing: border-box;
+  padding:
+    9px
+    12px
+    9px
+    10px;
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing:
+    border-box;
+
+  overflow: visible;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
   border-radius: 17px;
 
-  background: rgba(20, 20, 20, 0.85);
+  background:
+    rgba(
+      20,
+      20,
+      20,
+      0.88
+    );
+
+  box-shadow:
+    0 8px 25px
+    rgba(
+      0,
+      0,
+      0,
+      0.24
+    );
 
   transition:
-    transform 180ms ease,
-    background-color 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+    transform
+    180ms ease,
+    background-color
+    180ms ease,
+    border-color
+    180ms ease,
+    box-shadow
+    180ms ease;
 }
 
 
 /* =========================================================
    AVATAR
-   ========================================================= */
+========================================================= */
 
 .player-avatar {
   position: relative;
+
   z-index: 2;
 
-  flex: 0 0 60px;
+  flex:
+    0 0 60px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   width: 60px;
   height: 60px;
 
-  border: 1px solid rgb(66, 66, 66);
+  border:
+    1px solid
+    rgb(
+      66,
+      66,
+      66
+    );
+
   border-radius: 50%;
 
-  background: #ffffff;
+  background:
+    #ffffff;
 
-  font-size: 28px;
+  font-size:
+    28px;
 
   box-shadow:
-    0 0 15px rgba(255, 255, 255, 0.37);
+    0 0 15px
+    rgba(
+      255,
+      255,
+      255,
+      0.37
+    );
 
   transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
+    transform
+    180ms ease,
+    box-shadow
+    180ms ease;
 }
 
 
 /* =========================================================
    PLAYER INFORMATION
-   ========================================================= */
+========================================================= */
 
 .player-info {
-  flex: 1 1 auto;
+  flex:
+    1 1 auto;
+
   min-width: 0;
 
   margin-left: 14px;
   margin-right: 10px;
 }
 
-.player-name {
-  margin: 5px;
 
-  color: #ffffff;
+/* =========================================================
+   NAME + CREDITS
+========================================================= */
 
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.15;
+.player-name-row {
+  display: flex;
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
 }
 
-.player-level {
-  margin: 3px 0 7px;
 
-  color: rgba(255, 255, 255, 0.55);
+.player-name {
+  min-width: 0;
 
-  font-size: 14px;
-  line-height: 1;
+  margin:
+    5px;
+
+  overflow: hidden;
+
+  color:
+    #ffffff;
+
+  font-size:
+    17px;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.15;
+
+  white-space:
+    nowrap;
+
+  text-overflow:
+    ellipsis;
+}
+
+
+.player-credit {
+  flex:
+    0 0 auto;
+
+  margin-right:
+    4px;
+
+  color:
+    #f3d47a;
+
+  font-size:
+    10px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.05em;
+
+  white-space:
+    nowrap;
+
+  transition:
+    transform
+    180ms ease,
+    color
+    180ms ease,
+    text-shadow
+    180ms ease;
+}
+
+
+/* =========================================================
+   LEVEL + XP NUMBER
+========================================================= */
+
+.player-meta {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin:
+    2px
+    5px
+    6px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.72
+    );
+
+  font-size:
+    9px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    0.04em;
+}
+
+
+.player-meta span {
+  display: inline-flex;
+
+  align-items: center;
+
+  white-space:
+    nowrap;
+}
+
+
+.player-meta span:first-child {
+  color:
+    rgba(
+      255,
+      224,
+      130,
+      0.72
+    );
+
+  font-weight:
+    700;
+}
+
+
+.player-meta span:last-child {
+  color:
+    rgba(
+      210,
+      219,
+      255,
+      0.60
+    );
 }
 
 
 /* =========================================================
    XP BAR
-   ========================================================= */
+========================================================= */
 
 .xp-bar {
+  position: relative;
+
   width: 100%;
-  height: 5px;
+
+  height: 6px;
 
   overflow: hidden;
 
-  border-radius: 10px;
+  border-radius:
+    999px;
 
-  background: rgba(0, 0, 0, 0.5);
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+
+  box-shadow:
+    inset
+    0 1px 2px
+    rgba(
+      0,
+      0,
+      0,
+      0.60
+    );
 }
 
+
 .xp-fill {
+  position: relative;
+
   height: 100%;
 
-  border-radius: inherit;
+  overflow: visible;
 
-  background: #5588f7;
+  border-radius:
+    inherit;
 
-  transition: width 400ms ease;
+  background:
+    linear-gradient(
+      90deg,
+      #5f7cf3,
+      #77caff,
+      #f0d77e
+    );
+
+  box-shadow:
+    0 0 9px
+    rgba(
+      98,
+      150,
+      255,
+      0.32
+    );
+
+  transition:
+    width
+    180ms
+    cubic-bezier(
+      0.2,
+      0.75,
+      0.25,
+      1
+    );
+}
+
+
+/* =========================================================
+   XP SPARK
+========================================================= */
+
+.xp-spark {
+  position: absolute;
+
+  top: 50%;
+  right: -3px;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius:
+    50%;
+
+  background:
+    #ffffff;
+
+  box-shadow:
+    0 0 8px
+    #ffffff,
+    0 0 14px
+    rgba(
+      111,
+      190,
+      255,
+      0.90
+    );
+
+  opacity:
+    0.72;
+
+  transform:
+    translateY(
+      -50%
+    );
+}
+
+
+/* =========================================================
+   SHOP XP
+========================================================= */
+
+.shop-xp-line {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin:
+    5px
+    5px
+    0;
+
+  color:
+    rgba(
+      204,
+      214,
+      255,
+      0.43
+    );
+
+  font-size:
+    8px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.06em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.shop-xp-line strong {
+  color:
+    rgba(
+      234,
+      239,
+      255,
+      0.72
+    );
+
+  font-weight:
+    700;
+
+  transition:
+    transform
+    180ms ease,
+    color
+    180ms ease,
+    text-shadow
+    180ms ease;
 }
 
 
 /* =========================================================
    WORLD LEVEL
-   ========================================================= */
+========================================================= */
 
 .world-level {
   position: relative;
 
-  flex: 0 0 52px;
+  flex:
+    0 0 52px;
 
   width: 52px;
   height: 52px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   margin-left: auto;
 
   transition:
-    transform 180ms ease,
-    filter 180ms ease;
+    transform
+    180ms ease,
+    filter
+    180ms ease;
 }
 
 
 /* =========================================================
    WORLD STAR
-   ========================================================= */
+========================================================= */
 
 .world-star {
   position: absolute;
@@ -183,186 +529,1068 @@
 
   display: block;
 
-  transform: translate(-50%, -50%);
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
 
-  overflow: visible;
+  overflow:
+    visible;
 
-  pointer-events: none;
+  pointer-events:
+    none;
 }
 
 
 /* =========================================================
-   SMALL POINTS
-   ========================================================= */
+   WORLD POINTS
+========================================================= */
 
 .world-point {
-  fill: #ffffff;
+  fill:
+    #ffffff;
 
   filter:
-    drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+    drop-shadow(
+      0 0 3px
+      rgba(
+        255,
+        255,
+        255,
+        0.50
+      )
+    );
 
-  transform-origin: center;
+  transform-origin:
+    center;
 
   transition:
-    transform 180ms ease,
-    filter 180ms ease;
+    transform
+    180ms ease,
+    filter
+    180ms ease;
 }
 
 
 /* =========================================================
-   CENTRAL STAR
-   ========================================================= */
+   WORLD CENTRAL STAR
+========================================================= */
 
 .world-star-shape {
-  fill: #ffffff;
+  fill:
+    #ffffff;
 
   filter:
-    drop-shadow(0 0 4px rgba(255, 255, 255, 0.45));
+    drop-shadow(
+      0 0 4px
+      rgba(
+        255,
+        255,
+        255,
+        0.45
+      )
+    );
 
-  transform-origin: 50% 50%;
+  transform-origin:
+    50% 50%;
 
   transition:
-    transform 180ms ease,
-    filter 180ms ease;
+    transform
+    180ms ease,
+    filter
+    180ms ease;
 }
 
 
 /* =========================================================
    WORLD LEVEL NUMBER
-   ========================================================= */
+========================================================= */
 
 .world-level-number {
   position: relative;
+
   z-index: 5;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
-  color: #000000;
+  color:
+    #000000;
 
-  font-family: Garamond, Georgia, serif;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
+  font-family:
+    Garamond,
+    Georgia,
+    serif;
 
-  pointer-events: none;
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+  line-height:
+    1;
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   REWARD SPARKLES
+========================================================= */
+
+.reward-sparkles {
+  position: absolute;
+
+  inset:
+    -18px;
+
+  pointer-events:
+    none;
+
+  opacity:
+    0;
+}
+
+
+.reward-sparkles span {
+  position: absolute;
+
+  color:
+    #ffffff;
+
+  font-size:
+    11px;
+
+  filter:
+    drop-shadow(
+      0 0 7px
+      rgba(
+        142,
+        197,
+        255,
+        0.95
+      )
+    );
+}
+
+
+.reward-sparkles
+span:nth-child(1) {
+  left: 18%;
+  top: 75%;
+}
+
+
+.reward-sparkles
+span:nth-child(2) {
+  left: 42%;
+  top: 2%;
+}
+
+
+.reward-sparkles
+span:nth-child(3) {
+  right: 16%;
+  top: 28%;
+}
+
+
+.reward-sparkles
+span:nth-child(4) {
+  right: 3%;
+  bottom: 10%;
+}
+
+
+/* =========================================================
+   REWARD ACTIVE
+========================================================= */
+
+.player-details.rewarding {
+  border-color:
+    rgba(
+      151,
+      189,
+      255,
+      0.45
+    );
+
+  box-shadow:
+    0 0 0 1px
+    rgba(
+      121,
+      163,
+      255,
+      0.08
+    ),
+    0 0 28px
+    rgba(
+      72,
+      128,
+      255,
+      0.16
+    ),
+    inset
+    0 0 20px
+    rgba(
+      102,
+      141,
+      255,
+      0.04
+    );
+
+  animation:
+    playerRewardPulse
+    900ms
+    ease-out;
+}
+
+
+.player-details.rewarding
+.xp-fill {
+  box-shadow:
+    0 0 10px
+    rgba(
+      98,
+      150,
+      255,
+      0.70
+    ),
+    0 0 20px
+    rgba(
+      119,
+      202,
+      255,
+      0.24
+    );
+}
+
+
+.player-details.rewarding
+.xp-spark {
+  animation:
+    xpSparkBurst
+    620ms
+    ease-in-out
+    infinite
+    alternate;
+}
+
+
+.player-details.rewarding
+.player-credit {
+  color:
+    #ffe59a;
+
+  text-shadow:
+    0 0 10px
+    rgba(
+      243,
+      212,
+      122,
+      0.45
+    );
+
+  transform:
+    scale(
+      1.06
+    );
+}
+
+
+.player-details.rewarding
+.shop-xp-line strong {
+  color:
+    #d8dcff;
+
+  text-shadow:
+    0 0 9px
+    rgba(
+      142,
+      160,
+      255,
+      0.48
+    );
+
+  transform:
+    scale(
+      1.06
+    );
+}
+
+
+.player-details.rewarding
+.reward-sparkles {
+  opacity:
+    1;
+}
+
+
+.player-details.rewarding
+.reward-sparkles
+span:nth-child(1) {
+  animation:
+    rewardSparkA
+    0.9s
+    ease-out
+    both;
+}
+
+
+.player-details.rewarding
+.reward-sparkles
+span:nth-child(2) {
+  animation:
+    rewardSparkB
+    0.95s
+    0.08s
+    ease-out
+    both;
+}
+
+
+.player-details.rewarding
+.reward-sparkles
+span:nth-child(3) {
+  animation:
+    rewardSparkA
+    0.82s
+    0.12s
+    ease-out
+    both;
+}
+
+
+.player-details.rewarding
+.reward-sparkles
+span:nth-child(4) {
+  animation:
+    rewardSparkB
+    0.88s
+    0.04s
+    ease-out
+    both;
+}
+
+
+/* =========================================================
+   LEVEL UP POPUP
+========================================================= */
+
+.level-up-popup {
+  position: absolute;
+
+  z-index: 9999;
+
+  left: 50%;
+  top: 88px;
+
+  min-width:
+    130px;
+
+  padding:
+    9px
+    18px;
+
+  box-sizing:
+    border-box;
+
+  transform:
+    translateX(
+      -50%
+    );
+
+  border:
+    1px solid
+    rgba(
+      243,
+      212,
+      122,
+      0.42
+    );
+
+  border-radius:
+    11px;
+
+  color:
+    #ffe89f;
+
+  text-align:
+    center;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        27,
+        23,
+        48,
+        0.98
+      ),
+      rgba(
+        8,
+        10,
+        24,
+        0.98
+      )
+    );
+
+  box-shadow:
+    0 0 26px
+    rgba(
+      243,
+      212,
+      122,
+      0.18
+    ),
+    0 10px 30px
+    rgba(
+      0,
+      0,
+      0,
+      0.35
+    );
+
+  pointer-events:
+    none;
+
+  animation:
+    levelUpPopupIn
+    420ms
+    cubic-bezier(
+      0.18,
+      0.85,
+      0.22,
+      1
+    )
+    both;
+}
+
+
+.level-up-popup::before {
+  content:
+    '✦';
+
+  position: absolute;
+
+  left:
+    12px;
+
+  top:
+    50%;
+
+  color:
+    rgba(
+      255,
+      230,
+      150,
+      0.65
+    );
+
+  transform:
+    translateY(
+      -50%
+    );
+}
+
+
+.level-up-popup::after {
+  content:
+    '✦';
+
+  position: absolute;
+
+  right:
+    12px;
+
+  top:
+    50%;
+
+  color:
+    rgba(
+      255,
+      230,
+      150,
+      0.65
+    );
+
+  transform:
+    translateY(
+      -50%
+    );
+}
+
+
+.level-up-popup small,
+.level-up-popup strong {
+  display: block;
+}
+
+
+.level-up-popup small {
+  font-size:
+    7px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.20em;
+}
+
+
+.level-up-popup strong {
+  margin-top:
+    3px;
+
+  font-size:
+    16px;
+
+  font-weight:
+    700;
 }
 
 
 /* =========================================================
    HOVER
-   ========================================================= */
+========================================================= */
 
-.player-card:hover .world-level {
-  transform: scale(1.08);
+.player-card:hover
+.player-details {
+  transform:
+    scale(
+      1.025
+    );
 
-  filter:
-    drop-shadow(0 0 8px rgba(255, 255, 255, 0.25));
-}
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.30
+    );
 
-.player-card:hover .world-star-shape {
-  filter:
-    drop-shadow(0 0 5px rgba(255, 255, 255, 0.95))
-    drop-shadow(0 0 11px rgba(255, 255, 255, 0.4));
-
-  transform: scale(1.05);
-}
-
-.player-card:hover .world-point {
-  fill: #ffffff;
-
-  filter:
-    drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
-
-  transform: scale(1.2);
-}
-
-
-/* =========================================================
-   CLICK
-   ========================================================= */
-
-.player-card:active .world-level {
-  transform: scale(0.94);
-}
-
-
-/* =========================================================
-   CARD HOVER
-   ========================================================= */
-
-.player-card:hover .player-details {
-  transform: scale(1.045);
-
-  border-color: rgba(255, 255, 255, 0.3);
-
-  background: rgba(30, 30, 30, 0.9);
+  background:
+    rgba(
+      30,
+      30,
+      30,
+      0.92
+    );
 
   box-shadow:
-    0 0 10px rgba(255, 255, 255, 0.08),
-    0 0 24px rgba(255, 255, 255, 0.04);
+    0 0 10px
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    ),
+    0 0 24px
+    rgba(
+      255,
+      255,
+      255,
+      0.04
+    );
 }
 
 
-/* =========================================================
-   AVATAR HOVER
-   ========================================================= */
-
-.player-card:hover .player-avatar {
-  transform: scale(1.06);
+.player-card:hover
+.player-avatar {
+  transform:
+    scale(
+      1.06
+    );
 
   box-shadow:
-    0 0 18px rgba(255, 255, 255, 0.45),
-    0 0 30px rgba(255, 255, 255, 0.18);
+    0 0 18px
+    rgba(
+      255,
+      255,
+      255,
+      0.45
+    ),
+    0 0 30px
+    rgba(
+      255,
+      255,
+      255,
+      0.18
+    );
+}
+
+
+.player-card:hover
+.world-level {
+  transform:
+    scale(
+      1.08
+    );
+
+  filter:
+    drop-shadow(
+      0 0 8px
+      rgba(
+        255,
+        255,
+        255,
+        0.25
+      )
+    );
+}
+
+
+.player-card:hover
+.world-star-shape {
+  filter:
+    drop-shadow(
+      0 0 5px
+      rgba(
+        255,
+        255,
+        255,
+        0.95
+      )
+    )
+    drop-shadow(
+      0 0 11px
+      rgba(
+        255,
+        255,
+        255,
+        0.40
+      )
+    );
+
+  transform:
+    scale(
+      1.05
+    );
+}
+
+
+.player-card:hover
+.world-point {
+  fill:
+    #ffffff;
+
+  filter:
+    drop-shadow(
+      0 0 4px
+      rgba(
+        255,
+        255,
+        255,
+        0.90
+      )
+    );
+
+  transform:
+    scale(
+      1.2
+    );
 }
 
 
 /* =========================================================
-   CLICK / ACTIVE
-   ========================================================= */
+   ACTIVE
+========================================================= */
 
-.player-card:active .player-details {
-  transform: scale(0.97);
+.player-card:active
+.player-details {
+  transform:
+    scale(
+      0.97
+    );
 }
 
-.player-card:active .player-avatar {
-  transform: scale(0.98);
+
+.player-card:active
+.player-avatar {
+  transform:
+    scale(
+      0.98
+    );
 }
+
+
+.player-card:active
+.world-level {
+  transform:
+    scale(
+      0.94
+    );
+}
+
 
 /* =========================================================
    FOCUS
-   ========================================================= */
+========================================================= */
 
 .player-card:focus-visible {
-  outline: none;
+  outline:
+    none;
 }
 
-.player-card:focus-visible .player-details {
-  border-color: rgba(255, 255, 255, 0.5);
+
+.player-card:focus-visible
+.player-details {
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.50
+    );
 
   box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.08);
+    0 0 0 2px
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes playerRewardPulse {
+
+  0% {
+    transform:
+      scale(
+        1
+      );
+  }
+
+
+  45% {
+    transform:
+      scale(
+        1.035
+      );
+  }
+
+
+  100% {
+    transform:
+      scale(
+        1
+      );
+  }
+
+}
+
+
+@keyframes xpSparkBurst {
+
+  from {
+    transform:
+      translateY(
+        -50%
+      )
+      scale(
+        0.65
+      );
+
+    opacity:
+      0.55;
+  }
+
+
+  to {
+    transform:
+      translateY(
+        -50%
+      )
+      scale(
+        1.45
+      );
+
+    opacity:
+      1;
+  }
+
+}
+
+
+@keyframes rewardSparkA {
+
+  0% {
+    opacity:
+      0;
+
+    transform:
+      translate(
+        0,
+        8px
+      )
+      scale(
+        0.3
+      )
+      rotate(
+        0deg
+      );
+  }
+
+
+  35% {
+    opacity:
+      1;
+  }
+
+
+  100% {
+    opacity:
+      0;
+
+    transform:
+      translate(
+        -18px,
+        -28px
+      )
+      scale(
+        1.15
+      )
+      rotate(
+        160deg
+      );
+  }
+
+}
+
+
+@keyframes rewardSparkB {
+
+  0% {
+    opacity:
+      0;
+
+    transform:
+      translate(
+        0,
+        4px
+      )
+      scale(
+        0.25
+      )
+      rotate(
+        0deg
+      );
+  }
+
+
+  35% {
+    opacity:
+      1;
+  }
+
+
+  100% {
+    opacity:
+      0;
+
+    transform:
+      translate(
+        20px,
+        -24px
+      )
+      scale(
+        1.05
+      )
+      rotate(
+        -150deg
+      );
+  }
+
+}
+
+
+@keyframes levelUpPopupIn {
+
+  0% {
+    opacity:
+      0;
+
+    transform:
+      translate(
+        -50%,
+        10px
+      )
+      scale(
+        0.75
+      );
+  }
+
+
+  65% {
+    opacity:
+      1;
+
+    transform:
+      translate(
+        -50%,
+        0
+      )
+      scale(
+        1.08
+      );
+  }
+
+
+  100% {
+    opacity:
+      1;
+
+    transform:
+      translate(
+        -50%,
+        0
+      )
+      scale(
+        1
+      );
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (
+  max-width: 720px
+) {
+
+  .player-card {
+    min-width:
+      280px;
+  }
+
+
+  .player-details {
+    min-height:
+      72px;
+
+    padding:
+      8px
+      10px;
+  }
+
+
+  .player-avatar {
+    flex-basis:
+      54px;
+
+    width:
+      54px;
+
+    height:
+      54px;
+
+    font-size:
+      25px;
+  }
+
+
+  .player-name {
+    font-size:
+      15px;
+  }
+
+
+  .player-meta {
+    font-size:
+      8px;
+  }
+
+
+  .world-level {
+    flex-basis:
+      46px;
+
+    width:
+      46px;
+
+    height:
+      46px;
+  }
+
+
+  .world-star {
+    width:
+      46px;
+
+    height:
+      46px;
+  }
+
+
+  .level-up-popup {
+    top:
+      82px;
+  }
+
 }
 
 
 /* =========================================================
    REDUCED MOTION
-   ========================================================= */
+========================================================= */
 
-@media (prefers-reduced-motion: reduce) {
+@media (
+  prefers-reduced-motion:
+    reduce
+) {
+
   .player-details,
   .player-avatar,
   .world-level,
   .world-star-shape,
-  .world-level-number {
-    transition: none;
+  .world-level-number,
+  .xp-fill,
+  .player-credit,
+  .shop-xp-line strong {
+    transition:
+      none;
   }
 
-  .player-card:hover .player-details,
-  .player-card:hover .player-avatar,
-  .player-card:hover .world-level,
-  .player-card:hover .world-star-shape {
-    transform: none;
+
+  .player-details.rewarding,
+  .player-details.rewarding
+  .xp-spark,
+  .player-details.rewarding
+  .reward-sparkles span,
+  .level-up-popup {
+    animation:
+      none;
   }
+
+
+  .player-card:hover
+  .player-details,
+
+  .player-card:hover
+  .player-avatar,
+
+  .player-card:hover
+  .world-level,
+
+  .player-card:hover
+  .world-star-shape {
+    transform:
+      none;
+  }
+
 }

@@ -1,0 +1,1951 @@
+:host {
+  display: block;
+
+  --panel-text: #f5f6ff;
+
+  --muted:
+    rgba(
+      222,
+      227,
+      255,
+      0.55
+    );
+
+  --line:
+    rgba(
+      168,
+      188,
+      255,
+      0.14
+    );
+
+  --violet:
+    #9d8cff;
+
+  --blue:
+    #6695ff;
+
+  --gold:
+    #f2d78d;
+}
+
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.quest-panel {
+  position: relative;
+
+  width: 340px;
+
+  max-height:
+    calc(
+      100vh - 170px
+    );
+
+  overflow-x: hidden;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  padding: 18px;
+
+  color:
+    var(--panel-text);
+
+  border:
+    1px solid
+    rgba(
+      141,
+      159,
+      255,
+      0.18
+    );
+
+  border-radius:
+    22px;
+
+  background:
+
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(
+        92,
+        75,
+        200,
+        0.20
+      ),
+      transparent 32%
+    ),
+
+    radial-gradient(
+      circle at 10% 100%,
+      rgba(
+        42,
+        140,
+        196,
+        0.12
+      ),
+      transparent 34%
+    ),
+
+    linear-gradient(
+      160deg,
+      rgba(
+        19,
+        19,
+        48,
+        0.97
+      ),
+      rgba(
+        5,
+        12,
+        19,
+        0.96
+      )
+    );
+
+  box-shadow:
+
+    0 22px 60px
+    rgba(
+      0,
+      0,
+      0,
+      0.45
+    ),
+
+    inset
+    0 1px 0
+    rgba(
+      255,
+      255,
+      255,
+      0.025
+    );
+
+  backdrop-filter:
+    blur(16px);
+
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    rgba(
+      145,
+      160,
+      255,
+      0.25
+    )
+    transparent;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.quest-topbar {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 14px;
+
+  padding-bottom:
+    15px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+}
+
+
+.quest-kicker {
+  display: block;
+
+  color:
+    rgba(
+      196,
+      190,
+      255,
+      0.72
+    );
+
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.22em;
+}
+
+
+.quest-topbar h2 {
+  margin:
+    7px 0 0;
+
+  font-family:
+    Garamond,
+    Georgia,
+    serif;
+
+  font-size:
+    27px;
+
+  font-weight:
+    500;
+
+  letter-spacing:
+    0.08em;
+}
+
+
+/* =========================================================
+   DAILY COUNTER
+========================================================= */
+
+.daily-count {
+  min-width:
+    75px;
+
+  padding:
+    8px 12px;
+
+  border:
+    1px solid
+    rgba(
+      158,
+      164,
+      255,
+      0.24
+    );
+
+  border-radius:
+    999px;
+
+  text-align:
+    center;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.025
+    );
+}
+
+
+.daily-count span {
+  margin-right:
+    7px;
+
+  color:
+    rgba(
+      224,
+      222,
+      255,
+      0.58
+    );
+
+  font-size:
+    7px;
+
+  letter-spacing:
+    0.16em;
+}
+
+
+.daily-count strong {
+  font-size:
+    12px;
+}
+
+
+.daily-count.daily-limit {
+  color:
+    var(--gold);
+
+  border-color:
+    rgba(
+      242,
+      215,
+      141,
+      0.35
+    );
+}
+
+
+/* =========================================================
+   REWARD FEEDBACK
+
+   Fica dentro do painel.
+========================================================= */
+
+.reward-toast {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+
+  box-sizing:
+    border-box;
+
+  margin-top:
+    11px;
+
+  padding:
+    12px;
+
+  border:
+    1px solid
+    rgba(
+      153,
+      168,
+      255,
+      0.28
+    );
+
+  border-radius:
+    14px;
+
+  background:
+
+    radial-gradient(
+      circle at 8% 50%,
+      rgba(
+        108,
+        88,
+        255,
+        0.20
+      ),
+      transparent 34%
+    ),
+
+    rgba(
+      10,
+      13,
+      32,
+      0.96
+    );
+
+  box-shadow:
+    0 10px 30px
+    rgba(
+      0,
+      0,
+      0,
+      0.24
+    );
+
+  animation:
+    reward-in
+    220ms
+    ease-out
+    both;
+}
+
+
+.toast-star {
+  display: grid;
+
+  place-items:
+    center;
+
+  flex:
+    0 0 44px;
+
+  width:
+    44px;
+
+  height:
+    44px;
+
+  border-radius:
+    50%;
+
+  color:
+    #c8bdff;
+
+  background:
+    rgba(
+      104,
+      77,
+      212,
+      0.30
+    );
+
+  font-size:
+    22px;
+}
+
+
+.toast-copy {
+  min-width: 0;
+}
+
+
+.toast-copy strong {
+  display: block;
+
+  color:
+    white;
+
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.10em;
+}
+
+
+.toast-rewards {
+  display: flex;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    5px 9px;
+
+  margin-top:
+    5px;
+
+  color:
+    rgba(
+      225,
+      228,
+      255,
+      0.64
+    );
+
+  font-size:
+    7px;
+}
+
+
+/* =========================================================
+   PANEL MESSAGE
+========================================================= */
+
+.panel-message {
+  margin-top:
+    10px;
+
+  padding:
+    9px 11px;
+
+  border:
+    1px solid
+    rgba(
+      194,
+      173,
+      255,
+      0.18
+    );
+
+  border-radius:
+    10px;
+
+  color:
+    rgba(
+      232,
+      226,
+      255,
+      0.75
+    );
+
+  background:
+    rgba(
+      119,
+      87,
+      192,
+      0.08
+    );
+
+  font-size:
+    8px;
+
+  text-align:
+    center;
+}
+
+
+/* =========================================================
+   DAILY LIMIT
+========================================================= */
+
+.daily-limit-message {
+  display: flex;
+
+  align-items:
+    center;
+
+  gap: 10px;
+
+  margin-top:
+    12px;
+
+  padding:
+    12px;
+
+  border:
+    1px solid
+    rgba(
+      242,
+      215,
+      141,
+      0.22
+    );
+
+  border-radius:
+    13px;
+
+  background:
+    rgba(
+      242,
+      215,
+      141,
+      0.06
+    );
+}
+
+
+.limit-star {
+  color:
+    var(--gold);
+
+  font-size:
+    22px;
+}
+
+
+.daily-limit-message strong,
+.daily-limit-message small {
+  display: block;
+}
+
+
+.daily-limit-message strong {
+  font-size:
+    10px;
+}
+
+
+.daily-limit-message small {
+  margin-top:
+    3px;
+
+  color:
+    var(--muted);
+
+  font-size:
+    8px;
+
+  line-height:
+    1.4;
+}
+
+
+/* =========================================================
+   QUEST CARD
+========================================================= */
+
+.quest-card {
+  position: relative;
+
+  overflow:
+    hidden;
+
+  margin-top:
+    13px;
+
+  padding:
+    16px;
+
+  border:
+    1px solid
+    rgba(
+      164,
+      183,
+      255,
+      0.13
+    );
+
+  border-radius:
+    18px;
+
+  background:
+
+    linear-gradient(
+      135deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.035
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        0.012
+      )
+    );
+
+  box-shadow:
+
+    inset
+    0 1px 0
+    rgba(
+      255,
+      255,
+      255,
+      0.025
+    );
+
+  transition:
+    transform
+    160ms ease,
+    border-color
+    160ms ease,
+    box-shadow
+    160ms ease;
+}
+
+
+.quest-card:hover {
+  transform:
+    translateY(
+      -2px
+    );
+
+  border-color:
+    rgba(
+      148,
+      173,
+      255,
+      0.28
+    );
+
+  box-shadow:
+    0 9px 25px
+    rgba(
+      0,
+      0,
+      0,
+      0.18
+    );
+}
+
+
+/* =========================================================
+   DAILY CARD
+========================================================= */
+
+.daily-card {
+  border-color:
+    rgba(
+      100,
+      181,
+      231,
+      0.20
+    );
+
+  background:
+
+    radial-gradient(
+      circle at 95% 0%,
+      rgba(
+        94,
+        91,
+        226,
+        0.12
+      ),
+      transparent 40%
+    ),
+
+    linear-gradient(
+      135deg,
+      rgba(
+        19,
+        23,
+        57,
+        0.92
+      ),
+      rgba(
+        6,
+        25,
+        31,
+        0.68
+      )
+    );
+}
+
+
+.quest-card-orbit {
+  position: absolute;
+
+  width:
+    120px;
+
+  height:
+    55px;
+
+  right:
+    -65px;
+
+  top:
+    35px;
+
+  border:
+    1px solid
+    rgba(
+      140,
+      155,
+      255,
+      0.07
+    );
+
+  border-radius:
+    50%;
+
+  transform:
+    rotate(
+      -20deg
+    );
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   QUEST HEADER
+========================================================= */
+
+.quest-header-row {
+  position: relative;
+
+  z-index: 2;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    10px;
+}
+
+
+.quest-tags {
+  display: flex;
+
+  gap:
+    5px;
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.quest-badge {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  min-height:
+    18px;
+
+  padding:
+    0 8px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border-radius:
+    999px;
+
+  font-size:
+    7px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.13em;
+}
+
+
+.quest-badge.daily {
+  color:
+    #bfe4ff;
+
+  border-color:
+    rgba(
+      111,
+      195,
+      255,
+      0.22
+    );
+
+  background:
+    rgba(
+      85,
+      157,
+      222,
+      0.07
+    );
+}
+
+
+.quest-badge.player {
+  color:
+    #c8ddff;
+
+  border-color:
+    rgba(
+      126,
+      161,
+      255,
+      0.20
+    );
+
+  background:
+    rgba(
+      91,
+      119,
+      220,
+      0.07
+    );
+}
+
+
+.quest-badge.focus {
+  color:
+    #d7c9ff;
+
+  border-color:
+    rgba(
+      171,
+      139,
+      255,
+      0.25
+    );
+
+  background:
+    rgba(
+      134,
+      91,
+      219,
+      0.10
+    );
+}
+
+
+/* =========================================================
+   DIFFICULTY
+========================================================= */
+
+.quest-difficulty {
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.12em;
+}
+
+
+.quest-difficulty[data-difficulty='easy'] {
+  color:
+    #95e2b6;
+}
+
+
+.quest-difficulty[data-difficulty='medium'] {
+  color:
+    #f2d67c;
+}
+
+
+.quest-difficulty[data-difficulty='hard'] {
+  color:
+    #ff9da9;
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.quest-title-row {
+  position: relative;
+
+  z-index: 2;
+
+  display: grid;
+
+  grid-template-columns:
+    38px 1fr;
+
+  gap:
+    10px;
+
+  align-items:
+    center;
+
+  margin-top:
+    13px;
+}
+
+
+.quest-symbol {
+  display: grid;
+
+  place-items:
+    center;
+
+  width:
+    36px;
+
+  height:
+    36px;
+
+  border:
+    1px solid
+    rgba(
+      153,
+      171,
+      255,
+      0.12
+    );
+
+  border-radius:
+    11px;
+
+  background:
+    rgba(
+      104,
+      106,
+      213,
+      0.08
+    );
+
+  font-size:
+    18px;
+}
+
+
+.quest-title-row h3,
+.quest-title-row h4 {
+  margin:
+    0;
+
+  color:
+    #f5f5ff;
+
+  font-family:
+    Garamond,
+    Georgia,
+    serif;
+
+  font-weight:
+    600;
+}
+
+
+.quest-title-row h3 {
+  font-size:
+    17px;
+}
+
+
+.quest-title-row h4 {
+  font-size:
+    15px;
+}
+
+
+.quest-title-row p {
+  margin:
+    4px 0 0;
+
+  color:
+    var(--muted);
+
+  font-size:
+    9px;
+
+  line-height:
+    1.4;
+}
+
+
+/* =========================================================
+   DAILY REWARD BOXES
+========================================================= */
+
+.reward-cards {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap:
+    7px;
+
+  margin-top:
+    15px;
+}
+
+
+.reward-card {
+  min-width:
+    0;
+
+  padding:
+    9px 6px;
+
+  border-radius:
+    11px;
+
+  text-align:
+    center;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.035
+    );
+}
+
+
+.reward-card span,
+.reward-card strong {
+  display: block;
+}
+
+
+.reward-card span {
+  overflow:
+    hidden;
+
+  color:
+    rgba(
+      222,
+      224,
+      255,
+      0.49
+    );
+
+  font-size:
+    6px;
+
+  font-weight:
+    900;
+
+  white-space:
+    nowrap;
+
+  text-overflow:
+    ellipsis;
+}
+
+
+.reward-card strong {
+  margin-top:
+    4px;
+
+  font-size:
+    11px;
+}
+
+
+/* =========================================================
+   PLAYER REWARD STRIP
+========================================================= */
+
+.reward-strip {
+  display: flex;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    7px 10px;
+
+  margin-top:
+    12px;
+
+  padding-top:
+    10px;
+
+  border-top:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.05
+    );
+
+  color:
+    rgba(
+      229,
+      232,
+      255,
+      0.70
+    );
+
+  font-size:
+    8px;
+
+  font-weight:
+    700;
+}
+
+
+/* =========================================================
+   FOCUS INFO
+========================================================= */
+
+.focus-duration {
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  margin-top:
+    11px;
+
+  padding:
+    8px 10px;
+
+  border:
+    1px solid
+    rgba(
+      160,
+      130,
+      255,
+      0.09
+    );
+
+  border-radius:
+    10px;
+
+  color:
+    rgba(
+      221,
+      214,
+      255,
+      0.64
+    );
+
+  background:
+    rgba(
+      130,
+      89,
+      209,
+      0.07
+    );
+
+  font-size:
+    7px;
+
+  letter-spacing:
+    0.09em;
+}
+
+
+.focus-duration strong {
+  color:
+    #ede7ff;
+
+  font-size:
+    9px;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.quest-actions {
+  display: flex;
+
+  gap:
+    8px;
+
+  margin-top:
+    14px;
+}
+
+
+.quest-action {
+  min-height:
+    38px;
+
+  padding:
+    8px 12px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border-radius:
+    12px;
+
+  color:
+    #f4f4ff;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.025
+    );
+
+  font-family:
+    inherit;
+
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.08em;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform
+    140ms ease,
+    background
+    140ms ease,
+    border-color
+    140ms ease,
+    opacity
+    140ms ease;
+}
+
+
+.quest-action.primary {
+  flex: 1;
+
+  border-color:
+    rgba(
+      102,
+      123,
+      255,
+      0.36
+    );
+
+  background:
+    linear-gradient(
+      135deg,
+      #6757ed,
+      #416fd4
+    );
+
+  box-shadow:
+    0 7px 20px
+    rgba(
+      78,
+      81,
+      225,
+      0.18
+    );
+}
+
+
+.quest-action.secondary {
+  flex:
+    0 1 auto;
+
+  color:
+    rgba(
+      233,
+      233,
+      255,
+      0.48
+    );
+}
+
+
+.quest-action.icon-action {
+  flex:
+    0 0 40px;
+
+  padding:
+    0;
+
+  font-size:
+    15px;
+}
+
+
+.quest-action.focus-state {
+  flex: 1;
+
+  color:
+    #dcd0ff;
+
+  border-color:
+    rgba(
+      161,
+      126,
+      255,
+      0.20
+    );
+
+  background:
+    rgba(
+      131,
+      84,
+      214,
+      0.10
+    );
+}
+
+
+.quest-action:hover:not(:disabled) {
+  transform:
+    translateY(
+      -2px
+    );
+}
+
+
+.quest-action:active:not(:disabled) {
+  transform:
+    scale(
+      0.97
+    );
+}
+
+
+.quest-action:disabled {
+  opacity:
+    0.40;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* =========================================================
+   PLAYER SECTION
+========================================================= */
+
+.player-section-title {
+  display: flex;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  margin-top:
+    22px;
+
+  color:
+    rgba(
+      228,
+      226,
+      255,
+      0.80
+    );
+
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.16em;
+}
+
+
+.player-section-title i {
+  flex: 1;
+
+  height:
+    1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.10
+      ),
+      transparent
+    );
+}
+
+
+.player-section-description {
+  margin:
+    5px 0 0;
+
+  color:
+    rgba(
+      221,
+      224,
+      255,
+      0.42
+    );
+
+  font-size:
+    8px;
+}
+
+
+/* =========================================================
+   PLAYER QUEST LAYOUT
+
+   Vertical igual ao seu print.
+========================================================= */
+
+.player-quest-layout {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    5px;
+}
+
+
+.player-card {
+  width: 100%;
+
+  box-sizing:
+    border-box;
+}
+
+
+/* =========================================================
+   EMPTY SLOT
+========================================================= */
+
+.empty-card {
+  display: flex;
+
+  min-height:
+    165px;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  text-align:
+    center;
+}
+
+
+.empty-star-ring {
+  display: grid;
+
+  place-items:
+    center;
+
+  width:
+    52px;
+
+  height:
+    52px;
+
+  border:
+    1px dashed
+    rgba(
+      140,
+      149,
+      255,
+      0.24
+    );
+
+  border-radius:
+    50%;
+}
+
+
+.empty-star-ring span {
+  color:
+    rgba(
+      181,
+      187,
+      255,
+      0.72
+    );
+
+  font-size:
+    23px;
+}
+
+
+.empty-card h4 {
+  margin:
+    12px 0 5px;
+
+  color:
+    white;
+
+  font-family:
+    Garamond,
+    Georgia,
+    serif;
+
+  font-size:
+    14px;
+
+  font-weight:
+    500;
+}
+
+
+.empty-card p {
+  margin:
+    0 0 12px;
+
+  color:
+    var(--muted);
+
+  font-size:
+    8px;
+}
+
+
+.mini-create {
+  padding:
+    8px 13px;
+
+  border:
+    1px solid
+    rgba(
+      141,
+      149,
+      255,
+      0.23
+    );
+
+  border-radius:
+    10px;
+
+  color:
+    #e8e7ff;
+
+  background:
+    rgba(
+      112,
+      104,
+      213,
+      0.07
+    );
+
+  font-family:
+    inherit;
+
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+  cursor:
+    pointer;
+
+  transition:
+    140ms ease;
+}
+
+
+.mini-create:hover:not(:disabled) {
+  transform:
+    translateY(
+      -2px
+    );
+
+  border-color:
+    rgba(
+      155,
+      165,
+      255,
+      0.42
+    );
+
+  background:
+    rgba(
+      112,
+      104,
+      213,
+      0.13
+    );
+}
+
+
+.mini-create:disabled {
+  opacity:
+    0.40;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* =========================================================
+   MISSION JOURNAL
+========================================================= */
+
+.journal-button {
+  display: flex;
+
+  width:
+    100%;
+
+  box-sizing:
+    border-box;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  margin-top:
+    14px;
+
+  padding:
+    11px 13px;
+
+  border:
+    1px solid
+    rgba(
+      109,
+      139,
+      255,
+      0.22
+    );
+
+  border-radius:
+    14px;
+
+  color:
+    #f2f2ff;
+
+  text-align:
+    left;
+
+  background:
+
+    radial-gradient(
+      circle at 90% 50%,
+      rgba(
+        63,
+        133,
+        209,
+        0.13
+      ),
+      transparent 45%
+    ),
+
+    linear-gradient(
+      135deg,
+      rgba(
+        97,
+        76,
+        200,
+        0.18
+      ),
+      rgba(
+        18,
+        69,
+        101,
+        0.15
+      )
+    );
+
+  font-family:
+    inherit;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform
+    150ms ease,
+    border-color
+    150ms ease,
+    box-shadow
+    150ms ease;
+}
+
+
+.journal-button:hover:not(:disabled) {
+  transform:
+    translateY(
+      -2px
+    );
+
+  border-color:
+    rgba(
+      136,
+      164,
+      255,
+      0.42
+    );
+
+  box-shadow:
+    0 8px 25px
+    rgba(
+      0,
+      0,
+      0,
+      0.18
+    );
+}
+
+
+.journal-button:disabled {
+  opacity:
+    0.40;
+
+  cursor:
+    not-allowed;
+}
+
+
+.journal-icon {
+  display: grid;
+
+  place-items:
+    center;
+
+  flex:
+    0 0 42px;
+
+  width:
+    42px;
+
+  height:
+    42px;
+
+  border-radius:
+    12px;
+
+  color:
+    #c7c2ff;
+
+  background:
+    rgba(
+      109,
+      88,
+      229,
+      0.21
+    );
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size:
+    18px;
+}
+
+
+.journal-copy strong,
+.journal-copy small {
+  display:
+    block;
+}
+
+
+.journal-copy strong {
+  font-size:
+    9px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    0.10em;
+}
+
+
+.journal-copy small {
+  margin-top:
+    4px;
+
+  color:
+    rgba(
+      217,
+      221,
+      255,
+      0.48
+    );
+
+  font-size:
+    8px;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes reward-in {
+
+  from {
+    opacity:
+      0;
+
+    transform:
+      translateY(
+        -7px
+      );
+  }
+
+
+  to {
+    opacity:
+      1;
+
+    transform:
+      translateY(
+        0
+      );
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (
+  max-width: 900px
+) {
+
+  .quest-panel {
+    width:
+      315px;
+  }
+
+}
+
+
+@media (
+  max-width: 620px
+) {
+
+  .quest-panel {
+    width:
+      min(
+        92vw,
+        350px
+      );
+
+    max-height:
+      65vh;
+  }
+
+
+  .reward-cards {
+    gap:
+      5px;
+  }
+
+
+  .quest-actions {
+    flex-wrap:
+      wrap;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (
+  prefers-reduced-motion:
+    reduce
+) {
+
+  .quest-card,
+  .quest-action,
+  .mini-create,
+  .journal-button,
+  .reward-toast {
+    animation:
+      none;
+
+    transition:
+      none;
+  }
+
+}

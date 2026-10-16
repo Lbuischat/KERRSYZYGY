@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
 
+import { AudioService } from '../../../services/audio/audio.service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class GameSettingsService {
-
   private readonly storageKey = 'kerrsyzygy-settings';
-
 
   // =========================
   // Gameplay
   // =========================
-
   showDamageNumbers = true;
   showTutorials = true;
   hints = true;
@@ -20,26 +19,21 @@ export class GameSettingsService {
   autoSave = true;
   difficulty = 1;
 
-
   // =========================
   // Audio
   // =========================
-
   masterVolume = 100;
   musicVolume = 100;
   sfxVolume = 100;
   environmentVolume = 100;
   monstersVolume = 100;
   natureVolume = 100;
-
   subtitles = false;
   muteAll = false;
-
 
   // =========================
   // Accessibility
   // =========================
-
   reduceFlashes = false;
   screenShake = true;
   motionBlur = true;
@@ -49,11 +43,42 @@ export class GameSettingsService {
   reducedKeybinds = false;
   clickToWalk = false;
 
-
-  constructor() {
+  constructor(
+    private audioService: AudioService
+  ) {
     this.loadSettings();
+    this.applyAudioSettings();
   }
 
+  private applyAudioSettings(): void {
+    this.audioService.setMasterVolume(
+      this.masterVolume / 100
+    );
+
+    this.audioService.setMusicVolume(
+      this.musicVolume / 100
+    );
+
+    this.audioService.setSfxVolume(
+      this.sfxVolume / 100
+    );
+
+    this.audioService.setEnvironmentVolume(
+      this.environmentVolume / 100
+    );
+
+    this.audioService.setMonstersVolume(
+      this.monstersVolume / 100
+    );
+
+    this.audioService.setNatureVolume(
+      this.natureVolume / 100
+    );
+
+    this.audioService.setMuted(
+      this.muteAll
+    );
+  }
 
   // =========================================================
   // GAMEPLAY
@@ -90,10 +115,13 @@ export class GameSettingsService {
   }
 
   setDifficulty(value: number): void {
-    this.difficulty = Math.max(1, Math.min(10, value));
+    this.difficulty = Math.max(
+      1,
+      Math.min(10, value)
+    );
+
     this.saveSettings();
   }
-
 
   // =========================================================
   // AUDIO
@@ -101,31 +129,64 @@ export class GameSettingsService {
 
   setMasterVolume(value: number): void {
     this.masterVolume = this.clampVolume(value);
+
+    this.audioService.setMasterVolume(
+      this.masterVolume / 100
+    );
+
     this.saveSettings();
   }
 
   setMusicVolume(value: number): void {
     this.musicVolume = this.clampVolume(value);
+
+    this.audioService.setMusicVolume(
+      this.musicVolume / 100
+    );
+
     this.saveSettings();
   }
 
   setSfxVolume(value: number): void {
     this.sfxVolume = this.clampVolume(value);
+
+    this.audioService.setSfxVolume(
+      this.sfxVolume / 100
+    );
+
     this.saveSettings();
   }
 
   setEnvironmentVolume(value: number): void {
-    this.environmentVolume = this.clampVolume(value);
+    this.environmentVolume =
+      this.clampVolume(value);
+
+    this.audioService.setEnvironmentVolume(
+      this.environmentVolume / 100
+    );
+
     this.saveSettings();
   }
 
   setMonstersVolume(value: number): void {
-    this.monstersVolume = this.clampVolume(value);
+    this.monstersVolume =
+      this.clampVolume(value);
+
+    this.audioService.setMonstersVolume(
+      this.monstersVolume / 100
+    );
+
     this.saveSettings();
   }
 
   setNatureVolume(value: number): void {
-    this.natureVolume = this.clampVolume(value);
+    this.natureVolume =
+      this.clampVolume(value);
+
+    this.audioService.setNatureVolume(
+      this.natureVolume / 100
+    );
+
     this.saveSettings();
   }
 
@@ -136,9 +197,13 @@ export class GameSettingsService {
 
   toggleMuteAll(): void {
     this.muteAll = !this.muteAll;
+
+    this.audioService.setMuted(
+      this.muteAll
+    );
+
     this.saveSettings();
   }
-
 
   // =========================================================
   // ACCESSIBILITY
@@ -165,7 +230,11 @@ export class GameSettingsService {
   }
 
   setUiScale(value: number): void {
-    this.uiScale = Math.max(0, Math.min(2, value));
+    this.uiScale = Math.max(
+      0,
+      Math.min(2, value)
+    );
+
     this.saveSettings();
   }
 
@@ -184,13 +253,11 @@ export class GameSettingsService {
     this.saveSettings();
   }
 
-
   // =========================================================
   // LOCAL STORAGE
   // =========================================================
 
   private saveSettings(): void {
-
     // Make sure we're actually running in a browser.
     if (typeof localStorage === 'undefined') {
       return;
@@ -230,15 +297,15 @@ export class GameSettingsService {
     );
   }
 
-
   private loadSettings(): void {
-
     // Make sure we're actually running in a browser.
     if (typeof localStorage === 'undefined') {
       return;
     }
 
-    const saved = localStorage.getItem(this.storageKey);
+    const saved = localStorage.getItem(
+      this.storageKey
+    );
 
     // Nothing has been saved yet.
     if (!saved) {
@@ -246,133 +313,201 @@ export class GameSettingsService {
     }
 
     try {
-
       const settings = JSON.parse(saved);
 
-      if (typeof settings.showDamageNumbers === 'boolean') {
-        this.showDamageNumbers = settings.showDamageNumbers;
+      // =========================================================
+      // GAMEPLAY
+      // =========================================================
+
+      if (
+        typeof settings.showDamageNumbers === 'boolean'
+      ) {
+        this.showDamageNumbers =
+          settings.showDamageNumbers;
       }
 
-      if (typeof settings.showTutorials === 'boolean') {
-        this.showTutorials = settings.showTutorials;
+      if (
+        typeof settings.showTutorials === 'boolean'
+      ) {
+        this.showTutorials =
+          settings.showTutorials;
       }
 
-      if (typeof settings.hints === 'boolean') {
+      if (
+        typeof settings.hints === 'boolean'
+      ) {
         this.hints = settings.hints;
       }
 
-      if (typeof settings.enemyHealthBars === 'boolean') {
-        this.enemyHealthBars = settings.enemyHealthBars;
+      if (
+        typeof settings.enemyHealthBars === 'boolean'
+      ) {
+        this.enemyHealthBars =
+          settings.enemyHealthBars;
       }
 
-      if (typeof settings.autoEquip === 'boolean') {
+      if (
+        typeof settings.autoEquip === 'boolean'
+      ) {
         this.autoEquip = settings.autoEquip;
       }
 
-      if (typeof settings.autoSave === 'boolean') {
+      if (
+        typeof settings.autoSave === 'boolean'
+      ) {
         this.autoSave = settings.autoSave;
       }
 
-      if (typeof settings.difficulty === 'number') {
+      if (
+        typeof settings.difficulty === 'number'
+      ) {
         this.difficulty = Math.max(
           1,
           Math.min(10, settings.difficulty)
         );
       }
 
-
+      // =========================================================
       // AUDIO
+      // =========================================================
 
-      if (typeof settings.masterVolume === 'number') {
-        this.masterVolume = this.clampVolume(settings.masterVolume);
+      if (
+        typeof settings.masterVolume === 'number'
+      ) {
+        this.masterVolume =
+          this.clampVolume(settings.masterVolume);
       }
 
-      if (typeof settings.musicVolume === 'number') {
-        this.musicVolume = this.clampVolume(settings.musicVolume);
+      if (
+        typeof settings.musicVolume === 'number'
+      ) {
+        this.musicVolume =
+          this.clampVolume(settings.musicVolume);
       }
 
-      if (typeof settings.sfxVolume === 'number') {
-        this.sfxVolume = this.clampVolume(settings.sfxVolume);
+      if (
+        typeof settings.sfxVolume === 'number'
+      ) {
+        this.sfxVolume =
+          this.clampVolume(settings.sfxVolume);
       }
 
-      if (typeof settings.environmentVolume === 'number') {
+      if (
+        typeof settings.environmentVolume === 'number'
+      ) {
         this.environmentVolume =
-          this.clampVolume(settings.environmentVolume);
+          this.clampVolume(
+            settings.environmentVolume
+          );
       }
 
-      if (typeof settings.monstersVolume === 'number') {
+      if (
+        typeof settings.monstersVolume === 'number'
+      ) {
         this.monstersVolume =
-          this.clampVolume(settings.monstersVolume);
+          this.clampVolume(
+            settings.monstersVolume
+          );
       }
 
-      if (typeof settings.natureVolume === 'number') {
+      if (
+        typeof settings.natureVolume === 'number'
+      ) {
         this.natureVolume =
-          this.clampVolume(settings.natureVolume);
+          this.clampVolume(
+            settings.natureVolume
+          );
       }
 
-      if (typeof settings.subtitles === 'boolean') {
+      if (
+        typeof settings.subtitles === 'boolean'
+      ) {
         this.subtitles = settings.subtitles;
       }
 
-      if (typeof settings.muteAll === 'boolean') {
+      if (
+        typeof settings.muteAll === 'boolean'
+      ) {
         this.muteAll = settings.muteAll;
       }
 
-
+      // =========================================================
       // ACCESSIBILITY
+      // =========================================================
 
-      if (typeof settings.reduceFlashes === 'boolean') {
-        this.reduceFlashes = settings.reduceFlashes;
+      if (
+        typeof settings.reduceFlashes === 'boolean'
+      ) {
+        this.reduceFlashes =
+          settings.reduceFlashes;
       }
 
-      if (typeof settings.screenShake === 'boolean') {
-        this.screenShake = settings.screenShake;
+      if (
+        typeof settings.screenShake === 'boolean'
+      ) {
+        this.screenShake =
+          settings.screenShake;
       }
 
-      if (typeof settings.motionBlur === 'boolean') {
-        this.motionBlur = settings.motionBlur;
+      if (
+        typeof settings.motionBlur === 'boolean'
+      ) {
+        this.motionBlur =
+          settings.motionBlur;
       }
 
-      if (typeof settings.colorBlindMode === 'boolean') {
-        this.colorBlindMode = settings.colorBlindMode;
+      if (
+        typeof settings.colorBlindMode === 'boolean'
+      ) {
+        this.colorBlindMode =
+          settings.colorBlindMode;
       }
 
-      if (typeof settings.uiScale === 'number') {
+      if (
+        typeof settings.uiScale === 'number'
+      ) {
         this.uiScale = Math.max(
           0,
           Math.min(2, settings.uiScale)
         );
       }
 
-      if (typeof settings.autoPickup === 'boolean') {
-        this.autoPickup = settings.autoPickup;
+      if (
+        typeof settings.autoPickup === 'boolean'
+      ) {
+        this.autoPickup =
+          settings.autoPickup;
       }
 
-      if (typeof settings.reducedKeybinds === 'boolean') {
-        this.reducedKeybinds = settings.reducedKeybinds;
+      if (
+        typeof settings.reducedKeybinds === 'boolean'
+      ) {
+        this.reducedKeybinds =
+          settings.reducedKeybinds;
       }
 
-      if (typeof settings.clickToWalk === 'boolean') {
-        this.clickToWalk = settings.clickToWalk;
+      if (
+        typeof settings.clickToWalk === 'boolean'
+      ) {
+        this.clickToWalk =
+          settings.clickToWalk;
       }
-
     } catch (error) {
-
       console.warn(
         'Could not load KERRSYZYGY settings.',
         error
       );
-
     }
   }
-
 
   // =========================================================
   // HELPERS
   // =========================================================
 
   private clampVolume(value: number): number {
-    return Math.max(0, Math.min(100, value));
+    return Math.max(
+      0,
+      Math.min(100, value)
+    );
   }
-
 }
