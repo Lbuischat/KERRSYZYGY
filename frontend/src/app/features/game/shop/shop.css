@@ -797,162 +797,6 @@
     line-height: 1;
 }
 
-
-/* ================================================================
-   FEATURE SECTION
-   ================================================================ */
-
-.shop-feature {
-    display: grid;
-
-    grid-template-columns:
-        minmax(240px, 0.8fr) minmax(0, 1.2fr);
-
-    gap: clamp(18px, 2vw, 32px);
-
-    margin-top: clamp(30px, 3vw, 46px);
-
-    padding: clamp(18px, 2vw, 26px);
-
-    border: 1px solid rgba(255, 255, 255, 0.075);
-
-    background:
-        linear-gradient(100deg,
-            rgba(255, 255, 255, 0.025),
-            rgba(255, 255, 255, 0.01));
-
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.feature-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.feature-copy h2 {
-    font-size: clamp(12px, 1vw, 15px);
-}
-
-.feature-copy p {
-    max-width: 400px;
-
-    margin:
-        clamp(6px, 0.7vw, 9px) 0 0;
-
-    color: rgba(255, 255, 255, 0.35);
-
-    font-size: clamp(8px, 0.65vw, 11px);
-    line-height: 1.65;
-}
-
-.feature-items {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-    gap: clamp(7px, 0.8vw, 11px);
-}
-
-.feature-item {
-    display: flex;
-    align-items: center;
-
-    min-height: clamp(60px, 6vw, 76px);
-
-    gap: clamp(8px, 0.8vw, 13px);
-
-    padding: clamp(9px, 1vw, 13px);
-
-    border: 1px solid rgba(255, 255, 255, 0.06);
-
-    background: rgba(0, 0, 0, 0.14);
-
-    transition:
-        border-color 160ms ease,
-        background 160ms ease;
-}
-
-.feature-item:hover {
-    border-color: rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.025);
-}
-
-.feature-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: clamp(28px, 2.8vw, 36px);
-    height: clamp(28px, 2.8vw, 36px);
-
-    flex-shrink: 0;
-
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
-    color: rgba(255, 255, 255, 0.6);
-
-    font-size: clamp(13px, 1.2vw, 17px);
-}
-
-.feature-item div {
-    display: flex;
-    flex-direction: column;
-
-    min-width: 0;
-}
-
-.feature-item strong {
-    color: rgba(255, 255, 255, 0.72);
-
-    font-size: clamp(7px, 0.6vw, 9px);
-    letter-spacing: 0.1em;
-}
-
-.feature-item span {
-    margin-top: 4px;
-
-    color: rgba(255, 255, 255, 0.27);
-
-    font-size: clamp(6px, 0.5vw, 8px);
-    letter-spacing: 0.08em;
-}
-
-
-/* ================================================================
-   FOOTER
-   ================================================================ */
-
-.shop-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: clamp(7px, 0.8vw, 11px);
-
-    margin-top: clamp(18px, 2vw, 26px);
-
-    padding:
-        clamp(8px, 0.8vw, 11px) 0;
-
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-
-    color: rgba(255, 255, 255, 0.32);
-
-    font-size: clamp(7px, 0.6vw, 10px);
-    font-weight: 500;
-    letter-spacing: 0.18em;
-
-    text-transform: uppercase;
-}
-
-.footer-separator {
-    opacity: 0.4;
-}
-
-
 /* ================================================================
    FOCUS
    ================================================================ */
@@ -1041,13 +885,6 @@
             repeat(3, minmax(0, 1fr));
     }
 
-    .shop-feature {
-        grid-template-columns: 1fr;
-    }
-
-    .feature-copy p {
-        max-width: 650px;
-    }
 }
 
 
@@ -1164,16 +1001,6 @@
 
     .item-art {
         height: 150px;
-    }
-
-    .shop-feature {
-        margin-top: 28px;
-        padding: 17px;
-    }
-
-    .shop-footer {
-        padding: 0 14px;
-        font-size: 6px;
     }
 
     .shop-back-button {

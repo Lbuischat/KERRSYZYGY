@@ -1,42 +1,54 @@
 <div class="relative min-h-screen w-full">
 
   <app-game-world
+    #gameWorld
     (tutorialBoundary)="showTutorialMessage()"
     (playerAttacked)="onPlayerAttack()"
-    (enemyDefeated)="onEnemyDefeated()" />
+    (enemyDefeated)="onEnemyDefeated()"
+    (berryGathered)="tutorial.onBerryGathered()"
+  />
 
-  <app-hud (settingsOpen)="openSettings()" (inventoryOpen)="toggleInventory()" />
+  <app-hud
+    (settingsOpen)="openSettings()"
+    (inventoryOpen)="toggleInventory()"
+  />
 
-  <app-tutorial [player]="gameWorld?.player" />
+  <app-tutorial
+    #tutorial
+    [player]="gameWorld?.player"
+    (enemyStepStarted)="onTutorialEnemyStepStarted()"
+  />
 
   @if (inventoryOpen) {
-  <app-inventory (closeInventory)="toggleInventory()" />
+    <app-inventory
+      (closeInventory)="toggleInventory()"
+    />
   }
 
   @if (tutorialMessageVisible) {
-  <div class="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center">
-    <div class="tutorial-message">
+    <div class="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center">
+      <div class="tutorial-message">
 
-      <div class="tutorial-message-line"></div>
+        <div class="tutorial-message-line"></div>
 
-      <div class="tutorial-message-content">
-        <span class="tutorial-message-label">
-          TUTORIAL
-        </span>
+        <div class="tutorial-message-content">
+          <span class="tutorial-message-label">
+            TUTORIAL
+          </span>
 
-        <h2>
-          You can't leave yet.
-        </h2>
+          <h2>
+            You can't leave yet.
+          </h2>
 
-        <p>
-          Complete the tutorial before exploring beyond this area.
-        </p>
+          <p>
+            Complete the tutorial before exploring beyond this area.
+          </p>
+        </div>
+
+        <div class="tutorial-message-line"></div>
+
       </div>
-
-      <div class="tutorial-message-line"></div>
-
     </div>
-  </div>
   }
 
 </div>

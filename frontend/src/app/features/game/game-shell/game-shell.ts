@@ -20,7 +20,7 @@ import { tutorial } from '../tutorial/tutorial';
 export class GameShell {
 
   @ViewChild(GameWorld)
-  gameWorld!: GameWorld;
+  gameWorld?: GameWorld;
 
   /*
    * Reference to the Tutorial component so events coming up from
@@ -77,13 +77,16 @@ export class GameShell {
   }
 
   onEnemyDefeated(): void {
-
     if (!this.tutorialCmp) {
       return;
     }
 
     this.tutorialCmp.onTutorialEnemyDefeated();
 
+  }
+
+  onTutorialEnemyStepStarted(): void {
+    this.gameWorld?.startTutorialEnemyGuide();
   }
 
   @HostListener('document:keydown', ['$event'])

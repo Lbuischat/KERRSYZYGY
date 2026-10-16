@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+
+import { Component, OnDestroy } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 
 import { PlayerService } from '../../../services/player.service';
@@ -9,20 +9,16 @@ import { Task } from '../../../features/tasks/task-panel/task.model';
 interface Personagem {
   nome: string;
   classe: string;
-  frase: string;
-  estilo: string;
-  tema: string;
   colour: string;
 }
 
 @Component({
   selector: 'app-player-info',
-  imports: [RouterLink, FormsModule],
+  imports: [FormsModule],
   templateUrl: './player-info.html',
   styleUrl: './player-info.css'
 })
-export class PlayerInfo {
-
+export class PlayerInfo implements OnDestroy {
   constructor(
     public playerService: PlayerService,
     private taskService: TaskService
@@ -32,54 +28,21 @@ export class PlayerInfo {
 
   tasks: Task[] = [];
 
-  personagens: Personagem[] = [
-    {
-      nome: 'Astra',
-      classe: 'Explorer',
-      frase: 'Ready for the journey.',
-      estilo: 'Cosmic',
-      tema: 'Adventurer',
-      colour: '#d94b4b'
-    },
-    {
-      nome: 'Luna',
-      classe: 'Mage',
-      frase: 'The stars will guide me.',
-      estilo: 'Mystic',
-      tema: 'Cosmic',
-      colour: '#d9c84b'
-    },
-    {
-      nome: 'Nova',
-      classe: 'Warrior',
-      frase: 'My journey starts here.',
-      estilo: 'Battle',
-      tema: 'Adventurer',
-      colour: '#d94b91'
-    },
-    {
-      nome: 'Orion',
-      classe: 'Ranger',
-      frase: 'Always looking beyond.',
-      estilo: 'Explorer',
-      tema: 'Space',
-      colour: '#4b82d9'
-    },
-    {
-      nome: 'Stella',
-      classe: 'Guardian',
-      frase: 'I will protect this world.',
-      estilo: 'Guardian',
-      tema: 'Cosmic',
-      colour: '#8b5bd9'
-    }
+  // Current avatar preview
+  readonly personagens: Personagem[] = [
+    { nome: 'Astra', classe: 'Explorer', colour: '#d94b4b' },
+    { nome: 'Luna', classe: 'Mage', colour: '#d9c84b' },
+    { nome: 'Nova', classe: 'Warrior', colour: '#d94b91' },
+    { nome: 'Orion', classe: 'Ranger', colour: '#4b82d9' },
+    { nome: 'Stella', classe: 'Guardian', colour: '#8b5bd9' }
   ];
 
-  personagemSelecionado: number = 0;
+  personagemSelecionado = 0;
 
-  formIncompleto: boolean = false;
-  perfilCriado: boolean = false;
-  mostrarSucesso: boolean = false;
+  formIncompleto = false;
+  mostrarSucesso = false;
+
+  private successTimeout?: ReturnType<typeof setTimeout>;
 
   get personagemAtual(): Personagem {
     return this.personagens[this.personagemSelecionado];
@@ -90,11 +53,9 @@ export class PlayerInfo {
   }
 
   get taskProgress(): number {
-    if (!this.tasks.length) {
-      return 0;
-    }
-
-    return (this.completedTasks / this.tasks.length) * 100;
+    return this.tasks.length
+      ? (this.completedTasks / this.tasks.length) * 100
+      : 0;
   }
 
   completeTask(task: Task): void {
@@ -108,49 +69,34 @@ export class PlayerInfo {
     this.playerService.saveProfile();
   }
 
-  proximoPersonagem(): void {
-    this.personagemSelecionado =
-      (this.personagemSelecionado + 1) % this.personagens.length;
-  }
-
-  personagemAnterior(): void {
-    this.personagemSelecionado =
-      (this.personagemSelecionado - 1 + this.personagens.length) %
-      this.personagens.length;
-  }
-
-  selecionarPersonagem(index: number): void {
-    this.personagemSelecionado = index;
-  }
-
   criarPerfil(form: NgForm): void {
     if (form.invalid) {
       this.formIncompleto = true;
       this.mostrarSucesso = false;
 
       form.control.markAllAsTouched();
-
       return;
     }
 
     this.formIncompleto = false;
-    this.perfilCriado = true;
-    this.mostrarSucesso = true;
 
     this.playerService.saveProfile();
+    this.mostrarSucesso = true;
 
-    console.log(
-      'Informações do perfil:',
-      this.playerService.profile
-    );
+    // Reset any previous success-message timer.
+    if (this.successTimeout) {
+      clearTimeout(this.successTimeout);
+    }
 
-    console.log(
-      'Personagem escolhido:',
-      this.personagemAtual
-    );
-
-    setTimeout(() => {
+    this.successTimeout = setTimeout(() => {
       this.mostrarSucesso = false;
+      this.successTimeout = undefined;
     }, 3000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.successTimeout) {
+      clearTimeout(this.successTimeout);
+    }
   }
 }

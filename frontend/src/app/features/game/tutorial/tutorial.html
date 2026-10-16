@@ -110,6 +110,35 @@
 
     }
 
+    @if (currentStep === 'gatherBerries') {
+
+      <h2>Gather Berries</h2>
+
+      <p>
+        Collect berries from a nearby bush.
+      </p>
+
+      <p class="berry-counter">
+        {{ berriesGathered }} / {{ BERRIES_REQUIRED }} gathered
+      </p>
+
+      <div class="berry-progress">
+        @for (berry of [1, 2, 3]; track berry) {
+          <div
+            class="berry-dot"
+            [class.collected]="berriesGathered >= berry"
+          >
+            @if (berriesGathered >= berry) {
+              ✓
+            } @else {
+              {{ berry }}
+            }
+          </div>
+        }
+      </div>
+
+    }
+
   </div>
 
 }

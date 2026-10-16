@@ -76,3 +76,35 @@
 
   color: white;
 }
+
+.berry-counter {
+  margin-top: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.berry-progress {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.berry-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.berry-dot.collected {
+  background: #4b9b50;
+  border-color: #79d681;
+}
+

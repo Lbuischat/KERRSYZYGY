@@ -15,6 +15,42 @@
   transform-origin: top left;
 }
 
+#enemy-guide {
+  position: absolute;
+  height: 1px;
+  transform-origin: left center;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.guide-dot {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(255, 220, 80, 0.9);
+  box-shadow:
+    0 0 4px rgba(255, 220, 80, 0.9),
+    0 0 9px rgba(255, 200, 40, 0.55),
+    0 0 14px rgba(255, 180, 20, 0.25);
+  animation: guide-dot-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes guide-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(0.75);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 #map-background {
   position: absolute;
   left: 0;

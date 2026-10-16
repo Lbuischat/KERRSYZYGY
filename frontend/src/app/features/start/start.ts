@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { PlayerService } from '../../services/player.service';
 import { LanguageService } from '../../services/language/language.service';
 
@@ -27,20 +28,27 @@ interface CelestialEvent {
   styleUrl: './start.css',
 })
 export class Start {
+  @ViewChildren('stageSection', { read: ElementRef })
+  private stageSections!: QueryList<ElementRef<HTMLElement>>;
 
-  // =========================================================
-  // BACKGROUND STARS
-  // STATIC — GENERATED ONCE
-  // =========================================================
+  // Background
+  readonly backgroundStars: BackgroundStar[] = Array.from({ length: 180 }, () => ({
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    size: Math.random() < 0.9 ? 1 : 2,
+    opacity: 0.08 + Math.random() * 0.17,
+  }));
 
-  backgroundStars: BackgroundStar[] = [];
-  celestialEvents: CelestialEvent[] = [];
+  readonly celestialEvents: CelestialEvent[] = Array.from({ length: 5 }, (_, id) => ({
+    id,
+    type: Math.random() < 0.5 ? 'comet' : 'meteor',
+    left: Math.random() * 100,
+    top: Math.random() * 70,
+    duration: 2 + Math.random() * 3,
+    delay: Math.random() * 8,
+  }));
 
-
-  // =========================================================
-  // OPTIONS
-  // =========================================================
-
+  // Options
   readonly months = [
     'January',
     'February',
@@ -56,199 +64,134 @@ export class Start {
     'December',
   ];
 
-  readonly genderOptions = [
-    'Female',
-    'Male',
-    'Non-binary',
-    'Other',
-  ];
+  readonly genderOptions = ['Female', 'Male', 'Non-binary', 'Other'];
 
-  readonly pronounOptions = [
-    'She / Her',
-    'He / Him',
-    'They / Them',
-    'It / Its',
-  ];
+  readonly pronounOptions = ['She / Her', 'He / Him', 'They / Them', 'It / Its'];
 
-  readonly days = Array.from(
-    { length: 31 },
-    (_, index) => index + 1
-  );
+  readonly days = Array.from({ length: 31 }, (_, index) => index + 1);
 
-  readonly years = Array.from(
-    { length: 100 },
-    (_, index) => new Date().getFullYear() - index
-  );
+  readonly years = Array.from({ length: 100 }, (_, index) => new Date().getFullYear() - index);
 
-
-  // =========================================================
-  // BIRTHDAY SELECTIONS
-  // =========================================================
-
+  // Birthday selections
   selectedMonth = '';
   selectedDay: number | null = null;
   selectedYear: number | null = null;
 
-
-  // =========================================================
-  // CURRENT STAGE
-  // =========================================================
-
+  // Current stage: 0 through 4
   etapa = 0;
-
-
-  // =========================================================
-  // CONSTRUCTOR
-  // =========================================================
 
   constructor(
     public playerService: PlayerService,
     private router: Router,
     public readonly languageService: LanguageService,
   ) {
-    this.createBackgroundStars();
-    this.createCelestialEvents();
     this.restoreBirthdaySelections();
   }
 
-
-  // =========================================================
-  // BACKGROUND STARS
-  // STATIC — NO ANIMATION
-  // =========================================================
-
-  private createBackgroundStars(): void {
-    const numberOfStars = 180;
-
-    for (let i = 0; i < numberOfStars; i++) {
-      this.backgroundStars.push({
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size: Math.random() < 0.9 ? 1 : 2,
-        opacity: 0.08 + Math.random() * 0.17,
-      });
-    }
-  }
-
-
-  // =========================================================
-  // CELESTIAL EVENTS
-  // COMETS / METEORS
-  // THESE ARE THE ONLY BACKGROUND OBJECTS THAT MOVE
-  // =========================================================
-
-  private createCelestialEvents(): void {
-    const numberOfEvents = 5;
-
-    for (let i = 0; i < numberOfEvents; i++) {
-      this.celestialEvents.push({
-        id: i,
-        type: Math.random() < 0.5 ? 'comet' : 'meteor',
-        left: Math.random() * 100,
-        top: Math.random() * 70,
-        duration: 2 + Math.random() * 3,
-        delay: Math.random() * 8,
-      });
-    }
-  }
-
-
-  // =========================================================
-  // NAVIGATION
-  // ANGULAR animate.enter / animate.leave HANDLES
-  // THE VISUAL TRANSITION — NO setTimeout NEEDED
-  // =========================================================
+  // Navigation
 
   continue(): void {
-    this.goToNextStage();
+    if (this.etapa === 0) {
+      this.goToNextStage();
+    }
   }
 
   private goToNextStage(): void {
-    if (this.etapa >= 5) {
+    if (this.etapa >= 4) {
       return;
     }
 
     this.etapa++;
+
+    requestAnimationFrame(() => {
+      const nextSection = this.stageSections.get(this.etapa);
+
+      nextSection?.nativeElement.scrollIntoView({
+        behavior: window.matchMedia(
+          '(prefers-reduced-motion: reduce)',
+        ).matches
+          ? 'auto'
+          : 'smooth',
+        block: 'start',
+      });
+    });
   }
 
+  // Gender
 
-  // =========================================================
-  // GENDER
-  // =========================================================
+  selectGender(gender: string): void {
+    if (this.etapa !== 1) {
+      return;
+    }
+
+    this.playerService.profile.gender = gender;
+    this.playerService.saveProfile();
+  }
 
   continueAfterGender(): void {
-    if (!this.playerService.profile.gender) {
+    if (this.etapa !== 1 || !this.playerService.profile.gender) {
       return;
     }
 
     this.goToNextStage();
   }
 
-  selectGender(gender: string): void {
-    this.playerService.profile.gender = gender;
-    this.playerService.saveProfile();
-  }
-
-
-  // =========================================================
-  // USERNAME
-  // =========================================================
+  // Username
 
   selectUsername(): void {
-    const username =
-      this.playerService.profile.username.trim();
+    if (this.etapa !== 2) {
+      return;
+    }
+
+    const username = this.playerService.profile.username.trim();
 
     if (!username) {
       return;
     }
 
     this.playerService.profile.username = username;
-
     this.playerService.saveProfile();
 
     this.goToNextStage();
   }
 
+  // Pronouns
 
-  // =========================================================
-  // PRONOUNS
-  // =========================================================
+  selectPronouns(pronouns: string): void {
+    if (this.etapa !== 3) {
+      return;
+    }
+
+    this.playerService.profile.pronouns = pronouns;
+    this.playerService.saveProfile();
+  }
 
   continueAfterPronouns(): void {
-    if (!this.playerService.profile.pronouns) {
+    if (this.etapa !== 3 || !this.playerService.profile.pronouns) {
       return;
     }
 
     this.goToNextStage();
   }
 
-  selectPronouns(pronouns: string): void {
-    this.playerService.profile.pronouns = pronouns;
+  // Birthday
 
-    this.playerService.saveProfile();
-  }
-
-
-  // =========================================================
-  // BIRTHDAY
-  // =========================================================
-
-  selectBirthday(
-    type: 'month' | 'day' | 'year',
-    value: string | number
-  ): void {
+  selectBirthday(type: 'month' | 'day' | 'year', value: string | number): void {
+    if (this.etapa !== 4) {
+      return;
+    }
 
     switch (type) {
       case 'month':
-        this.selectedMonth = value as string;
+        this.selectedMonth = String(value);
         break;
 
       case 'day':
-        this.selectedDay = value as number;
+        this.selectedDay = Number(value);
         break;
 
       case 'year':
-        this.selectedYear = value as number;
+        this.selectedYear = Number(value);
         break;
     }
 
@@ -256,136 +199,60 @@ export class Start {
     this.updateBirthday();
   }
 
-
-  // =========================================================
-  // CONTINUE AFTER BIRTHDAY
-  // =========================================================
-
-  continueAfterBirthday(): void {
-    if (!this.playerService.profile.birthday) {
-      return;
-    }
-
-    this.playerService.saveProfile();
-
-    this.goToNextStage();
-  }
-
-
-  // =========================================================
-  // AVAILABLE DAYS
-  // =========================================================
-
   get availableDays(): number[] {
     if (!this.selectedMonth) {
       return this.days;
     }
 
-    const monthNumber =
-      this.months.indexOf(this.selectedMonth) + 1;
+    const monthNumber = this.months.indexOf(this.selectedMonth) + 1;
+    const year = this.selectedYear ?? new Date().getFullYear();
 
-    const year =
-      this.selectedYear ?? new Date().getFullYear();
+    const daysInMonth = new Date(year, monthNumber, 0).getDate();
 
-    const daysInMonth =
-      new Date(year, monthNumber, 0).getDate();
-
-    return Array.from(
-      { length: daysInMonth },
-      (_, index) => index + 1
-    );
+    return Array.from({ length: daysInMonth }, (_, index) => index + 1);
   }
-
-
-  // =========================================================
-  // CLAMP SELECTED DAY
-  // =========================================================
 
   private clampSelectedDay(): void {
     if (this.selectedDay === null) {
       return;
     }
 
-    const maxDay = this.availableDays.length;
-
-    if (this.selectedDay > maxDay) {
+    if (this.selectedDay > this.availableDays.length) {
       this.selectedDay = null;
     }
   }
 
-
-  // =========================================================
-  // UPDATE BIRTHDAY
-  // =========================================================
-
   private updateBirthday(): void {
-    if (
-      !this.selectedMonth ||
-      !this.selectedDay ||
-      !this.selectedYear
-    ) {
+    const { selectedMonth, selectedDay, selectedYear } = this;
+
+    if (!selectedMonth || selectedDay === null || selectedYear === null) {
       this.playerService.profile.birthday = '';
       return;
     }
 
-    const monthNumber =
-      this.months.indexOf(this.selectedMonth) + 1;
+    const monthNumber = this.months.indexOf(selectedMonth) + 1;
 
-    if (
-      !this.isValidDate(
-        this.selectedYear,
-        monthNumber,
-        this.selectedDay
-      )
-    ) {
+    if (monthNumber < 1 || !this.isValidDate(selectedYear, monthNumber, selectedDay)) {
       this.playerService.profile.birthday = '';
       return;
     }
 
-    const month =
-      String(monthNumber).padStart(2, '0');
+    const month = String(monthNumber).padStart(2, '0');
+    const day = String(selectedDay).padStart(2, '0');
 
-    const day =
-      String(this.selectedDay).padStart(2, '0');
-
-    this.playerService.profile.birthday =
-      `${this.selectedYear}-${month}-${day}`;
+    this.playerService.profile.birthday = `${selectedYear}-${month}-${day}`;
 
     this.playerService.saveProfile();
   }
 
+  private isValidDate(year: number, month: number, day: number): boolean {
+    const date = new Date(year, month - 1, day);
 
-  // =========================================================
-  // DATE VALIDATION
-  // =========================================================
-
-  private isValidDate(
-    year: number,
-    month: number,
-    day: number
-  ): boolean {
-
-    const date = new Date(
-      year,
-      month - 1,
-      day
-    );
-
-    return (
-      date.getFullYear() === year &&
-      date.getMonth() === month - 1 &&
-      date.getDate() === day
-    );
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
   }
 
-
-  // =========================================================
-  // RESTORE BIRTHDAY
-  // =========================================================
-
   private restoreBirthdaySelections(): void {
-    const birthday =
-      this.playerService.profile.birthday;
+    const birthday = this.playerService.profile.birthday;
 
     if (!birthday) {
       return;
@@ -397,17 +264,9 @@ export class Start {
       return;
     }
 
-    const year = Number(parts[0]);
-    const month = Number(parts[1]);
-    const day = Number(parts[2]);
+    const [year, month, day] = parts.map(Number);
 
-    if (
-      !year ||
-      !month ||
-      !day ||
-      month < 1 ||
-      month > 12
-    ) {
+    if (!year || !month || !day || month < 1 || month > 12 || !this.isValidDate(year, month, day)) {
       return;
     }
 
@@ -416,12 +275,17 @@ export class Start {
     this.selectedDay = day;
   }
 
-
-  // =========================================================
-  // GAME
-  // =========================================================
+  // Game
 
   startJourney(): void {
+    if (
+      this.etapa !== 4 ||
+      !this.playerService.profile.birthday
+    ) {
+      return;
+    }
+
+    this.playerService.saveProfile();
     this.router.navigate(['/game']);
   }
 }

@@ -1,447 +1,137 @@
+
 <main class="profile-page">
-
-  <div class="profile-ui">
-
-    <div class="profile-shell">
-
-      <!-- HEADER -->
-      <header class="profile-header">
-
-        <div class="profile-title">
-          <span class="profile-kicker">PLAYER PROFILE</span>
-
-          <h1>Personal Dossier</h1>
-
-          <span class="profile-title-line"></span>
-        </div>
-
-        <div class="profile-status">
-          <span class="status-dot"></span>
-          <span>PROFILE ACTIVE</span>
-        </div>
-
-      </header>
-
-
-      <!-- CONTENT -->
-      <div class="profile-content">
-
-
-        <!-- ========================================================= -->
-        <!-- IDENTITY -->
-        <!-- ========================================================= -->
-
-        <section class="profile-section identity-section">
-
-          <div class="section-heading">
-
-            <div>
-              <span class="section-kicker">IDENTITY</span>
-
-              <h2>Personal Information</h2>
-
-              <p>
-                Information selected during your journey.
-              </p>
-            </div>
-
-          </div>
-
-
-          <div class="identity-layout">
-
-
-            <!-- PLAYER INFORMATION -->
-            <div class="identity-data">
-
-              <div class="profile-field">
-                <span class="field-label">USERNAME</span>
-
-                <strong>
-                  {{ playerService.profile.username || '—' }}
-                </strong>
-              </div>
-
-
-              <div class="profile-field">
-                <span class="field-label">GENDER</span>
-
-                <strong>
-                  {{ playerService.profile.gender || '—' }}
-                </strong>
-              </div>
-
-
-              <div class="profile-field">
-                <span class="field-label">PRONOUNS</span>
-
-                <strong>
-                  {{ playerService.profile.pronouns || '—' }}
-                </strong>
-              </div>
-
-
-              <div class="profile-field">
-                <span class="field-label">BIRTHDAY</span>
-
-                <strong>
-                  {{ playerService.profile.birthday || '—' }}
-                </strong>
-              </div>
-
-
-              <div class="profile-field">
-                <span class="field-label">LANGUAGE</span>
-
-                <strong>
-                  {{ playerService.profile.language || 'Português' }}
-                </strong>
-              </div>
-
-            </div>
-
-
-            <!-- ===================================================== -->
-            <!-- CURRENT AVATAR -->
-            <!-- ===================================================== -->
-
-            <div class="profile-character-preview">
-
-              <div class="character-preview-header">
-
-                <span class="field-label">
-                  CURRENT AVATAR
-                </span>
-
-                <span class="character-index">
-                  {{ personagemSelecionado + 1 }}
-                  /
-                  {{ personagens.length }}
-                </span>
-
-              </div>
-
-
-              <div class="character-preview-frame">
-
-                <div class="character-glow"></div>
-
-
-                <!-- THE ACTUAL CHARACTER -->
-                <div id="profile-character" class="profile-character" [style.background-color]="personagemAtual.colour">
-                </div>
-
-              </div>
-
-
-              <div class="character-preview-info">
-
-                <h3>
-                  {{ personagemAtual.nome }}
-                </h3>
-
-                <span>
-                  {{ personagemAtual.classe }}
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-
-        <!-- ========================================================= -->
-        <!-- ABOUT -->
-        <!-- ========================================================= -->
-
-        <section class="profile-section about-section">
-
-          <div class="section-heading">
-
-            <div>
-
-              <span class="section-kicker">
-                ABOUT
-              </span>
-
-              <h2>
-                About You
-              </h2>
-
-              <p>
-                Add something that represents who you are.
-              </p>
-
-            </div>
-
-          </div>
-
-
-
-          <form class="profile-form" #profileForm="ngForm" (ngSubmit)="criarPerfil(profileForm)">
-
-
-            <!-- ===================================================== -->
-            <!-- BIO -->
-            <!-- ===================================================== -->
-
-            <div class="profile-field bio-field">
-
-              <label class="field-label" for="bio">
-                BIOGRAPHY
-              </label>
-
-
-              <textarea id="bio" name="bio" placeholder="Tell something about yourself..."
-                [(ngModel)]="playerService.profile.bio" required #bio="ngModel"></textarea>
-
-
-              @if (bio.invalid && bio.touched) {
-
-              <span class="field-error">
-                Write a short biography.
-              </span>
-
-              }
-
-            </div>
-
-
-
-            <!-- ===================================================== -->
-            <!-- CHARACTER SELECTOR -->
-            <!-- ===================================================== -->
-
-            <div class="character-selector-section">
-
-
-              <div class="character-selector-header">
-
-                <div>
-
-                  <span class="section-kicker">
-                    REPRESENTATION
-                  </span>
-
-                  <h2>
-                    Character
-                  </h2>
-
-                </div>
-
-
-                <!-- ARROWS -->
-                <div class="character-controls">
-
-                  <button type="button" class="character-arrow" (click)="personagemAnterior()"
-                    aria-label="Previous character">
-                    ←
-                  </button>
-
-
-                  <button type="button" class="character-arrow" (click)="proximoPersonagem()"
-                    aria-label="Next character">
-                    →
-                  </button>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- =================================================== -->
-              <!-- CHARACTER DOSSIER -->
-              <!-- =================================================== -->
-
-              <div class="character-dossier">
-
-
-                <!-- CHARACTER -->
-                <div class="character-art">
-
-                  <div class="character-glow"></div>
-
-
-                  <!-- ACTUAL CSS PLAYER -->
-                  <div class="profile-character" [style.background-color]="personagemAtual.colour"></div>
-
-                </div>
-
-
-
-                <!-- CHARACTER INFORMATION -->
-                <div class="character-information">
-
-                  <span class="field-label">
-                    CHARACTER
-                  </span>
-
-
-                  <h3>
-                    {{ personagemAtual.nome }}
-                  </h3>
-
-
-                  <span class="character-class">
-                    {{ personagemAtual.classe }}
-                  </span>
-
-
-                  <p class="character-quote">
-                    {{ personagemAtual.frase }}
-                  </p>
-
-
-                  <div class="character-tags">
-
-                    <span>
-                      {{ personagemAtual.estilo }}
-                    </span>
-
-                    <span>
-                      {{ personagemAtual.tema }}
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- =================================================== -->
-              <!-- CHARACTER NAVIGATION -->
-              <!-- =================================================== -->
-
-              <div class="character-navigation">
-
-                <div class="character-dots">
-
-                  @for (
-                  personagem of personagens;
-                  track $index
-                  ) {
-
-                  <button type="button" class="character-dot" [class.active]="
-                        personagemSelecionado === $index
-                      " (click)="selecionarPersonagem($index)" [attr.aria-label]="
-                        'Character ' + ($index + 1)
-                      "></button>
-
-                  }
-
-                </div>
-
-
-                <span>
-                  CHARACTER
-                  {{ personagemSelecionado + 1 }}
-                  /
-                  {{ personagens.length }}
-                </span>
-
-              </div>
-
-            </div>
-
-
-
-            <!-- ===================================================== -->
-            <!-- ACTIONS -->
-            <!-- ===================================================== -->
-
-            <div class="profile-actions">
-
-
-              <button class="save-profile-button" type="submit">
-
-                <span>
-                  SAVE PROFILE
-                </span>
-
-                <span class="button-arrow">
-                  →
-                </span>
-
-              </button>
-
-
-
-              @if (formIncompleto) {
-
-              <div class="profile-feedback error">
-
-                <span>!</span>
-
-                Complete all required information.
-
-              </div>
-
-              }
-
-
-
-              @if (mostrarSucesso) {
-
-              <div class="profile-feedback success">
-
-                <span>✓</span>
-
-                Profile saved successfully.
-
-              </div>
-
-              }
-
-
-
-              @if (perfilCriado) {
-
-              <button class="shop-button" type="button" routerLink="/shop">
-
-                GO TO SHOP
-
-                <span>→</span>
-
-              </button>
-
-              }
-
-            </div>
-
-          </form>
-
-        </section>
-
-
-
-        <!-- FOOTER -->
-        <footer class="profile-footer">
-
-          <span>
-            PLAYER PROFILE
-          </span>
-
-          <span class="footer-separator">
-            //
-          </span>
-
-          <span>
-            CELESTIAL JOURNEY
-          </span>
-
-        </footer>
-
+  <div class="profile-shell">
+
+    <!-- Header -->
+    <header class="profile-header">
+      <div class="profile-title">
+        <span class="profile-kicker">PLAYER PROFILE</span>
+        <h1>Personal Dossier</h1>
+        <span class="profile-title-line"></span>
       </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="profile-content">
+
+      <!-- Personal information -->
+      <section class="profile-section identity-section">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">IDENTITY</span>
+            <h2>Personal Information</h2>
+            <p>Information selected during your journey.</p>
+          </div>
+        </div>
+
+        <div class="identity-layout">
+
+          <!-- Player information -->
+          <div class="identity-data">
+
+            <div class="profile-field">
+              <span class="field-label">USERNAME</span>
+              <strong>
+                {{ playerService.profile.username || '—' }}
+              </strong>
+            </div>
+
+            <div class="profile-field">
+              <span class="field-label">GENDER</span>
+              <strong>
+                {{ playerService.profile.gender || '—' }}
+              </strong>
+            </div>
+
+            <div class="profile-field">
+              <span class="field-label">PRONOUNS</span>
+              <strong>
+                {{ playerService.profile.pronouns || '—' }}
+              </strong>
+            </div>
+
+            <div class="profile-field">
+              <span class="field-label">BIRTHDAY</span>
+              <strong>
+                {{ playerService.profile.birthday || '—' }}
+              </strong>
+            </div>
+
+            <div class="profile-field">
+              <span class="field-label">LANGUAGE</span>
+              <strong>
+                {{ playerService.profile.language || 'Português' }}
+              </strong>
+            </div>
+
+          </div>
+
+          <!-- Current avatar -->
+          <aside class="profile-character-preview">
+            <div class="character-preview-header">
+              <span class="field-label">CURRENT AVATAR</span>
+
+              <span class="character-index">
+                {{ personagemSelecionado + 1 }} / {{ personagens.length }}
+              </span>
+            </div>
+
+            <div class="character-preview-frame">
+              <div class="character-glow"></div>
+
+              <div
+                id="profile-character"
+                class="profile-character"
+                [style.background-color]="personagemAtual.colour"
+              ></div>
+            </div>
+
+            <div class="character-preview-info">
+              <h3>{{ personagemAtual.nome }}</h3>
+              <span>{{ personagemAtual.classe }}</span>
+            </div>
+          </aside>
+
+        </div>
+      </section>
+
+      <!-- Save profile -->
+      <form
+        class="profile-form"
+        #profileForm="ngForm"
+        (ngSubmit)="criarPerfil(profileForm)"
+      >
+        <div class="profile-actions">
+
+          <button class="save-profile-button" type="submit">
+            <span>SAVE PROFILE</span>
+            <span class="button-arrow" aria-hidden="true">→</span>
+          </button>
+
+          @if (formIncompleto) {
+            <div class="profile-feedback error" role="alert">
+              <span aria-hidden="true">!</span>
+              Complete all required information.
+            </div>
+          }
+
+          @if (mostrarSucesso) {
+            <div class="profile-feedback success" role="status">
+              <span aria-hidden="true">✓</span>
+              Profile saved successfully.
+            </div>
+          }
+
+        </div>
+      </form>
+
+      <!-- Footer -->
+      <footer class="profile-footer">
+        <span>PLAYER PROFILE</span>
+        <span class="footer-separator" aria-hidden="true">//</span>
+        <span>CELESTIAL JOURNEY</span>
+      </footer>
 
     </div>
-
   </div>
-
 </main>

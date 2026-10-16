@@ -41,6 +41,14 @@ export class GameWorld {
   @Output()
   enemyDefeated = new EventEmitter<void>();
 
+  @Output()
+  berryGathered = new EventEmitter<void>();
+
+  private tutorialEnemyGuideActive = false;
+  private readonly GUIDE_DOT_SPACING = 45;
+  private readonly GUIDE_START_OFFSET = 30;
+  public readonly guideDotSlots = Array.from({ length: 90 });
+
   @ViewChild(Player)
   player!: Player;
 
@@ -119,6 +127,7 @@ export class GameWorld {
 
       // Camera follows the player.
       this.updateCamera();
+      this.updateTutorialEnemyGuide();
 
       this.animationFrameId = requestAnimationFrame(update);
     };
@@ -166,10 +175,6 @@ export class GameWorld {
   playerAttack(): void {
     console.log('PLAYER ATTACK RECEIVED');
 
-    /*
-     * Let the tutorial know an attack happened, independent of
-     * whether it hits the enemy below.
-     */
     this.playerAttacked.emit();
 
     if (!this.player || !this.enemy) {
@@ -253,6 +258,7 @@ export class GameWorld {
         this.inventoryService.addBerry(berries);
 
         this.audioService.playItemPickup();
+        this.berryGathered.emit();
 
         this.bushes.update((list) =>
           list.map((b) => (b.id === bush.id ? { ...b, harvested: true } : b)),
@@ -471,6 +477,7 @@ export class GameWorld {
     }
 
     if (this.enemy.isDead && !this.enemyWasDead) {
+      this.stopTutorialEnemyGuide();
       this.enemyDefeated.emit();
     }
 
@@ -579,6 +586,146 @@ export class GameWorld {
   // ================================================================
   // CAMERA
   // ================================================================
+
+  private updateTutorialEnemyGuide(): void {
+    const guide =
+      document.getElementById('enemy-guide');
+
+    if (!guide) {
+      return;
+    }
+
+    const dots =
+      guide.querySelectorAll<HTMLElement>('.guide-dot');
+
+    if (
+      !this.tutorialEnemyGuideActive ||
+      !this.player ||
+      !this.enemy ||
+      this.enemy.isDead
+    ) {
+      guide.style.display = 'none';
+
+      for (const dot of dots) {
+        dot.style.display = 'none';
+      }
+
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // PLAYER CENTER
+    // ------------------------------------------------------------
+
+    const playerPosition =
+      this.player.getPosition();
+
+    const playerSize =
+      this.player.getSize();
+
+    const playerCenterX =
+      playerPosition.x +
+      playerSize / 2;
+
+    const playerCenterY =
+      playerPosition.y +
+      playerSize / 2;
+
+    // ------------------------------------------------------------
+    // ENEMY CENTER
+    // ------------------------------------------------------------
+
+    const enemyCenterX =
+      this.enemy.x +
+      this.enemy.size / 2;
+
+    const enemyCenterY =
+      this.enemy.y +
+      this.enemy.size / 2;
+
+    // ------------------------------------------------------------
+    // DISTANCE
+    // ------------------------------------------------------------
+
+    const dx =
+      enemyCenterX -
+      playerCenterX;
+
+    const dy =
+      enemyCenterY -
+      playerCenterY;
+
+    const distance =
+      Math.sqrt(
+        dx * dx +
+        dy * dy
+      );
+
+    const angle =
+      Math.atan2(dy, dx) *
+      (180 / Math.PI);
+
+    // ------------------------------------------------------------
+    // GUIDE POSITION
+    // ------------------------------------------------------------
+
+    guide.style.left =
+      `${playerCenterX}px`;
+
+    guide.style.top =
+      `${playerCenterY}px`;
+
+    guide.style.width =
+      `${distance}px`;
+
+    guide.style.transform =
+      `rotate(${angle}deg)`;
+
+    guide.style.display =
+      'block';
+
+    // ------------------------------------------------------------
+    // POSITION PARTICLES
+    // ------------------------------------------------------------
+
+    for (let i = 0; i < dots.length; i++) {
+      const dot = dots[i];
+
+      const position =
+        this.GUIDE_START_OFFSET +
+        i * this.GUIDE_DOT_SPACING;
+
+      const shouldShow =
+        position < distance - 25;
+
+      if (!shouldShow) {
+        dot.style.display = 'none';
+        continue;
+      }
+
+      dot.style.display = 'block';
+      dot.style.left = `${position}px`;
+    }
+  }
+
+  private hideTutorialEnemyGuide(): void {
+    const guide = document.getElementById('enemy-guide');
+
+    if (!guide) {
+      return;
+    }
+
+    guide.style.display = 'none';
+  }
+
+  public startTutorialEnemyGuide(): void {
+    this.tutorialEnemyGuideActive = true;
+  }
+
+  public stopTutorialEnemyGuide(): void {
+    this.tutorialEnemyGuideActive = false;
+    this.hideTutorialEnemyGuide();
+  }
 
   private updateCamera(): void {
     const camera = document.getElementById('camera');
