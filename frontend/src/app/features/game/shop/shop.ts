@@ -1,17 +1,17 @@
+
+import { isPlatformBrowser } from '@angular/common';
 import {
   Component,
   HostListener,
   inject,
   OnDestroy,
   OnInit,
-  PLATFORM_ID,
+  PLATFORM_ID
 } from '@angular/core';
-
-import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { ShopCbb } from './shop-cbb';
-
+import { PlayerService } from '../../../services/player.service';
 
 type ShopCategory =
   | 'recommended'
@@ -22,6 +22,7 @@ type ShopCategory =
   | 'consumables'
   | 'wishes';
 
+type ShopCurrency = 'credits' | 'xp';
 type MessageType = 'sucesso' | 'erro';
 
 interface ShopItem {
@@ -32,16 +33,20 @@ interface ShopItem {
   preco: number;
   quantidade: number;
   categoria: ShopCategory;
-
-  /**
-   * Which currency is required to purchase this item.
-   */
-  moeda: 'credits' | 'xp';
-
-  /**
-   * Optional category used for future filtering / organization.
-   */
+  moeda: ShopCurrency;
   subcategoria?: string;
+}
+
+interface PurchaseHistoryEntry {
+  id: string;
+  itemId: string;
+  nome: string;
+  icone: string;
+  quantidade: number;
+  precoUnitario: number;
+  total: number;
+  moeda: ShopCurrency;
+  data: string;
 }
 
 interface ShopSaveData {
@@ -49,70 +54,70 @@ interface ShopSaveData {
   xp: number;
   quantities: Record<string, number>;
   selectedCategory: ShopCategory;
+  wishlistIds?: string[];
+  history?: PurchaseHistoryEntry[];
 }
 
 @Component({
   selector: 'app-shop',
   standalone: true,
-  imports: [
-    ShopCbb
-  ],
+  imports: [ShopCbb],
   templateUrl: './shop.html',
-  styleUrl: './shop.css',
+  styleUrl: './shop.css'
 })
 export class Shop implements OnInit, OnDestroy {
-
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
-
-  /* ============================================================
-     STORAGE
-     ============================================================ */
+  private readonly playerService = inject(PlayerService);
 
   private readonly STORAGE_KEY = 'game-shop-state';
+  private readonly MAX_HISTORY = 100;
 
+  private purchaseInterval:
+    ReturnType<typeof setInterval> | null = null;
 
-  /* ============================================================
-     PLAYER CURRENCIES
-     ============================================================ */
+  private purchaseTimeout:
+    ReturnType<typeof setTimeout> | null = null;
 
-  credits = 12480;
-  xp = 2840;
-
-
-  /* ============================================================
-     SHOP STATE
-     ============================================================ */
+  private readonly INITIAL_REPEAT_DELAY = 350;
+  private readonly REPEAT_INTERVAL = 90;
 
   selectedCategory: ShopCategory = 'recommended';
+
+  wishlistIds: string[] = [];
+
+  historico: PurchaseHistoryEntry[] = [];
+  historicoAberto = false;
 
   mensagem = '';
   tipoMensagem: MessageType = 'sucesso';
 
+  // ==========================================
+  // CARTEIRA DO JOGADOR
+  // ==========================================
 
-  /* ============================================================
-     PURCHASE STATE
-     ============================================================ */
+  get credits(): number {
+    return this.playerService.credits();
+  }
 
-  private purchaseInterval: ReturnType<typeof setInterval> | null = null;
+  set credits(value: number) {
+    this.playerService.setCredits(value);
+  }
 
-  private purchaseTimeout: ReturnType<typeof setTimeout> | null = null;
+  // XP da Loja, separado do XP do nível.
+  get xp(): number {
+    return this.playerService.shopXp();
+  }
 
-  private readonly INITIAL_REPEAT_DELAY = 350;
+  set xp(value: number) {
+    this.playerService.setShopXp(value);
+  }
 
-  private readonly REPEAT_INTERVAL = 90;
-
-
-  /* ============================================================
-     SHOP ITEMS
-     ============================================================ */
+  // ==========================================
+  // CATÁLOGO ORIGINAL
+  // ==========================================
 
   boosts: ShopItem[] = [
-
-    /* --------------------------------------------------------
-       RECOMMENDED
-       -------------------------------------------------------- */
-
     {
       id: 'character-exp',
       nome: 'Stellar Concentrate',
@@ -123,9 +128,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 24,
       categoria: 'recommended',
       moeda: 'credits',
-      subcategoria: 'character-exp',
+      subcategoria: 'character-exp'
     },
-
     {
       id: 'weapon-material',
       nome: 'Tungsten Alloy',
@@ -136,9 +140,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 31,
       categoria: 'recommended',
       moeda: 'credits',
-      subcategoria: 'weapon-enhancement',
+      subcategoria: 'weapon-enhancement'
     },
-
     {
       id: 'ability-core',
       nome: 'Resonance Charge',
@@ -149,9 +152,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 8,
       categoria: 'recommended',
       moeda: 'credits',
-      subcategoria: 'ability',
+      subcategoria: 'ability'
     },
-
     {
       id: 'ascension-material',
       nome: 'Collapse Matter',
@@ -162,14 +164,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 12,
       categoria: 'recommended',
       moeda: 'credits',
-      subcategoria: 'ascension',
+      subcategoria: 'ascension'
     },
-
-
-    /* --------------------------------------------------------
-       CHARACTERS
-       -------------------------------------------------------- */
-
     {
       id: 'character-exp-large',
       nome: 'Refined Stellar Concentrate',
@@ -180,9 +176,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 6,
       categoria: 'characters',
       moeda: 'credits',
-      subcategoria: 'character-exp',
+      subcategoria: 'character-exp'
     },
-
     {
       id: 'character-ascension',
       nome: 'Collapse Residue',
@@ -193,9 +188,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 4,
       categoria: 'characters',
       moeda: 'credits',
-      subcategoria: 'ascension',
+      subcategoria: 'ascension'
     },
-
     {
       id: 'character-skill',
       nome: 'Neural Record',
@@ -206,14 +200,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 14,
       categoria: 'characters',
       moeda: 'credits',
-      subcategoria: 'talent',
+      subcategoria: 'talent'
     },
-
-
-    /* --------------------------------------------------------
-       WEAPONS
-       -------------------------------------------------------- */
-
     {
       id: 'weapon-exp',
       nome: 'Energy Cell',
@@ -224,9 +212,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 42,
       categoria: 'weapons',
       moeda: 'credits',
-      subcategoria: 'weapon-exp',
+      subcategoria: 'weapon-exp'
     },
-
     {
       id: 'weapon-ascension',
       nome: 'Iridium Alloy',
@@ -237,9 +224,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 7,
       categoria: 'weapons',
       moeda: 'credits',
-      subcategoria: 'weapon-ascension',
+      subcategoria: 'weapon-ascension'
     },
-
     {
       id: 'weapon-core',
       nome: 'Resonance Matrix',
@@ -250,14 +236,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 3,
       categoria: 'weapons',
       moeda: 'credits',
-      subcategoria: 'refinement',
+      subcategoria: 'refinement'
     },
-
-
-    /* --------------------------------------------------------
-       ABILITIES
-       -------------------------------------------------------- */
-
     {
       id: 'ability-exp',
       nome: 'Energy Pulse',
@@ -268,9 +248,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 18,
       categoria: 'abilities',
       moeda: 'credits',
-      subcategoria: 'ability-exp',
+      subcategoria: 'ability-exp'
     },
-
     {
       id: 'ability-core-rare',
       nome: 'Resonance Condensate',
@@ -281,14 +260,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 2,
       categoria: 'abilities',
       moeda: 'credits',
-      subcategoria: 'ability-core',
+      subcategoria: 'ability-core'
     },
-
-
-    /* --------------------------------------------------------
-       MATERIALS
-       -------------------------------------------------------- */
-
     {
       id: 'basic-material',
       nome: 'Structural Alloy',
@@ -298,9 +271,8 @@ export class Shop implements OnInit, OnDestroy {
       preco: 250,
       quantidade: 56,
       categoria: 'materials',
-      moeda: 'credits',
+      moeda: 'credits'
     },
-
     {
       id: 'rare-material',
       nome: 'Fusion Crystal',
@@ -310,9 +282,8 @@ export class Shop implements OnInit, OnDestroy {
       preco: 900,
       quantidade: 11,
       categoria: 'materials',
-      moeda: 'credits',
+      moeda: 'credits'
     },
-
     {
       id: 'advanced-material',
       nome: 'Degenerate Matter',
@@ -322,14 +293,8 @@ export class Shop implements OnInit, OnDestroy {
       preco: 3000,
       quantidade: 2,
       categoria: 'materials',
-      moeda: 'credits',
+      moeda: 'credits'
     },
-
-
-    /* --------------------------------------------------------
-       CONSUMABLES
-       -------------------------------------------------------- */
-
     {
       id: 'energy-food',
       nome: 'High-Density Ration',
@@ -339,9 +304,8 @@ export class Shop implements OnInit, OnDestroy {
       preco: 180,
       quantidade: 8,
       categoria: 'consumables',
-      moeda: 'credits',
+      moeda: 'credits'
     },
-
     {
       id: 'exp-booster',
       nome: 'Metabolic Stimulant',
@@ -351,14 +315,8 @@ export class Shop implements OnInit, OnDestroy {
       preco: 850,
       quantidade: 4,
       categoria: 'consumables',
-      moeda: 'credits',
+      moeda: 'credits'
     },
-
-
-    /* --------------------------------------------------------
-       WISHES
-       -------------------------------------------------------- */
-
     {
       id: 'wish-token',
       nome: 'Stellar Resonator',
@@ -369,9 +327,8 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 18,
       categoria: 'wishes',
       moeda: 'credits',
-      subcategoria: 'wish',
+      subcategoria: 'wish'
     },
-
     {
       id: 'wish-pack',
       nome: 'Resonator Set',
@@ -382,113 +339,247 @@ export class Shop implements OnInit, OnDestroy {
       quantidade: 2,
       categoria: 'wishes',
       moeda: 'credits',
-      subcategoria: 'wish-pack',
-    },
+      subcategoria: 'wish-pack'
+    }
   ];
 
-
-  /* ============================================================
-     ANGULAR LIFECYCLE
-     ============================================================ */
+  // ==========================================
+  // INICIALIZAÇÃO
+  // ==========================================
 
   ngOnInit(): void {
     this.carregarEstado();
   }
 
-
   ngOnDestroy(): void {
     this.pararAcaoContinua();
   }
 
-
-  /* ============================================================
-     CATEGORY
-     ============================================================ */
+  // ==========================================
+  // CATEGORIAS
+  // ==========================================
 
   selecionarCategoria(category: ShopCategory): void {
     this.selectedCategory = category;
-
     this.limparMensagem();
+    this.salvarEstado();
+  }
+
+  // ==========================================
+  // ITENS VISÍVEIS
+  // ==========================================
+
+  get itensVisiveis(): ShopItem[] {
+
+    // CORREÇÃO:
+    // WISHES mostra SOMENTE os itens que
+    // o jogador marcou com a estrela dourada.
+    //
+    // Não mostra automaticamente os produtos
+    // que possuem categoria "wishes".
+    if (this.selectedCategory === 'wishes') {
+      return this.boosts.filter(item =>
+        this.wishlistIds.includes(item.id)
+      );
+    }
+
+    return this.boosts.filter(item =>
+      item.categoria === this.selectedCategory
+    );
+  }
+
+  // ==========================================
+  // LISTA DE DESEJOS
+  // ==========================================
+
+  isWishlisted(item: ShopItem): boolean {
+    return this.wishlistIds.includes(item.id);
+  }
+
+  toggleWishlist(item: ShopItem): void {
+
+    if (this.isWishlisted(item)) {
+
+      this.wishlistIds = this.wishlistIds.filter(
+        id => id !== item.id
+      );
+
+      this.mostrarMensagem(
+        `${item.nome} removido dos Wishes.`,
+        'sucesso'
+      );
+
+    } else {
+
+      this.wishlistIds = [
+        ...this.wishlistIds,
+        item.id
+      ];
+
+      this.mostrarMensagem(
+        `✦ ${item.nome} adicionado aos Wishes!`,
+        'sucesso'
+      );
+    }
 
     this.salvarEstado();
   }
 
+  get totalWishes(): number {
+    return this.wishlistIds.length;
+  }
 
-  /* ============================================================
-     FILTERED ITEMS
-     ============================================================ */
+  // ==========================================
+  // HISTÓRICO DE COMPRAS
+  // ==========================================
 
-  get itensVisiveis(): ShopItem[] {
+  alternarHistorico(): void {
+    this.historicoAberto = !this.historicoAberto;
+  }
 
-    if (this.selectedCategory === 'recommended') {
-      return this.boosts.filter(
-        item => item.categoria === 'recommended'
-      );
-    }
-
-    return this.boosts.filter(
-      item => item.categoria === this.selectedCategory
+  get totalCompras(): number {
+    return this.historico.reduce(
+      (total, compra) =>
+        total + compra.quantidade,
+      0
     );
   }
 
-
-  /* ============================================================
-     PURCHASE
-     ============================================================ */
-
-  comprar(item: ShopItem): void {
-
-    const currency = this.obterSaldo(item);
-
-    if (currency < item.preco) {
-      this.mostrarMensagem(
-        `Saldo insuficiente para comprar ${item.nome}.`,
-        'erro'
+  get totalCreditosGastos(): number {
+    return this.historico
+      .filter(compra => compra.moeda === 'credits')
+      .reduce(
+        (total, compra) => total + compra.total,
+        0
       );
+  }
+
+  formatarData(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return 'Data desconhecida';
+    }
+
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  private registrarCompra(item: ShopItem): void {
+    const agora = new Date();
+    const anterior = this.historico[0];
+
+    // Agrupa compras seguidas do mesmo produto.
+    if (
+      anterior &&
+      anterior.itemId === item.id &&
+      anterior.moeda === item.moeda &&
+      agora.getTime() -
+        new Date(anterior.data).getTime() < 1500
+    ) {
+
+      this.historico = [
+        {
+          ...anterior,
+          quantidade: anterior.quantidade + 1,
+          total: anterior.total + item.preco,
+          data: agora.toISOString()
+        },
+        ...this.historico.slice(1)
+      ];
 
       return;
     }
 
-    this.definirSaldo(
-      item,
-      currency - item.preco
-    );
+    const compra: PurchaseHistoryEntry = {
+      id: `${agora.getTime()}-${Math.random()
+        .toString(36)
+        .slice(2, 8)}`,
+      itemId: item.id,
+      nome: item.nome,
+      icone: item.icone,
+      quantidade: 1,
+      precoUnitario: item.preco,
+      total: item.preco,
+      moeda: item.moeda,
+      data: agora.toISOString()
+    };
 
-    item.quantidade += 1;
-
-    this.mostrarMensagem(
-      `${item.nome} adquirido.`,
-      'sucesso'
-    );
-
-    this.salvarEstado();
+    this.historico = [
+      compra,
+      ...this.historico
+    ].slice(0, this.MAX_HISTORY);
   }
 
+  // ==========================================
+  // COMPRAR PRODUTOS
+  // ==========================================
 
-  /* ============================================================
-     CONTINUOUS PURCHASE
-     ============================================================ */
+  comprar(item: ShopItem): boolean {
+    return this.executarCompra(item, true);
+  }
+
+  private executarCompra(
+    item: ShopItem,
+    mostrarFeedback: boolean
+  ): boolean {
+
+    const saldo = this.obterSaldo(item);
+
+    if (saldo < item.preco) {
+      if (mostrarFeedback) {
+        this.mostrarMensagem(
+          `Saldo insuficiente para comprar ${item.nome}.`,
+          'erro'
+        );
+      }
+
+      return false;
+    }
+
+    // Desconta da carteira do jogador.
+    this.definirSaldo(item, saldo - item.preco);
+
+    // Atualiza o item comprado.
+    item.quantidade += 1;
+
+    // Registra a transação.
+    this.registrarCompra(item);
+
+    // Salva o estado.
+    this.salvarEstado();
+
+    if (mostrarFeedback) {
+      this.mostrarMensagem(
+        `${item.nome} adquirido.`,
+        'sucesso'
+      );
+    }
+
+    return true;
+  }
+
+  // ==========================================
+  // COMPRA CONTÍNUA
+  // ==========================================
 
   iniciarCompraContinua(item: ShopItem): void {
-
     this.pararAcaoContinua();
 
-    /*
-     * Compra imediatamente ao pressionar.
-     */
-    this.comprar(item);
+    // Primeira compra imediata.
+    if (!this.comprar(item)) {
+      return;
+    }
 
-    /*
-     * Depois de segurar o botão por um curto período,
-     * começa a repetir automaticamente.
-     */
     this.purchaseTimeout = setTimeout(() => {
-
       this.purchaseInterval = setInterval(() => {
 
-        const saldo = this.obterSaldo(item);
-
-        if (saldo < item.preco) {
+        if (this.obterSaldo(item) < item.preco) {
           this.pararAcaoContinua();
 
           this.mostrarMensagem(
@@ -500,12 +591,10 @@ export class Shop implements OnInit, OnDestroy {
         }
 
         this.comprarSilenciosamente(item);
-
       }, this.REPEAT_INTERVAL);
 
     }, this.INITIAL_REPEAT_DELAY);
   }
-
 
   pararAcaoContinua(): void {
 
@@ -520,40 +609,22 @@ export class Shop implements OnInit, OnDestroy {
     }
   }
 
-
   private comprarSilenciosamente(item: ShopItem): void {
 
-    const saldo = this.obterSaldo(item);
-
-    if (saldo < item.preco) {
+    if (!this.executarCompra(item, false)) {
       this.pararAcaoContinua();
-      return;
     }
-
-    this.definirSaldo(
-      item,
-      saldo - item.preco
-    );
-
-    item.quantidade += 1;
-
-    this.salvarEstado();
   }
 
-
-  /* ============================================================
-     CURRENCY
-     ============================================================ */
+  // ==========================================
+  // CONTROLE DOS SALDOS
+  // ==========================================
 
   private obterSaldo(item: ShopItem): number {
-
-    if (item.moeda === 'xp') {
-      return this.xp;
-    }
-
-    return this.credits;
+    return item.moeda === 'xp'
+      ? this.xp
+      : this.credits;
   }
-
 
   private definirSaldo(
     item: ShopItem,
@@ -562,16 +633,14 @@ export class Shop implements OnInit, OnDestroy {
 
     if (item.moeda === 'xp') {
       this.xp = valor;
-      return;
+    } else {
+      this.credits = valor;
     }
-
-    this.credits = valor;
   }
 
-
-  /* ============================================================
-     FEEDBACK
-     ============================================================ */
+  // ==========================================
+  // FEEDBACK DAS AÇÕES
+  // ==========================================
 
   private mostrarMensagem(
     mensagem: string,
@@ -581,52 +650,49 @@ export class Shop implements OnInit, OnDestroy {
     this.mensagem = mensagem;
     this.tipoMensagem = tipo;
 
-    /*
-     * Remove a mensagem automaticamente.
-     */
     setTimeout(() => {
-
       if (this.mensagem === mensagem) {
         this.limparMensagem();
       }
-
     }, 2500);
   }
-
 
   private limparMensagem(): void {
     this.mensagem = '';
   }
 
-
-  /* ============================================================
-     NAVIGATION
-     ============================================================ */
+  // ==========================================
+  // VOLTAR AO JOGO
+  // ==========================================
 
   @HostListener('document:keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
 
-    if (event.key === 'Escape' || event.key === 'Esc') {
-      event.preventDefault();
+    if (
+      event.key !== 'Escape' &&
+      event.key !== 'Esc'
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (this.historicoAberto) {
+      this.historicoAberto = false;
+    } else {
       this.voltarParaOJogo();
     }
   }
 
   voltarParaOJogo(): void {
-
-    /*
-     * Make sure a held purchase cannot continue
-     * after leaving the shop.
-     */
     this.pararAcaoContinua();
 
-    this.router.navigate(['/game']);
+    void this.router.navigate(['/game']);
   }
 
-
-  /* ============================================================
-     LOCAL STORAGE
-     ============================================================ */
+  // ==========================================
+  // SALVAR ESTADO DA LOJA
+  // ==========================================
 
   private salvarEstado(): void {
 
@@ -645,6 +711,8 @@ export class Shop implements OnInit, OnDestroy {
       xp: this.xp,
       quantities,
       selectedCategory: this.selectedCategory,
+      wishlistIds: this.wishlistIds,
+      history: this.historico
     };
 
     try {
@@ -654,12 +722,15 @@ export class Shop implements OnInit, OnDestroy {
       );
     } catch (error) {
       console.warn(
-        'Não foi possível salvar o estado da loja.',
+        'Não foi possível salvar a loja.',
         error
       );
     }
   }
 
+  // ==========================================
+  // CARREGAR ESTADO DA LOJA
+  // ==========================================
 
   private carregarEstado(): void {
 
@@ -677,36 +748,63 @@ export class Shop implements OnInit, OnDestroy {
         return;
       }
 
-      const state = JSON.parse(
-        raw
-      ) as Partial<ShopSaveData>;
-      /*
-       * Currency
-       */
+      const state = JSON.parse(raw) as
+        Partial<ShopSaveData>;
 
-      if (typeof state.credits === 'number') {
-        this.credits = state.credits;
+      // IMPORTANTE:
+      // Não carregamos credits nem xp do estado.
+      // O PlayerService controla os dois saldos.
+
+      // CARREGAR WISHES
+      if (Array.isArray(state.wishlistIds)) {
+
+        this.wishlistIds = [
+          ...new Set(
+            state.wishlistIds.filter(
+              (id): id is string =>
+                typeof id === 'string' &&
+                this.boosts.some(
+                  item => item.id === id
+                )
+            )
+          )
+        ];
       }
 
-      if (typeof state.xp === 'number') {
-        this.xp = state.xp;
+      // CARREGAR HISTÓRICO
+      if (Array.isArray(state.history)) {
+
+        this.historico = state.history
+          .filter(
+            (entry): entry is PurchaseHistoryEntry =>
+              !!entry &&
+              typeof entry.id === 'string' &&
+              typeof entry.itemId === 'string' &&
+              typeof entry.nome === 'string' &&
+              typeof entry.icone === 'string' &&
+              typeof entry.quantidade === 'number' &&
+              entry.quantidade > 0 &&
+              typeof entry.precoUnitario === 'number' &&
+              typeof entry.total === 'number' &&
+              entry.total >= 0 &&
+              (
+                entry.moeda === 'credits' ||
+                entry.moeda === 'xp'
+              ) &&
+              typeof entry.data === 'string'
+          )
+          .slice(0, this.MAX_HISTORY);
       }
 
-
-      /*
-       * Selected category
-       */
-
-      if (this.isValidCategory(state.selectedCategory)) {
+      // CARREGAR CATEGORIA
+      if (
+        this.isValidCategory(state.selectedCategory)
+      ) {
         this.selectedCategory =
           state.selectedCategory;
       }
 
-
-      /*
-       * Item quantities
-       */
-
+      // CARREGAR QUANTIDADES
       if (state.quantities) {
 
         for (const item of this.boosts) {
@@ -714,7 +812,11 @@ export class Shop implements OnInit, OnDestroy {
           const quantity =
             state.quantities[item.id];
 
-          if (typeof quantity === 'number') {
+          if (
+            typeof quantity === 'number' &&
+            Number.isFinite(quantity)
+          ) {
+
             item.quantidade = Math.max(
               0,
               Math.floor(quantity)
@@ -726,13 +828,15 @@ export class Shop implements OnInit, OnDestroy {
     } catch (error) {
 
       console.warn(
-        'Não foi possível carregar o estado da loja.',
+        'Não foi possível carregar a loja.',
         error
       );
-
     }
   }
 
+  // ==========================================
+  // VALIDAR CATEGORIA
+  // ==========================================
 
   private isValidCategory(
     value: unknown
@@ -745,7 +849,7 @@ export class Shop implements OnInit, OnDestroy {
       'abilities',
       'materials',
       'consumables',
-      'wishes',
+      'wishes'
     ].includes(value as ShopCategory);
   }
 }

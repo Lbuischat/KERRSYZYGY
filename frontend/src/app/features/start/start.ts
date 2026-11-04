@@ -1,6 +1,8 @@
+
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { PlayerService } from '../../services/player.service';
 import { LanguageService } from '../../services/language/language.service';
 
@@ -22,24 +24,14 @@ interface CelestialEvent {
 
 @Component({
   selector: 'app-start',
+  standalone: true,
   imports: [FormsModule],
   templateUrl: './start.html',
-  styleUrl: './start.css',
+  styleUrl: './start.css'
 })
 export class Start {
-
-  // =========================================================
-  // BACKGROUND STARS
-  // STATIC — GENERATED ONCE
-  // =========================================================
-
   backgroundStars: BackgroundStar[] = [];
   celestialEvents: CelestialEvent[] = [];
-
-
-  // =========================================================
-  // OPTIONS
-  // =========================================================
 
   readonly months = [
     'January',
@@ -53,128 +45,101 @@ export class Start {
     'September',
     'October',
     'November',
-    'December',
+    'December'
   ];
 
   readonly genderOptions = [
     'Female',
     'Male',
     'Non-binary',
-    'Other',
+    'Other'
   ];
 
   readonly pronounOptions = [
     'She / Her',
     'He / Him',
     'They / Them',
-    'It / Its',
+    'It / Its'
   ];
 
   readonly days = Array.from(
     { length: 31 },
-    (_, index) => index + 1
+    (_, i) => i + 1
   );
 
   readonly years = Array.from(
     { length: 100 },
-    (_, index) => new Date().getFullYear() - index
+    (_, i) => new Date().getFullYear() - i
   );
-
-
-  // =========================================================
-  // BIRTHDAY SELECTIONS
-  // =========================================================
 
   selectedMonth = '';
   selectedDay: number | null = null;
   selectedYear: number | null = null;
 
-
-  // =========================================================
-  // CURRENT STAGE
-  // =========================================================
-
   etapa = 0;
-
-
-  // =========================================================
-  // CONSTRUCTOR
-  // =========================================================
 
   constructor(
     public playerService: PlayerService,
     private router: Router,
-    public readonly languageService: LanguageService,
+    public readonly languageService: LanguageService
   ) {
     this.createBackgroundStars();
     this.createCelestialEvents();
     this.restoreBirthdaySelections();
   }
 
-
-  // =========================================================
-  // BACKGROUND STARS
-  // STATIC — NO ANIMATION
-  // =========================================================
+  // =========================================
+  // BACKGROUND
+  // =========================================
 
   private createBackgroundStars(): void {
-    const numberOfStars = 180;
-
-    for (let i = 0; i < numberOfStars; i++) {
+    for (let i = 0; i < 180; i++) {
       this.backgroundStars.push({
         left: Math.random() * 100,
         top: Math.random() * 100,
         size: Math.random() < 0.9 ? 1 : 2,
-        opacity: 0.08 + Math.random() * 0.17,
+        opacity: 0.08 + Math.random() * 0.17
       });
     }
   }
 
-
-  // =========================================================
-  // CELESTIAL EVENTS
-  // COMETS / METEORS
-  // THESE ARE THE ONLY BACKGROUND OBJECTS THAT MOVE
-  // =========================================================
-
   private createCelestialEvents(): void {
-    const numberOfEvents = 5;
-
-    for (let i = 0; i < numberOfEvents; i++) {
+    for (let i = 0; i < 5; i++) {
       this.celestialEvents.push({
         id: i,
-        type: Math.random() < 0.5 ? 'comet' : 'meteor',
+        type: Math.random() < 0.5
+          ? 'comet'
+          : 'meteor',
         left: Math.random() * 100,
         top: Math.random() * 70,
         duration: 2 + Math.random() * 3,
-        delay: Math.random() * 8,
+        delay: Math.random() * 8
       });
     }
   }
 
-
-  // =========================================================
-  // NAVIGATION
-  // ANGULAR animate.enter / animate.leave HANDLES
-  // THE VISUAL TRANSITION — NO setTimeout NEEDED
-  // =========================================================
+  // =========================================
+  // STAGES
+  // =========================================
 
   continue(): void {
     this.goToNextStage();
   }
 
   private goToNextStage(): void {
-    if (this.etapa >= 5) {
-      return;
+    if (this.etapa < 5) {
+      this.etapa++;
     }
-
-    this.etapa++;
   }
 
-
-  // =========================================================
+  // =========================================
   // GENDER
-  // =========================================================
+  // =========================================
+
+  selectGender(gender: string): void {
+    this.playerService.profile.gender = gender;
+    this.playerService.saveProfile();
+  }
 
   continueAfterGender(): void {
     if (!this.playerService.profile.gender) {
@@ -184,35 +149,30 @@ export class Start {
     this.goToNextStage();
   }
 
-  selectGender(gender: string): void {
-    this.playerService.profile.gender = gender;
-    this.playerService.saveProfile();
-  }
-
-
-  // =========================================================
+  // =========================================
   // USERNAME
-  // =========================================================
+  // =========================================
 
   selectUsername(): void {
-    const username =
+    const name =
       this.playerService.profile.username.trim();
 
-    if (!username) {
-      return;
-    }
+    if (!name) return;
 
-    this.playerService.profile.username = username;
-
+    this.playerService.profile.username = name;
     this.playerService.saveProfile();
 
     this.goToNextStage();
   }
 
-
-  // =========================================================
+  // =========================================
   // PRONOUNS
-  // =========================================================
+  // =========================================
+
+  selectPronouns(pronouns: string): void {
+    this.playerService.profile.pronouns = pronouns;
+    this.playerService.saveProfile();
+  }
 
   continueAfterPronouns(): void {
     if (!this.playerService.profile.pronouns) {
@@ -222,149 +182,92 @@ export class Start {
     this.goToNextStage();
   }
 
-  selectPronouns(pronouns: string): void {
-    this.playerService.profile.pronouns = pronouns;
-
-    this.playerService.saveProfile();
-  }
-
-
-  // =========================================================
+  // =========================================
   // BIRTHDAY
-  // =========================================================
+  // =========================================
 
   selectBirthday(
     type: 'month' | 'day' | 'year',
     value: string | number
   ): void {
+    if (type === 'month') {
+      this.selectedMonth = String(value);
+    }
 
-    switch (type) {
-      case 'month':
-        this.selectedMonth = value as string;
-        break;
+    if (type === 'day') {
+      this.selectedDay = Number(value) || null;
+    }
 
-      case 'day':
-        this.selectedDay = value as number;
-        break;
-
-      case 'year':
-        this.selectedYear = value as number;
-        break;
+    if (type === 'year') {
+      this.selectedYear = Number(value) || null;
     }
 
     this.clampSelectedDay();
     this.updateBirthday();
   }
 
-
-  // =========================================================
-  // CONTINUE AFTER BIRTHDAY
-  // =========================================================
-
-  continueAfterBirthday(): void {
-    if (!this.playerService.profile.birthday) {
-      return;
-    }
-
-    this.playerService.saveProfile();
-
-    this.goToNextStage();
-  }
-
-
-  // =========================================================
-  // AVAILABLE DAYS
-  // =========================================================
-
   get availableDays(): number[] {
     if (!this.selectedMonth) {
       return this.days;
     }
 
-    const monthNumber =
+    const month =
       this.months.indexOf(this.selectedMonth) + 1;
+
+    if (!month) {
+      return this.days;
+    }
 
     const year =
       this.selectedYear ?? new Date().getFullYear();
 
-    const daysInMonth =
-      new Date(year, monthNumber, 0).getDate();
+    const count =
+      new Date(year, month, 0).getDate();
 
     return Array.from(
-      { length: daysInMonth },
-      (_, index) => index + 1
+      { length: count },
+      (_, i) => i + 1
     );
   }
 
-
-  // =========================================================
-  // CLAMP SELECTED DAY
-  // =========================================================
-
   private clampSelectedDay(): void {
-    if (this.selectedDay === null) {
-      return;
-    }
-
-    const maxDay = this.availableDays.length;
-
-    if (this.selectedDay > maxDay) {
+    if (
+      this.selectedDay !== null &&
+      this.selectedDay > this.availableDays.length
+    ) {
       this.selectedDay = null;
     }
   }
 
-
-  // =========================================================
-  // UPDATE BIRTHDAY
-  // =========================================================
-
   private updateBirthday(): void {
-    if (
-      !this.selectedMonth ||
-      !this.selectedDay ||
-      !this.selectedYear
-    ) {
-      this.playerService.profile.birthday = '';
-      return;
-    }
-
-    const monthNumber =
+    const month =
       this.months.indexOf(this.selectedMonth) + 1;
 
+    const day = this.selectedDay;
+    const year = this.selectedYear;
+
     if (
-      !this.isValidDate(
-        this.selectedYear,
-        monthNumber,
-        this.selectedDay
-      )
+      !month ||
+      !day ||
+      !year ||
+      !this.validDate(year, month, day)
     ) {
       this.playerService.profile.birthday = '';
+      this.playerService.saveProfile();
       return;
     }
 
-    const month =
-      String(monthNumber).padStart(2, '0');
-
-    const day =
-      String(this.selectedDay).padStart(2, '0');
-
     this.playerService.profile.birthday =
-      `${this.selectedYear}-${month}-${day}`;
+      `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
     this.playerService.saveProfile();
   }
 
-
-  // =========================================================
-  // DATE VALIDATION
-  // =========================================================
-
-  private isValidDate(
+  private validDate(
     year: number,
     month: number,
     day: number
   ): boolean {
-
     const date = new Date(
       year,
       month - 1,
@@ -378,36 +281,33 @@ export class Start {
     );
   }
 
+  continueAfterBirthday(): void {
+    if (!this.playerService.profile.birthday) {
+      return;
+    }
 
-  // =========================================================
-  // RESTORE BIRTHDAY
-  // =========================================================
+    this.playerService.saveProfile();
+    this.goToNextStage();
+  }
 
   private restoreBirthdaySelections(): void {
     const birthday =
       this.playerService.profile.birthday;
 
-    if (!birthday) {
-      return;
-    }
+    if (!birthday) return;
 
-    const parts = birthday.split('-');
+    const match =
+      /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthday);
 
-    if (parts.length !== 3) {
-      return;
-    }
+    if (!match) return;
 
-    const year = Number(parts[0]);
-    const month = Number(parts[1]);
-    const day = Number(parts[2]);
+    const [, y, m, d] = match;
 
-    if (
-      !year ||
-      !month ||
-      !day ||
-      month < 1 ||
-      month > 12
-    ) {
+    const year = Number(y);
+    const month = Number(m);
+    const day = Number(d);
+
+    if (!this.validDate(year, month, day)) {
       return;
     }
 
@@ -416,12 +316,20 @@ export class Start {
     this.selectedDay = day;
   }
 
-
-  // =========================================================
-  // GAME
-  // =========================================================
+  // =========================================
+  // START → PERFIL
+  // =========================================
 
   startJourney(): void {
-    this.router.navigate(['/game']);
+    this.playerService.saveProfile();
+
+    void this.router.navigate(
+      ['/playerinfo'],
+      {
+        queryParams: {
+          setup: '1'
+        }
+      }
+    );
   }
 }

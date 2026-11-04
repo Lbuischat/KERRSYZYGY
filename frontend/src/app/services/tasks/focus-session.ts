@@ -1,5 +1,6 @@
 
 import { isPlatformBrowser } from '@angular/common';
+import { AccountSessionService } from '../account-session.service';
 import {
   Injectable,
   PLATFORM_ID,
@@ -20,12 +21,17 @@ export interface FocusSessionData {
 })
 export class FocusSessionService {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly accountSession = inject(AccountSessionService);
 
   // Mantém a chave usada anteriormente pelo projeto.
-  private readonly storageKey = 'active-focus-session';
+  private get storageKey(): string {
+    return this.accountSession.storageKey('active-focus-session');
+  }
 
   // Guarda uma conclusão que ainda precisa ser processada.
-  private readonly finishedKey = 'finished-focus-quest-id';
+  private get finishedKey(): string {
+    return this.accountSession.storageKey('finished-focus-quest-id');
+  }
 
   readonly session = signal<FocusSessionData | null>(null);
 
@@ -54,6 +60,18 @@ export class FocusSessionService {
 
   get active(): boolean {
     return this.session() !== null;
+  }
+
+  // =========================================
+  // SWITCH ACCOUNT
+  // =========================================
+
+  reloadForCurrentAccount(): void {
+    this.session.set(null);
+    this.finishedQuestId.set(null);
+    if (!this.isBrowser) return;
+    this.restoreSession();
+    this.restoreFinishedQuest();
   }
 
   // =========================================

@@ -1239,4 +1239,159 @@ textarea::placeholder {
   .quest-expanded-actions button {
     transition: none;
   }
+
+  
+/* ==============================================
+   KERRSYZYGY — NEW QUEST
+   MELHORIAS VISUAIS DO CABEÇALHO
+============================================== */
+
+/* BOTÃO VOLTAR — MAIS VISÍVEL */
+
+.page-header .back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-height: 44px;
+  padding: 12px 19px;
+
+  border: 1px solid rgba(160, 143, 255, 0.6);
+  border-radius: 11px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(91, 72, 174, 0.45),
+    rgba(43, 38, 99, 0.85)
+  );
+
+  color: #f5f2ff;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 18px rgba(51, 39, 130, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.page-header .back-button span {
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 500;
+  color: #cabfff;
+}
+
+/* HOVER */
+
+.page-header .back-button:hover {
+  transform: translateX(-3px);
+
+  border-color: #ac9aff;
+
+  background: linear-gradient(
+    135deg,
+    rgba(108, 87, 202, 0.75),
+    rgba(60, 48, 139, 0.95)
+  );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 0 18px rgba(133, 112, 255, 0.3),
+    0 5px 22px rgba(51, 39, 130, 0.25);
+}
+
+.page-header .back-button:active {
+  transform: translateX(-1px) scale(0.98);
+}
+
+.page-header .back-button:focus-visible {
+  outline: 2px solid #bdadff;
+  outline-offset: 4px;
+}
+
+/* ==============================================
+   CONSTELAÇÃO DISCRETA
+============================================== */
+
+.page-header .header-decoration {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+
+  color: #aa9dff;
+  font-size: 12px;
+  font-weight: 400;
+
+  opacity: 0.55;
+  text-shadow: 0 0 8px rgba(151, 132, 255, 0.3);
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.page-header .header-decoration span:nth-child(1),
+.page-header .header-decoration span:nth-child(3) {
+  color: #b8c1ff;
+  font-size: 18px;
+}
+
+.page-header .header-decoration span:nth-child(2) {
+  font-size: 10px;
+}
+
+.page-header .header-decoration span:nth-child(4) {
+  font-size: 9px;
+}
+
+/* ==============================================
+   TÍTULO DA SEÇÃO
+============================================== */
+
+.creator-card .section-heading h2 {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ==============================================
+   TELAS MENORES
+============================================== */
+
+@media (max-width: 650px) {
+  .page-header .back-button {
+    min-height: 42px;
+    padding: 10px 13px;
+    font-size: 10px;
+    gap: 7px;
+  }
+
+  .page-header .back-button span {
+    font-size: 17px;
+  }
+
+  .page-header .header-decoration {
+    gap: 5px;
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header .back-button {
+    transition: none;
+  }
+}
+
 }

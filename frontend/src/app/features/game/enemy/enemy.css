@@ -1,45 +1,214 @@
+
+:host {
+  display: contents;
+}
+
+/* =====================================
+   INIMIGO
+===================================== */
+
 .enemy {
   position: absolute;
-  top: 0;
-  left: 0;
 
   width: 40px;
   height: 40px;
 
-  background-color: purple;
-  border-radius: 50%;
   pointer-events: none;
+
+  background: transparent;
+  border: none;
+
+  transform: none;
+  overflow: visible;
+
   z-index: 10;
 }
 
+/* =====================================
+   SPRITE
+===================================== */
+
+.enemy-sprite {
+  position: absolute;
+
+  left: 0;
+  top: -8px;
+
+  width: 40px;
+  height: 48px;
+
+  display: block;
+  object-fit: contain;
+
+  image-rendering: pixelated;
+
+  filter: drop-shadow(
+    0 3px 2px #16182799
+  );
+
+  animation:
+    slime-bob 1.6s steps(2, end) infinite;
+
+  z-index: 2;
+}
+
+/* =====================================
+   SLIME ELITE
+===================================== */
+
+.elite .enemy-sprite {
+  filter:
+    drop-shadow(0 0 5px #ffd56f)
+    drop-shadow(0 3px 3px #151520aa);
+
+  transform-origin: 50% 90%;
+}
+
+/* =====================================
+   RAIO DE DETECÇÃO
+===================================== */
+
+.enemy-view-range {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  box-sizing: border-box;
+
+  border: 1px dashed #98e8dd88;
+  border-radius: 50%;
+
+  background: #8adfda05;
+
+  opacity: 0.8;
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Jogador dentro do alcance */
+
+.enemy-view-range.detected {
+  border-color: #ffd584bb;
+}
+
+/* Raio do elite */
+
+.elite .enemy-view-range {
+  border-color: #ffb66b88;
+}
+
+.elite .enemy-view-range.detected {
+  border-color: #ff678de0;
+}
+
+/* =====================================
+   VIDA
+===================================== */
+
 .health-container {
   position: absolute;
-  bottom: 100%;
+
+  bottom: calc(100% + 12px);
   left: 50%;
+
   transform: translateX(-50%);
-  margin-bottom: 5px;
 
   width: 50px;
   height: 6px;
 
-  background: black;
+  border: 1px solid #2b3143;
   border-radius: 4px;
+
+  background: #151725;
   overflow: hidden;
+
+  z-index: 4;
 }
 
 .health-bar {
   height: 100%;
-  background: red;
-  transition: width 0.08s linear;
+  width: 100%;
+
+  background: #ff526f;
+
+  transition: width 100ms linear;
 }
 
-.enemy-view-range {
+/* VIDA DO ELITE */
+
+.elite .health-container {
+  width: 62px;
+  height: 7px;
+}
+
+.elite .health-bar {
+  background: #f6b54e;
+}
+
+/* =====================================
+   IDENTIFICAÇÃO
+===================================== */
+
+.elite-label {
   position: absolute;
+
+  bottom: calc(100% + 21px);
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  border: 1px dashed white;
-  border-radius: 50%;
+
+  transform: translateX(-50%);
+
+  color: #ffe6a4;
+
+  font: 700 9px sans-serif;
+  letter-spacing: 2px;
+
+  text-shadow: 0 1px 4px #000;
+
+  z-index: 5;
+}
+
+/* =====================================
+   NÚMERO DE DANO
+===================================== */
+
+.enemy-damage-label {
+  position: absolute;
+
+  top: -26px;
+  left: 50%;
+
+  z-index: 8;
+
+  color: white;
+
+  font: 800 15px sans-serif;
+
+  text-shadow: 0 2px 3px black;
+
   pointer-events: none;
-  opacity: 0.25;
+}
+
+/* =====================================
+   ANIMAÇÃO
+===================================== */
+
+@keyframes slime-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enemy-sprite {
+    animation: none;
+  }
 }

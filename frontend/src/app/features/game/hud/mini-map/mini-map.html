@@ -1,69 +1,76 @@
+
 <div class="mini-map-wrapper">
 
-    <!-- North -->
-    <svg
-        class="map-star map-star-north"
-        viewBox="0 0 20 20"
-        aria-hidden="true"
-    >
-        <path
-            d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
-        />
-    </svg>
+  <!-- ESTRELA NORTE -->
+  <svg
+    class="map-star map-star-north"
+    viewBox="0 0 20 20"
+    aria-hidden="true"
+  >
+    <path
+      d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
+    />
+  </svg>
 
-    <!-- East -->
-    <svg
-        class="map-star map-star-east"
-        viewBox="0 0 20 20"
-        aria-hidden="true"
-    >
-        <path
-            d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
-        />
-    </svg>
+  <!-- ESTRELA LESTE -->
+  <svg
+    class="map-star map-star-east"
+    viewBox="0 0 20 20"
+    aria-hidden="true"
+  >
+    <path
+      d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
+    />
+  </svg>
 
-    <!-- South -->
-    <svg
-        class="map-star map-star-south"
-        viewBox="0 0 20 20"
-        aria-hidden="true"
-    >
-        <path
-            d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
-        />
-    </svg>
+  <!-- ESTRELA SUL -->
+  <svg
+    class="map-star map-star-south"
+    viewBox="0 0 20 20"
+    aria-hidden="true"
+  >
+    <path
+      d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
+    />
+  </svg>
 
-    <!-- West -->
-    <svg
-        class="map-star map-star-west"
-        viewBox="0 0 20 20"
-        aria-hidden="true"
-    >
-        <path
-            d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
-        />
-    </svg>
+  <!-- ESTRELA OESTE -->
+  <svg
+    class="map-star map-star-west"
+    viewBox="0 0 20 20"
+    aria-hidden="true"
+  >
+    <path
+      d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
+    />
+  </svg>
 
+  <!-- ÁREA DO RADAR -->
+  <div class="mini-map">
 
-    <!-- Actual map -->
-    <div class="mini-map">
+    <!-- JOGADOR -->
+    <div
+      class="player-marker"
+      [style.left.%]="getPlayerX()"
+      [style.top.%]="getPlayerY()"
+      title="Jogador"
+    ></div>
 
-        <!-- Player -->
-        <div
-            class="player-marker"
-            [style.left.%]="getPlayerX()"
-            [style.top.%]="getPlayerY()"
-        ></div>
+    <!-- INIMIGOS VIVOS -->
+    @for (
+      enemy of radarEnemies();
+      track $index
+    ) {
 
-        <!-- Enemies -->
-        @for (enemy of enemies; track $index) {
-            <div
-                class="enemy-marker"
-                [style.left.%]="getEnemyX(enemy)"
-                [style.top.%]="getEnemyY(enemy)"
-            ></div>
-        }
+      <div
+        class="enemy-marker"
+        [style.left.%]="getEnemyX(enemy)"
+        [style.top.%]="getEnemyY(enemy)"
+        title="Slime inimigo"
+      ></div>
 
-    </div>
+    }
+
+  </div>
 
 </div>

@@ -1,3 +1,12 @@
+
+:host {
+  display: contents;
+}
+
+/* ============================
+   JOGADOR / HITBOX ORIGINAL
+============================ */
+
 #player {
   position: absolute;
   top: 0;
@@ -7,10 +16,152 @@
   height: 40px;
 
   transform-origin: top left;
-  z-index: 10;
+  z-index: 11;
+  overflow: visible;
+  pointer-events: none;
 }
 
+/* ============================
+   SPRITE PIXEL-CARTOON
+============================ */
+
 #player-character {
+  position: absolute;
+  top: -8px;
+  left: 0;
+
   width: 40px;
-  height: 40px;
+  height: 48px;
+
+  background-color: transparent !important;
+  border: none;
+  border-radius: 0;
+
+  overflow: visible;
+
+  filter: drop-shadow(
+    0 3px 2px rgba(16, 18, 40, 0.4)
+  );
+}
+
+.player-sprite {
+  display: block;
+  width: 40px;
+  height: 48px;
+
+  image-rendering: pixelated;
+  shape-rendering: crispEdges;
+
+  transform-origin: 50% 90%;
+
+  animation: player-idle 1.5s steps(2, end) infinite;
+}
+
+/* ============================
+   VARIAÇÕES DE PERSONAGEM
+============================ */
+
+.accessory-explorer {
+  display: var(--show-explorer, inline);
+}
+
+.accessory-oracle {
+  display: var(--show-oracle, none);
+}
+
+.accessory-guardian {
+  display: var(--show-guardian, none);
+}
+
+.accessory-hunter {
+  display: var(--show-hunter, none);
+}
+
+.accessory-chrono {
+  display: var(--show-chrono, none);
+}
+
+/* ============================
+   BARRA DE VIDA
+============================ */
+
+#player-health-container {
+  position: absolute;
+  bottom: calc(100% + 11px);
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 40px;
+  height: 6px;
+
+  background: #101526;
+  border: 1px solid #2b3150;
+  border-radius: 3px;
+  overflow: hidden;
+
+  z-index: 5;
+}
+
+#player-health-bar {
+  height: 100%;
+  width: 100%;
+  background: #ff506b;
+}
+
+/* ============================
+   STAMINA
+============================ */
+
+#stamina-container {
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 40px;
+  height: 4px;
+
+  display: none;
+  background: #171d32;
+  border-radius: 2px;
+  overflow: hidden;
+
+  z-index: 5;
+}
+
+#stamina-bar {
+  width: 100%;
+  height: 100%;
+  background: #f4d16f;
+}
+
+/* ============================
+   EFEITO DE DANO
+============================ */
+
+#player-character[style*="background-color: white"]
+.player-sprite {
+  filter: brightness(1.8);
+}
+
+/* ============================
+   ANIMAÇÃO DE VIDA
+============================ */
+
+@keyframes player-idle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-sprite {
+    animation: none;
+  }
 }

@@ -1,9 +1,18 @@
-import { Component } from '@angular/core';
+
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+
+import { PlayerService } from '../../../../services/player.service';
+
 @Component({
-  imports: [RouterLink],
   selector: 'app-shop-button',
-  styleUrl: './shop-button.css',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './shop-button.html',
+  styleUrl: './shop-button.css'
 })
-export class ShopButton {}
+export class ShopButton {
+  // Saldo real do jogador, atualizado pelas missões.
+  readonly playerService = inject(PlayerService);
+}

@@ -5,7 +5,6 @@ import {
   Component,
   OnDestroy,
   effect,
-  inject,
   signal
 } from '@angular/core';
 
@@ -33,14 +32,9 @@ interface WorldPoint {
   styleUrl: './player-info-bnt.css'
 })
 export class PlayerInfoBnt implements OnDestroy {
-  private readonly router = inject(Router);
-
-  private readonly focusService = inject(FocusSessionService);
-
-  readonly playerService = inject(PlayerService);
 
   // =========================================
-  // VISUAL STATE
+  // FEEDBACK REATIVO
   // =========================================
 
   readonly rewarding = signal(false);
@@ -51,46 +45,52 @@ export class PlayerInfoBnt implements OnDestroy {
 
   private rewardTimer?: ReturnType<typeof setTimeout>;
 
-  private levelTimer?: ReturnType<typeof setTimeout>;
+  private levelUpTimer?: ReturnType<typeof setTimeout>;
 
-  constructor() {
-    // =========================================
-    // REWARD FEEDBACK
-    // =========================================
+  constructor(
+    public playerService: PlayerService,
+    private focusService: FocusSessionService,
+    private router: Router
+  ) {
+
+    // =====================================
+    // FEEDBACK DE RECOMPENSA
+    // =====================================
 
     effect(() => {
       const pulse = this.playerService.rewardPulse();
 
-      if (pulse <= 0) return;
-
-      this.rewarding.set(true);
+      if (pulse === 0) return;
 
       if (this.rewardTimer) {
         clearTimeout(this.rewardTimer);
       }
 
+      this.rewarding.set(true);
+
       this.rewardTimer = setTimeout(() => {
         this.rewarding.set(false);
-      }, 900);
+      }, 1200);
     });
 
-    // =========================================
-    // LEVEL UP - 2 SECONDS
-    // =========================================
+    // =====================================
+    // FEEDBACK DE NÍVEL
+    // =====================================
 
     effect(() => {
-      const level = this.playerService.lastLevelUp();
+      const newLevel = this.playerService.lastLevelUp();
 
-      if (level === null) return;
+      if (newLevel === null) return;
 
-      this.levelUpValue.set(level);
-      this.levelUpVisible.set(true);
-
-      if (this.levelTimer) {
-        clearTimeout(this.levelTimer);
+      if (this.levelUpTimer) {
+        clearTimeout(this.levelUpTimer);
       }
 
-      this.levelTimer = setTimeout(() => {
+      this.levelUpValue.set(newLevel);
+      this.levelUpVisible.set(true);
+
+      // Mostra o feedback por 2 segundos.
+      this.levelUpTimer = setTimeout(() => {
         this.levelUpVisible.set(false);
 
         this.playerService.clearLevelUp();
@@ -98,24 +98,76 @@ export class PlayerInfoBnt implements OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.rewardTimer) {
-      clearTimeout(this.rewardTimer);
-    }
-
-    if (this.levelTimer) {
-      clearTimeout(this.levelTimer);
-    }
-  }
-
   // =========================================
-  // PROFILE
+  // OPEN PROFILE
   // =========================================
 
   openProfile(): void {
+    // Bloqueia navegação durante o Focus.
     if (this.focusService.active) return;
 
     void this.router.navigate(['/playerinfo']);
+  }
+
+  // =========================================
+  // XP TOTAL ACUMULADO
+  // =========================================
+
+  get totalXp(): number {
+    const level = this.playerService.level();
+
+    const currentXp = this.playerService.xp();
+
+    // Soma o XP de todos os níveis anteriores.
+    const previousLevelsXp =
+      50 * level +
+      (5 * level * (level - 1)) / 2;
+
+    return previousLevelsXp + currentXp;
+  }
+
+  // =========================================
+  // META TOTAL DO PRÓXIMO NÍVEL
+  // =========================================
+
+  get xpForNextLevel(): number {
+    const nextLevel = this.playerService.level() + 1;
+
+    return (
+      50 * nextLevel +
+      (5 * nextLevel * (nextLevel - 1)) / 2
+    );
+  }
+
+  // =========================================
+  // XP NO NÍVEL ATUAL
+  // =========================================
+
+  get currentLevelXp(): number {
+    return this.playerService.xp();
+  }
+
+  get currentLevelRequired(): number {
+    return this.playerService.xpRequired();
+  }
+
+  get xpRemaining(): number {
+    return Math.max(
+      0,
+      this.currentLevelRequired - this.currentLevelXp
+    );
+  }
+
+  // =========================================
+  // CRÉDITOS E XP DA LOJA
+  // =========================================
+
+  get currentCredits(): number {
+    return this.playerService.credits();
+  }
+
+  get currentShopXp(): number {
+    return this.playerService.shopXp();
   }
 
   // =========================================
@@ -123,7 +175,7 @@ export class PlayerInfoBnt implements OnDestroy {
   // =========================================
 
   get worldLevel(): number {
-    return this.playerService.profile.worldLevel || 1;
+    return this.playerService.p().worldLevel || 1;
   }
 
   get worldTier(): number {
@@ -134,20 +186,28 @@ export class PlayerInfoBnt implements OnDestroy {
     return this.worldLevel % 10;
   }
 
+  // =========================================
+  // WORLD POINTS
+  // =========================================
+
   get worldPoints(): WorldPoint[] {
     const count = this.worldProgress;
 
-    if (count === 0) return [];
+    if (count === 0) {
+      return [];
+    }
 
     const points: WorldPoint[] = [];
+
     const centerX = 50;
     const centerY = 50;
 
     const radius = this.worldTier === 0 ? 35 : 39;
 
-    for (let index = 0; index < count; index++) {
+    for (let i = 0; i < count; i++) {
       const angle =
-        (-90 + (360 / count) * index) * Math.PI / 180;
+        (-90 + (360 / count) * i) *
+        Math.PI / 180;
 
       points.push({
         x: centerX + Math.cos(angle) * radius,
@@ -157,5 +217,19 @@ export class PlayerInfoBnt implements OnDestroy {
     }
 
     return points;
+  }
+
+  // =========================================
+  // CLEANUP
+  // =========================================
+
+  ngOnDestroy(): void {
+    if (this.rewardTimer) {
+      clearTimeout(this.rewardTimer);
+    }
+
+    if (this.levelUpTimer) {
+      clearTimeout(this.levelUpTimer);
+    }
   }
 }

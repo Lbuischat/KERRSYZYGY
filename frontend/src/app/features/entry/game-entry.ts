@@ -2,6 +2,7 @@ import {
   Component,
   signal
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { Title } from '../title/title';
 import { Login } from '../auth/login/login';
@@ -23,7 +24,15 @@ export class GameEntry {
 
   private readonly transitionDuration = 1200;
 
-  constructor(public readonly languageService: LanguageService) {}
+  constructor(
+    public readonly languageService: LanguageService,
+    private readonly route: ActivatedRoute
+  ) {
+    // Volta diretamente para o login depois de criar a conta.
+    if (this.route.snapshot.queryParamMap.get('login') === '1') {
+      this.showLogin.set(true);
+    }
+  }
 
   enterLogin(): void {
     if (this.isTransitioning()) {

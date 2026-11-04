@@ -21,6 +21,156 @@ import {
   FocusSessionService
 } from '../../../services/tasks/focus-session';
 
+import {
+  PlayerService
+} from '../../../services/player.service';
+
+type SpriteName =
+  | 'aether'
+  | 'selene'
+  | 'kael'
+  | 'vesper'
+  | 'chrona'
+  | 'lumi'
+  | 'ravi'
+  | 'iris'
+  | 'nox'
+  | 'atlas';
+
+type AccessoryKind =
+  | 'explorer'
+  | 'oracle'
+  | 'guardian'
+  | 'hunter'
+  | 'chrono';
+
+interface SpritePalette {
+  skin: string;
+  hair: string;
+  outfit: string;
+  dark: string;
+  accent: string;
+  cape: string;
+  eye: string;
+  accessory: AccessoryKind;
+}
+
+const SPRITES: Record<SpriteName, SpritePalette> = {
+  aether: {
+    skin: '#b87959',
+    hair: '#192237',
+    outfit: '#26435e',
+    dark: '#132d40',
+    accent: '#80d9ff',
+    cape: '#142d40',
+    eye: '#1d1830',
+    accessory: 'explorer'
+  },
+
+  selene: {
+    skin: '#d9a889',
+    hair: '#e2d9f3',
+    outfit: '#44406e',
+    dark: '#29234f',
+    accent: '#bda6ff',
+    cape: '#29234f',
+    eye: '#343054',
+    accessory: 'oracle'
+  },
+
+  kael: {
+    skin: '#915c48',
+    hair: '#292027',
+    outfit: '#6e453e',
+    dark: '#4b252d',
+    accent: '#ffd078',
+    cape: '#4b252d',
+    eye: '#211823',
+    accessory: 'guardian'
+  },
+
+  vesper: {
+    skin: '#684234',
+    hair: '#a25568',
+    outfit: '#24505a',
+    dark: '#15343d',
+    accent: '#71e1c6',
+    cape: '#15343d',
+    eye: '#0b2428',
+    accessory: 'hunter'
+  },
+
+  chrona: {
+    skin: '#c28b72',
+    hair: '#c5cede',
+    outfit: '#483b6d',
+    dark: '#302448',
+    accent: '#f29ac8',
+    cape: '#302448',
+    eye: '#312645',
+    accessory: 'chrono'
+  },
+
+  // ========================================
+  // NOVOS PERSONAGENS
+  // ========================================
+
+  lumi: {
+    skin: '#b9dce7',
+    hair: '#476b84',
+    outfit: '#244e65',
+    dark: '#0b293b',
+    accent: '#69f0ed',
+    cape: '#0b293b',
+    eye: '#08718c',
+    accessory: 'chrono'
+  },
+
+  ravi: {
+    skin: '#b87654',
+    hair: '#30222b',
+    outfit: '#795035',
+    dark: '#4a3036',
+    accent: '#ffb164',
+    cape: '#4a3036',
+    eye: '#241a24',
+    accessory: 'explorer'
+  },
+
+  iris: {
+    skin: '#d09b76',
+    hair: '#354a37',
+    outfit: '#3c6949',
+    dark: '#234b42',
+    accent: '#a2e88d',
+    cape: '#234b42',
+    eye: '#27382b',
+    accessory: 'oracle'
+  },
+
+  nox: {
+    skin: '#88624e',
+    hair: '#15182a',
+    outfit: '#302a51',
+    dark: '#15152d',
+    accent: '#a995ff',
+    cape: '#15152d',
+    eye: '#e8dfff',
+    accessory: 'hunter'
+  },
+
+  atlas: {
+    skin: '#7f533e',
+    hair: '#3a2731',
+    outfit: '#385071',
+    dark: '#5b2944',
+    accent: '#efca73',
+    cape: '#5b2944',
+    eye: '#211823',
+    accessory: 'guardian'
+  }
+};
+
 @Component({
   selector: 'app-game-shell',
   standalone: true,
@@ -38,6 +188,7 @@ export class GameShell implements OnDestroy {
   private readonly router = inject(Router);
 
   readonly focusService = inject(FocusSessionService);
+  readonly playerService = inject(PlayerService);
 
   @ViewChild(GameWorld)
   gameWorld!: GameWorld;
@@ -51,20 +202,83 @@ export class GameShell implements OnDestroy {
   private tutorialMessageTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
-    // Quando o Focus começar, fecha o inventário.
     effect(() => {
-      const focus = this.focusService.session();
-
-      if (focus) {
+      if (this.focusService.session()) {
         this.inventoryOpen = false;
         this.tutorialMessageVisible = false;
       }
     });
   }
 
-  // =========================================
+  // ========================================
+  // PERSONAGEM SALVO NO PERFIL
+  // ========================================
+
+  get selectedSprite(): SpriteName {
+    const name = (
+      this.playerService.p().characterName || 'Aether'
+    )
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
+
+    switch (name) {
+      case 'aether':
+        return 'aether';
+
+      case 'selene':
+        return 'selene';
+
+      case 'kael':
+        return 'kael';
+
+      case 'vesper':
+        return 'vesper';
+
+      case 'chrona':
+      case 'crona':
+        return 'chrona';
+
+      case 'lumi':
+        return 'lumi';
+
+      case 'ravi':
+        return 'ravi';
+
+      case 'iris':
+        return 'iris';
+
+      case 'nox':
+        return 'nox';
+
+      case 'atlas':
+        return 'atlas';
+
+      default:
+        return 'aether';
+    }
+  }
+
+  // ========================================
+  // CORES E ACESSÓRIOS
+  // ========================================
+
+  get spritePalette(): SpritePalette {
+    return SPRITES[this.selectedSprite];
+  }
+
+  get spriteAccessory(): AccessoryKind {
+    return this.spritePalette.accessory;
+  }
+
+  isAccessory(kind: AccessoryKind): boolean {
+    return this.spriteAccessory === kind;
+  }
+
+  // ========================================
   // SETTINGS
-  // =========================================
+  // ========================================
 
   openSettings(): void {
     if (this.focusService.active) return;
@@ -72,9 +286,9 @@ export class GameShell implements OnDestroy {
     void this.router.navigate(['/settings']);
   }
 
-  // =========================================
+  // ========================================
   // INVENTORY
-  // =========================================
+  // ========================================
 
   toggleInventory(): void {
     if (this.focusService.active) return;
@@ -82,9 +296,9 @@ export class GameShell implements OnDestroy {
     this.inventoryOpen = !this.inventoryOpen;
   }
 
-  // =========================================
+  // ========================================
   // TUTORIAL
-  // =========================================
+  // ========================================
 
   showTutorialMessage(): void {
     if (this.focusService.active) return;
@@ -102,29 +316,25 @@ export class GameShell implements OnDestroy {
 
   onPlayerAttack(): void {
     if (this.focusService.active) return;
-    if (!this.tutorialCmp) return;
 
-    this.tutorialCmp.onBasicAttack();
+    this.tutorialCmp?.onBasicAttack();
   }
 
   onEnemyDefeated(): void {
     if (this.focusService.active) return;
-    if (!this.tutorialCmp) return;
 
-    this.tutorialCmp.onTutorialEnemyDefeated();
+    this.tutorialCmp?.onTutorialEnemyDefeated();
   }
 
-  // =========================================
+  // ========================================
   // KEYBOARD
-  // =========================================
+  // ========================================
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
     const key = event.key.toLowerCase();
 
     if (this.focusService.active) {
-      // Não bloqueia atualização da página.
-      // O cronômetro é salvo pelo FocusSessionService.
       if (
         event.key === 'F5' ||
         (event.ctrlKey && key === 'r')
@@ -133,9 +343,16 @@ export class GameShell implements OnDestroy {
       }
 
       const blockedKeys = [
-        'w', 'a', 's', 'd',
-        'i', 'q', 'e', 'f',
-        'shift', ' ',
+        'w',
+        'a',
+        's',
+        'd',
+        'i',
+        'q',
+        'e',
+        'f',
+        'shift',
+        ' ',
         'arrowup',
         'arrowdown',
         'arrowleft',
@@ -155,9 +372,9 @@ export class GameShell implements OnDestroy {
     }
   }
 
-  // =========================================
+  // ========================================
   // CLEANUP
-  // =========================================
+  // ========================================
 
   ngOnDestroy(): void {
     if (this.tutorialMessageTimer) {

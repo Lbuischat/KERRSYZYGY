@@ -12,7 +12,7 @@ import {
 } from '@angular/forms';
 
 import {
-  Router, RouterLink
+  Router
 } from '@angular/router';
 
 import {
@@ -49,7 +49,7 @@ interface BackgroundStar {
   standalone: true,
 
   imports: [
-    FormsModule, RouterLink
+    FormsModule
   ],
 
   templateUrl: './create-account.html',
@@ -288,9 +288,7 @@ export class CreateAccount
          */
         setTimeout(() => {
 
-          this.router.navigate(
-            ['/login']
-          );
+          void this.router.navigate(['/'], { queryParams: { login: '1' } });
 
         }, 1200);
 
@@ -393,9 +391,7 @@ export class CreateAccount
 
   goToLogin(): void {
 
-    this.router.navigate(
-      ['']
-    );
+    void this.router.navigate(['/'], { queryParams: { login: '1' } });
 
   }
 

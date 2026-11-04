@@ -12,6 +12,7 @@ import {
 import { Router } from '@angular/router';
 
 import { PlayerService } from '../../../services/player.service';
+import { AccountSessionService } from '../../../services/account-session.service';
 import { FocusSessionService } from '../../../services/tasks/focus-session';
 
 type Difficulty = 'easy' | 'medium' | 'hard';
@@ -75,6 +76,7 @@ export class TaskPanel implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
 
   private readonly playerService = inject(PlayerService);
+  private readonly accountSession = inject(AccountSessionService);
   private readonly focusService = inject(FocusSessionService);
 
   readonly maxDaily = 10;
@@ -83,14 +85,28 @@ export class TaskPanel implements OnInit, OnDestroy {
   // Mantém os dados atuais: não reinicia seu progresso.
   private readonly dailyVersion = '3';
 
-  private readonly versionKey = 'quests-daily-version';
-  private readonly dateKey = 'quests-daily-date';
-  private readonly countKey = 'quests-daily-completed';
-  private readonly changesKey = 'quests-daily-changes';
-  private readonly orderKey = 'quests-daily-order';
+  private get versionKey(): string {
+    return this.accountSession.storageKey('quests-daily-version');
+  }
+  private get dateKey(): string {
+    return this.accountSession.storageKey('quests-daily-date');
+  }
+  private get countKey(): string {
+    return this.accountSession.storageKey('quests-daily-completed');
+  }
+  private get changesKey(): string {
+    return this.accountSession.storageKey('quests-daily-changes');
+  }
+  private get orderKey(): string {
+    return this.accountSession.storageKey('quests-daily-order');
+  }
 
-  private readonly playerQuestKey = 'playerQuests';
-  private readonly playerSlotsKey = 'quests-player-slots';
+  private get playerQuestKey(): string {
+    return this.accountSession.storageKey('playerQuests');
+  }
+  private get playerSlotsKey(): string {
+    return this.accountSession.storageKey('quests-player-slots');
+  }
 
   dailyCompletedCount = 0;
   dailyChanges = 0;

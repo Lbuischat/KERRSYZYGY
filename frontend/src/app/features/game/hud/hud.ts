@@ -1,10 +1,11 @@
+
 import {
   ChangeDetectorRef,
   Component,
-  Output,
   EventEmitter,
+  OnDestroy,
   OnInit,
-  OnDestroy
+  Output
 } from '@angular/core';
 
 import { Subscription } from 'rxjs';
@@ -12,17 +13,23 @@ import { Subscription } from 'rxjs';
 import { PlayerInfoBnt } from './player-info-btn/player-info-bnt';
 import { ShopButton } from './shop-button/shop-button';
 import { TaskPanel } from '../../tasks/task-panel/task-panel';
+
 import {
   MiniMap,
   MiniMapEntity
 } from './mini-map/mini-map';
+
 import { ActionBar } from '../combat/action-bar/action-bar';
 import { InventoryButton } from './inventory-button/inventory-button';
 import { SettingsButton } from './settings-button/settings-button';
-import { GameStateService } from '../../../services/game-state/game-state.service';
+
+import {
+  GameStateService
+} from '../../../services/game-state/game-state.service';
 
 @Component({
   selector: 'app-hud',
+  standalone: true,
   imports: [
     PlayerInfoBnt,
     ShopButton,
@@ -30,24 +37,33 @@ import { GameStateService } from '../../../services/game-state/game-state.servic
     MiniMap,
     ActionBar,
     InventoryButton,
-    SettingsButton,
+    SettingsButton
   ],
   templateUrl: './hud.html',
-  styleUrl: './hud.css',
+  styleUrl: './hud.css'
 })
 export class Hud implements OnInit, OnDestroy {
 
-  // =========================================================
-  // MINIMAP DATA
-  // =========================================================
+  // =====================================
+  // CONTROLE DO PAINEL DE MISSÕES
+  // =====================================
+
+  questsCollapsed = false;
+
+  toggleQuests(): void {
+    this.questsCollapsed = !this.questsCollapsed;
+  }
+
+  // =====================================
+  // MINIMAP
+  // =====================================
 
   worldWidth = 20 * 128;
-
   worldHeight = 20 * 128;
 
   playerPosition: MiniMapEntity = {
     x: 1255,
-    y: 1255,
+    y: 1255
   };
 
   enemies: MiniMapEntity[] = [];
@@ -56,22 +72,26 @@ export class Hud implements OnInit, OnDestroy {
 
   constructor(
     private gameStateService: GameStateService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.subscription.add(
-      this.gameStateService.playerPosition$.subscribe(position => {
-        this.playerPosition = position;
-        this.cdr.detectChanges();
-      })
+      this.gameStateService.playerPosition$.subscribe(
+        position => {
+          this.playerPosition = position;
+          this.cdr.detectChanges();
+        }
+      )
     );
 
     this.subscription.add(
-      this.gameStateService.enemyPositions$.subscribe(positions => {
-        this.enemies = positions;
-        this.cdr.detectChanges();
-      })
+      this.gameStateService.enemyPositions$.subscribe(
+        positions => {
+          this.enemies = positions;
+          this.cdr.detectChanges();
+        }
+      )
     );
   }
 
@@ -79,25 +99,21 @@ export class Hud implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  // =====================================
+  // EVENTOS DO HUD
+  // =====================================
 
-  // =========================================================
-  // HUD EVENTS
-  // =========================================================
+  @Output()
+  settingsOpen = new EventEmitter<void>();
 
-  @Output() settingsOpen = new EventEmitter<void>();
-
-  @Output() inventoryOpen = new EventEmitter<void>();
-
+  @Output()
+  inventoryOpen = new EventEmitter<void>();
 
   openSettings(): void {
-    console.log('⚙️ HUD RECEIVED SETTINGS CLICK');
     this.settingsOpen.emit();
   }
 
-
   toggleInventory(): void {
-    console.log('🎒 HUD RECEIVED INVENTORY CLICK');
     this.inventoryOpen.emit();
   }
-
 }

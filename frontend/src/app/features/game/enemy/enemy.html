@@ -1,20 +1,44 @@
+
 <div
+  #enemyRef
   class="enemy"
+  [class.elite]="elite"
   [style.left.px]="x"
   [style.top.px]="y"
   [style.width.px]="size"
   [style.height.px]="size"
 >
+  <!-- RAIO DE DETECÇÃO -->
   <div
     class="enemy-view-range"
     [style.width.px]="viewRange * 2"
     [style.height.px]="viewRange * 2"
   ></div>
 
+  <!-- SPRITE DO SLIME -->
+  <img
+    class="enemy-sprite"
+    [src]="spritePath"
+    [alt]="
+      elite
+        ? 'Slime alienígena elite'
+        : 'Slime alienígena'
+    "
+    draggable="false"
+  />
+
+  <!-- BARRA DE VIDA -->
   <div class="health-container">
     <div
-      id="enemy-health-bar"
       class="health-bar"
+      [style.width.%]="getHealthPercentage()"
     ></div>
   </div>
+
+  <!-- IDENTIFICAÇÃO DO ELITE -->
+  @if (elite) {
+    <span class="elite-label">
+      ELITE
+    </span>
+  }
 </div>

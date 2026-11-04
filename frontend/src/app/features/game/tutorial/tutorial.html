@@ -1,111 +1,244 @@
+
 @if (currentStep !== 'complete') {
 
   <div class="tutorial-window">
+
+    <!-- ===================================
+         MOVEMENT
+    =================================== -->
 
     @if (currentStep === 'movement') {
 
       <h2>Movement</h2>
 
       <p>
-        Use <strong>WASD</strong> or the
-        <strong>Arrow Keys</strong> to move around the world.
+        Try all four directions using
+        <strong>WASD</strong> or
+        <strong>Arrow Keys</strong>.
       </p>
 
+      <!-- DIREÇÕES -->
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+          margin-top: 18px;
+        "
+      >
+
+        @for (direction of directionOptions; track direction.id) {
+
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 8px;
+              padding: 12px 8px;
+              border: 1px solid;
+              border-radius: 9px;
+              background: rgba(255,255,255,.035);
+              transition: border-color .2s, background .2s;
+            "
+            [style.border-color]="
+              hasMoved(direction.id)
+                ? 'rgba(119, 230, 179, .65)'
+                : 'rgba(255,255,255,.12)'
+            "
+            [style.background]="
+              hasMoved(direction.id)
+                ? 'rgba(74, 159, 115, .15)'
+                : 'rgba(255,255,255,.035)'
+            "
+          >
+
+            <span
+              style="
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: .12em;
+              "
+              [style.color]="
+                hasMoved(direction.id)
+                  ? '#91f4c0'
+                  : '#bbbccc'
+              "
+            >
+              {{ direction.label }}
+            </span>
+
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+              "
+            >
+
+              @for (key of direction.keys; track key) {
+                <kbd
+                  style="
+                    min-width: 25px;
+                    padding: 5px 4px;
+                    border: 1px solid rgba(255,255,255,.2);
+                    border-radius: 5px;
+                    background: rgba(255,255,255,.07);
+                    color: #fff;
+                    font-size: 13px;
+                    font-family: inherit;
+                    font-weight: 700;
+                  "
+                >
+                  {{ key }}
+                </kbd>
+              }
+
+              <span
+                aria-hidden="true"
+                style="font-size: 16px"
+                [style.color]="
+                  hasMoved(direction.id)
+                    ? '#91f4c0'
+                    : '#777b90'
+                "
+              >
+                {{ hasMoved(direction.id) ? '✓' : '○' }}
+              </span>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+      <!-- BARRA -->
       <div class="progress-container">
 
         <div
           class="progress-bar"
-          [style.width.%]="movementProgress">
-        </div>
+          [style.width.%]="movementProgress"
+        ></div>
 
       </div>
 
+      <p
+        style="
+          margin-top: 10px;
+          font-size: 11px;
+          letter-spacing: .06em;
+        "
+      >
+        {{ movementCount }} / 4 DIRECTIONS
+      </p>
+
       @if (movementProgress >= 100) {
+
         <div class="checkmark">
           ✓
         </div>
+
+        <p style="margin-top: 6px; color: #91f4c0">
+          Movement complete!
+        </p>
+
       }
 
     }
+
+    <!-- ===================================
+         SPRINT
+    =================================== -->
 
     @if (currentStep === 'sprint') {
 
       <h2>Sprint</h2>
 
       <p>
-        Hold <strong>SHIFT</strong> while moving to sprint.
+        Hold <strong>SHIFT</strong> while moving
+        to sprint.
       </p>
 
       <div class="progress-container">
 
         <div
           class="progress-bar"
-          [style.width.%]="sprintProgress">
-        </div>
+          [style.width.%]="sprintProgress"
+        ></div>
 
       </div>
 
       @if (sprintProgress >= 100) {
-        <div class="checkmark">
-          ✓
-        </div>
+        <div class="checkmark">✓</div>
       }
 
     }
+
+    <!-- ===================================
+         STAMINA
+    =================================== -->
 
     @if (currentStep === 'stamina') {
 
       <h2>Stamina</h2>
 
       <p>
-        Keep sprinting until your <strong>Stamina</strong> runs out.
+        Keep sprinting until your
+        <strong>Stamina</strong> runs out.
       </p>
 
       <div class="progress-container">
 
         <div
           class="progress-bar"
-          [style.width.%]="staminaProgress">
-        </div>
+          [style.width.%]="staminaProgress"
+        ></div>
 
       </div>
 
       @if (staminaProgress >= 100) {
-        <div class="checkmark">
-          ✓
-        </div>
+        <div class="checkmark">✓</div>
       }
 
     }
+
+    <!-- ===================================
+         ATTACK
+    =================================== -->
 
     @if (currentStep === 'attack') {
 
       <h2>Attack</h2>
 
       <p>
-        Use the <strong>Left Mouse Button</strong> to attack.
+        Use the <strong>Left Mouse Button</strong>
+        to attack.
       </p>
 
       @if (attackPerformed) {
-        <div class="checkmark">
-          ✓
-        </div>
+        <div class="checkmark">✓</div>
       }
 
     }
+
+    <!-- ===================================
+         DEFEAT ENEMY
+    =================================== -->
 
     @if (currentStep === 'attackEnemy') {
 
       <h2>Defeat the Enemy</h2>
 
       <p>
-        Attack the nearby enemy until it's defeated.
+        Attack the nearby enemy until
+        it's defeated.
       </p>
 
       @if (tutorialEnemyDefeated) {
-        <div class="checkmark">
-          ✓
-        </div>
+        <div class="checkmark">✓</div>
       }
 
     }

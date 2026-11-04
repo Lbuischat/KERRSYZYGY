@@ -1,8 +1,18 @@
+
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
-  ChangeDetectionStrategy
+  inject
 } from '@angular/core';
+
+import {
+  toSignal
+} from '@angular/core/rxjs-interop';
+
+import {
+  GameStateService
+} from '../../../../services/game-state/game-state.service';
 
 export interface MiniMapEntity {
   x: number;
@@ -16,20 +26,21 @@ export interface MiniMapEntity {
   styleUrl: './mini-map.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-
 export class MiniMap {
 
-  // =========================================================
-  // WORLD
-  // =========================================================
+  private readonly gameStateService =
+    inject(GameStateService);
 
-  @Input() worldWidth = 20 * 128;
-  @Input() worldHeight = 20 * 128;
+  // ========================================
+  // TAMANHO DO MUNDO
+  // ========================================
 
+  @Input() worldWidth = 2560;
+  @Input() worldHeight = 2560;
 
-  // =========================================================
-  // PLAYER
-  // =========================================================
+  // ========================================
+  // JOGADOR
+  // ========================================
 
   @Input()
   playerPosition: MiniMapEntity = {
@@ -37,78 +48,63 @@ export class MiniMap {
     y: 1255
   };
 
-
-  // =========================================================
-  // PLAYER DIRECTION
-  // =========================================================
-
   @Input()
   direcaoJogador = 0;
 
-
-  // =========================================================
-  // ENEMIES
-  // =========================================================
-
+  // Compatibilidade com o HUD existente.
   @Input()
   enemies: MiniMapEntity[] = [];
 
+  // ========================================
+  // POSIÇÕES ATUALIZADAS DOS INIMIGOS
+  // ========================================
 
-  // =========================================================
-  // PLAYER POSITION
-  // =========================================================
+  readonly radarEnemies = toSignal(
+    this.gameStateService.enemyPositions$,
+    {
+      initialValue: [] as MiniMapEntity[]
+    }
+  );
+
+  // ========================================
+  // POSIÇÃO DO JOGADOR
+  // ========================================
 
   getPlayerX(): number {
-
     return this.worldToPercentage(
       this.playerPosition.x,
       this.worldWidth
     );
-
   }
 
-
   getPlayerY(): number {
-
     return this.worldToPercentage(
       this.playerPosition.y,
       this.worldHeight
     );
-
   }
 
+  // ========================================
+  // POSIÇÃO DOS INIMIGOS
+  // ========================================
 
-  // =========================================================
-  // ENEMY POSITION
-  // =========================================================
-
-  getEnemyX(
-    enemy: MiniMapEntity
-  ): number {
-
+  getEnemyX(enemy: MiniMapEntity): number {
     return this.worldToPercentage(
       enemy.x,
       this.worldWidth
     );
-
   }
 
-
-  getEnemyY(
-    enemy: MiniMapEntity
-  ): number {
-
+  getEnemyY(enemy: MiniMapEntity): number {
     return this.worldToPercentage(
       enemy.y,
       this.worldHeight
     );
-
   }
 
-
-  // =========================================================
-  // WORLD → MINI MAP
-  // =========================================================
+  // ========================================
+  // CONVERTER POSIÇÃO PARA %
+  // ========================================
 
   private worldToPercentage(
     position: number,
@@ -124,12 +120,7 @@ export class MiniMap {
 
     return Math.max(
       0,
-      Math.min(
-        100,
-        percentage
-      )
+      Math.min(100, percentage)
     );
-
   }
-
 }

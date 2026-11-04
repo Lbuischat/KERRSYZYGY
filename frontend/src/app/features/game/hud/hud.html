@@ -1,45 +1,114 @@
+
 <div class="pointer-events-none absolute inset-0">
 
-  <!-- Player info -->
-  <div class="pointer-events-auto absolute left-6 top-10">
+  <!-- =====================================
+       PLAYER INFO
+  ===================================== -->
+
+  <div
+    class="pointer-events-auto absolute left-6 top-10"
+  >
     <app-player-info-bnt />
   </div>
 
+  <!-- =====================================
+       TOP-RIGHT CONTROLS
+  ===================================== -->
 
-  <!-- Top-right controls -->
-  <div class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3">
+  <div
+    class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3"
+  >
 
-    <!-- Inventory -->
-    <app-inventory-button (inventoryClicked)="toggleInventory()"></app-inventory-button>
+    <app-inventory-button
+      (inventoryClicked)="toggleInventory()"
+    />
 
-    <!-- Shop -->
-    <app-shop-button></app-shop-button>
+    <app-shop-button />
 
   </div>
 
+  <!-- =====================================
+       QUEST PANEL
+       RECOLHÍVEL
+  ===================================== -->
 
-  <!-- Tasks -->
-  <div class="pointer-events-auto absolute left-6 top-35">
-    <app-task-panel />
+  <div class="hud-quest-dock">
+
+    <!-- BOTÃO DE RECOLHER / EXPANDIR -->
+    <button
+      type="button"
+      class="hud-quest-toggle"
+      (click)="toggleQuests()"
+      [attr.aria-expanded]="!questsCollapsed"
+      aria-controls="hud-quest-content"
+      [attr.aria-label]="
+        questsCollapsed
+          ? 'Expandir missões'
+          : 'Recolher missões'
+      "
+    >
+
+      <span class="hud-quest-toggle-icon">
+        {{ questsCollapsed ? '▸' : '▾' }}
+      </span>
+
+      <span>
+        {{
+          questsCollapsed
+            ? 'ABRIR MISSÕES'
+            : 'RECOLHER MISSÕES'
+        }}
+      </span>
+
+    </button>
+
+    <!-- PAINEL EXISTENTE -->
+    <div
+      id="hud-quest-content"
+      class="hud-quest-body"
+      [hidden]="questsCollapsed"
+    >
+      <app-task-panel />
+    </div>
+
   </div>
 
+  <!-- =====================================
+       MINI-MAP
+  ===================================== -->
 
-  <!-- Mini-map -->
-  <div class="pointer-events-auto absolute right-6 top-35">
-    <app-mini-map [worldWidth]="worldWidth" [worldHeight]="worldHeight" [playerPosition]="playerPosition"
-      [enemies]="enemies" />
+  <div
+    class="pointer-events-auto absolute right-6 top-35"
+  >
+    <app-mini-map
+      [worldWidth]="worldWidth"
+      [worldHeight]="worldHeight"
+      [playerPosition]="playerPosition"
+      [enemies]="enemies"
+    />
   </div>
 
+  <!-- =====================================
+       ACTION BAR
+  ===================================== -->
 
-  <!-- Action buttons -->
-  <div class="pointer-events-auto absolute bottom-6 right-6">
+  <div
+    class="pointer-events-auto absolute bottom-6 right-6"
+  >
     <app-action-bar />
   </div>
 
+  <!-- =====================================
+       SETTINGS
+       MANTIDO FORA DAS MISSÕES
+  ===================================== -->
 
-  <!-- Settings Btn -->
-  <div class="pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2">
-    <app-settings-button (settingsClicked)="openSettings()" />
+  <div
+    class="hud-settings-anchor pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2"
+  >
+    <app-settings-button
+      (settingsClicked)="openSettings()"
+    />
   </div>
 
 </div>

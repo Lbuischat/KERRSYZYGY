@@ -1,32 +1,34 @@
-<!-- ========================================================= -->
-<!-- CELESTIAL BACKGROUND                                      -->
-<!-- ========================================================= -->
 
+<!-- FUNDO ESPACIAL -->
 <app-shop-cbb></app-shop-cbb>
 
-<!-- ========================================================= -->
-<!-- SHOP                                                       -->
-<!-- ========================================================= -->
-
 <main class="global-shop">
-
-  <!-- ========================================================= -->
-  <!-- UI                                                        -->
-  <!-- ========================================================= -->
-
   <div class="shop-ui">
-
     <section class="shop-shell">
 
-      <button type="button" class="shop-back-button" (click)="voltarParaOJogo()" aria-label="Voltar para o jogo">
+      <!-- ==================================
+           VOLTAR AO JOGO
+      =================================== -->
+
+      <button
+        type="button"
+        class="shop-back-button"
+        (click)="voltarParaOJogo()"
+        aria-label="Voltar ao jogo"
+      >
         <span class="back-arrow">←</span>
       </button>
 
-      <!-- HEADER -->
+      <!-- ==================================
+           CABEÇALHO
+      =================================== -->
+
       <header class="shop-header">
 
         <div class="shop-title">
-          <span class="shop-title-kicker">SYSTEM // ECONOMY</span>
+          <span class="shop-title-kicker">
+            SYSTEM // ECONOMY
+          </span>
 
           <h1>SHOP</h1>
 
@@ -35,8 +37,13 @@
 
         <div class="shop-currencies">
 
+          <!-- CRÉDITOS -->
           <div class="currency">
-            <span class="currency-icon currency-icon-credits">◈</span>
+            <span
+              class="currency-icon currency-icon-credits"
+            >
+              ◈
+            </span>
 
             <div class="currency-info">
               <span>CREDITS</span>
@@ -44,88 +51,330 @@
             </div>
           </div>
 
+          <!-- XP DA LOJA -->
           <div class="currency">
-            <span class="currency-icon currency-icon-xp">✦</span>
+            <span
+              class="currency-icon currency-icon-xp"
+            >
+              ✦
+            </span>
 
             <div class="currency-info">
-              <span>XP</span>
+              <span>SHOP XP</span>
               <strong>{{ xp }}</strong>
             </div>
           </div>
 
         </div>
-
       </header>
 
+      <!-- ==================================
+           CATEGORIAS
+      =================================== -->
 
-      <!-- CATEGORY NAVIGATION -->
-      <nav class="shop-navigation" aria-label="Shop categories">
+      <nav
+        class="shop-navigation"
+        aria-label="Categorias da loja"
+      >
 
-        <button type="button" class="shop-category" [class.active]="selectedCategory === 'recommended'"
-          (click)="selecionarCategoria('recommended')">
+        <button
+          type="button"
+          class="shop-category"
+          [class.active]="selectedCategory === 'recommended'"
+          (click)="selecionarCategoria('recommended')"
+        >
           <span class="category-symbol">✦</span>
           <span>RECOMMENDED</span>
         </button>
 
-        <button type="button" class="shop-category" [class.active]="selectedCategory === 'characters'"
-          (click)="selecionarCategoria('characters')">
+        <button
+          type="button"
+          class="shop-category"
+          [class.active]="selectedCategory === 'characters'"
+          (click)="selecionarCategoria('characters')"
+        >
           <span class="category-symbol">◇</span>
           <span>CHARACTERS</span>
         </button>
 
-        <button type="button" class="shop-category" [class.active]="selectedCategory === 'weapons'"
-          (click)="selecionarCategoria('weapons')">
+        <button
+          type="button"
+          class="shop-category"
+          [class.active]="selectedCategory === 'weapons'"
+          (click)="selecionarCategoria('weapons')"
+        >
           <span class="category-symbol">⌁</span>
           <span>WEAPONS</span>
         </button>
 
-        <button type="button" class="shop-category" [class.active]="selectedCategory === 'abilities'"
-          (click)="selecionarCategoria('abilities')">
+        <button
+          type="button"
+          class="shop-category"
+          [class.active]="selectedCategory === 'abilities'"
+          (click)="selecionarCategoria('abilities')"
+        >
           <span class="category-symbol">✧</span>
           <span>ABILITIES</span>
         </button>
 
-        <button type="button" class="shop-category" [class.active]="selectedCategory === 'materials'"
-          (click)="selecionarCategoria('materials')">
+        <button
+          type="button"
+          class="shop-category"
+          [class.active]="selectedCategory === 'materials'"
+          (click)="selecionarCategoria('materials')"
+        >
           <span class="category-symbol">◆</span>
           <span>MATERIALS</span>
         </button>
 
-        <button type="button" class="shop-category" [class.active]="selectedCategory === 'consumables'"
-          (click)="selecionarCategoria('consumables')">
+        <button
+          type="button"
+          class="shop-category"
+          [class.active]="selectedCategory === 'consumables'"
+          (click)="selecionarCategoria('consumables')"
+        >
           <span class="category-symbol">○</span>
           <span>CONSUMABLES</span>
         </button>
 
-        <button type="button" class="shop-category shop-category-wishes" [class.active]="selectedCategory === 'wishes'"
-          (click)="selecionarCategoria('wishes')">
+        <!-- WISHES -->
+        <button
+          type="button"
+          class="shop-category shop-category-wishes"
+          [class.active]="selectedCategory === 'wishes'"
+          (click)="selecionarCategoria('wishes')"
+        >
           <span class="category-symbol">✦</span>
           <span>WISHES</span>
+
+          @if (totalWishes > 0) {
+            <span>({{ totalWishes }})</span>
+          }
         </button>
 
       </nav>
 
+      <!-- ==================================
+           BOTÃO DE HISTÓRICO
+      =================================== -->
 
-      @if (mensagem) {
-      <div class="shop-feedback" [class.success]="tipoMensagem === 'sucesso'" [class.error]="tipoMensagem === 'erro'">
-        <span class="feedback-icon">
+      <div
+        style="
+          display: flex;
+          justify-content: flex-end;
+          padding: 12px 24px 0;
+        "
+      >
 
-          @if (tipoMensagem === 'sucesso') {
-          ✓
-          }
+        <button
+          type="button"
+          (click)="alternarHistorico()"
+          [attr.aria-expanded]="historicoAberto"
+          style="
+            border: 1px solid rgba(225, 196, 135, 0.35);
+            background: rgba(13, 15, 24, 0.85);
+            color: #e4cf9a;
+            padding: 11px 15px;
+            font: inherit;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            cursor: pointer;
+          "
+        >
+          ◈ HISTÓRICO DE COMPRAS
+          ({{ totalCompras }})
 
-          @if (tipoMensagem === 'erro') {
-          !
-          }
+          <span style="margin-left: 10px">
+            {{ historicoAberto ? '−' : '+' }}
+          </span>
+        </button>
 
-        </span>
-
-        <span>{{ mensagem }}</span>
       </div>
+
+      <!-- ==================================
+           PAINEL DE HISTÓRICO
+      =================================== -->
+
+      @if (historicoAberto) {
+
+        <section
+          aria-label="Histórico de compras"
+          style="
+            margin: 12px 24px 16px;
+            padding: 18px;
+            background: rgba(8, 12, 21, 0.93);
+            border: 1px solid rgba(225, 196, 135, 0.22);
+            color: #e6e5ef;
+          "
+        >
+
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 14px;
+              flex-wrap: wrap;
+              margin-bottom: 12px;
+            "
+          >
+
+            <strong
+              style="
+                letter-spacing: 0.1em;
+                color: #e6cb8c;
+                font-size: 13px;
+              "
+            >
+              REGISTRO DE TRANSAÇÕES
+            </strong>
+
+            <span
+              style="
+                font-size: 12px;
+                color: #a8a8b7;
+              "
+            >
+              ◈ {{ totalCreditosGastos }}
+              créditos gastos
+            </span>
+
+          </div>
+
+          @if (historico.length === 0) {
+
+            <p
+              style="
+                font-size: 13px;
+                color: #9296a6;
+                margin: 0;
+              "
+            >
+              Nenhuma compra registrada ainda.
+              Suas próximas compras aparecerão aqui.
+            </p>
+
+          } @else {
+
+            <div
+              style="
+                max-height: 260px;
+                overflow-y: auto;
+              "
+            >
+
+              @for (compra of historico; track compra.id) {
+
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    padding: 12px 0;
+                    border-top: 1px solid rgba(255,255,255,.09);
+                  "
+                >
+
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                    "
+                  >
+
+                    <span
+                      style="
+                        font-size: 19px;
+                        color: #e4cb93;
+                      "
+                    >
+                      {{ compra.icone }}
+                    </span>
+
+                    <div>
+
+                      <strong
+                        style="
+                          display: block;
+                          font-size: 13px;
+                        "
+                      >
+                        {{ compra.nome }}
+
+                        <span style="color: #9d9faf">
+                          ×{{ compra.quantidade }}
+                        </span>
+                      </strong>
+
+                      <small style="color: #9296a6">
+                        {{ formatarData(compra.data) }}
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                  <strong
+                    style="
+                      font-size: 14px;
+                      color: #e1c987;
+                    "
+                  >
+                    {{
+                      compra.moeda === 'credits'
+                        ? '◈'
+                        : '✦'
+                    }}
+                    −{{ compra.total }}
+                  </strong>
+
+                </div>
+
+              }
+
+            </div>
+
+          }
+
+        </section>
+
       }
 
+      <!-- ==================================
+           FEEDBACK DE COMPRA E WISHES
+      =================================== -->
 
-      <!-- CONTENT -->
+      @if (mensagem) {
+
+        <div
+          class="shop-feedback"
+          [class.success]="tipoMensagem === 'sucesso'"
+          [class.error]="tipoMensagem === 'erro'"
+          role="status"
+        >
+
+          <span class="feedback-icon">
+            @if (tipoMensagem === 'sucesso') {
+              ✓
+            } @else {
+              !
+            }
+          </span>
+
+          <span>{{ mensagem }}</span>
+
+        </div>
+
+      }
+
+      <!-- ==================================
+           CONTEÚDO DA LOJA
+      =================================== -->
+
       <section class="shop-content">
 
         <div class="section-heading">
@@ -136,12 +385,20 @@
             </span>
 
             <h2>
-              PROGRESSION RESOURCES
+              @if (selectedCategory === 'wishes') {
+                CELESTIAL WISHES
+              } @else {
+                PROGRESSION RESOURCES
+              }
             </h2>
 
             <p>
-              Strengthen your characters, weapons, and abilities
-              using the available resources.
+              @if (selectedCategory === 'wishes') {
+                Your saved treasures and stellar wishes.
+              } @else {
+                Strengthen your characters, weapons,
+                and abilities using the available resources.
+              }
             </p>
           </div>
 
@@ -152,79 +409,215 @@
 
         </div>
 
+        <!-- ==================================
+             WISHES VAZIO
+        =================================== -->
+
+        @if (
+          selectedCategory === 'wishes' &&
+          itensVisiveis.length === 0
+        ) {
+
+          <div
+            style="
+              padding: 60px 20px;
+              text-align: center;
+              background: rgba(11, 13, 20, 0.55);
+              border: 1px solid rgba(208, 178, 105, 0.18);
+            "
+          >
+
+            <div
+              style="
+                font-size: 38px;
+                color: #d4b675;
+              "
+            >
+              ✧
+            </div>
+
+            <h3
+              style="
+                margin: 15px 0;
+                color: #e6cd94;
+                font-size: 16px;
+                letter-spacing: 0.1em;
+              "
+            >
+              NO WISHES YET
+            </h3>
+
+            <p
+              style="
+                color: #9295a5;
+                font-size: 13px;
+              "
+            >
+              Your celestial wishlist is waiting
+              for its first star.
+            </p>
+
+          </div>
+
+        }
+
+        <!-- ==================================
+             CARDS ORIGINAIS
+        =================================== -->
 
         <div class="shop-grid">
 
           @for (boost of itensVisiveis; track boost.id) {
 
-          <article class="shop-item">
+            <article class="shop-item">
 
-            <div class="item-art">
+              <!-- ARTE DO ITEM -->
+              <div class="item-art">
 
-              <div class="item-art-glow"></div>
+                <div class="item-art-glow"></div>
 
-              <div class="item-symbol">
-                {{ boost.icone }}
-              </div>
+                <!-- ESTRELA DOURADA -->
+                <button
+                  type="button"
+                  [attr.aria-label]="
+                    isWishlisted(boost)
+                      ? 'Remover ' + boost.nome + ' dos Wishes'
+                      : 'Adicionar ' + boost.nome + ' aos Wishes'
+                  "
+                  [attr.aria-pressed]="isWishlisted(boost)"
+                  [title]="
+                    isWishlisted(boost)
+                      ? 'Salvo em Wishes'
+                      : 'Adicionar aos Wishes'
+                  "
+                  (click)="toggleWishlist(boost)"
+                  style="
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    z-index: 4;
+                    width: 35px;
+                    height: 35px;
+                    border: 1px solid rgba(238,195,106,.42);
+                    border-radius: 7px;
+                    background: rgba(10,12,19,.88);
+                    cursor: pointer;
+                    display: grid;
+                    place-items: center;
+                    transition: transform .16s ease;
+                  "
+                  [style.color]="
+                    isWishlisted(boost)
+                      ? '#ffd477'
+                      : '#ad915a'
+                  "
+                  [style.boxShadow]="
+                    isWishlisted(boost)
+                      ? '0 0 14px rgba(255,202,91,.28)'
+                      : 'none'
+                  "
+                >
 
-              @if (boost.quantidade > 0) {
-              <span class="item-owned-badge">
-                x{{ boost.quantidade }}
-              </span>
-              }
+                  <span
+                    style="
+                      font-size: 24px;
+                      line-height: 1;
+                      pointer-events: none;
+                    "
+                    aria-hidden="true"
+                  >
+                    {{ isWishlisted(boost) ? '★' : '☆' }}
+                  </span>
 
-            </div>
+                </button>
 
-            <div class="item-body">
+                <!-- SÍMBOLO DO PRODUTO -->
+                <div class="item-symbol">
+                  {{ boost.icone }}
+                </div>
 
-              <div class="item-heading">
-
-                <h3>
-                  {{ boost.nome }}
-                </h3>
-
+                <!-- QUANTIDADE -->
                 @if (boost.quantidade > 0) {
-                <span class="item-owned">
-                  OWNED {{ boost.quantidade }}
-                </span>
+
+                  <span class="item-owned-badge">
+                    x{{ boost.quantidade }}
+                  </span>
+
                 }
 
               </div>
 
-              <p class="item-description">
-                {{ boost.descricao }}
-              </p>
+              <!-- ==================================
+                   INFORMAÇÕES DO PRODUTO
+              =================================== -->
 
-            </div>
+              <div class="item-body">
 
-            <div class="item-footer">
+                <div class="item-heading">
 
-              <div class="item-price">
+                  <h3>{{ boost.nome }}</h3>
 
-                <span class="price-icon">✦</span>
+                  @if (boost.quantidade > 0) {
+                    <span class="item-owned">
+                      OWNED {{ boost.quantidade }}
+                    </span>
+                  }
 
-                <div>
-                  <span class="price-label">
-                    PRICE
-                  </span>
-
-                  <strong>
-                    {{ boost.preco }}
-                  </strong>
                 </div>
+
+                <p class="item-description">
+                  {{ boost.descricao }}
+                </p>
 
               </div>
 
-              <button type="button" class="item-buy" (pointerdown)="iniciarCompraContinua(boost)"
-                (pointerup)="pararAcaoContinua()" (pointerleave)="pararAcaoContinua()"
-                (pointercancel)="pararAcaoContinua()">
-                <span>BUY</span>
-                <span class="buy-symbol">+</span>
-              </button>
+              <!-- ==================================
+                   PREÇO E COMPRA
+              =================================== -->
 
-            </div>
+              <div class="item-footer">
 
-          </article>
+                <div class="item-price">
+
+                  <!-- ◈ CRÉDITOS / ✦ XP DA LOJA -->
+                  <span class="price-icon">
+                    {{
+                      boost.moeda === 'credits'
+                        ? '◈'
+                        : '✦'
+                    }}
+                  </span>
+
+                  <div>
+
+                    <span class="price-label">
+                      PRICE
+                    </span>
+
+                    <strong>
+                      {{ boost.preco }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+                <!-- BOTÃO DE COMPRA -->
+                <button
+                  type="button"
+                  class="item-buy"
+                  (pointerdown)="iniciarCompraContinua(boost)"
+                  (pointerup)="pararAcaoContinua()"
+                  (pointerleave)="pararAcaoContinua()"
+                  (pointercancel)="pararAcaoContinua()"
+                >
+                  <span>BUY</span>
+                  <span class="buy-symbol">+</span>
+                </button>
+
+              </div>
+
+            </article>
 
           }
 
@@ -233,7 +626,5 @@
       </section>
 
     </section>
-
   </div>
-
 </main>

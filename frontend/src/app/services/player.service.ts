@@ -1,5 +1,6 @@
 
 import { isPlatformBrowser } from '@angular/common';
+import { AccountSessionService } from './account-session.service';
 
 import {
   Injectable,
@@ -25,6 +26,7 @@ export interface PlayerProfile {
   worldLevel: number;
 
   receiveBirthdayEmails: boolean;
+  characterCreated?: boolean;
 }
 
 export interface PlayerReward {
@@ -38,8 +40,11 @@ export interface PlayerReward {
 })
 export class PlayerService {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly accountSession = inject(AccountSessionService);
 
-  private readonly storageKey = 'playerProfile';
+  private get storageKey(): string {
+    return this.accountSession.storageKey('playerProfile');
+  }
 
   private readonly defaultProfile: PlayerProfile = {
     username: '',
@@ -52,11 +57,12 @@ export class PlayerService {
 
     level: 0,
     xp: 0,
-    credits: 1250,
-    shopXp: 2840,
+    credits: 0,
+    shopXp: 0,
     worldLevel: 1,
 
-    receiveBirthdayEmails: false
+    receiveBirthdayEmails: false,
+    characterCreated: false
   };
 
   // =========================================
@@ -127,6 +133,18 @@ export class PlayerService {
   readonly lastLevelUp = signal<number | null>(null);
 
   constructor() {
+    this.loadProfile();
+  }
+
+  // =========================================
+  // ACCOUNT SWITCH (called after successful login)
+  // =========================================
+
+  reloadForCurrentAccount(): void {
+    // Do not persist the previous user's state into the new account.
+    this.p.set({ ...this.defaultProfile });
+    this.rewardPulse.set(0);
+    this.lastLevelUp.set(null);
     this.loadProfile();
   }
 
