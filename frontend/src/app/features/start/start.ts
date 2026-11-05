@@ -1,4 +1,10 @@
-import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -23,32 +29,46 @@ interface CelestialEvent {
 
 @Component({
   selector: 'app-start',
+  standalone: true,
   imports: [FormsModule],
   templateUrl: './start.html',
-  styleUrl: './start.css',
+  styleUrl: './start.css'
 })
 export class Start {
+
+  // =========================================
+  // STAGE ELEMENTS
+  // =========================================
+
   @ViewChildren('stageSection', { read: ElementRef })
   private stageSections!: QueryList<ElementRef<HTMLElement>>;
 
-  // Background
-  readonly backgroundStars: BackgroundStar[] = Array.from({ length: 180 }, () => ({
-    left: Math.random() * 100,
-    top: Math.random() * 100,
-    size: Math.random() < 0.9 ? 1 : 2,
-    opacity: 0.08 + Math.random() * 0.17,
-  }));
+  // =========================================
+  // BACKGROUND
+  // =========================================
 
-  readonly celestialEvents: CelestialEvent[] = Array.from({ length: 5 }, (_, id) => ({
-    id,
-    type: Math.random() < 0.5 ? 'comet' : 'meteor',
-    left: Math.random() * 100,
-    top: Math.random() * 70,
-    duration: 2 + Math.random() * 3,
-    delay: Math.random() * 8,
-  }));
+  readonly backgroundStars: BackgroundStar[] =
+    Array.from({ length: 180 }, () => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: Math.random() < 0.9 ? 1 : 2,
+      opacity: 0.08 + Math.random() * 0.17
+    }));
 
-  // Options
+  readonly celestialEvents: CelestialEvent[] =
+    Array.from({ length: 5 }, (_, id) => ({
+      id,
+      type: Math.random() < 0.5 ? 'comet' : 'meteor',
+      left: Math.random() * 100,
+      top: Math.random() * 70,
+      duration: 2 + Math.random() * 3,
+      delay: Math.random() * 8
+    }));
+
+  // =========================================
+  // OPTIONS
+  // =========================================
+
   readonly months = [
     'January',
     'February',
@@ -61,43 +81,70 @@ export class Start {
     'September',
     'October',
     'November',
-    'December',
+    'December'
   ];
 
-  readonly genderOptions = ['Female', 'Male', 'Non-binary', 'Other'];
+  readonly genderOptions = [
+    'Female',
+    'Male',
+    'Non-binary',
+    'Other'
+  ];
 
-  readonly pronounOptions = ['She / Her', 'He / Him', 'They / Them', 'It / Its'];
+  readonly pronounOptions = [
+    'She / Her',
+    'He / Him',
+    'They / Them',
+    'It / Its'
+  ];
 
-  readonly days = Array.from({ length: 31 }, (_, index) => index + 1);
+  readonly days = Array.from(
+    { length: 31 },
+    (_, index) => index + 1
+  );
 
-  readonly years = Array.from({ length: 100 }, (_, index) => new Date().getFullYear() - index);
+  readonly years = Array.from(
+    { length: 100 },
+    (_, index) => new Date().getFullYear() - index
+  );
 
-  // Birthday selections
+  // =========================================
+  // BIRTHDAY SELECTIONS
+  // =========================================
+
   selectedMonth = '';
   selectedDay: number | null = null;
   selectedYear: number | null = null;
 
-  // Current stage: 0 through 4
+  // Stages: 0 through 5
   etapa = 0;
+
+  // =========================================
+  // CONSTRUCTOR
+  // =========================================
 
   constructor(
     public playerService: PlayerService,
     private router: Router,
-    public readonly languageService: LanguageService,
+    public readonly languageService: LanguageService
   ) {
     this.restoreBirthdaySelections();
   }
 
-  // Navigation
+  // =========================================
+  // NAVIGATION
+  // =========================================
 
   continue(): void {
-    if (this.etapa === 0) {
-      this.goToNextStage();
+    if (this.etapa !== 0) {
+      return;
     }
+
+    this.goToNextStage();
   }
 
   private goToNextStage(): void {
-    if (this.etapa >= 4) {
+    if (this.etapa >= 5) {
       return;
     }
 
@@ -108,16 +155,18 @@ export class Start {
 
       nextSection?.nativeElement.scrollIntoView({
         behavior: window.matchMedia(
-          '(prefers-reduced-motion: reduce)',
+          '(prefers-reduced-motion: reduce)'
         ).matches
           ? 'auto'
           : 'smooth',
-        block: 'start',
+        block: 'start'
       });
     });
   }
 
-  // Gender
+  // =========================================
+  // GENDER
+  // =========================================
 
   selectGender(gender: string): void {
     if (this.etapa !== 1) {
@@ -129,21 +178,27 @@ export class Start {
   }
 
   continueAfterGender(): void {
-    if (this.etapa !== 1 || !this.playerService.profile.gender) {
+    if (
+      this.etapa !== 1 ||
+      !this.playerService.profile.gender
+    ) {
       return;
     }
 
     this.goToNextStage();
   }
 
-  // Username
+  // =========================================
+  // USERNAME
+  // =========================================
 
   selectUsername(): void {
     if (this.etapa !== 2) {
       return;
     }
 
-    const username = this.playerService.profile.username.trim();
+    const username =
+      this.playerService.profile.username.trim();
 
     if (!username) {
       return;
@@ -155,7 +210,9 @@ export class Start {
     this.goToNextStage();
   }
 
-  // Pronouns
+  // =========================================
+  // PRONOUNS
+  // =========================================
 
   selectPronouns(pronouns: string): void {
     if (this.etapa !== 3) {
@@ -167,16 +224,24 @@ export class Start {
   }
 
   continueAfterPronouns(): void {
-    if (this.etapa !== 3 || !this.playerService.profile.pronouns) {
+    if (
+      this.etapa !== 3 ||
+      !this.playerService.profile.pronouns
+    ) {
       return;
     }
 
     this.goToNextStage();
   }
 
-  // Birthday
+  // =========================================
+  // BIRTHDAY
+  // =========================================
 
-  selectBirthday(type: 'month' | 'day' | 'year', value: string | number): void {
+  selectBirthday(
+    type: 'month' | 'day' | 'year',
+    value: string | number
+  ): void {
     if (this.etapa !== 4) {
       return;
     }
@@ -187,11 +252,11 @@ export class Start {
         break;
 
       case 'day':
-        this.selectedDay = Number(value);
+        this.selectedDay = Number(value) || null;
         break;
 
       case 'year':
-        this.selectedYear = Number(value);
+        this.selectedYear = Number(value) || null;
         break;
     }
 
@@ -204,80 +269,76 @@ export class Start {
       return this.days;
     }
 
-    const monthNumber = this.months.indexOf(this.selectedMonth) + 1;
-    const year = this.selectedYear ?? new Date().getFullYear();
+    const month =
+      this.months.indexOf(this.selectedMonth) + 1;
 
-    const daysInMonth = new Date(year, monthNumber, 0).getDate();
+    if (!month) {
+      return this.days;
+    }
 
-    return Array.from({ length: daysInMonth }, (_, index) => index + 1);
+    const year =
+      this.selectedYear ?? new Date().getFullYear();
+
+    const count = new Date(year, month, 0).getDate();
+
+    return Array.from(
+      { length: count },
+      (_, index) => index + 1
+    );
   }
 
   private clampSelectedDay(): void {
-    if (this.selectedDay === null) {
-      return;
-    }
-
-    if (this.selectedDay > this.availableDays.length) {
+    if (
+      this.selectedDay !== null &&
+      this.selectedDay > this.availableDays.length
+    ) {
       this.selectedDay = null;
     }
   }
 
   private updateBirthday(): void {
-    const { selectedMonth, selectedDay, selectedYear } = this;
+    const month =
+      this.months.indexOf(this.selectedMonth) + 1;
 
-    if (!selectedMonth || selectedDay === null || selectedYear === null) {
+    const day = this.selectedDay;
+    const year = this.selectedYear;
+
+    if (
+      !month ||
+      !day ||
+      !year ||
+      !this.validDate(year, month, day)
+    ) {
       this.playerService.profile.birthday = '';
+      this.playerService.saveProfile();
       return;
     }
 
-    const monthNumber = this.months.indexOf(selectedMonth) + 1;
-
-    if (monthNumber < 1 || !this.isValidDate(selectedYear, monthNumber, selectedDay)) {
-      this.playerService.profile.birthday = '';
-      return;
-    }
-
-    const month = String(monthNumber).padStart(2, '0');
-    const day = String(selectedDay).padStart(2, '0');
-
-    this.playerService.profile.birthday = `${selectedYear}-${month}-${day}`;
+    this.playerService.profile.birthday =
+      `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
     this.playerService.saveProfile();
   }
 
-  private isValidDate(year: number, month: number, day: number): boolean {
-    const date = new Date(year, month - 1, day);
+  private validDate(
+    year: number,
+    month: number,
+    day: number
+  ): boolean {
+    const date = new Date(
+      year,
+      month - 1,
+      day
+    );
 
-    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    );
   }
 
-  private restoreBirthdaySelections(): void {
-    const birthday = this.playerService.profile.birthday;
-
-    if (!birthday) {
-      return;
-    }
-
-    const parts = birthday.split('-');
-
-    if (parts.length !== 3) {
-      return;
-    }
-
-    const [year, month, day] = parts.map(Number);
-
-    if (!year || !month || !day || month < 1 || month > 12 || !this.isValidDate(year, month, day)) {
-      return;
-    }
-
-    this.selectedYear = year;
-    this.selectedMonth = this.months[month - 1];
-    this.selectedDay = day;
-  }
-
-  // Game
-
-  startJourney(): void {
+  continueAfterBirthday(): void {
     if (
       this.etapa !== 4 ||
       !this.playerService.profile.birthday
@@ -286,6 +347,59 @@ export class Start {
     }
 
     this.playerService.saveProfile();
-    this.router.navigate(['/game']);
+    this.goToNextStage();
+  }
+
+  private restoreBirthdaySelections(): void {
+    const birthday =
+      this.playerService.profile.birthday;
+
+    if (!birthday) {
+      return;
+    }
+
+    const match =
+      /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthday);
+
+    if (!match) {
+      return;
+    }
+
+    const [, y, m, d] = match;
+
+    const year = Number(y);
+    const month = Number(m);
+    const day = Number(d);
+
+    if (
+      !this.validDate(year, month, day)
+    ) {
+      return;
+    }
+
+    this.selectedYear = year;
+    this.selectedMonth = this.months[month - 1];
+    this.selectedDay = day;
+  }
+
+  // =========================================
+  // START → PLAYER PROFILE
+  // =========================================
+
+  startJourney(): void {
+    if (this.etapa !== 5) {
+      return;
+    }
+
+    this.playerService.saveProfile();
+
+    void this.router.navigate(
+      ['/playerinfo'],
+      {
+        queryParams: {
+          setup: '1'
+        }
+      }
+    );
   }
 }

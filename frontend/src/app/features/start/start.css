@@ -1,6 +1,10 @@
 /* =========================================================
-   PAGE
+   BASE
    ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
 
 :host {
   display: block;
@@ -8,12 +12,22 @@
   font-family: Arial, Helvetica, sans-serif;
 
   --background: #030303;
+
   --text-primary: rgba(255, 255, 255, 0.92);
   --text-secondary: rgba(255, 255, 255, 0.62);
-}
+  --text-muted: rgba(255, 255, 255, 0.48);
 
-* {
-  box-sizing: border-box;
+  --surface-light: rgba(255, 255, 255, 0.04);
+
+  --border: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.4);
+  --border-focus: rgba(255, 255, 255, 0.7);
+
+  --radius-small: 8px;
+  --radius-medium: 10px;
+  --radius-large: 20px;
+
+  --transition: 0.2s ease;
 }
 
 /* =========================================================
@@ -24,12 +38,15 @@
   position: relative;
   isolation: isolate;
 
+  width: 100%;
   min-height: 100vh;
+
   padding: 48px 20px 90px;
 
   overflow-x: clip;
-  background: var(--background);
+
   color: var(--text-primary);
+  background: var(--background);
 }
 
 /* =========================================================
@@ -41,8 +58,10 @@
 .stars {
   position: fixed;
   inset: 0;
+
   width: 100%;
   height: 100%;
+
   pointer-events: none;
 }
 
@@ -59,13 +78,18 @@
   z-index: -1;
 }
 
-/* Static background stars */
+/* =========================================================
+   STATIC BACKGROUND STARS
+   DO NOT ANIMATE
+   ========================================================= */
 
 .background-star {
   position: absolute;
   display: block;
+
   border-radius: 50%;
-  background: #fff;
+  background: rgb(202, 202, 202);
+
   opacity: var(--star-opacity, 0.5);
 }
 
@@ -75,70 +99,183 @@
 
 .celestial-event {
   position: absolute;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: white;
-  opacity: 0;
+  display: block;
 
-  animation: celestial-travel
+  opacity: 0;
+}
+
+/* =========================================================
+   COMETS
+   ========================================================= */
+
+.comet {
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+  background: aliceblue;
+
+  box-shadow:
+    0 0 4px rgba(240, 248, 255, 0.8),
+    -25px 15px 8px rgba(240, 248, 255, 0.15),
+    -50px 30px 12px rgba(240, 248, 255, 0.05);
+
+  animation:
+    comet-fly
     var(--event-duration, 5s)
-    linear
+    ease-in-out
     var(--event-delay, 0s)
     infinite;
 }
 
-.celestial-event.comet {
-  width: 4px;
-  height: 4px;
-  box-shadow:
-    0 0 8px 2px rgba(255, 255, 255, 0.5),
-    0 0 20px rgba(180, 205, 255, 0.25);
+@keyframes comet-fly {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-25deg);
+  }
+
+  10% {
+    opacity: 0.8;
+  }
+
+  30% {
+    opacity: 0.5;
+  }
+
+  45% {
+    opacity: 0;
+    transform: translate(180px, 110px) rotate(-25deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(180px, 110px) rotate(-25deg);
+  }
 }
 
-.celestial-event.comet::after,
-.celestial-event.meteor::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 1px;
-  height: 1px;
-  transform: translateY(-50%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.8)
-  );
+/* =========================================================
+   METEORS
+   ========================================================= */
+
+.meteor {
+  width: 2px;
+  height: 2px;
+
+  border-radius: 50%;
+  background: white;
+
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+
+  animation:
+    meteor-fall
+    var(--event-duration, 5s)
+    ease-out
+    var(--event-delay, 0s)
+    infinite;
 }
 
-.celestial-event.comet::after {
-  width: 90px;
-}
-
-.celestial-event.meteor::after {
-  width: 55px;
-}
-
-@keyframes celestial-travel {
+@keyframes meteor-fall {
   0% {
     opacity: 0;
     transform: translate(0, 0);
   }
 
-  5%,
-  75% {
-    opacity: 1;
+  8% {
+    opacity: 0.7;
+  }
+
+  35% {
+    opacity: 0;
+    transform: translate(100px, 100px);
   }
 
   100% {
     opacity: 0;
-    transform: translate(-180px, 180px);
+    transform: translate(100px, 100px);
   }
 }
 
 /* =========================================================
+   DECORATIVE STATIC STARS
+   DO NOT ANIMATE
+   ========================================================= */
+
+.star {
+  position: absolute;
+
+  width: 2px;
+  height: 2px;
+
+  border-radius: 50%;
+  background: aliceblue;
+
+  opacity: 0.4;
+}
+
+/* Star positions */
+
+.star-1 {
+  left: 8%;
+  top: 20%;
+}
+
+.star-2 {
+  left: 18%;
+  top: 72%;
+}
+
+.star-3 {
+  left: 29%;
+  top: 15%;
+}
+
+.star-4 {
+  left: 42%;
+  top: 10%;
+}
+
+.star-5 {
+  left: 57%;
+  top: 18%;
+}
+
+.star-6 {
+  left: 72%;
+  top: 29%;
+}
+
+.star-7 {
+  left: 87%;
+  top: 65%;
+}
+
+.star-8 {
+  left: 75%;
+  top: 84%;
+}
+
+.star-9 {
+  left: 48%;
+  top: 88%;
+}
+
+.star-10 {
+  left: 27%;
+  top: 84%;
+}
+
+.star-11 {
+  left: 12%;
+  top: 45%;
+}
+
+.star-12 {
+  left: 91%;
+  top: 16%;
+}
+
+/* =========================================================
    CONTINUOUS ONBOARDING
-   NO PANEL. NO CARDS.
    ========================================================= */
 
 .question-container {
@@ -151,43 +288,54 @@
 
   width: 100%;
   max-width: 760px;
+
   margin-inline: auto;
+
   gap: 38px;
 }
 
-/* Main logo above the questions */
+/* Main logo */
 
 .logo {
   display: block;
+
   width: min(180px, 45vw);
   height: auto;
+
   object-fit: contain;
+
   margin: 0 auto 12px;
 }
 
-/* Every question occupies the same continuous page */
+/* =========================================================
+   QUESTION SECTIONS
+   ========================================================= */
 
 .question-screen {
   position: relative;
+
   width: 100%;
   min-width: 0;
+
   margin: 0;
   padding: 0;
 
   text-align: center;
+
   scroll-margin-top: 32px;
 
   opacity: 0.48;
+
   transition: opacity 300ms ease;
 }
 
-/* The question currently being answered */
+/* Current question */
 
 .question-screen.active {
   opacity: 1;
 }
 
-/* Questions already answered */
+/* Previously completed questions */
 
 .question-screen.completed {
   opacity: 0.48;
@@ -202,37 +350,51 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+
   gap: 20px;
 
   width: 100%;
   min-width: 0;
+
   margin: 0 auto;
 }
 
 .story-logo img {
   display: block;
+
   width: min(180px, 45vw);
   height: auto;
+
   object-fit: contain;
+
   margin-inline: auto;
 }
 
 .story-text,
 .choice-description {
   max-width: 580px;
+
   margin: 0;
 
   color: var(--text-secondary);
+
   font-size: 1rem;
   line-height: 1.8;
+}
+
+.story-text {
+  font-family: Garamond, Georgia, serif;
+  letter-spacing: 0.5px;
 }
 
 .eyebrow {
   margin: 0;
 
-  color: rgba(255, 255, 255, 0.48);
+  color: var(--text-muted);
+
   font-size: 0.75rem;
   font-weight: 600;
+
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -241,25 +403,31 @@
   margin: 0;
 
   color: var(--text-primary);
+
+  font-family: Garamond, Georgia, serif;
+
   font-size: clamp(1.8rem, 5vw, 2.8rem);
   font-weight: 400;
   line-height: 1.2;
 }
 
 /* =========================================================
-   DISABLE DEFAULT FIELDSET STYLING
+   FIELDSETS
    ========================================================= */
 
 .question-screen fieldset {
   display: flex;
   flex-direction: column;
   align-items: center;
+
   gap: 18px;
 
   width: 100%;
   min-width: 0;
+
   margin: 0;
   padding: 0;
+
   border: 0;
 }
 
@@ -275,6 +443,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+
   gap: 12px;
 
   width: 100%;
@@ -282,61 +451,92 @@
 
 .choice-button {
   min-width: 110px;
+
   padding: 12px 20px;
 
   color: rgba(255, 255, 255, 0.72);
   font: inherit;
 
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 9px;
+  background: var(--surface-light);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-medium);
 
   cursor: pointer;
 
   transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
+    background-color var(--transition),
+    border-color var(--transition),
+    color var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 
 .choice-button:hover {
   background: rgba(255, 255, 255, 0.075);
-  border-color: rgba(255, 255, 255, 0.32);
+
+  border-color: var(--border-hover);
+
   color: white;
+
+  transform: translateY(-2px);
 }
 
 .choice-button.selected {
   background: rgba(255, 255, 255, 0.11);
+
   border-color: rgba(255, 255, 255, 0.55);
+
   color: white;
+
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+.choice-button:active {
+  transform: scale(0.97);
 }
 
 /* =========================================================
-   INPUTS
+   USERNAME INPUT
    ========================================================= */
 
 .username-input {
   width: min(420px, 100%);
+
   padding: 14px 16px;
 
   color: white;
   font: inherit;
 
+  text-align: center;
+
   background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  border-radius: 9px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-medium);
 
   outline: none;
 
-  transition: border-color 180ms ease;
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    box-shadow var(--transition);
 }
 
 .username-input::placeholder {
   color: rgba(255, 255, 255, 0.35);
 }
 
+.username-input:hover {
+  border-color: var(--border-hover);
+}
+
 .username-input:focus {
-  border-color: rgba(255, 255, 255, 0.55);
+  border-color: var(--border-focus);
+
+  background: rgba(255, 255, 255, 0.07);
+
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.06);
 }
 
 /* =========================================================
@@ -347,32 +547,79 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+
   gap: 12px;
 
   width: 100%;
 }
 
+.custom-select {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.custom-select::after {
+  content: "⌄";
+
+  position: absolute;
+
+  top: 50%;
+  right: 16px;
+
+  color: rgba(255, 255, 255, 0.6);
+
+  font-size: 18px;
+
+  pointer-events: none;
+
+  transform: translateY(-55%);
+}
+
 .custom-select select {
+  width: 100%;
   min-width: 115px;
-  padding: 12px 14px;
+
+  padding: 14px 42px 14px 14px;
+
+  appearance: none;
+  -webkit-appearance: none;
 
   color: white;
-  font: inherit;
+  font-family: Garamond, Georgia, serif;
+  font-size: 17px;
 
-  background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  border-radius: 8px;
+  background: rgba(20, 20, 20, 0.85);
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  outline: none;
 
   cursor: pointer;
+
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.custom-select select:hover {
+  border-color: var(--border-hover);
+  background: rgba(30, 30, 30, 0.95);
 }
 
 .custom-select select:focus {
-  outline: 1px solid rgba(255, 255, 255, 0.45);
+  border-color: var(--border-focus);
+
+  box-shadow:
+    0 0 15px rgba(255, 255, 255, 0.08),
+    0 0 35px rgba(255, 255, 255, 0.04);
 }
 
-.custom-select option {
+.custom-select select option {
   color: white;
-  background: #111;
+  background: #101010;
 }
 
 /* =========================================================
@@ -383,25 +630,89 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+
+  gap: 12px;
+
+  width: 100%;
+  max-width: 320px;
+
+  margin-top: 10px;
+
+  color: var(--text-secondary);
+
+  font-family: Garamond, Georgia, serif;
+  font-size: 16px;
+  line-height: 1.4;
+
+  text-align: left;
 
   cursor: pointer;
+  user-select: none;
 }
 
 .birthday-checkbox input {
-  width: 16px;
-  height: 16px;
-  accent-color: white;
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+  pointer-events: none;
 }
 
 .checkbox-box {
-  display: none;
+  position: relative;
+
+  width: 20px;
+  height: 20px;
+
+  flex: 0 0 20px;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+
+  background: var(--surface-light);
+
+  transition:
+    border-color var(--transition),
+    background-color var(--transition),
+    box-shadow var(--transition);
 }
 
-.checkbox-text {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  line-height: 1.5;
+.birthday-checkbox:hover .checkbox-box {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.birthday-checkbox input:checked + .checkbox-box {
+  border-color: white;
+
+  background: white;
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.35),
+    0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+.birthday-checkbox input:checked + .checkbox-box::after {
+  content: "✓";
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  color: #111;
+
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+
+  transform: translate(-50%, -52%);
+}
+
+.birthday-checkbox input:focus-visible + .checkbox-box {
+  outline: 2px solid white;
+  outline-offset: 4px;
 }
 
 /* =========================================================
@@ -410,34 +721,70 @@
 
 .question-screen button {
   transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    opacity 180ms ease;
+    background-color var(--transition),
+    border-color var(--transition),
+    color var(--transition),
+    opacity var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 
 .continue-button {
-  padding: 11px 25px;
+  margin-top: 10px;
+
+  padding: 13px 30px;
 
   color: rgba(255, 255, 255, 0.82);
   font: inherit;
 
+  font-size: 13px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
   background: rgba(255, 255, 255, 0.055);
+
   border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 9px;
+  border-radius: var(--radius-small);
 
   cursor: pointer;
 }
 
 .continue-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.35);
   color: white;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  border-color: var(--border-hover);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.2),
+    0 0 25px rgba(255, 255, 255, 0.08);
+}
+
+.continue-button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .continue-button:disabled {
   opacity: 0.38;
-  cursor: default;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* =========================================================
+   KEYBOARD ACCESSIBILITY
+   ========================================================= */
+
+.choice-button:focus-visible,
+.continue-button:focus-visible,
+.username-input:focus-visible,
+.custom-select select:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
 }
 
 /* =========================================================
@@ -507,25 +854,49 @@
 
   .custom-select select {
     min-width: 0;
-    max-width: 100%;
-    padding: 11px 8px;
+    padding: 11px 30px 11px 8px;
+  }
+
+  .custom-select::after {
+    right: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .start-page {
+    padding: 25px 15px 50px;
+  }
+
+  .question-container {
+    gap: 25px;
+  }
+
+  .story-text,
+  .choice-description {
+    font-size: 0.95rem;
+  }
+
+  .question-screen h1 {
+    font-size: 30px;
+  }
+
+  .choice-button {
+    min-width: 90px;
+    padding: 10px 12px;
   }
 }
 
 /* =========================================================
-   ACCESSIBILITY
+   REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  .question-screen,
-  .question-screen button,
-  .username-input {
-    transition: none;
-  }
-
-  .question-enter,
-  .question-leave,
-  .celestial-event {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

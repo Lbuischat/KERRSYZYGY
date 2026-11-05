@@ -15,6 +15,34 @@
   transform-origin: top left;
 }
 
+/* Map background */
+#map-background {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2560px;
+  height: 2560px;
+
+  background-image: url('../../../../../public/assets/map.spawn.png');
+  background-repeat: no-repeat;
+  background-size: 2560px 2560px;
+
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Projectile layer */
+#projectile-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2560px;
+  height: 2560px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Enemy tutorial guide */
 #enemy-guide {
   position: absolute;
   height: 1px;
@@ -49,29 +77,4 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
-}
-
-#map-background {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 2560px;
-  height: 2560px;
-
-  background-image: url('../../../../../public/assets/map.spawn.png');
-  background-repeat: no-repeat;
-  background-size: 2560px 2560px;
-
-  pointer-events: none;
-  z-index: 1;
-}
-
-#projectile-layer {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 2560px;
-  height: 2560px;
-  pointer-events: none;
-  z-index: 20;
 }

@@ -1,45 +1,114 @@
 <div class="pointer-events-none absolute inset-0">
 
-  <!-- Player info -->
+  <div class="pointer-events-auto absolute bottom-20 left-15">
+    <p>{{ testProperty }}</p>
+    <button type="button" (click)="testMethod()">Test</button>
+  </div>
+
+  <!-- =====================================
+       PLAYER INFO
+  ===================================== -->
+
   <div class="pointer-events-auto absolute left-6 top-10">
     <app-player-info-bnt />
   </div>
 
 
-  <!-- Top-right controls -->
+  <!-- =====================================
+       TOP-RIGHT CONTROLS
+  ===================================== -->
+
   <div class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3">
 
     <!-- Inventory -->
-    <app-inventory-button (inventoryClicked)="toggleInventory()"></app-inventory-button>
+    <app-inventory-button
+      (inventoryClicked)="toggleInventory()"
+    />
 
     <!-- Shop -->
-    <app-shop-button></app-shop-button>
+    <app-shop-button />
 
   </div>
 
 
-  <!-- Tasks -->
-  <div class="pointer-events-auto absolute left-6 top-35">
-    <app-task-panel />
+  <!-- =====================================
+       QUEST PANEL
+       COLLAPSIBLE
+  ===================================== -->
+
+  <div class="hud-quest-dock">
+
+    <!-- Collapse / Expand button -->
+    <button
+      type="button"
+      class="hud-quest-toggle"
+      (click)="toggleQuests()"
+      [attr.aria-expanded]="!questsCollapsed"
+      aria-controls="hud-quest-content"
+      [attr.aria-label]="
+        questsCollapsed
+          ? 'Expand quests'
+          : 'Collapse quests'
+      "
+    >
+
+      <span class="hud-quest-toggle-icon">
+        {{ questsCollapsed ? '▸' : '▾' }}
+      </span>
+
+      <span>
+        {{
+          questsCollapsed
+            ? 'OPEN QUESTS'
+            : 'CLOSE QUESTS'
+        }}
+      </span>
+
+    </button>
+
+    <!-- Existing task panel -->
+    <div
+      id="hud-quest-content"
+      class="hud-quest-body"
+      [hidden]="questsCollapsed"
+    >
+      <app-task-panel />
+    </div>
+
   </div>
 
 
-  <!-- Mini-map -->
+  <!-- =====================================
+       MINI-MAP
+  ===================================== -->
+
   <div class="pointer-events-auto absolute right-6 top-35">
-    <app-mini-map [worldWidth]="worldWidth" [worldHeight]="worldHeight" [playerPosition]="playerPosition"
-      [enemies]="enemies" />
+    <app-mini-map
+      [worldWidth]="worldWidth"
+      [worldHeight]="worldHeight"
+      [playerPosition]="playerPosition"
+      [enemies]="enemies"
+    />
   </div>
 
 
-  <!-- Action buttons -->
+  <!-- =====================================
+       ACTION BAR
+  ===================================== -->
+
   <div class="pointer-events-auto absolute bottom-6 right-6">
     <app-action-bar />
   </div>
 
 
-  <!-- Settings Btn -->
+  <!-- =====================================
+       SETTINGS
+  ===================================== -->
+
   <div class="pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2">
-    <app-settings-button (settingsClicked)="openSettings()" />
+    <app-settings-button
+      (settingsClicked)="openSettings()"
+    />
   </div>
 
 </div>

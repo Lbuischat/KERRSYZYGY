@@ -1,5 +1,22 @@
-<div class="relative min-h-screen w-full">
+<div
+  class="relative min-h-screen w-full"
 
+  [style.--sprite-skin]="spritePalette.skin"
+  [style.--sprite-hair]="spritePalette.hair"
+  [style.--sprite-outfit]="spritePalette.outfit"
+  [style.--sprite-dark]="spritePalette.dark"
+  [style.--sprite-accent]="spritePalette.accent"
+  [style.--sprite-cape]="spritePalette.cape"
+  [style.--sprite-eye]="spritePalette.eye"
+
+  [style.--show-explorer]="isAccessory('explorer') ? 'inline' : 'none'"
+  [style.--show-oracle]="isAccessory('oracle') ? 'inline' : 'none'"
+  [style.--show-guardian]="isAccessory('guardian') ? 'inline' : 'none'"
+  [style.--show-hunter]="isAccessory('hunter') ? 'inline' : 'none'"
+  [style.--show-chrono]="isAccessory('chrono') ? 'inline' : 'none'"
+>
+
+  <!-- GAME WORLD -->
   <app-game-world
     #gameWorld
     (tutorialBoundary)="showTutorialMessage()"
@@ -8,25 +25,31 @@
     (berryGathered)="tutorial.onBerryGathered()"
   />
 
+  <!-- HUD -->
   <app-hud
     (settingsOpen)="openSettings()"
     (inventoryOpen)="toggleInventory()"
   />
 
+  <!-- TUTORIAL -->
   <app-tutorial
     #tutorial
     [player]="gameWorld?.player"
     (enemyStepStarted)="onTutorialEnemyStepStarted()"
   />
 
-  @if (inventoryOpen) {
+  <!-- INVENTORY -->
+  @if (inventoryOpen && !focusService.session()) {
     <app-inventory
       (closeInventory)="toggleInventory()"
     />
   }
 
-  @if (tutorialMessageVisible) {
-    <div class="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center">
+  <!-- TUTORIAL MESSAGE -->
+  @if (tutorialMessageVisible && !focusService.session()) {
+    <div
+      class="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center"
+    >
       <div class="tutorial-message">
 
         <div class="tutorial-message-line"></div>
@@ -36,9 +59,7 @@
             TUTORIAL
           </span>
 
-          <h2>
-            You can't leave yet.
-          </h2>
+          <h2>You can't leave yet.</h2>
 
           <p>
             Complete the tutorial before exploring beyond this area.
@@ -50,5 +71,8 @@
       </div>
     </div>
   }
+
+  <!-- FOCUS MODE -->
+  <app-focus-mode />
 
 </div>

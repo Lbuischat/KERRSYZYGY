@@ -7,42 +7,109 @@ import { Settings } from './features/game/settings/settings';
 import { CreateAccount } from './features/auth/create-account/create-account';
 import { PlayerInfo } from './features/game/player-info/player-info';
 import { Shop } from './features/game/shop/shop';
+import { NewQuest } from './features/tasks/new-quest/new-quest';
+
+import {
+  focusExitGuard,
+  focusGuard
+} from './services/tasks/focus-guard';
 
 export const routes: Routes = [
 
-    {
-        path: '',
-        component: GameEntry
-    },
+  // =========================================
+  // ENTRY
+  // =========================================
 
-    {
-        path: 'create-account',
-        component: CreateAccount
-    },
+  {
+    path: '',
+    component: GameEntry,
+    canActivate: [
+      focusGuard
+    ]
+  },
 
-    {
-        path: 'start',
-        component: Start
-    },
+  // =========================================
+  // CREATE ACCOUNT
+  // =========================================
 
-    {
-        path: 'game',
-        component: GameShell
-    },
+  {
+    path: 'create-account',
+    component: CreateAccount,
+    canActivate: [
+      focusGuard
+    ]
+  },
 
-    {
-        path: 'settings',
-        component: Settings
-    },
+  // =========================================
+  // START / ONBOARDING
+  // =========================================
 
-    {
-        path: 'playerinfo',
-        component: PlayerInfo
-    },
+  {
+    path: 'start',
+    component: Start,
+    canActivate: [
+      focusGuard
+    ]
+  },
 
-    {
-        path: 'shop',
-        component: Shop
-    }
+  // =========================================
+  // GAME
+  // =========================================
+
+  {
+    path: 'game',
+    component: GameShell,
+    canDeactivate: [
+      focusExitGuard
+    ]
+  },
+
+  // =========================================
+  // SETTINGS
+  // =========================================
+
+  {
+    path: 'settings',
+    component: Settings,
+    canActivate: [
+      focusGuard
+    ]
+  },
+
+  // =========================================
+  // PLAYER INFO
+  // =========================================
+
+  {
+    path: 'playerinfo',
+    component: PlayerInfo,
+    canActivate: [
+      focusGuard
+    ]
+  },
+
+  // =========================================
+  // SHOP
+  // =========================================
+
+  {
+    path: 'shop',
+    component: Shop,
+    canActivate: [
+      focusGuard
+    ]
+  },
+
+  // =========================================
+  // NEW QUEST
+  // =========================================
+
+  {
+    path: 'new-quest',
+    component: NewQuest,
+    canActivate: [
+      focusGuard
+    ]
+  }
 
 ];

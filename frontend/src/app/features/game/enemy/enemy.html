@@ -1,20 +1,41 @@
 <div
+  #enemyRef
   class="enemy"
+  [class.elite]="elite"
   [style.left.px]="x"
   [style.top.px]="y"
   [style.width.px]="size"
   [style.height.px]="size"
 >
+  <!-- DETECTION RANGE -->
   <div
     class="enemy-view-range"
+    [class.detected]="isPlayerInView"
     [style.width.px]="viewRange * 2"
     [style.height.px]="viewRange * 2"
   ></div>
 
+  <!-- SLIME SPRITE -->
+  <img
+    class="enemy-sprite"
+    [src]="spritePath"
+    [alt]="elite ? 'Elite alien slime' : 'Alien slime'"
+    draggable="false"
+  />
+
+  <!-- HEALTH BAR -->
   <div class="health-container">
     <div
       id="enemy-health-bar"
       class="health-bar"
+      [style.width.%]="getHealthPercentage()"
     ></div>
   </div>
+
+  <!-- ELITE IDENTIFICATION -->
+  @if (elite) {
+    <span class="elite-label">
+      ELITE
+    </span>
+  }
 </div>

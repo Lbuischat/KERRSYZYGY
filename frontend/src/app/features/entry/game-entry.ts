@@ -2,6 +2,7 @@ import {
   Component,
   signal
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { Title } from '../title/title';
 import { Login } from '../auth/login/login';
@@ -23,7 +24,15 @@ export class GameEntry {
 
   private readonly transitionDuration = 1200;
 
-  constructor(public readonly languageService: LanguageService) {}
+  constructor(
+    public readonly languageService: LanguageService,
+    private readonly route: ActivatedRoute
+  ) {
+    // Return directly to login after creating an account.
+    if (this.route.snapshot.queryParamMap.get('login') === '1') {
+      this.showLogin.set(true);
+    }
+  }
 
   enterLogin(): void {
     if (this.isTransitioning()) {
@@ -32,7 +41,7 @@ export class GameEntry {
 
     this.isTransitioning.set(true);
 
-    // Hide the language menu when entering login
+    // Hide the language menu when entering login.
     this.showLanguages.set(false);
 
     setTimeout(() => {

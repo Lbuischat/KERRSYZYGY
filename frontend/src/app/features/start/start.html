@@ -55,13 +55,14 @@
 
   <!-- =====================================================
        CONTINUOUS ONBOARDING
-       No panels. No individual cards.
+       Completed stages remain visible.
        ===================================================== -->
 
   <div class="question-container">
+
     <!-- MAIN LOGO -->
 
-    <img class="logo" src="assets/logo.png" alt="Dopamine Dungeon" />
+    <img class="logo" src="assets/logo.png" alt="KERRSYZYGY" />
 
     <!-- ===================================================
          STAGE 0 — STORY
@@ -84,7 +85,11 @@
               {{ languageService.t().start.story.worldWaiting }}
             </p>
 
-            <button class="continue-button" type="button" (click)="continue()">
+            <button
+              class="continue-button"
+              type="button"
+              (click)="continue()"
+            >
               {{ languageService.t().start.story.continue }}
             </button>
           </div>
@@ -266,6 +271,7 @@
             </p>
 
             <div class="birthday-selects">
+
               <!-- MONTH -->
 
               <div class="custom-select">
@@ -327,7 +333,10 @@
             <!-- BIRTHDAY EMAIL PREFERENCE -->
 
             <label class="birthday-checkbox">
-              <input type="checkbox" [(ngModel)]="playerService.profile.receiveBirthdayEmails" />
+              <input
+                type="checkbox"
+                [(ngModel)]="playerService.profile.receiveBirthdayEmails"
+              />
 
               <span class="checkbox-box"></span>
 
@@ -337,12 +346,49 @@
             </label>
 
             <button
-              type="button"
               class="continue-button"
+              type="button"
               [disabled]="!playerService.profile.birthday"
-              (click)="startJourney()"
+              (click)="continueAfterBirthday()"
             >
               {{ languageService.t().start.birthday.continue }}
+            </button>
+          </div>
+        </fieldset>
+      </section>
+    }
+
+    <!-- ===================================================
+         STAGE 5 — READY
+         =================================================== -->
+
+    @if (etapa >= 5) {
+      <section
+        #stageSection
+        class="question-screen choice-screen"
+        [class.active]="etapa === 5"
+        [class.completed]="etapa > 5"
+      >
+        <fieldset [disabled]="etapa !== 5">
+          <div class="choice-content">
+            <p class="eyebrow">
+              {{ languageService.t().start.ready.eyebrow }}
+            </p>
+
+            <h1>
+              {{ languageService.t().start.ready.title }}
+            </h1>
+
+            <p class="choice-description">
+              {{ languageService.t().start.ready.description }}
+            </p>
+
+            <button
+              class="continue-button"
+              type="button"
+              (click)="startJourney()"
+            >
+              {{ languageService.t().start.ready.begin }}
             </button>
           </div>
         </fieldset>

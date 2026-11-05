@@ -1,80 +1,448 @@
 import { isPlatformBrowser } from '@angular/common';
+
 import {
   Component,
   EventEmitter,
   Inject,
+  OnDestroy,
   Output,
   PLATFORM_ID,
+  QueryList,
   ViewChild,
-  signal,
+  ViewChildren,
+  signal
 } from '@angular/core';
 
 import { Bush } from '../bush/bush';
 import { Enemy } from '../enemy/enemy';
 import { Player } from '../player/player';
-import { ProjectileService } from '../projectile/projectile.service';
-import { GameStateService } from '../../../services/game-state/game-state.service';
-import { InventoryService } from '../../../services/Inventory/inventory.service';
-import { AudioService } from '../../../services/audio/audio.service';
+
+import {
+  ProjectileService
+} from '../projectile/projectile.service';
+
+import {
+  GameStateService
+} from '../../../services/game-state/game-state.service';
+
+import {
+  InventoryService
+} from '../../../services/Inventory/inventory.service';
+
+import {
+  AudioService
+} from '../../../services/audio/audio.service';
+
+interface EnemySpawn {
+  id: string;
+  x: number;
+  y: number;
+  elite: boolean;
+  training: boolean;
+}
+
+interface EnemyShot {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  damage: number;
+  lifetime: number;
+  volleyId: number | null;
+  element: HTMLElement;
+}
 
 @Component({
   selector: 'app-game-world',
+  standalone: true,
   imports: [Player, Enemy, Bush],
   templateUrl: './game-world.html',
-  styleUrl: './game-world.css',
+  styleUrl: './game-world.css'
 })
-export class GameWorld {
+export class GameWorld implements OnDestroy {
+
+  // ========================================
+  // EVENTOS DO TUTORIAL
+  // ========================================
+
   @Output()
   tutorialBoundary = new EventEmitter<void>();
 
-  /*
-   * Fired whenever the player performs a basic attack, regardless of
-   * whether it actually lands on the enemy. Tutorial.onBasicAttack()
-   * only cares that the action happened.
-   */
   @Output()
   playerAttacked = new EventEmitter<void>();
 
-  /*
-   * Fired once, the moment the tutorial enemy transitions to dead.
-   */
   @Output()
   enemyDefeated = new EventEmitter<void>();
 
   @Output()
   berryGathered = new EventEmitter<void>();
 
-  private tutorialEnemyGuideActive = false;
-  private readonly GUIDE_DOT_SPACING = 45;
-  private readonly GUIDE_START_OFFSET = 30;
-  public readonly guideDotSlots = Array.from({ length: 90 });
+  // ========================================
+  // JOGADOR E INIMIGOS
+  // ========================================
 
   @ViewChild(Player)
   player!: Player;
 
-  @ViewChild(Enemy)
-  enemy!: Enemy;
+  @ViewChildren(Enemy)
+  enemyComponents!: QueryList<Enemy>;
 
+  private readonly MAP_SIZE = 2560;
   private readonly TILE = 128;
 
+  private readonly PLAYER_START_X = 1255;
+  private readonly PLAYER_START_Y = 1255;
+
+  // ========================================
+  // CINCO SLIMES MAIS DISTANTES
+  // ========================================
+
+  readonly enemySpawns: EnemySpawn[] = [
+    {
+      id: 'tutorial',
+      x: 650,
+      y: 850,
+      elite: false,
+      training: true
+    },
+    {
+      id: 'slime-2',
+      x: 350,
+      y: 1770,
+      elite: false,
+      training: false
+    },
+    {
+      id: 'slime-3',
+      x: 1900,
+      y: 1530,
+      elite: false,
+      training: false
+    },
+    {
+      id: 'slime-4',
+      x: 1760,
+      y: 2250,
+      elite: false,
+      training: false
+    },
+    {
+      id: 'elite',
+      x: 2170,
+      y: 400,
+      elite: true,
+      training: false
+    }
+  ];
+
+  // ========================================
+  // ARBUSTOS
+  // ========================================
+
   readonly bushes = signal([
-    { id: 1, column: 2, row: 12, harvested: false },
-    { id: 2, column: 17, row: 5, harvested: false },
-    { id: 3, column: 14, row: 17, harvested: false },
+    {
+      id: 1,
+      column: 2,
+      row: 12,
+      harvested: false
+    },
+    {
+      id: 2,
+      column: 17,
+      row: 5,
+      harvested: false
+    },
+    {
+      id: 3,
+      column: 14,
+      row: 17,
+      harvested: false
+    }
   ]);
 
-  private animationFrameId = 0;
-  private projectileElements = new Map<number, HTMLElement>();
-  private enemyAttackCooldown = 0;
-  private playerWasAtBoundary = false;
-  private enemyWasDead = false;
+  // ========================================
+  // TELA DE MORTE
+  // ========================================
 
-  // Current camera position in world/screen coordinates.
-  // These are used to convert mouse coordinates into world coordinates.
+  readonly gameOver = signal(false);
+
+  private deathPosition: {
+    x: number;
+    y: number;
+  } | null = null;
+
+  // ========================================
+  // CONTROLE DO LOOP
+  // ========================================
+
+  private animationFrameId = 0;
+  private destroyed = false;
+
+  // Atualização do minimapa a cada 150 ms.
+  // Evita forçar o HUD a atualizar 60x por segundo.
+  private lastMapSync = 0;
+
+  // ========================================
+  // PROJÉTEIS
+  // ========================================
+
+  private projectileElements =
+    new Map<number, HTMLElement>();
+
+  private enemyShots: EnemyShot[] = [];
+
+  private nextEnemyShotId = 1;
+  private nextVolleyId = 1;
+
+  private hitVolleyIds = new Set<number>();
+
+  // ========================================
+  // CÂMERA E TUTORIAL
+  // ========================================
+
   private cameraX = 0;
   private cameraY = 0;
 
+  private playerWasAtBoundary = false;
+  private tutorialEnemyWasDead = false;
+
+  // Tutorial guide pointing toward the training enemy.
+  private tutorialEnemyGuideActive = false;
+  private readonly GUIDE_DOT_SPACING = 45;
+  private readonly GUIDE_START_OFFSET = 30;
+  readonly guideDotSlots = Array.from({ length: 90 });
+
+  constructor(
+    @Inject(PLATFORM_ID)
+    private readonly platformId: object,
+
+    private readonly projectileService: ProjectileService,
+
+    private readonly gameStateService: GameStateService,
+
+    private readonly inventoryService: InventoryService,
+
+    private readonly audioService: AudioService
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.startGameLoop();
+    }
+  }
+
+  private get enemies(): Enemy[] {
+    return this.enemyComponents?.toArray() ?? [];
+  }
+
+  // ========================================
+  // LOOP DO JOGO
+  // ========================================
+
+  private startGameLoop(): void {
+    let lastTime = performance.now();
+
+    const frame = (now: number): void => {
+      if (this.destroyed) return;
+
+      const dt = Math.min(
+        0.05,
+        Math.max(0, (now - lastTime) / 1000)
+      );
+
+      lastTime = now;
+
+      // Detecta morte de qualquer origem.
+      if (
+        this.player &&
+        this.player.getHealthPercentage() <= 0
+      ) {
+        this.triggerGameOver();
+      }
+
+      if (!this.gameOver()) {
+        this.projectileService.update(dt);
+
+        this.checkTutorialBoundary();
+        this.updateEnemies(dt);
+        this.checkPlayerProjectileCollisions();
+        this.updateEnemyShots(dt);
+        this.checkTutorialEnemyDefeated();
+
+        this.renderPlayerProjectiles();
+      } else if (this.player && this.deathPosition) {
+        // O Player usa um loop próprio.
+        // Mantemos a posição de morte durante o overlay.
+        this.player.setPosition(
+          this.deathPosition.x,
+          this.deathPosition.y
+        );
+      }
+
+      // Radar continua atualizado.
+      this.updateMiniMap(now);
+
+      this.updateCamera();
+      this.updateTutorialEnemyGuide();
+
+      this.animationFrameId =
+        requestAnimationFrame(frame);
+    };
+
+    this.animationFrameId =
+      requestAnimationFrame(frame);
+  }
+
+  // ========================================
+  // ATIVAR GAME OVER
+  // ========================================
+
+  private triggerGameOver(): void {
+    if (this.gameOver()) return;
+
+    if (this.player) {
+      this.deathPosition =
+        this.player.getPosition();
+    }
+
+    this.stopTutorialEnemyGuide();
+    this.gameOver.set(true);
+  }
+
+  // ========================================
+  // REINICIAR JOGO
+  // ========================================
+
+  restartGame(): void {
+    if (!this.player || !this.gameOver()) {
+      return;
+    }
+
+    // Restaurar vida.
+    this.player.heal(100);
+
+    // Posição inicial.
+    this.player.setPosition(
+      this.PLAYER_START_X,
+      this.PLAYER_START_Y
+    );
+
+    this.deathPosition = null;
+
+    const healthBar =
+      document.getElementById('player-health-bar');
+
+    if (healthBar) {
+      healthBar.style.width = '100%';
+    }
+
+    // Limpar projéteis do jogador.
+    const playerShots = [
+      ...this.projectileService.getProjectiles()
+    ];
+
+    for (const shot of playerShots) {
+      this.projectileService.removeProjectile(
+        shot.id
+      );
+    }
+
+    for (const element of this.projectileElements.values()) {
+      element.remove();
+    }
+
+    this.projectileElements.clear();
+
+    // Limpar projéteis dos inimigos.
+    for (const shot of this.enemyShots) {
+      shot.element.remove();
+    }
+
+    this.enemyShots = [];
+    this.hitVolleyIds.clear();
+
+    // Restaurar todos os cinco slimes.
+    this.enemies.forEach((enemy, index) => {
+      const spawn = this.enemySpawns[index];
+
+      if (!spawn) return;
+
+      enemy.x = spawn.x;
+      enemy.y = spawn.y;
+
+      enemy.maxHealth = enemy.elite ? 350 : 100;
+      enemy.health = enemy.maxHealth;
+
+      enemy.isDead = false;
+      enemy.isPlayerInView = false;
+
+      enemy.touchTimer = 0;
+      enemy.spitTimer = 1.4;
+
+      enemy.burstTimer = 3.8;
+      enemy.burstWindup = 0;
+      enemy.burstCharging = false;
+
+      const root = enemy.enemyRef?.nativeElement;
+
+      if (root) {
+        for (const animation of root.getAnimations()) {
+          animation.cancel();
+        }
+
+        root.style.display = '';
+        root.style.opacity = '';
+        root.style.transform = '';
+
+        const sprite =
+          root.querySelector<HTMLElement>(
+            '.enemy-sprite'
+          );
+
+        if (sprite) {
+          for (const animation of sprite.getAnimations()) {
+            animation.cancel();
+          }
+        }
+
+        const bar =
+          root.querySelector<HTMLElement>(
+            '.health-bar'
+          );
+
+        if (bar) {
+          bar.style.width = '100%';
+        }
+
+        root.querySelector('.enemy-view-range')
+          ?.classList.remove('detected');
+      }
+
+      enemy.updateVisualPosition();
+    });
+
+    this.tutorialEnemyWasDead = false;
+    this.playerWasAtBoundary = false;
+    this.bushes.update(list =>
+      list.map(bush => ({ ...bush, harvested: false }))
+    );
+    this.tutorialEnemyGuideActive = false;
+    this.hideTutorialEnemyGuide();
+
+    this.gameOver.set(false);
+
+    // Mostrar todos os pontos restaurados.
+    this.updateMiniMap(performance.now(), true);
+    this.updateCamera();
+  }
+
+  // ========================================
+  // CONTROLES DO MOUSE
+  // ========================================
+
   handleMouseDown(event: MouseEvent): void {
+    if (!this.player || this.gameOver()) return;
+
     if (event.button === 0) {
       this.player.handleMouseDown(event);
     }
@@ -86,523 +454,697 @@ export class GameWorld {
   }
 
   handleMouseUp(event: MouseEvent): void {
+    if (!this.player || this.gameOver()) return;
+
     if (event.button === 0) {
       this.player.handleMouseUp(event);
     }
   }
 
-  constructor(
-    @Inject(PLATFORM_ID)
-    private platformId: object,
-    private projectileService: ProjectileService,
-    private gameStateService: GameStateService,
-    private inventoryService: InventoryService,
-    private audioService: AudioService,
-  ) {
-    if (isPlatformBrowser(this.platformId)) {
-      this.startGameLoop();
-    }
-  }
+  // ========================================
+  // DISPARO DO JOGADOR
+  // ========================================
 
-  private startGameLoop(): void {
-    let lastTime = performance.now();
+  shootProjectile(event: {
+    mouseX: number;
+    mouseY: number;
+  }): void {
+    if (!this.player || this.gameOver()) return;
 
-    const update = (currentTime: number): void => {
-      const deltaTime = (currentTime - lastTime) / 1000;
-      lastTime = currentTime;
-
-      this.projectileService.update(deltaTime);
-
-      this.checkTutorialBoundary();
-
-      this.updateEnemyMovement();
-      this.updateEnemyAttack(deltaTime);
-      this.resolvePlayerEnemyCollision();
-      this.checkProjectileCollisions();
-      this.checkEnemyDefeated();
-      this.updateEnemyHealthBar();
-      this.updateMiniMap();
-
-      this.renderProjectiles();
-
-      // Camera follows the player.
-      this.updateCamera();
-      this.updateTutorialEnemyGuide();
-
-      this.animationFrameId = requestAnimationFrame(update);
-    };
-
-    this.animationFrameId = requestAnimationFrame(update);
-  }
-
-  // ================================================================
-  // PROJECTILES
-  // ================================================================
-
-  shootProjectile(event: { mouseX: number; mouseY: number }): void {
-    if (!this.player) {
-      return;
-    }
-
-    const position = this.player.getPosition();
-
-    /*
-     * Mouse coordinates come from the SCREEN.
-     *
-     * The projectile system uses WORLD coordinates.
-     *
-     * Therefore:
-     *
-     * world position = screen position - camera position
-     */
-    const worldMouseX = event.mouseX - this.cameraX;
-
-    const worldMouseY = event.mouseY - this.cameraY;
+    const p = this.player.getPosition();
 
     this.projectileService.spawnProjectile(
       'player',
-      position.x,
-      position.y,
-      worldMouseX,
-      worldMouseY,
+      p.x,
+      p.y,
+      event.mouseX - this.cameraX,
+      event.mouseY - this.cameraY
     );
   }
 
-  // ================================================================
-  // PLAYER ATTACK
-  // ================================================================
+  // ========================================
+  // ATAQUE CORPO A CORPO
+  // ========================================
 
   playerAttack(): void {
-    console.log('PLAYER ATTACK RECEIVED');
+    if (!this.player || this.gameOver()) return;
 
     this.playerAttacked.emit();
 
-    if (!this.player || !this.enemy) {
-      console.log('Player or enemy not found');
-      return;
+    const p = this.player.getPosition();
+    const size = this.player.getSize();
+
+    let nearest: Enemy | null = null;
+    let nearestDistance = 70;
+
+    for (const enemy of this.enemies) {
+      if (enemy.isDead) continue;
+
+      const distance = Math.hypot(
+        p.x + size / 2 -
+          (enemy.x + enemy.size / 2),
+        p.y + size / 2 -
+          (enemy.y + enemy.size / 2)
+      );
+
+     if (distance <= nearestDistance) {
+        nearestDistance = distance;
+        nearest = enemy;
+      }
     }
 
-    const playerPosition = this.player.getPosition();
-    const playerSize = this.player.getSize();
+    nearest?.takeDamage(10);
+  }
 
-    const enemyX = this.enemy.x;
-    const enemyY = this.enemy.y;
-    const enemySize = this.enemy.size;
+  // ========================================
+  // INTERAÇÃO COM ARBUSTOS
+  // ========================================
 
-    const playerCenterX = playerPosition.x + playerSize / 2;
+  playerInteract(): void {
+    if (!this.player || this.gameOver()) return;
 
-    const playerCenterY = playerPosition.y + playerSize / 2;
+    const p = this.player.getPosition();
+    const size = this.player.getSize();
 
-    const enemyCenterX = enemyX + enemySize / 2;
+    for (const bush of this.bushes()) {
+      if (bush.harvested) continue;
 
-    const enemyCenterY = enemyY + enemySize / 2;
+      const dx =
+        p.x + size / 2 -
+        (bush.column * this.TILE + this.TILE / 2);
 
-    const dx = playerCenterX - enemyCenterX;
+      const dy =
+        p.y + size / 2 -
+        (bush.row * this.TILE + this.TILE / 2);
 
-    const dy = playerCenterY - enemyCenterY;
+      if (Math.hypot(dx, dy) > 85) continue;
 
-    const distance = Math.sqrt(dx * dx + dy * dy);
+      this.inventoryService.addBerry(
+        Math.floor(Math.random() * 4) + 1
+      );
 
-    console.log('Attack distance:', distance);
+      this.audioService.playItemPickup();
+      this.berryGathered.emit();
 
-    const attackRange = 70;
+      this.bushes.update(list =>
+        list.map(item =>
+          item.id === bush.id
+            ? { ...item, harvested: true }
+            : item
+        )
+      );
 
-    if (distance <= attackRange) {
-      this.enemy.takeDamage(10);
-      console.log('MELEE HIT! Damage: 10');
-    } else {
-      console.log('Attack missed — enemy too far away');
+      return;
     }
   }
 
-  // ================================================================
-  // BUSH INTERACTION
-  // ================================================================
+  // ========================================
+  // IA DOS CINCO SLIMES
+  // ========================================
 
-  playerInteract(): void {
-    if (!this.player) {
-      return;
-    }
+  private updateEnemies(dt: number): void {
+    if (!this.player || this.gameOver()) return;
 
-    const playerPosition = this.player.getPosition();
+    const p = this.player.getPosition();
     const playerSize = this.player.getSize();
 
-    const playerCenterX = playerPosition.x + playerSize / 2;
+    for (const enemy of this.enemies) {
+      if (enemy.isDead) continue;
 
-    const playerCenterY = playerPosition.y + playerSize / 2;
+      enemy.updateTimers(dt);
 
-    const interactionRange = 85;
+      const detected = enemy.checkPlayerInView(
+        p.x,
+        p.y,
+        playerSize
+      );
 
-    for (const bush of this.bushes()) {
-      if (bush.harvested) {
+      if (!detected) {
+        enemy.burstCharging = false;
+        enemy.burstWindup = 0;
         continue;
       }
 
-      const bushCenterX = bush.column * this.TILE + this.TILE / 2;
+      const dx =
+        p.x + playerSize / 2 -
+        (enemy.x + enemy.size / 2);
 
-      const bushCenterY = bush.row * this.TILE + this.TILE / 2;
+      const dy =
+        p.y + playerSize / 2 -
+        (enemy.y + enemy.size / 2);
 
-      const dx = playerCenterX - bushCenterX;
+      const distance = Math.hypot(dx, dy);
 
-      const dy = playerCenterY - bushCenterY;
+      if (distance < 0.001) continue;
 
-      const distance = Math.sqrt(dx * dx + dy * dy);
+      const preferredDistance =
+        enemy.elite ? 155 : 47;
 
-      console.log('🌳 Bush distance:', distance);
-
-      if (distance <= interactionRange) {
-        const berries = Math.floor(Math.random() * 4) + 1;
-
-        console.log(`🫐 YOU GOT ${berries} BERRIES!`);
-
-        this.inventoryService.addBerry(berries);
-
-        this.audioService.playItemPickup();
-        this.berryGathered.emit();
-
-        this.bushes.update((list) =>
-          list.map((b) => (b.id === bush.id ? { ...b, harvested: true } : b)),
+      // Perseguir sem aproximar além da
+      // distância de combate desejada.
+      if (distance > preferredDistance) {
+        const movement = Math.min(
+          enemy.movementSpeed * dt,
+          distance - preferredDistance
         );
 
-        return;
+        const nextX =
+          enemy.x + (dx / distance) * movement;
+
+        const nextY =
+          enemy.y + (dy / distance) * movement;
+
+        enemy.x = enemy.elite
+          ? Math.max(1940, nextX)
+          : nextX;
+
+        enemy.y = nextY;
+
+        enemy.updateVisualPosition();
       }
+
+      const updatedDistance = Math.hypot(
+        p.x + playerSize / 2 -
+        (enemy.x + enemy.size / 2),
+
+        p.y + playerSize / 2 -
+        (enemy.y + enemy.size / 2)
+      );
+
+      const contactDistance =
+        playerSize / 2 + enemy.size / 2;
+
+      // Dano ao encostar.
+      if (
+        updatedDistance <= contactDistance &&
+        enemy.touchTimer <= 0
+      ) {
+        this.damagePlayer(enemy.touchDamage);
+
+        enemy.touchTimer = 1.2;
+
+        if (this.gameOver()) return;
+      }
+
+      const canShoot =
+        updatedDistance <= enemy.attackRange &&
+        updatedDistance > contactDistance + 8;
+
+      // Rajada tripla do mini-chefe.
+      if (enemy.elite && enemy.burstCharging) {
+        enemy.burstWindup = Math.max(
+          0,
+          enemy.burstWindup - dt
+        );
+
+        if (enemy.burstWindup <= 0) {
+          enemy.burstCharging = false;
+
+          if (canShoot) {
+            this.fireEliteBurst(enemy);
+          }
+
+          enemy.spitTimer = Math.max(
+            enemy.spitTimer,
+            0.9
+          );
+        }
+      } else if (
+        enemy.elite &&
+        canShoot &&
+        enemy.burstTimer <= 0
+      ) {
+        enemy.burstCharging = true;
+        enemy.burstWindup = 0.65;
+        enemy.burstTimer = 5.8;
+
+        enemy.spitTimer = Math.max(
+          enemy.spitTimer,
+          1.5
+        );
+
+        this.showEliteCharge(enemy);
+      } else if (
+        canShoot &&
+        enemy.spitTimer <= 0
+      ) {
+        // Cuspe direto.
+        this.spawnEnemyShot(enemy);
+        enemy.spitTimer = enemy.spitCooldown;
+      }
+
+      this.resolvePlayerEnemyCollision(enemy);
     }
   }
 
-  // ================================================================
-  // PLAYER / ENEMY COLLISION
-  // ================================================================
+  // ========================================
+  // DANO NO JOGADOR
+  // ========================================
 
-  private resolvePlayerEnemyCollision(): void {
-    if (!this.player || !this.enemy || this.enemy.isDead) {
+  private damagePlayer(amount: number): void {
+    if (
+      !this.player ||
+      this.gameOver() ||
+      this.player.getHealthPercentage() <= 0
+    ) {
       return;
     }
 
-    const playerPosition = this.player.getPosition();
+    this.player.takeDamage(amount);
 
-    const playerSize = this.player.getSize();
+    const health =
+      this.player.getHealthPercentage();
 
-    const enemyPosition = {
-      x: this.enemy.x,
-      y: this.enemy.y,
-    };
+    const bar =
+      document.getElementById('player-health-bar');
 
-    const enemySize = this.enemy.size;
-
-    const playerCenterX = playerPosition.x + playerSize / 2;
-
-    const playerCenterY = playerPosition.y + playerSize / 2;
-
-    const enemyCenterX = enemyPosition.x + enemySize / 2;
-
-    const enemyCenterY = enemyPosition.y + enemySize / 2;
-
-    const dx = playerCenterX - enemyCenterX;
-
-    const dy = playerCenterY - enemyCenterY;
-
-    const overlapX = playerSize / 2 + enemySize / 2 - Math.abs(dx);
-
-    const overlapY = playerSize / 2 + enemySize / 2 - Math.abs(dy);
-
-    if (overlapX <= 0 || overlapY <= 0) {
-      return;
+    if (bar) {
+      bar.style.width = `${health}%`;
     }
 
-    let correctedX = playerPosition.x;
+    if (health <= 0) {
+      this.triggerGameOver();
+    }
+  }
 
-    let correctedY = playerPosition.y;
+  // ========================================
+  // COLISÃO COM O INIMIGO
+  // ========================================
+
+  private resolvePlayerEnemyCollision(enemy: Enemy): void {
+    if (!this.player || enemy.isDead) return;
+
+    const p = this.player.getPosition();
+    const size = this.player.getSize();
+
+    const dx =
+      p.x + size / 2 -
+      (enemy.x + enemy.size / 2);
+
+    const dy =
+      p.y + size / 2 -
+      (enemy.y + enemy.size / 2);
+
+    const overlapX =
+      size / 2 + enemy.size / 2 - Math.abs(dx);
+
+    const overlapY =
+      size / 2 + enemy.size / 2 - Math.abs(dy);
+
+    if (overlapX <= 0 || overlapY <= 0) return;
+
+    let newX = p.x;
+    let newY = p.y;
 
     if (overlapX < overlapY) {
-      if (dx > 0) {
-        correctedX += overlapX;
-      } else {
-        correctedX -= overlapX;
-      }
+      newX += dx >= 0 ? overlapX : -overlapX;
     } else {
-      if (dy > 0) {
-        correctedY += overlapY;
+      newY += dy >= 0 ? overlapY : -overlapY;
+    }
+
+    this.player.setPosition(newX, newY);
+  }
+
+  // ========================================
+  // AVISO VISUAL DO ATAQUE ESPECIAL
+  // ========================================
+
+  private showEliteCharge(enemy: Enemy): void {
+    const sprite =
+      enemy.enemyRef?.nativeElement
+        .querySelector<HTMLElement>('.enemy-sprite');
+
+    sprite?.animate(
+      [
+        {
+          filter:
+            'drop-shadow(0 0 3px #ffd56f) brightness(1)'
+        },
+        {
+          filter:
+            'drop-shadow(0 0 13px #cc8fff) brightness(1.8)'
+        },
+        {
+          filter:
+            'drop-shadow(0 0 3px #ffd56f) brightness(1)'
+        }
+      ],
+      {
+        duration: 650,
+        easing: 'ease-in-out'
+      }
+    );
+  }
+
+  // ========================================
+  // RAJADA DE TRÊS BOLHAS
+  // ========================================
+
+  private fireEliteBurst(enemy: Enemy): void {
+    const volleyId = this.nextVolleyId++;
+
+    for (const angle of [-0.34, 0, 0.34]) {
+      this.spawnEnemyShot(
+        enemy,
+        angle,
+        'burst',
+        volleyId
+      );
+    }
+  }
+
+  // ========================================
+  // CRIAR TIRO DO SLIME
+  // ========================================
+
+  private spawnEnemyShot(
+    enemy: Enemy,
+    angleOffset = 0,
+    kind: 'spit' | 'burst' = 'spit',
+    volleyId: number | null = null
+  ): void {
+    if (!this.player || this.gameOver()) return;
+
+    const layer =
+      document.getElementById('projectile-layer');
+
+    if (!layer) return;
+
+    const p = this.player.getPosition();
+    const playerSize = this.player.getSize();
+
+    const sx =
+      enemy.x + enemy.size / 2;
+
+    const sy =
+      enemy.y + enemy.size / 2;
+
+    const dx =
+      p.x + playerSize / 2 - sx;
+
+    const dy =
+      p.y + playerSize / 2 - sy;
+
+    if (Math.hypot(dx, dy) < 1) return;
+
+    const direction =
+      Math.atan2(dy, dx) + angleOffset;
+
+    const burst = kind === 'burst';
+
+    const speed = burst
+      ? 215
+      : enemy.projectileSpeed;
+
+    const damage = burst
+      ? 18
+      : enemy.projectileDamage;
+
+    const size = burst
+      ? 16
+      : enemy.elite ? 18 : 12;
+
+    const background = burst
+      ? 'radial-gradient(circle at 35% 30%,#fff,#d29aff 40%,#7033a0 90%)'
+      : enemy.elite
+        ? 'radial-gradient(circle at 35% 30%,#fff7ba,#ffc663 43%,#f667ac 90%)'
+        : 'radial-gradient(circle at 35% 30%,#e4ffff,#42deda 45%,#3678ca 90%)';
+
+    const glow = burst
+      ? '#c487ff'
+      : enemy.elite ? '#ffbf70' : '#5cdbfa';
+
+    const element =
+      document.createElement('div');
+
+    Object.assign(element.style, {
+      position: 'absolute',
+      width: `${size}px`,
+      height: `${size}px`,
+      borderRadius: '50%',
+      background,
+      boxShadow: `0 0 12px ${glow}`,
+      pointerEvents: 'none',
+      zIndex: '25'
+    });
+
+    layer.appendChild(element);
+
+    this.enemyShots.push({
+      id: this.nextEnemyShotId++,
+      x: sx - size / 2,
+      y: sy - size / 2,
+      vx: Math.cos(direction) * speed,
+      vy: Math.sin(direction) * speed,
+      size,
+      damage,
+      lifetime: 3.3,
+      volleyId,
+      element
+    });
+  }
+
+  // ========================================
+  // ATUALIZAR TIROS DOS SLIMES
+  // ========================================
+
+  private updateEnemyShots(dt: number): void {
+    if (!this.player || this.gameOver()) return;
+
+    const p = this.player.getPosition();
+    const playerSize = this.player.getSize();
+
+    const alive: EnemyShot[] = [];
+
+    for (const shot of this.enemyShots) {
+
+      if (
+        shot.volleyId !== null &&
+        this.hitVolleyIds.has(shot.volleyId)
+      ) {
+        shot.element.remove();
+        continue;
+      }
+
+      shot.x += shot.vx * dt;
+      shot.y += shot.vy * dt;
+      shot.lifetime -= dt;
+
+      const hit =
+        shot.x < p.x + playerSize &&
+        shot.x + shot.size > p.x &&
+        shot.y < p.y + playerSize &&
+        shot.y + shot.size > p.y;
+
+      const out =
+        shot.lifetime <= 0 ||
+        shot.x < 0 ||
+        shot.y < 0 ||
+        shot.x > this.MAP_SIZE ||
+        shot.y > this.MAP_SIZE;
+
+      if (hit) {
+        this.damagePlayer(shot.damage);
+
+        if (shot.volleyId !== null) {
+          this.hitVolleyIds.add(shot.volleyId);
+        }
+      }
+
+      if (hit || out) {
+        shot.element.remove();
       } else {
-        correctedY -= overlapY;
+        shot.element.style.transform =
+          `translate(${shot.x}px,${shot.y}px)`;
+
+        alive.push(shot);
       }
     }
 
-    this.player.setPosition(correctedX, correctedY);
-  }
+    this.enemyShots = alive;
 
-  // ================================================================
-  // ENEMY MOVEMENT
-  // ================================================================
+    // Limpar identificadores de rajadas encerradas.
+    const activeVolleys = new Set(
+      alive
+        .map(shot => shot.volleyId)
+        .filter((id): id is number => id !== null)
+    );
 
-  private updateEnemyMovement(): void {
-    if (!this.player || !this.enemy || this.enemy.isDead) {
-      return;
-    }
-
-    const playerPosition = this.player.getPosition();
-
-    const playerSize = this.player.getSize();
-
-    this.enemy.checkPlayerInView(playerPosition.x, playerPosition.y, playerSize);
-
-    if (!this.enemy.isPlayerInView) {
-      return;
-    }
-
-    const playerCenterX = playerPosition.x + playerSize / 2;
-
-    const playerCenterY = playerPosition.y + playerSize / 2;
-
-    const enemyCenterX = this.enemy.x + this.enemy.size / 2;
-
-    const enemyCenterY = this.enemy.y + this.enemy.size / 2;
-
-    const dx = playerCenterX - enemyCenterX;
-
-    const dy = playerCenterY - enemyCenterY;
-
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance === 0) {
-      return;
-    }
-
-    const directionX = dx / distance;
-
-    const directionY = dy / distance;
-
-    this.enemy.x += directionX * this.enemy.speed;
-
-    this.enemy.y += directionY * this.enemy.speed;
-
-    this.enemy.updateVisualPosition();
-  }
-
-  // ================================================================
-  // ENEMY ATTACK
-  // ================================================================
-
-  private updateEnemyAttack(deltaTime: number): void {
-    if (!this.player || !this.enemy || this.enemy.isDead) {
-      return;
-    }
-
-    if (this.enemyAttackCooldown > 0) {
-      this.enemyAttackCooldown -= deltaTime;
-      return;
-    }
-
-    const playerPosition = this.player.getPosition();
-
-    const playerSize = this.player.getSize();
-
-    const enemySize = this.enemy.size;
-
-    const playerCenterX = playerPosition.x + playerSize / 2;
-
-    const playerCenterY = playerPosition.y + playerSize / 2;
-
-    const enemyCenterX = this.enemy.x + enemySize / 2;
-
-    const enemyCenterY = this.enemy.y + enemySize / 2;
-
-    const dx = playerCenterX - enemyCenterX;
-
-    const dy = playerCenterY - enemyCenterY;
-
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    const collisionDistance = playerSize / 2 + enemySize / 2;
-
-    if (distance <= collisionDistance) {
-      console.log('🚨 ENEMY ATTACKING', 'isDead:', this.enemy.isDead, 'health:', this.enemy.health);
-
-      this.player.takeDamage(10);
-
-      this.enemyAttackCooldown = 0.75;
-
-      console.log('Skunk attacked player!');
-    }
-  }
-
-  // ================================================================
-  // PROJECTILE COLLISIONS
-  // ================================================================
-
-  private checkProjectileCollisions(): void {
-    if (!this.enemy || this.enemy.isDead) {
-      return;
-    }
-
-    const projectiles = this.projectileService.getProjectiles();
-
-    const enemyX = this.enemy.x;
-
-    const enemyY = this.enemy.y;
-
-    const enemySize = this.enemy.size;
-
-    const enemyCenterX = enemyX + enemySize / 2;
-
-    const enemyCenterY = enemyY + enemySize / 2;
-
-    for (const projectile of projectiles) {
-      const projectileCenterX = projectile.x + projectile.size / 2;
-
-      const projectileCenterY = projectile.y + projectile.size / 2;
-
-      const dx = projectileCenterX - enemyCenterX;
-
-      const dy = projectileCenterY - enemyCenterY;
-
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      const collisionDistance = enemySize / 2 + projectile.size / 2;
-
-      if (distance <= collisionDistance) {
-        this.enemy.takeDamage(projectile.damage);
-
-        this.projectileService.removeProjectile(projectile.id);
+    for (const id of this.hitVolleyIds) {
+      if (!activeVolleys.has(id)) {
+        this.hitVolleyIds.delete(id);
       }
     }
   }
 
-  // ================================================================
-  // ENEMY DEFEATED (for the tutorial)
-  // ================================================================
+  // ========================================
+  // TIROS DO JOGADOR ACERTAM SLIMES
+  // ========================================
 
-  private checkEnemyDefeated(): void {
-    if (!this.enemy) {
-      return;
+  private checkPlayerProjectileCollisions(): void {
+    const projectiles =
+      this.projectileService.getProjectiles();
+
+    for (const shot of projectiles) {
+      if (shot.ownerId !== 'player') continue;
+
+      for (const enemy of this.enemies) {
+        if (enemy.isDead) continue;
+
+        const distance = Math.hypot(
+          shot.x + shot.size / 2 -
+          (enemy.x + enemy.size / 2),
+
+          shot.y + shot.size / 2 -
+          (enemy.y + enemy.size / 2)
+        );
+
+        if (
+          distance >
+          enemy.size / 2 + shot.size / 2
+        ) {
+          continue;
+        }
+
+        enemy.takeDamage(shot.damage);
+
+        this.projectileService.removeProjectile(
+          shot.id
+        );
+
+        break;
+      }
     }
+  }
 
-    if (this.enemy.isDead && !this.enemyWasDead) {
+  // ========================================
+  // TUTORIAL — INIMIGO DERROTADO
+  // ========================================
+
+  private checkTutorialEnemyDefeated(): void {
+    const tutorialEnemy = this.enemies.find(
+      enemy => enemy.training
+    );
+
+    if (
+      tutorialEnemy?.isDead &&
+      !this.tutorialEnemyWasDead
+    ) {
+      this.tutorialEnemyWasDead = true;
       this.stopTutorialEnemyGuide();
       this.enemyDefeated.emit();
     }
-
-    this.enemyWasDead = this.enemy.isDead;
   }
 
-  // ================================================================
-  // ENEMY HEALTH BAR
-  // ================================================================
+  // ========================================
+  // DESENHAR TIROS DO JOGADOR
+  // ========================================
 
-  private updateEnemyHealthBar(): void {
-    if (!this.enemy || this.enemy.isDead) {
-      return;
-    }
+  private renderPlayerProjectiles(): void {
+    const layer =
+      document.getElementById('projectile-layer');
 
-    const healthBar = document.getElementById('enemy-health-bar');
+    if (!layer) return;
 
-    if (!healthBar) {
-      return;
-    }
+    const projectiles =
+      this.projectileService.getProjectiles();
 
-    healthBar.style.width = `${this.enemy.getHealthPercentage()}%`;
-  }
+    const active = new Set<number>();
 
-  // ================================================================
-  // PROJECTILE VISUALS
-  // ================================================================
+    for (const shot of projectiles) {
+      active.add(shot.id);
 
-  private renderProjectiles(): void {
-    const layer = document.getElementById('projectile-layer');
+      let element =
+        this.projectileElements.get(shot.id);
 
-    if (!layer) {
-      return;
-    }
-
-    const projectiles = this.projectileService.getProjectiles();
-
-    const activeIds = new Set<number>();
-
-    for (const projectile of projectiles) {
-      activeIds.add(projectile.id);
-
-      let element = this.projectileElements.get(projectile.id);
-
-      // Create visual only once
       if (!element) {
         element = document.createElement('div');
 
-        element.style.position = 'absolute';
-
-        element.style.borderRadius = '50%';
-
-        element.style.pointerEvents = 'none';
+        Object.assign(element.style, {
+          position: 'absolute',
+          borderRadius: '50%',
+          pointerEvents: 'none'
+        });
 
         layer.appendChild(element);
-
-        this.projectileElements.set(projectile.id, element);
+        this.projectileElements.set(
+          shot.id,
+          element
+        );
       }
 
-      // Update visual
-      element.style.width = `${projectile.size}px`;
+      element.style.width = `${shot.size}px`;
+      element.style.height = `${shot.size}px`;
+      element.style.backgroundColor = shot.color;
 
-      element.style.height = `${projectile.size}px`;
-
-      element.style.backgroundColor = projectile.color;
-
-      element.style.transform = `translate(${projectile.x}px, ${projectile.y}px)`;
+      element.style.transform =
+        `translate(${shot.x}px,${shot.y}px)`;
     }
 
-    // Remove visuals for dead projectiles
     for (const [id, element] of this.projectileElements) {
-      if (!activeIds.has(id)) {
-        element.remove();
+      if (active.has(id)) continue;
 
-        this.projectileElements.delete(id);
-      }
+      element.remove();
+      this.projectileElements.delete(id);
     }
   }
 
-  // ================================================================
-  // MINIMAP
-  // ================================================================
+  // ========================================
+  // MINIMAPA — CINCO INIMIGOS VIVOS
+  // ========================================
 
-  private updateMiniMap(): void {
-    if (this.player) {
-      const position = this.player.getPosition();
-
-      this.gameStateService.setPlayerPosition({
-        x: position.x,
-        y: position.y,
-      });
-    }
-
-    if (this.enemy && !this.enemy.isDead) {
-      this.gameStateService.setEnemyPositions([
-        {
-          x: this.enemy.x,
-          y: this.enemy.y,
-        },
-      ]);
-    } else {
-      this.gameStateService.setEnemyPositions([]);
-    }
-  }
-
-  // ================================================================
-  // CAMERA
-  // ================================================================
-
-  private updateTutorialEnemyGuide(): void {
-    const guide =
-      document.getElementById('enemy-guide');
-
-    if (!guide) {
+  private updateMiniMap(
+    now: number,
+    force = false
+  ): void {
+    if (
+      !force &&
+      now - this.lastMapSync < 150
+    ) {
       return;
     }
 
-    const dots =
-      guide.querySelectorAll<HTMLElement>('.guide-dot');
+    this.lastMapSync = now;
+
+    if (this.player) {
+      const p = this.player.getPosition();
+
+      this.gameStateService.setPlayerPosition({
+        x: p.x + this.player.getSize() / 2,
+        y: p.y + this.player.getSize() / 2
+      });
+    }
+
+    // Posições reais dos componentes renderizados.
+    const positions = this.enemies
+      .filter(enemy => !enemy.isDead)
+      .map(enemy => ({
+        x: enemy.x + enemy.size / 2,
+        y: enemy.y + enemy.size / 2
+      }));
+
+    this.gameStateService.setEnemyPositions(
+      positions
+    );
+  }
+
+
+  // ========================================
+  // GUIA VISUAL DO INIMIGO DO TUTORIAL
+  // ========================================
+
+  private updateTutorialEnemyGuide(): void {
+    const guide = document.getElementById('enemy-guide');
+    if (!guide) return;
+
+    const dots = guide.querySelectorAll<HTMLElement>('.guide-dot');
+    const tutorialEnemy = this.enemies.find(enemy => enemy.training);
 
     if (
       !this.tutorialEnemyGuideActive ||
       !this.player ||
-      !this.enemy ||
-      this.enemy.isDead
+      !tutorialEnemy ||
+      tutorialEnemy.isDead
     ) {
       guide.style.display = 'none';
 
@@ -613,92 +1155,33 @@ export class GameWorld {
       return;
     }
 
-    // ------------------------------------------------------------
-    // PLAYER CENTER
-    // ------------------------------------------------------------
+    const playerPosition = this.player.getPosition();
+    const playerSize = this.player.getSize();
 
-    const playerPosition =
-      this.player.getPosition();
+    const playerCenterX = playerPosition.x + playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
 
-    const playerSize =
-      this.player.getSize();
+    const enemyCenterX = tutorialEnemy.x + tutorialEnemy.size / 2;
+    const enemyCenterY = tutorialEnemy.y + tutorialEnemy.size / 2;
 
-    const playerCenterX =
-      playerPosition.x +
-      playerSize / 2;
+    const dx = enemyCenterX - playerCenterX;
+    const dy = enemyCenterY - playerCenterY;
 
-    const playerCenterY =
-      playerPosition.y +
-      playerSize / 2;
+    const distance = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
-    // ------------------------------------------------------------
-    // ENEMY CENTER
-    // ------------------------------------------------------------
-
-    const enemyCenterX =
-      this.enemy.x +
-      this.enemy.size / 2;
-
-    const enemyCenterY =
-      this.enemy.y +
-      this.enemy.size / 2;
-
-    // ------------------------------------------------------------
-    // DISTANCE
-    // ------------------------------------------------------------
-
-    const dx =
-      enemyCenterX -
-      playerCenterX;
-
-    const dy =
-      enemyCenterY -
-      playerCenterY;
-
-    const distance =
-      Math.sqrt(
-        dx * dx +
-        dy * dy
-      );
-
-    const angle =
-      Math.atan2(dy, dx) *
-      (180 / Math.PI);
-
-    // ------------------------------------------------------------
-    // GUIDE POSITION
-    // ------------------------------------------------------------
-
-    guide.style.left =
-      `${playerCenterX}px`;
-
-    guide.style.top =
-      `${playerCenterY}px`;
-
-    guide.style.width =
-      `${distance}px`;
-
-    guide.style.transform =
-      `rotate(${angle}deg)`;
-
-    guide.style.display =
-      'block';
-
-    // ------------------------------------------------------------
-    // POSITION PARTICLES
-    // ------------------------------------------------------------
+    guide.style.left = `${playerCenterX}px`;
+    guide.style.top = `${playerCenterY}px`;
+    guide.style.width = `${distance}px`;
+    guide.style.transform = `rotate(${angle}deg)`;
+    guide.style.display = 'block';
 
     for (let i = 0; i < dots.length; i++) {
       const dot = dots[i];
-
       const position =
-        this.GUIDE_START_OFFSET +
-        i * this.GUIDE_DOT_SPACING;
+        this.GUIDE_START_OFFSET + i * this.GUIDE_DOT_SPACING;
 
-      const shouldShow =
-        position < distance - 25;
-
-      if (!shouldShow) {
+      if (position >= distance - 25) {
         dot.style.display = 'none';
         continue;
       }
@@ -710,12 +1193,14 @@ export class GameWorld {
 
   private hideTutorialEnemyGuide(): void {
     const guide = document.getElementById('enemy-guide');
-
-    if (!guide) {
-      return;
-    }
+    if (!guide) return;
 
     guide.style.display = 'none';
+
+    const dots = guide.querySelectorAll<HTMLElement>('.guide-dot');
+    for (const dot of dots) {
+      dot.style.display = 'none';
+    }
   }
 
   public startTutorialEnemyGuide(): void {
@@ -727,99 +1212,108 @@ export class GameWorld {
     this.hideTutorialEnemyGuide();
   }
 
+  // ========================================
+  // CÂMERA
+  // ========================================
+
   private updateCamera(): void {
-    const camera = document.getElementById('camera');
+    const camera =
+      document.getElementById('camera');
 
-    if (!camera || !this.player) {
-      return;
-    }
+    if (!camera || !this.player) return;
 
-    const playerPosition = this.player.getPosition();
-
-    const playerSize = this.player.getSize();
-
-    // ------------------------------------------------
-    // Player center in WORLD coordinates
-    // ------------------------------------------------
-
-    const playerCenterX = playerPosition.x + playerSize / 2;
-
-    const playerCenterY = playerPosition.y + playerSize / 2;
-
-    // ------------------------------------------------
-    // Map dimensions
-    // ------------------------------------------------
-
-    const mapWidth = 2560;
-    const mapHeight = 2560;
-
-    // ------------------------------------------------
-    // Screen dimensions
-    // ------------------------------------------------
+    const p = this.player.getPosition();
+    const size = this.player.getSize();
 
     const screenWidth = window.innerWidth;
-
     const screenHeight = window.innerHeight;
 
-    // ------------------------------------------------
-    // Try to place the player in the center
-    // ------------------------------------------------
+    const camX = Math.max(
+      Math.min(
+        screenWidth - this.MAP_SIZE,
+        0
+      ),
+      Math.min(
+        0,
+        screenWidth / 2 -
+        (p.x + size / 2)
+      )
+    );
 
-    let cameraX = screenWidth / 2 - playerCenterX;
+    const camY = Math.max(
+      Math.min(
+        screenHeight - this.MAP_SIZE,
+        0
+      ),
+      Math.min(
+        0,
+        screenHeight / 2 -
+        (p.y + size / 2)
+      )
+    );
 
-    let cameraY = screenHeight / 2 - playerCenterY;
+    this.cameraX = camX;
+    this.cameraY = camY;
 
-    // ------------------------------------------------
-    // Don't let the camera show outside the MAP
-    // ------------------------------------------------
-
-    const minCameraX = screenWidth - mapWidth;
-
-    const maxCameraX = 0;
-
-    cameraX = Math.max(minCameraX, Math.min(cameraX, maxCameraX));
-
-    const minCameraY = screenHeight - mapHeight;
-
-    const maxCameraY = 0;
-
-    cameraY = Math.max(minCameraY, Math.min(cameraY, maxCameraY));
-
-    // ------------------------------------------------
-    // Save camera position
-    //
-    // We need these values later when converting
-    // screen mouse coordinates into world coordinates.
-    // ------------------------------------------------
-
-    this.cameraX = cameraX;
-    this.cameraY = cameraY;
-
-    // ------------------------------------------------
-    // Move the entire world
-    // ------------------------------------------------
-
-    camera.style.transform = `translate(${cameraX}px, ${cameraY}px)`;
+    camera.style.transform =
+      `translate(${camX}px,${camY}px)`;
   }
 
+  // ========================================
+  // LIMITE DO TUTORIAL
+  // ========================================
+
   private checkTutorialBoundary(): void {
-    if (!this.player) {
-      return;
-    }
+    if (!this.player) return;
 
-    const position = this.player.getPosition();
-
-    const boundary = 2500;
+    const p = this.player.getPosition();
 
     const atBoundary =
-      position.x >= boundary || position.y >= boundary || position.x <= 0 || position.y <= 0;
+      p.x >= 2500 ||
+      p.y >= 2500 ||
+      p.x <= 0 ||
+      p.y <= 0;
 
-    if (atBoundary && !this.playerWasAtBoundary) {
-      console.log('🚧 GAME WORLD DETECTED PLAYER AT BOUNDARY');
-
+    if (
+      atBoundary &&
+      !this.playerWasAtBoundary
+    ) {
       this.tutorialBoundary.emit();
     }
 
     this.playerWasAtBoundary = atBoundary;
+  }
+
+  // ========================================
+  // LIMPEZA SEGURA — ANGULAR SSR
+  // ========================================
+
+  ngOnDestroy(): void {
+    this.destroyed = true;
+
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    if (this.animationFrameId) {
+      cancelAnimationFrame(
+        this.animationFrameId
+      );
+
+      this.animationFrameId = 0;
+    }
+
+    for (const element of this.projectileElements.values()) {
+      element.remove();
+    }
+
+    this.projectileElements.clear();
+
+    for (const shot of this.enemyShots) {
+      shot.element.remove();
+    }
+
+    this.enemyShots = [];
+    this.hitVolleyIds.clear();
   }
 }

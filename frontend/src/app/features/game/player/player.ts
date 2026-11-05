@@ -1,4 +1,11 @@
-import { Component, Inject, PLATFORM_ID, Output, EventEmitter, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Inject,
+  PLATFORM_ID,
+  Output,
+  EventEmitter,
+  OnDestroy
+} from '@angular/core';
 
 import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -13,6 +20,7 @@ import { BuffService } from '../../../services/Inventory/Buff/buff.service';
   styleUrl: './player.css',
 })
 export class Player implements OnDestroy {
+
   // ================================================================
   // EVENTS
   // ================================================================
@@ -37,63 +45,21 @@ export class Player implements OnDestroy {
 
   private readonly MAP_WIDTH = 2560;
   private readonly MAP_HEIGHT = 2560;
-
   private readonly PLAYABLE_BOUNDARY = 2500;
-
   private readonly PLAYER_SIZE = 40;
-
   private readonly TILE_SIZE = 128;
 
   private readonly riverTiles = new Set([
-    // Row 0
-    '11,0',
-    '12,0',
-
-    // Row 1
-    '12,1',
-    '13,1',
-
-    // Row 2
-    '12,2',
-    '13,2',
-
-    // Row 3
-    '12,3',
-    '13,3',
-    '14,3',
-
-    // Row 4
-    '12,4',
-    '13,4',
-    '14,4',
-    '15,4',
-
-    // Row 5
-    '12,5',
-    '13,5',
-    '14,5',
-    '15,5',
-
-    // Row 6
-    '14,6',
-    '15,6',
-    '16,6',
-
-    // Row 7
-    '16,7',
-    '17,7',
-    '18,7',
-
-    // Row 8
-    '16,8',
-    '17,8',
-    '18,8',
-    '19,8',
-
-    // Row 9
-    '17,9',
-    '18,9',
-    '19,9',
+    '11,0', '12,0',
+    '12,1', '13,1',
+    '12,2', '13,2',
+    '12,3', '13,3', '14,3',
+    '12,4', '13,4', '14,4', '15,4',
+    '12,5', '13,5', '14,5', '15,5',
+    '14,6', '15,6', '16,6',
+    '16,7', '17,7', '18,7',
+    '16,8', '17,8', '18,8', '19,8',
+    '17,9', '18,9', '19,9',
   ]);
 
   // ================================================================
@@ -103,10 +69,7 @@ export class Player implements OnDestroy {
   private playerX = 1255;
   private playerY = 1255;
 
-  public getPosition(): {
-    x: number;
-    y: number;
-  } {
+  public getPosition(): { x: number; y: number } {
     return {
       x: this.playerX,
       y: this.playerY,
@@ -124,7 +87,6 @@ export class Player implements OnDestroy {
 
   private isRiverTile(x: number, y: number): boolean {
     const column = Math.floor(x / this.TILE_SIZE) + 1;
-
     const row = Math.floor(y / this.TILE_SIZE);
 
     return this.riverTiles.has(`${column},${row}`);
@@ -132,7 +94,6 @@ export class Player implements OnDestroy {
 
   private getDistanceToRiver(): number {
     const playerCenterX = this.playerX + this.PLAYER_SIZE / 2;
-
     const playerCenterY = this.playerY + this.PLAYER_SIZE / 2;
 
     let closestDistance = Infinity;
@@ -141,26 +102,25 @@ export class Player implements OnDestroy {
       const [columnString, rowString] = tile.split(',');
 
       const column = Number(columnString);
-
       const row = Number(rowString);
 
-      // isRiverTile() uses column = floor(x / TILE_SIZE) + 1
-      // so we reverse that here.
       const tileX = (column - 1) * this.TILE_SIZE;
-
       const tileY = row * this.TILE_SIZE;
 
       const tileRight = tileX + this.TILE_SIZE;
-
       const tileBottom = tileY + this.TILE_SIZE;
 
-      // Find the closest point on the tile rectangle.
-      const closestX = Math.max(tileX, Math.min(playerCenterX, tileRight));
+      const closestX = Math.max(
+        tileX,
+        Math.min(playerCenterX, tileRight)
+      );
 
-      const closestY = Math.max(tileY, Math.min(playerCenterY, tileBottom));
+      const closestY = Math.max(
+        tileY,
+        Math.min(playerCenterY, tileBottom)
+      );
 
       const dx = playerCenterX - closestX;
-
       const dy = playerCenterY - closestY;
 
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -177,14 +137,19 @@ export class Player implements OnDestroy {
     const size = this.PLAYER_SIZE;
 
     const topLeft = this.isRiverTile(x, y);
-
     const topRight = this.isRiverTile(x + size - 1, y);
-
     const bottomLeft = this.isRiverTile(x, y + size - 1);
+    const bottomRight = this.isRiverTile(
+      x + size - 1,
+      y + size - 1
+    );
 
-    const bottomRight = this.isRiverTile(x + size - 1, y + size - 1);
-
-    return !(topLeft || topRight || bottomLeft || bottomRight);
+    return !(
+      topLeft ||
+      topRight ||
+      bottomLeft ||
+      bottomRight
+    );
   }
 
   // ================================================================
@@ -208,25 +173,8 @@ export class Player implements OnDestroy {
   // TUTORIAL STATE
   // ================================================================
 
-  /*
-   * These values describe what the player is ACTUALLY doing.
-   *
-   * The tutorial reads these values instead of listening for
-   * keyboard input itself.
-   */
-
   private moving = false;
   private sprinting = false;
-
-  /*
-   * Tutorial accessors.
-   *
-   * The tutorial can call:
-   *
-   * player.getIsMoving()
-   * player.getIsSprinting()
-   * player.getStamina()
-   */
 
   public getIsMoving(): boolean {
     return this.moving;
@@ -257,10 +205,6 @@ export class Player implements OnDestroy {
 
   private dashRemaining = 0;
 
-  /*
-   * Last direction the player moved.
-   * Used when Q is pressed without movement input.
-   */
   private lastMoveHorizontal = 1;
   private lastMoveVertical = 0;
 
@@ -312,9 +256,7 @@ export class Player implements OnDestroy {
   private keys = new Set<string>();
 
   private animationFrameId = 0;
-
   private qHeld = false;
-
   private wasAtBoundary = false;
 
   // ================================================================
@@ -322,7 +264,6 @@ export class Player implements OnDestroy {
   // ================================================================
 
   private holdTimer?: ReturnType<typeof setTimeout>;
-
   private isHoldingAttack = false;
 
   // ================================================================
@@ -343,17 +284,16 @@ export class Player implements OnDestroy {
   ) {
     console.log('🟢 PLAYER COMPONENT CREATED');
 
-    this.buffSubscription = this.buffService.instantBuffApplied$.subscribe((buff) => {
-      if (buff.type === 'health') {
-        this.heal(buff.value);
-      }
-    });
+    this.buffSubscription =
+      this.buffService.instantBuffApplied$.subscribe((buff) => {
+        if (buff.type === 'health') {
+          this.heal(buff.value);
+        }
+      });
 
     if (isPlatformBrowser(this.platformId)) {
       window.addEventListener('keydown', this.handleKeyDown);
-
       window.addEventListener('keyup', this.handleKeyUp);
-
       window.addEventListener('contextmenu', this.preventContextMenu);
 
       this.startGameLoop();
@@ -366,9 +306,7 @@ export class Player implements OnDestroy {
 
   private setupControls(): void {
     window.addEventListener('keydown', this.handleKeyDown);
-
     window.addEventListener('keyup', this.handleKeyUp);
-
     window.addEventListener('contextmenu', this.preventContextMenu);
   }
 
@@ -383,49 +321,28 @@ export class Player implements OnDestroy {
   private handleKeyDown = (event: KeyboardEvent): void => {
     const key = event.key.toLowerCase();
 
-    // ------------------------------------------------------------
-    // SKILL 2 — F
-    // ------------------------------------------------------------
-
     if (key === 'f') {
       event.preventDefault();
-
       this.useSkill2();
-
       return;
     }
-
-    // ------------------------------------------------------------
-    // SKILL 3 — Q
-    // ------------------------------------------------------------
 
     if (key === 'q') {
       event.preventDefault();
 
       if (!this.qHeld) {
         this.qHeld = true;
-
         this.useSkill3();
       }
 
       return;
     }
 
-    // ------------------------------------------------------------
-    // INTERACT — E
-    // ------------------------------------------------------------
-
     if (key === 'e') {
       event.preventDefault();
-
       this.interact.emit();
-
       return;
     }
-
-    // ------------------------------------------------------------
-    // MOVEMENT + SHIFT
-    // ------------------------------------------------------------
 
     if (
       key === 'w' ||
@@ -439,7 +356,6 @@ export class Player implements OnDestroy {
       key === 'shift'
     ) {
       event.preventDefault();
-
       this.keys.add(key);
     }
   };
@@ -459,25 +375,18 @@ export class Player implements OnDestroy {
   // ================================================================
 
   handleMouseDown = (event: MouseEvent): void => {
-    // ------------------------------------------------------------
-    // LEFT MOUSE — NORMAL ATTACK
-    // ------------------------------------------------------------
-
     if (event.button === 0) {
       event.preventDefault();
 
       this.isHoldingAttack = true;
 
       this.setButtonActive('attack-btn');
-
       this.changePlayerColor('yellow');
 
       console.log('PLAYER EMITTING ATTACK');
 
-      // Tell GameWorld that a basic attack happened.
       this.attack.emit();
 
-      // Hold left mouse for 2 seconds -> Skill 1
       this.holdTimer = setTimeout(() => {
         if (this.isHoldingAttack) {
           this.useSkill1();
@@ -486,10 +395,6 @@ export class Player implements OnDestroy {
 
       return;
     }
-
-    // ------------------------------------------------------------
-    // RIGHT MOUSE — PROJECTILE
-    // ------------------------------------------------------------
 
     if (event.button === 2) {
       event.preventDefault();
@@ -511,12 +416,10 @@ export class Player implements OnDestroy {
     this.isHoldingAttack = false;
 
     this.setButtonInactive('attack-btn');
-
     this.setButtonInactive('skill1-btn');
 
     if (this.holdTimer) {
       clearTimeout(this.holdTimer);
-
       this.holdTimer = undefined;
     }
 
@@ -529,7 +432,6 @@ export class Player implements OnDestroy {
 
   private useSkill1(): void {
     this.setButtonActive('skill1-btn');
-
     this.changePlayerColor('turquoise');
   }
 
@@ -539,13 +441,12 @@ export class Player implements OnDestroy {
 
   private useSkill2(): void {
     this.setButtonActive('skill2-btn');
-
     this.changePlayerColor('purple');
 
     setTimeout(() => {
       this.setButtonInactive('skill2-btn');
 
-      if (!this.isHoldingAttack) {
+      if (!this.isHoldingAttack && !this.isDashing) {
         this.changePlayerColor('red');
       }
     }, 500);
@@ -565,7 +466,6 @@ export class Player implements OnDestroy {
     }
 
     this.stamina -= this.dashStaminaCost;
-
     this.isDashing = true;
 
     this.audioService.playSfx('player.dash');
@@ -573,7 +473,6 @@ export class Player implements OnDestroy {
     this.dashRemaining = this.DASH_DISTANCE;
 
     this.setButtonActive('skill3-btn');
-
     this.changePlayerColor('white');
   }
 
@@ -586,19 +485,12 @@ export class Player implements OnDestroy {
 
     const update = (currentTime: number): void => {
       const deltaTime = (currentTime - lastTime) / 1000;
-
       lastTime = currentTime;
 
-      // ========================================================
       // BUFFS
-      // ========================================================
-
       this.buffService.update(deltaTime);
 
-      // ========================================================
       // MOVEMENT INPUT
-      // ========================================================
-
       let horizontal = 0;
       let vertical = 0;
 
@@ -618,69 +510,31 @@ export class Player implements OnDestroy {
         horizontal += 1;
       }
 
-      // ========================================================
       // NORMALIZE DIAGONAL MOVEMENT
-      // ========================================================
-
       if (horizontal !== 0 && vertical !== 0) {
         horizontal *= 0.7071;
-
         vertical *= 0.7071;
       }
 
-      // ========================================================
       // ACTUAL MOVEMENT STATE
-      // ========================================================
-
-      /*
-       * This is the REAL movement state of the player.
-       *
-       * Tutorial reads this instead of checking keyboard
-       * input itself.
-       */
-
       this.moving = horizontal !== 0 || vertical !== 0;
 
       if (this.moving) {
         this.lastMoveHorizontal = horizontal;
-
         this.lastMoveVertical = vertical;
       }
 
-      // ========================================================
       // ACTUAL SPRINT STATE
-      // ========================================================
-
       const wantsToSprint = this.keys.has('shift') && this.moving;
-
-      /*
-       * This is the REAL sprint state.
-       *
-       * Shift alone is NOT enough.
-       *
-       * The player must:
-       *
-       * 1. Hold Shift
-       * 2. Actually be moving
-       * 3. Have stamina remaining
-       */
 
       this.sprinting = wantsToSprint && this.stamina > 0;
 
-      // ========================================================
       // STAMINA
-      // ========================================================
-
       if (this.sprinting) {
         this.stamina -= this.staminaDrain * deltaTime;
 
         if (this.stamina <= 0) {
           this.stamina = 0;
-
-          /*
-           * The player is no longer sprinting once
-           * their stamina reaches zero.
-           */
           this.sprinting = false;
         }
       } else {
@@ -691,32 +545,37 @@ export class Player implements OnDestroy {
         }
       }
 
-      // ========================================================
       // SPEED
-      // ========================================================
+      const currentSpeed = this.sprinting
+        ? this.speed * this.sprintMultiplier
+        : this.speed;
 
-      const currentSpeed = this.sprinting ? this.speed * this.sprintMultiplier : this.speed;
-
-      // ========================================================
       // MOVEMENT / DASH
-      // ========================================================
-
       if (this.isDashing) {
-        const dashStep = Math.min(this.dashSpeed, this.dashRemaining);
+        const dashStep = Math.min(
+          this.dashSpeed,
+          this.dashRemaining
+        );
 
-        const nextX = this.playerX + this.lastMoveHorizontal * dashStep;
+        const nextX = this.playerX +
+          this.lastMoveHorizontal * dashStep;
 
-        const nextY = this.playerY + this.lastMoveVertical * dashStep;
+        const nextY = this.playerY +
+          this.lastMoveVertical * dashStep;
 
-        this.playerX = nextX;
+        // Check collision separately on each axis.
+        if (this.canMoveTo(nextX, this.playerY)) {
+          this.playerX = nextX;
+        }
 
-        this.playerY = nextY;
+        if (this.canMoveTo(this.playerX, nextY)) {
+          this.playerY = nextY;
+        }
 
         this.dashRemaining -= dashStep;
 
         if (this.dashRemaining <= 0) {
           this.dashRemaining = 0;
-
           this.isDashing = false;
 
           this.setButtonInactive('skill3-btn');
@@ -727,7 +586,6 @@ export class Player implements OnDestroy {
         }
       } else {
         const nextX = this.playerX + horizontal * currentSpeed;
-
         const nextY = this.playerY + vertical * currentSpeed;
 
         if (this.canMoveTo(nextX, this.playerY)) {
@@ -739,66 +597,45 @@ export class Player implements OnDestroy {
         }
       }
 
-      // ========================================================
       // MAP BOUNDARIES
-      // ========================================================
-
       let hitMapBoundary = false;
 
       if (this.playerX < 0) {
         this.playerX = 0;
-
         hitMapBoundary = true;
       }
 
       if (this.playerX >= this.PLAYABLE_BOUNDARY) {
         this.playerX = this.PLAYABLE_BOUNDARY;
-
         hitMapBoundary = true;
       }
 
       if (this.playerY < 0) {
         this.playerY = 0;
-
         hitMapBoundary = true;
       }
 
       if (this.playerY >= this.PLAYABLE_BOUNDARY) {
         this.playerY = this.PLAYABLE_BOUNDARY;
-
         hitMapBoundary = true;
       }
 
-      // ========================================================
       // BOUNDARY EVENT
-      // ========================================================
-
       if (hitMapBoundary && !this.wasAtBoundary) {
         console.log('PLAYER REACHED MAP BOUNDARY');
-
         this.tutorialBoundary.emit();
       }
 
       this.wasAtBoundary = hitMapBoundary;
 
-      // ========================================================
       // RIVER AUDIO
-      // ========================================================
-
       const riverDistance = this.getDistanceToRiver();
-
       this.audioService.updateRiverVolume(riverDistance);
 
-      // ========================================================
       // UPDATE PLAYER
-      // ========================================================
-
       this.updatePlayerPosition();
 
-      // ========================================================
       // NEXT FRAME
-      // ========================================================
-
       this.animationFrameId = requestAnimationFrame(update);
     };
 
@@ -824,21 +661,11 @@ export class Player implements OnDestroy {
 
     player.animate(
       [
-        {
-          transform: 'translate(0px, 0px)',
-        },
-        {
-          transform: 'translate(-4px, 0px)',
-        },
-        {
-          transform: 'translate(4px, 0px)',
-        },
-        {
-          transform: 'translate(-3px, 0px)',
-        },
-        {
-          transform: 'translate(0px, 0px)',
-        },
+        { transform: 'translate(0px, 0px)' },
+        { transform: 'translate(-4px, 0px)' },
+        { transform: 'translate(4px, 0px)' },
+        { transform: 'translate(-3px, 0px)' },
+        { transform: 'translate(0px, 0px)' },
       ],
       {
         duration: 100,
@@ -863,16 +690,14 @@ export class Player implements OnDestroy {
     const player = document.getElementById('player');
 
     const staminaContainer = document.getElementById('stamina-container');
-
     const staminaBar = document.getElementById('stamina-bar');
-
     const healthBar = document.getElementById('player-health-bar');
 
     if (player) {
       player.style.transform = `translate(
-                    ${this.playerX}px,
-                    ${this.playerY}px
-                )`;
+        ${this.playerX}px,
+        ${this.playerY}px
+      )`;
     }
 
     if (staminaContainer) {
@@ -882,9 +707,7 @@ export class Player implements OnDestroy {
     }
 
     if (staminaBar) {
-      const staminaPercentage = this.getStaminaPercentage();
-
-      staminaBar.style.width = `${staminaPercentage}%`;
+      staminaBar.style.width = `${this.getStaminaPercentage()}%`;
     }
 
     if (healthBar) {
@@ -942,13 +765,12 @@ export class Player implements OnDestroy {
     }
 
     window.removeEventListener('keydown', this.handleKeyDown);
-
     window.removeEventListener('keyup', this.handleKeyUp);
-
     window.removeEventListener('contextmenu', this.preventContextMenu);
 
     if (this.holdTimer) {
       clearTimeout(this.holdTimer);
+      this.holdTimer = undefined;
     }
   }
 }

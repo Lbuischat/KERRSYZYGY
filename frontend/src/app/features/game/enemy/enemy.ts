@@ -1,227 +1,178 @@
-import { Component, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 
 @Component({
   selector: 'app-enemy',
+  standalone: true,
   imports: [],
   templateUrl: './enemy.html',
-  styleUrl: './enemy.css',
+  styleUrl: './enemy.css'
 })
-export class Enemy {
+export class Enemy implements OnInit, AfterViewInit, OnDestroy {
+
+  // =====================================
+  // DEBUG ID
+  // =====================================
 
   private static nextId = 1;
-  private id = Enemy.nextId++;
+  private readonly id = Enemy.nextId++;
 
-  constructor() {
+  // =====================================
+  // ELEMENT REFERENCE
+  // =====================================
 
-    console.log(
-      `🟢 CREATED ENEMY #${this.id}`,
-      'document:',
-      typeof document,
-      'window:',
-      typeof window
-    );
+  @ViewChild('enemyRef')
+  enemyRef?: ElementRef<HTMLElement>;
 
-    if (typeof document !== 'undefined') {
-      requestAnimationFrame(() => {
-        this.updateVisualPosition();
-      });
-    }
-
-  }
+  // =====================================
+  // POSITION / TYPE
+  // =====================================
 
   @Input() x = 600;
   @Input() y = 400;
 
-  // =========================
+  @Input() elite = false;
+  @Input() training = false;
+
+  readonly spritePath =
+    '/assets/sprites/enemies/alien-slime.png';
+
+  // =====================================
+  // HITBOX / SIZE / SPEED
+  // =====================================
+
+  readonly size = 40;
+  readonly speed = 65;
+
+  // =====================================
   // HEALTH
-  // =========================
+  // =====================================
 
   maxHealth = 100;
   health = 100;
+
   isDead = false;
-
-  // =========================
-  // SIZE
-  // =========================
-
-  size = 40;
-
-  // =========================
-  // MOVEMENT
-  // =========================
-
-  speed = 1;
-
-  // =========================
-  // VIEW RANGE
-  // =========================
-
-  viewRange = 300;
   isPlayerInView = false;
-  attackRange = 70;
 
-  // =========================
-  // DAMAGE
-  // =========================
+  // =====================================
+  // TIMERS
+  // =====================================
 
-  takeDamage(amount: number): void {
-    if (this.isDead) {
-      return;
-    }
+  touchTimer = 0;
+  spitTimer = 1.4;
 
-    this.health -= amount;
+  // Special elite attack
+  burstTimer = 3.8;
+  burstWindup = 0;
+  burstCharging = false;
 
-    if (this.health < 0) {
-      this.health = 0;
-    }
+  // =====================================
+  // INITIALIZATION
+  // =====================================
+
+  ngOnInit(): void {
+
+    this.maxHealth = this.elite
+      ? 350
+      : 100;
+
+    this.health = this.maxHealth;
 
     console.log(
-      `Enemy #${this.id} HP:`,
-      this.health
+      `🟢 CREATED ENEMY #${this.id}`,
+      this.elite ? '(ELITE)' : '(NORMAL)'
+    );
+  }
+
+  ngAfterViewInit(): void {
+    this.updateVisualPosition();
+    this.updateHealthBar();
+  }
+
+  ngOnDestroy(): void {
+    // Angular automatically removes this enemy's elements.
+  }
+
+  // =====================================
+  // TYPE-BASED STATISTICS
+  // =====================================
+
+  get viewRange(): number {
+    return this.elite ? 390 : 260;
+  }
+
+  get attackRange(): number {
+    return this.elite ? 310 : 165;
+  }
+
+  get movementSpeed(): number {
+    return this.elite ? 85 : this.speed;
+  }
+
+  get touchDamage(): number {
+    return this.elite ? 80 : 10;
+  }
+
+  get projectileDamage(): number {
+    return this.elite ? 30 : 8;
+  }
+
+  get projectileSpeed(): number {
+    return this.elite ? 275 : 195;
+  }
+
+  get spitCooldown(): number {
+    return this.elite ? 1.8 : 2.8;
+  }
+
+  // =====================================
+  // UPDATE ATTACK TIMERS
+  // =====================================
+
+  updateTimers(deltaTime: number): void {
+
+    this.touchTimer = Math.max(
+      0,
+      this.touchTimer - deltaTime
     );
 
-    this.triggerHitEffect(amount);
-
-    if (this.health === 0) {
-      this.die();
-    }
-  }
-
-  private die(): void {
-    this.isDead = true;
-
-    const enemy =
-      document.querySelector(
-        '.enemy'
-      ) as HTMLElement | null;
-    if (!enemy) {
-      return;
-    }
-
-    enemy.animate(
-      [
-        {
-          transform: 'scale(1)',
-          opacity: '1'
-        },
-        {
-          transform: 'scale(1.3)',
-          opacity: '0'
-        }
-      ],
-      {
-        duration: 250,
-        easing: 'ease-out'
-      }
+    this.spitTimer = Math.max(
+      0,
+      this.spitTimer - deltaTime
     );
 
-    setTimeout(() => {
-      enemy.remove();
-    }, 250);
+    this.burstTimer = Math.max(
+      0,
+      this.burstTimer - deltaTime
+    );
   }
 
-  getHealthPercentage(): number {
-    return (this.health / this.maxHealth) * 100;
-  }
+  // =====================================
+  // UPDATE POSITION
+  // =====================================
 
   public updateVisualPosition(): void {
-    const enemy =
-      document.querySelector<HTMLElement>('.enemy');
-    if (!enemy) {
-      return;
-    }
-    enemy.style.left =
-      `${this.x}px`;
-    enemy.style.top =
-      `${this.y}px`;
-  }
 
-  triggerHitEffect(damage: number): void {
-    const enemy =
-      document.querySelector<HTMLElement>('.enemy');
-    if (!enemy) {
+    const root = this.enemyRef?.nativeElement;
+
+    if (!root) {
       return;
     }
 
-    enemy.style.backgroundColor =
-      'white';
-    setTimeout(() => {
-      enemy.style.backgroundColor =
-        'purple';
-    }, 80);
-
-    // =========================
-    // SHAKE
-    // =========================
-
-    enemy.animate(
-      [
-        { transform: 'translate(0px, 0px)' },
-        { transform: 'translate(-4px, 0px)' },
-        { transform: 'translate(4px, 0px)' },
-        { transform: 'translate(-3px, 0px)' },
-        { transform: 'translate(0px, 0px)' }
-      ],
-      {
-        duration: 100,
-        easing: 'linear'
-      }
-    );
-
-    // =========================
-    // DAMAGE NUMBER
-    // =========================
-
-    const damageNumber =
-      document.createElement('div');
-    damageNumber.textContent =
-      `-${damage}`;
-    damageNumber.style.position =
-      'absolute';
-    damageNumber.style.left =
-      `${this.x + this.size / 2}px`;
-    damageNumber.style.top =
-      `${this.y - 10}px`;
-    damageNumber.style.color =
-      'white';
-    damageNumber.style.fontWeight =
-      'bold';
-    damageNumber.style.fontSize =
-      '16px';
-    damageNumber.style.pointerEvents =
-      'none';
-    damageNumber.style.zIndex =
-      '100';
-    document.body.appendChild(
-      damageNumber
-    );
-
-    // =========================
-    // FLOAT + FADE
-    // =========================
-
-    damageNumber.animate(
-      [
-        {
-          transform: 'translateY(0px)',
-          opacity: '1'
-        },
-        {
-          transform: 'translateY(-35px)',
-          opacity: '0'
-        }
-      ],
-      {
-        duration: 600,
-        easing: 'ease-out'
-      }
-    );
-
-    setTimeout(() => {
-      damageNumber.remove();
-    }, 600);
+    root.style.left = `${this.x}px`;
+    root.style.top = `${this.y}px`;
   }
 
+  // =====================================
+  // CHECK PLAYER DETECTION
+  // =====================================
 
   public checkPlayerInView(
     playerX: number,
@@ -241,21 +192,186 @@ export class Enemy {
     const enemyCenterY =
       this.y + this.size / 2;
 
-    const dx =
-      playerCenterX - enemyCenterX;
+    const dx = playerCenterX - enemyCenterX;
+    const dy = playerCenterY - enemyCenterY;
 
-    const dy =
-      playerCenterY - enemyCenterY;
-
-    const distance =
-      Math.sqrt(
-        dx * dx +
-        dy * dy
-      );
+    const distance = Math.hypot(dx, dy);
 
     this.isPlayerInView =
+      !this.isDead &&
       distance <= this.viewRange;
 
     return this.isPlayerInView;
+  }
+
+  // =====================================
+  // HEALTH PERCENTAGE
+  // =====================================
+
+  getHealthPercentage(): number {
+
+    if (this.maxHealth <= 0) {
+      return 0;
+    }
+
+    return Math.max(
+      0,
+      100 * this.health / this.maxHealth
+    );
+  }
+
+  // =====================================
+  // UPDATE HEALTH BAR
+  // =====================================
+
+  private updateHealthBar(): void {
+
+    const bar = this.enemyRef?.nativeElement
+      .querySelector<HTMLElement>('.health-bar');
+
+    if (bar) {
+      bar.style.width =
+        `${this.getHealthPercentage()}%`;
+    }
+  }
+
+  // =====================================
+  // RECEIVE DAMAGE
+  // =====================================
+
+  takeDamage(amount: number): void {
+
+    if (
+      this.isDead ||
+      amount <= 0
+    ) {
+      return;
+    }
+
+    this.health = Math.max(
+      0,
+      this.health - amount
+    );
+
+    console.log(
+      `Enemy #${this.id} HP:`,
+      this.health
+    );
+
+    this.updateHealthBar();
+    this.triggerHitEffect(amount);
+
+    if (this.health <= 0) {
+      this.die();
+    }
+  }
+
+  // =====================================
+  // DAMAGE VISUAL EFFECT
+  // =====================================
+
+  public triggerHitEffect(damage: number): void {
+
+    const root = this.enemyRef?.nativeElement;
+
+    if (!root) {
+      return;
+    }
+
+    const sprite = root.querySelector<HTMLElement>(
+      '.enemy-sprite'
+    );
+
+    // Flash and shake the sprite.
+    sprite?.animate(
+      [
+        {
+          filter: 'brightness(2)',
+          transform: 'translateX(-3px)'
+        },
+        {
+          filter: 'brightness(1)',
+          transform: 'translateX(3px)'
+        },
+        {
+          filter: 'brightness(1)',
+          transform: 'translateX(0)'
+        }
+      ],
+      {
+        duration: 180
+      }
+    );
+
+    // Create floating damage number.
+    const label = document.createElement('span');
+
+    label.className = 'enemy-damage-label';
+    label.textContent = `-${damage}`;
+
+    root.appendChild(label);
+
+    const animation = label.animate(
+      [
+        {
+          transform: 'translate(-50%, 0)',
+          opacity: 1
+        },
+        {
+          transform: 'translate(-50%, -28px)',
+          opacity: 0
+        }
+      ],
+      {
+        duration: 650,
+        fill: 'forwards'
+      }
+    );
+
+    animation.onfinish = () => {
+      label.remove();
+    };
+  }
+
+  // =====================================
+  // ENEMY DEATH
+  // =====================================
+
+  private die(): void {
+
+    if (this.isDead) {
+      return;
+    }
+
+    this.isDead = true;
+    this.isPlayerInView = false;
+    this.burstCharging = false;
+
+    const root = this.enemyRef?.nativeElement;
+
+    if (!root) {
+      return;
+    }
+
+    const animation = root.animate(
+      [
+        {
+          opacity: 1,
+          transform: 'scale(1)'
+        },
+        {
+          opacity: 0,
+          transform: 'scale(1.25, .55)'
+        }
+      ],
+      {
+        duration: 300,
+        fill: 'forwards'
+      }
+    );
+
+    animation.onfinish = () => {
+      root.style.display = 'none';
+    };
   }
 }

@@ -44,7 +44,6 @@
         />
     </svg>
 
-
     <!-- Actual map -->
     <div class="mini-map">
 
@@ -53,14 +52,16 @@
             class="player-marker"
             [style.left.%]="getPlayerX()"
             [style.top.%]="getPlayerY()"
+            title="Player"
         ></div>
 
-        <!-- Enemies -->
-        @for (enemy of enemies; track $index) {
+        <!-- Living enemies -->
+        @for (enemy of radarEnemies(); track $index) {
             <div
                 class="enemy-marker"
                 [style.left.%]="getEnemyX(enemy)"
                 [style.top.%]="getEnemyY(enemy)"
+                title="Enemy slime"
             ></div>
         }
 

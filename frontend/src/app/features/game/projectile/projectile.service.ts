@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
 import { Projectile } from './projectile.model';
 
 @Injectable({
@@ -10,9 +9,6 @@ export class ProjectileService {
   private projectiles: Projectile[] = [];
 
   private nextId = 0;
-
-  private readonly projectileSpawnedSubject = new Subject<string>();
-  readonly projectileSpawned$ = this.projectileSpawnedSubject.asObservable();
 
   spawnProjectile(
     ownerId: string,
@@ -57,7 +53,6 @@ export class ProjectileService {
     };
 
     this.projectiles.push(projectile);
-    this.projectileSpawnedSubject.next(ownerId);
   }
 
   update(deltaTime: number): void {

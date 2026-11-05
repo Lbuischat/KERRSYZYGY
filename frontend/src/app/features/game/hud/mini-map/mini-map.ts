@@ -1,8 +1,17 @@
 import {
   Component,
   Input,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  inject
 } from '@angular/core';
+
+import {
+  toSignal
+} from '@angular/core/rxjs-interop';
+
+import {
+  GameStateService
+} from '../../../../services/game-state/game-state.service';
 
 export interface MiniMapEntity {
   x: number;
@@ -18,6 +27,10 @@ export interface MiniMapEntity {
 })
 
 export class MiniMap {
+
+  private readonly gameStateService =
+    inject(GameStateService);
+
 
   // =========================================================
   // WORLD
@@ -52,6 +65,18 @@ export class MiniMap {
 
   @Input()
   enemies: MiniMapEntity[] = [];
+
+
+  // =========================================================
+  // LIVE ENEMY POSITIONS
+  // =========================================================
+
+  readonly radarEnemies = toSignal(
+    this.gameStateService.enemyPositions$,
+    {
+      initialValue: [] as MiniMapEntity[]
+    }
+  );
 
 
   // =========================================================
