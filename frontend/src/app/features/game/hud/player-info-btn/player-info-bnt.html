@@ -4,145 +4,104 @@
   type="button"
   (click)="openProfile()"
 >
-
   <div
     id="player-xp-target"
     class="player-details"
-    [class.rewarding]="rewarding()"  >
+    [class.rewarding]="rewarding()"
+  >
 
-    <!-- PLAYER AVATAR -->
-    <div class="player-avatar">
-      👤
-    </div>
+    <!-- AVATAR -->
+    <div class="player-avatar">👤</div>
 
     <!-- PLAYER INFORMATION -->
     <div class="player-info">
 
-      <!-- USERNAME / CREDITS -->
+      <!-- NAME AND CREDITS -->
       <div class="player-name-row">
-
         <p class="player-name">
           {{ playerService.username() || 'Player' }}
         </p>
 
         <span class="player-credit">
-          ◈ {{ currentCredits | number }}
+          ◈ {{ playerService.credits() | number }}
         </span>
-
       </div>
 
-      <!-- LEVEL / TOTAL XP -->
+      <!-- LEVEL AND XP -->
       <p class="player-meta">
-
         <span>
           ⭐ Level {{ playerService.level() }}
         </span>
 
-        <span
-          [title]="
-            currentLevelXp +
-            ' de ' +
-            currentLevelRequired +
-            ' XP neste nível'
-          "
-        >
-          {{ totalXp | number }}
+        <span>
+          {{ playerService.xp() | number }}
           /
-          {{ xpForNextLevel | number }}
+          {{ playerService.xpRequired() | number }}
           XP
         </span>
-
       </p>
 
-      <!-- XP BAR -->
-      <!-- NÃO ALTERAMOS O FUNCIONAMENTO -->
+      <!-- XP PROGRESS BAR -->
       <div
         class="xp-bar"
+        role="progressbar"
         aria-label="Player XP progress"
+        [attr.aria-valuenow]="playerService.xp()"
+        [attr.aria-valuemax]="playerService.xpRequired()"
+        aria-valuemin="0"
       >
-
         <div
           class="xp-fill"
           [style.width.%]="playerService.xpProgressPercent()"
         >
           <span class="xp-spark"></span>
         </div>
-
       </div>
 
       <!-- SHOP XP -->
       <div class="shop-xp-line">
-
-        <span>
-          ✧ Shop XP
-        </span>
+        <span>✧ SHOP XP</span>
 
         <strong>
-          {{ currentShopXp | number }}
+          {{ playerService.shopXp() | number }}
         </strong>
-
       </div>
 
     </div>
 
     <!-- WORLD LEVEL -->
     <div class="world-level">
-
       <svg
         class="world-star"
         viewBox="0 0 100 100"
         aria-hidden="true"
       >
 
-        <ng-container
-          *ngFor="let point of worldPoints"
-        >
-
+        <ng-container *ngFor="let point of worldPoints">
           <circle
             class="world-point"
             [attr.cx]="point.x"
             [attr.cy]="point.y"
             [attr.r]="point.size"
           ></circle>
-
         </ng-container>
 
         <polygon
           *ngIf="worldTier === 1"
           class="world-star-shape"
-          points="
-            50,8
-            57,43
-            92,50
-            57,57
-            50,92
-            43,57
-            8,50
-            43,43
-          "
+          points="50,8 57,43 92,50 57,57 50,92 43,57 8,50 43,43"
         ></polygon>
 
         <polygon
           *ngIf="worldTier >= 2"
           class="world-star-shape"
-          points="
-            50,4
-            61,39
-            96,50
-            61,61
-            50,96
-            39,61
-            4,50
-            39,39
-          "
+          points="50,4 61,39 96,50 61,61 50,96 39,61 4,50 39,39"
         ></polygon>
-
       </svg>
 
       <span class="world-level-number">
         {{ worldLevel }}
       </span>
-
     </div>
 
     <!-- REWARD ANIMATION -->
@@ -158,4 +117,16 @@
 
   </div>
 
+  <!-- LEVEL UP FEEDBACK -->
+  <div
+    class="level-up-popup"
+    *ngIf="levelUpVisible()"
+    role="status"
+  >
+    <small>LEVEL UP!</small>
+
+    <strong>
+      LV. {{ levelUpValue() }}
+    </strong>
+  </div>
 </button>
