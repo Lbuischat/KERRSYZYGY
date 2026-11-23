@@ -1,3 +1,4 @@
+
 import {
   AfterViewInit,
   Component,
@@ -12,7 +13,8 @@ import {
 } from '@angular/forms';
 
 import {
-  Router
+  Router,
+  RouterLink
 } from '@angular/router';
 
 import {
@@ -31,13 +33,9 @@ import {
 interface BackgroundStar {
 
   left: number;
-
   top: number;
-
   size: number;
-
   opacity: number;
-
   delay: number;
 
 }
@@ -49,7 +47,8 @@ interface BackgroundStar {
   standalone: true,
 
   imports: [
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
 
   templateUrl: './create-account.html',
@@ -119,12 +118,8 @@ export class CreateAccount
 
 
     /*
-     * Everything below this point is browser-only.
-     *
-     * The Create Account screen does not currently
-     * need a continuous animation loop, but keeping
-     * the browser check here makes the component safe
-     * with Angular SSR/hydration.
+     * Browser-only initialization.
+     * Keeps the component safe with Angular SSR/hydration.
      */
     afterNextRender(() => {
 
@@ -150,13 +145,7 @@ export class CreateAccount
   ngAfterViewInit(): void {
 
     /*
-     * Nothing external needs to be initialized here
-     * for Create Account.
-     *
-     * This lifecycle hook is intentionally kept so the
-     * component follows the same browser-safe structure
-     * as Login and can easily accommodate future
-     * visual initialization if needed.
+     * Nothing external needs to be initialized here.
      */
 
   }
@@ -288,7 +277,14 @@ export class CreateAccount
          */
         setTimeout(() => {
 
-          void this.router.navigate(['/'], { queryParams: { login: '1' } });
+          void this.router.navigate(
+            ['/'],
+            {
+              queryParams: {
+                login: '1'
+              }
+            }
+          );
 
         }, 1200);
 
@@ -370,11 +366,6 @@ export class CreateAccount
           0.08 +
           Math.random() * 0.17,
 
-        /*
-         * The Create Account screen begins
-         * with the stars already revealing,
-         * just like Login.
-         */
         delay:
           Math.random() * 2.5
 
@@ -391,7 +382,14 @@ export class CreateAccount
 
   goToLogin(): void {
 
-    void this.router.navigate(['/'], { queryParams: { login: '1' } });
+    void this.router.navigate(
+      ['/'],
+      {
+        queryParams: {
+          login: '1'
+        }
+      }
+    );
 
   }
 
@@ -406,9 +404,6 @@ export class CreateAccount
      * There is currently no requestAnimationFrame
      * loop on this component, so there is nothing
      * to cancel here.
-     *
-     * Keeping the lifecycle method makes it explicit
-     * that this screen owns no persistent animation.
      */
 
   }

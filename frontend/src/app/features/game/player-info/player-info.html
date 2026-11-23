@@ -17,9 +17,10 @@
         </div>
       </header>
 
+      <!-- MAIN CONTENT -->
       <div class="profile-content">
 
-        <!-- IDENTIDADE -->
+        <!-- PERSONAL INFORMATION -->
         <section class="profile-section identity-section">
 
           <div class="section-heading">
@@ -34,7 +35,7 @@
 
           <div class="identity-layout">
 
-            <!-- INFORMAÇÕES DO JOGADOR -->
+            <!-- PLAYER INFORMATION -->
             <div class="identity-data">
 
               <div class="profile-field">
@@ -71,15 +72,15 @@
                   {{ playerService.profile.language || 'Português' }}
                 </strong>
               </div>
+
             </div>
 
-            <!-- AVATAR SELECIONADO -->
-            <div class="profile-character-preview">
+            <!-- CURRENT AVATAR -->
+            <aside class="profile-character-preview">
 
               <div class="character-preview-header">
-                <span class="field-label">
-                  CURRENT AVATAR
-                </span>
+                <span class="field-label">CURRENT AVATAR</span>
+
                 <span class="character-index">
                   {{ personagemSelecionado + 1 }}
                   /
@@ -98,18 +99,20 @@
                     />
                   }
                 }
+
               </div>
 
               <div class="character-preview-info">
                 <h3>{{ personagemAtual.nome }}</h3>
                 <span>{{ personagemAtual.classe }}</span>
               </div>
-            </div>
+
+            </aside>
 
           </div>
         </section>
 
-        <!-- SOBRE VOCÊ -->
+        <!-- ABOUT YOU -->
         <section class="profile-section about-section">
 
           <div class="section-heading">
@@ -120,14 +123,16 @@
             </div>
           </div>
 
+          <!-- PROFILE FORM -->
           <form
             class="profile-form"
             #profileForm="ngForm"
             (ngSubmit)="criarPerfil(profileForm)"
           >
 
-            <!-- BIOGRAFIA -->
+            <!-- BIOGRAPHY -->
             <div class="profile-field bio-field">
+
               <label class="field-label" for="bio">
                 BIOGRAPHY
               </label>
@@ -146,9 +151,10 @@
                   Write a short biography.
                 </span>
               }
+
             </div>
 
-            <!-- SELEÇÃO DE PERSONAGEM -->
+            <!-- CHARACTER SELECTION -->
             <div class="character-selector-section">
 
               <div class="character-selector-header">
@@ -183,10 +189,10 @@
                 </div>
               </div>
 
-              <!-- DOSSIÊ DO PERSONAGEM -->
+              <!-- CHARACTER DOSSIER -->
               <div class="character-dossier">
 
-                <!-- RETRATO -->
+                <!-- CHARACTER PORTRAIT -->
                 <div class="character-art">
                   <div class="character-glow"></div>
 
@@ -198,9 +204,10 @@
                       />
                     }
                   }
+
                 </div>
 
-                <!-- NOME, CLASSE E DESCRIÇÃO -->
+                <!-- CHARACTER INFORMATION -->
                 <div class="character-information">
 
                   <span class="field-label">CHARACTER</span>
@@ -230,19 +237,22 @@
                 </div>
               </div>
 
-              <!-- NAVEGAÇÃO ENTRE OS 10 -->
+              <!-- CHARACTER NAVIGATION -->
               <div class="character-navigation">
 
                 <div class="character-dots">
+
                   @for (personagem of personagens; track personagem.id) {
                     <button
                       type="button"
                       class="character-dot"
                       [class.active]="personagemSelecionado === $index"
                       (click)="selecionarPersonagem($index)"
-                      [attr.aria-label]="'Selecionar ' + personagem.nome"
+                      [attr.aria-label]="'Select ' + personagem.nome"
+                      [attr.aria-current]="personagemSelecionado === $index ? 'true' : null"
                     ></button>
                   }
+
                 </div>
 
                 <span>
@@ -253,9 +263,10 @@
                 </span>
 
               </div>
+
             </div>
 
-            <!-- BOTÕES -->
+            <!-- PROFILE ACTIONS -->
             <div class="profile-actions">
 
               <button
@@ -263,7 +274,7 @@
                 type="submit"
               >
                 <span>SAVE PROFILE</span>
-                <span class="button-arrow">→</span>
+                <span class="button-arrow" aria-hidden="true">→</span>
               </button>
 
               <app-profile-flow-controls
@@ -272,15 +283,21 @@
               />
 
               @if (formIncompleto) {
-                <div class="profile-feedback error">
-                  <span>!</span>
+                <div
+                  class="profile-feedback error"
+                  role="alert"
+                >
+                  <span aria-hidden="true">!</span>
                   Complete all required information.
                 </div>
               }
 
               @if (mostrarSucesso) {
-                <div class="profile-feedback success">
-                  <span>✓</span>
+                <div
+                  class="profile-feedback success"
+                  role="status"
+                >
+                  <span aria-hidden="true">✓</span>
                   Profile saved successfully.
                 </div>
               }
@@ -292,11 +309,12 @@
                   routerLink="/shop"
                 >
                   GO TO SHOP
-                  <span>→</span>
+                  <span aria-hidden="true">→</span>
                 </button>
               }
 
             </div>
+
           </form>
 
         </section>
@@ -304,7 +322,7 @@
         <!-- FOOTER -->
         <footer class="profile-footer">
           <span>PLAYER PROFILE</span>
-          <span class="footer-separator">//</span>
+          <span class="footer-separator" aria-hidden="true">//</span>
           <span>CELESTIAL JOURNEY</span>
         </footer>
 

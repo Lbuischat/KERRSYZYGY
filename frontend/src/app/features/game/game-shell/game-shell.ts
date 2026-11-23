@@ -1,4 +1,3 @@
-
 import {
   Component,
   HostListener,
@@ -17,13 +16,12 @@ import { tutorial } from '../tutorial/tutorial';
 
 import { FocusMode } from '../../tasks/focus-mode/focus-mode';
 
-import {
-  FocusSessionService
-} from '../../../services/tasks/focus-session';
+import { FocusSessionService } from '../../../services/tasks/focus-session';
+import { PlayerService } from '../../../services/player.service';
 
-import {
-  PlayerService
-} from '../../../services/player.service';
+// ========================================
+// TYPES
+// ========================================
 
 type SpriteName =
   | 'aether'
@@ -54,6 +52,10 @@ interface SpritePalette {
   eye: string;
   accessory: AccessoryKind;
 }
+
+// ========================================
+// CHARACTER SPRITE CONFIGURATION
+// ========================================
 
 const SPRITES: Record<SpriteName, SpritePalette> = {
   aether: {
@@ -111,10 +113,6 @@ const SPRITES: Record<SpriteName, SpritePalette> = {
     accessory: 'chrono'
   },
 
-  // ========================================
-  // NOVOS PERSONAGENS
-  // ========================================
-
   lumi: {
     skin: '#b9dce7',
     hair: '#476b84',
@@ -171,6 +169,10 @@ const SPRITES: Record<SpriteName, SpritePalette> = {
   }
 };
 
+// ========================================
+// GAME SHELL COMPONENT
+// ========================================
+
 @Component({
   selector: 'app-game-shell',
   standalone: true,
@@ -185,16 +187,25 @@ const SPRITES: Record<SpriteName, SpritePalette> = {
   styleUrl: './game-shell.css'
 })
 export class GameShell implements OnDestroy {
+
   private readonly router = inject(Router);
 
   readonly focusService = inject(FocusSessionService);
   readonly playerService = inject(PlayerService);
 
+  // ========================================
+  // COMPONENT REFERENCES
+  // ========================================
+
   @ViewChild(GameWorld)
-  gameWorld!: GameWorld;
+  gameWorld?: GameWorld;
 
   @ViewChild(tutorial)
-  tutorialCmp!: tutorial;
+  tutorialCmp?: tutorial;
+
+  // ========================================
+  // UI STATE
+  // ========================================
 
   inventoryOpen = false;
   tutorialMessageVisible = false;
@@ -202,6 +213,8 @@ export class GameShell implements OnDestroy {
   private tutorialMessageTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
+
+    // Close temporary UI when focus mode begins.
     effect(() => {
       if (this.focusService.session()) {
         this.inventoryOpen = false;
@@ -211,10 +224,11 @@ export class GameShell implements OnDestroy {
   }
 
   // ========================================
-  // PERSONAGEM SALVO NO PERFIL
+  // SELECTED CHARACTER
   // ========================================
 
   get selectedSprite(): SpriteName {
+
     const name = (
       this.playerService.p().characterName || 'Aether'
     )
@@ -261,7 +275,7 @@ export class GameShell implements OnDestroy {
   }
 
   // ========================================
-  // CORES E ACESSÓRIOS
+  // SPRITE COLORS AND ACCESSORIES
   // ========================================
 
   get spritePalette(): SpritePalette {
@@ -281,7 +295,10 @@ export class GameShell implements OnDestroy {
   // ========================================
 
   openSettings(): void {
-    if (this.focusService.active) return;
+
+    if (this.focusService.active) {
+      return;
+    }
 
     void this.router.navigate(['/settings']);
   }
@@ -291,17 +308,24 @@ export class GameShell implements OnDestroy {
   // ========================================
 
   toggleInventory(): void {
-    if (this.focusService.active) return;
+
+    if (this.focusService.active) {
+      return;
+    }
 
     this.inventoryOpen = !this.inventoryOpen;
+
   }
 
   // ========================================
-  // TUTORIAL
+  // TUTORIAL MESSAGE
   // ========================================
 
   showTutorialMessage(): void {
-    if (this.focusService.active) return;
+
+    if (this.focusService.active) {
+      return;
+    }
 
     this.tutorialMessageVisible = true;
 
@@ -314,27 +338,45 @@ export class GameShell implements OnDestroy {
     }, 2500);
   }
 
+  // ========================================
+  // TUTORIAL EVENT FORWARDING
+  // ========================================
+
   onPlayerAttack(): void {
-    if (this.focusService.active) return;
+
+    if (this.focusService.active) {
+      return;
+    }
 
     this.tutorialCmp?.onBasicAttack();
   }
 
   onEnemyDefeated(): void {
-    if (this.focusService.active) return;
+
+    if (this.focusService.active) {
+      return;
+    }
 
     this.tutorialCmp?.onTutorialEnemyDefeated();
   }
 
+  onTutorialEnemyStepStarted(): void {
+
+    this.gameWorld?.startTutorialEnemyGuide();
+  }
+
   // ========================================
-  // KEYBOARD
+  // KEYBOARD CONTROLS
   // ========================================
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
+
     const key = event.key.toLowerCase();
 
     if (this.focusService.active) {
+
+      // Allow page refresh.
       if (
         event.key === 'F5' ||
         (event.ctrlKey && key === 'r')
@@ -377,6 +419,7 @@ export class GameShell implements OnDestroy {
   // ========================================
 
   ngOnDestroy(): void {
+
     if (this.tutorialMessageTimer) {
       clearTimeout(this.tutorialMessageTimer);
     }

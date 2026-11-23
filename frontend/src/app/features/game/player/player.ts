@@ -342,6 +342,8 @@ export class Player implements OnDestroy {
 
     private dashSpeed = 14;
     private dashStaminaCost = 30;
+    private readonly dodgeStaminaCost = 15;
+    private activeDashButton: 'skill2-btn' | 'skill3-btn' = 'skill3-btn';
 
     private readonly DASH_DISTANCE =
         this.TILE_SIZE * 2.5;
@@ -364,6 +366,9 @@ export class Player implements OnDestroy {
     private health = 100;
 
     public takeDamage(amount: number): void {
+        if (this.isDashing && this.activeDashButton === 'skill2-btn') {
+            return;
+        }
 
         console.log(
             '⚠️ PLAYER TAKE DAMAGE CALLED',
@@ -550,7 +555,7 @@ export class Player implements OnDestroy {
 
             event.preventDefault();
 
-            this.useSkill2();
+            if (!event.repeat) this.useSkill2();
 
             return;
         }
@@ -756,31 +761,18 @@ export class Player implements OnDestroy {
     // ================================================================
 
     private useSkill2(): void {
+        // Dodge (F): short evasive movement, with a stamina cost.
+        if (this.isDashing || this.stamina < this.dodgeStaminaCost) {
+            return;
+        }
 
-        this.setButtonActive(
-            'skill2-btn'
-        );
-
-        this.changePlayerColor(
-            'purple'
-        );
-
-        setTimeout(() => {
-
-            this.setButtonInactive(
-                'skill2-btn'
-            );
-
-            if (!this.isHoldingAttack) {
-
-                this.changePlayerColor(
-                    'red'
-                );
-
-            }
-
-        }, 500);
-
+        this.stamina -= this.dodgeStaminaCost;
+        this.isDashing = true;
+        this.dashRemaining = this.TILE_SIZE * 0.8;
+        this.activeDashButton = 'skill2-btn';
+        this.setButtonActive(this.activeDashButton);
+        this.changePlayerColor('purple');
+        this.audioService.playSfx('player.dash');
     }
 
 
@@ -810,6 +802,8 @@ export class Player implements OnDestroy {
 
         this.dashRemaining =
             this.DASH_DISTANCE;
+
+        this.activeDashButton = 'skill3-btn';
 
         this.setButtonActive(
             'skill3-btn'
@@ -1064,7 +1058,7 @@ export class Player implements OnDestroy {
                     this.isDashing = false;
 
                     this.setButtonInactive(
-                        'skill3-btn'
+                        this.activeDashButton
                     );
 
                     if (

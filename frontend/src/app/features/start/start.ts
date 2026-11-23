@@ -1,5 +1,10 @@
+import {
+  Component,
+  ElementRef,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 
-import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -30,8 +35,39 @@ interface CelestialEvent {
   styleUrl: './start.css'
 })
 export class Start {
-  backgroundStars: BackgroundStar[] = [];
-  celestialEvents: CelestialEvent[] = [];
+
+  // =========================================
+  // STAGE ELEMENTS
+  // =========================================
+
+  @ViewChildren('stageSection', { read: ElementRef })
+  private stageSections!: QueryList<ElementRef<HTMLElement>>;
+
+  // =========================================
+  // BACKGROUND
+  // =========================================
+
+  readonly backgroundStars: BackgroundStar[] =
+    Array.from({ length: 180 }, () => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: Math.random() < 0.9 ? 1 : 2,
+      opacity: 0.08 + Math.random() * 0.17
+    }));
+
+  readonly celestialEvents: CelestialEvent[] =
+    Array.from({ length: 5 }, (_, id) => ({
+      id,
+      type: Math.random() < 0.5 ? 'comet' : 'meteor',
+      left: Math.random() * 100,
+      top: Math.random() * 70,
+      duration: 2 + Math.random() * 3,
+      delay: Math.random() * 8
+    }));
+
+  // =========================================
+  // OPTIONS
+  // =========================================
 
   readonly months = [
     'January',
@@ -64,72 +100,68 @@ export class Start {
 
   readonly days = Array.from(
     { length: 31 },
-    (_, i) => i + 1
+    (_, index) => index + 1
   );
 
   readonly years = Array.from(
     { length: 100 },
-    (_, i) => new Date().getFullYear() - i
+    (_, index) => new Date().getFullYear() - index
   );
+
+  // =========================================
+  // BIRTHDAY SELECTIONS
+  // =========================================
 
   selectedMonth = '';
   selectedDay: number | null = null;
   selectedYear: number | null = null;
 
+  // Stages: 0 through 5
   etapa = 0;
+
+  // =========================================
+  // CONSTRUCTOR
+  // =========================================
 
   constructor(
     public playerService: PlayerService,
     private router: Router,
     public readonly languageService: LanguageService
   ) {
-    this.createBackgroundStars();
-    this.createCelestialEvents();
     this.restoreBirthdaySelections();
   }
 
   // =========================================
-  // BACKGROUND
-  // =========================================
-
-  private createBackgroundStars(): void {
-    for (let i = 0; i < 180; i++) {
-      this.backgroundStars.push({
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size: Math.random() < 0.9 ? 1 : 2,
-        opacity: 0.08 + Math.random() * 0.17
-      });
-    }
-  }
-
-  private createCelestialEvents(): void {
-    for (let i = 0; i < 5; i++) {
-      this.celestialEvents.push({
-        id: i,
-        type: Math.random() < 0.5
-          ? 'comet'
-          : 'meteor',
-        left: Math.random() * 100,
-        top: Math.random() * 70,
-        duration: 2 + Math.random() * 3,
-        delay: Math.random() * 8
-      });
-    }
-  }
-
-  // =========================================
-  // STAGES
+  // NAVIGATION
   // =========================================
 
   continue(): void {
+    if (this.etapa !== 0) {
+      return;
+    }
+
     this.goToNextStage();
   }
 
   private goToNextStage(): void {
-    if (this.etapa < 5) {
-      this.etapa++;
+    if (this.etapa >= 5) {
+      return;
     }
+
+    this.etapa++;
+
+    requestAnimationFrame(() => {
+      const nextSection = this.stageSections.get(this.etapa);
+
+      nextSection?.nativeElement.scrollIntoView({
+        behavior: window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches
+          ? 'auto'
+          : 'smooth',
+        block: 'start'
+      });
+    });
   }
 
   // =========================================
@@ -137,12 +169,19 @@ export class Start {
   // =========================================
 
   selectGender(gender: string): void {
+    if (this.etapa !== 1) {
+      return;
+    }
+
     this.playerService.profile.gender = gender;
     this.playerService.saveProfile();
   }
 
   continueAfterGender(): void {
-    if (!this.playerService.profile.gender) {
+    if (
+      this.etapa !== 1 ||
+      !this.playerService.profile.gender
+    ) {
       return;
     }
 
@@ -154,12 +193,18 @@ export class Start {
   // =========================================
 
   selectUsername(): void {
-    const name =
+    if (this.etapa !== 2) {
+      return;
+    }
+
+    const username =
       this.playerService.profile.username.trim();
 
-    if (!name) return;
+    if (!username) {
+      return;
+    }
 
-    this.playerService.profile.username = name;
+    this.playerService.profile.username = username;
     this.playerService.saveProfile();
 
     this.goToNextStage();
@@ -170,12 +215,19 @@ export class Start {
   // =========================================
 
   selectPronouns(pronouns: string): void {
+    if (this.etapa !== 3) {
+      return;
+    }
+
     this.playerService.profile.pronouns = pronouns;
     this.playerService.saveProfile();
   }
 
   continueAfterPronouns(): void {
-    if (!this.playerService.profile.pronouns) {
+    if (
+      this.etapa !== 3 ||
+      !this.playerService.profile.pronouns
+    ) {
       return;
     }
 
@@ -190,16 +242,22 @@ export class Start {
     type: 'month' | 'day' | 'year',
     value: string | number
   ): void {
-    if (type === 'month') {
-      this.selectedMonth = String(value);
+    if (this.etapa !== 4) {
+      return;
     }
 
-    if (type === 'day') {
-      this.selectedDay = Number(value) || null;
-    }
+    switch (type) {
+      case 'month':
+        this.selectedMonth = String(value);
+        break;
 
-    if (type === 'year') {
-      this.selectedYear = Number(value) || null;
+      case 'day':
+        this.selectedDay = Number(value) || null;
+        break;
+
+      case 'year':
+        this.selectedYear = Number(value) || null;
+        break;
     }
 
     this.clampSelectedDay();
@@ -221,12 +279,11 @@ export class Start {
     const year =
       this.selectedYear ?? new Date().getFullYear();
 
-    const count =
-      new Date(year, month, 0).getDate();
+    const count = new Date(year, month, 0).getDate();
 
     return Array.from(
       { length: count },
-      (_, i) => i + 1
+      (_, index) => index + 1
     );
   }
 
@@ -282,7 +339,10 @@ export class Start {
   }
 
   continueAfterBirthday(): void {
-    if (!this.playerService.profile.birthday) {
+    if (
+      this.etapa !== 4 ||
+      !this.playerService.profile.birthday
+    ) {
       return;
     }
 
@@ -294,12 +354,16 @@ export class Start {
     const birthday =
       this.playerService.profile.birthday;
 
-    if (!birthday) return;
+    if (!birthday) {
+      return;
+    }
 
     const match =
       /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthday);
 
-    if (!match) return;
+    if (!match) {
+      return;
+    }
 
     const [, y, m, d] = match;
 
@@ -307,7 +371,9 @@ export class Start {
     const month = Number(m);
     const day = Number(d);
 
-    if (!this.validDate(year, month, day)) {
+    if (
+      !this.validDate(year, month, day)
+    ) {
       return;
     }
 
@@ -317,10 +383,14 @@ export class Start {
   }
 
   // =========================================
-  // START → PERFIL
+  // START → PLAYER PROFILE
   // =========================================
 
   startJourney(): void {
+    if (this.etapa !== 5) {
+      return;
+    }
+
     this.playerService.saveProfile();
 
     void this.router.navigate(

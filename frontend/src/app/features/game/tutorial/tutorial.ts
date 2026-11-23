@@ -1,18 +1,25 @@
-
 import {
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   HostListener,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
-  SimpleChanges,
+  Output,
+  PLATFORM_ID,
   inject,
   signal
 } from '@angular/core';
 
+import { isPlatformBrowser } from '@angular/common';
+
 import { Player } from '../player/player';
+import { AccountSessionService } from '../../../services/account-session.service';
+
+// ========================================
+// TYPES
+// ========================================
 
 type TutorialStep =
   | 'movement'
@@ -20,6 +27,7 @@ type TutorialStep =
   | 'stamina'
   | 'attack'
   | 'attackEnemy'
+  | 'gatherBerries'
   | 'complete';
 
 type MovementDirection =
@@ -28,6 +36,10 @@ type MovementDirection =
   | 'down'
   | 'right';
 
+// ========================================
+// COMPONENT
+// ========================================
+
 @Component({
   selector: 'app-tutorial',
   standalone: true,
@@ -35,22 +47,34 @@ type MovementDirection =
   templateUrl: './tutorial.html',
   styleUrl: './tutorial.css'
 })
-export class tutorial
-  implements OnInit, OnChanges, OnDestroy {
+export class tutorial implements OnInit, OnDestroy {
 
-  @Input() player?: Player;
+  // ========================================
+  // PLATFORM
+  // ========================================
+
+  private readonly platformId = inject(PLATFORM_ID);
 
   private readonly cdr = inject(ChangeDetectorRef);
 
+  private readonly accountSession = inject(AccountSessionService);
+
   // ========================================
-  // ETAPA ATUAL
+  // PLAYER INPUT
+  // ========================================
+
+  @Input() player?: Player;
+
+  // ========================================
+  // CURRENT STEP
   // ========================================
 
   currentStep: TutorialStep = 'movement';
+
   completed = false;
 
   // ========================================
-  // MOVEMENT - QUATRO DIREÇÕES
+  // MOVEMENT - FOUR DIRECTIONS
   // ========================================
 
   readonly directionOptions: {
@@ -105,7 +129,9 @@ export class tutorial
   // ========================================
 
   sprintProgress = 0;
+
   private sprintTime = 0;
+
   private readonly SPRINT_REQUIRED = 2;
 
   // ========================================
@@ -115,56 +141,66 @@ export class tutorial
   staminaProgress = 0;
 
   // ========================================
-  // COMBATE
+  // BASIC ATTACK
   // ========================================
 
   attackPerformed = false;
+
+  // ========================================
+  // TUTORIAL ENEMY
+  // ========================================
+
+  @Output()
+  enemyStepStarted = new EventEmitter<void>();
+
   tutorialEnemyDefeated = false;
 
   // ========================================
-  // PLAYER CONNECTION
+  // BERRY COLLECTION
   // ========================================
 
-  private getPlayerSprinting?: () => boolean;
-  private getPlayerStamina?: () => number;
+  berriesGathered = 0;
+
+  readonly BERRIES_REQUIRED = 3;
 
   // ========================================
   // GAME LOOP
   // ========================================
 
   private animationFrameId = 0;
+
   private lastTime = 0;
 
+  // ========================================
+  // INITIALIZATION
+  // ========================================
+
   ngOnInit(): void {
-    if (typeof requestAnimationFrame === 'undefined') {
+
+    // requestAnimationFrame is browser-only.
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    this.restoreProgress();
+
+    // If the player returned during the training-enemy step, show the guide again.
+    if (this.currentStep === 'attackEnemy') {
+      requestAnimationFrame(() => this.enemyStepStarted.emit());
+    }
+
+    if (this.completed) {
       return;
     }
 
     this.lastTime = performance.now();
+
     this.startTutorialLoop();
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['player'] && this.player) {
-      this.connectPlayer(
-        () => this.player!.getIsMoving(),
-        () => this.player!.getIsSprinting(),
-        () => this.player!.getStamina()
-      );
-    }
-  }
-
-  public connectPlayer(
-    _getMoving: () => boolean,
-    getSprinting: () => boolean,
-    getStamina: () => number
-  ): void {
-    this.getPlayerSprinting = getSprinting;
-    this.getPlayerStamina = getStamina;
   }
 
   // ========================================
-  // RECONHECER CADA DIREÇÃO
+  // MOVEMENT INPUT
   // ========================================
 
   @HostListener('document:keydown', ['$event'])
@@ -174,11 +210,13 @@ export class tutorial
       return;
     }
 
+    // Ignore modified keyboard shortcuts.
     if (event.ctrlKey || event.altKey || event.metaKey) {
       return;
     }
 
-    const target = event.target as Element | null;
+    // Don't register keyboard input inside text fields.
+    const target = event.target as HTMLElement | null;
 
     if (
       target?.closest(
@@ -192,23 +230,19 @@ export class tutorial
 
     let direction: MovementDirection | null = null;
 
-    // W ou seta para cima
     if (key === 'w' || key === 'arrowup') {
       direction = 'up';
-    }
-
-    // A ou seta para esquerda
-    else if (key === 'a' || key === 'arrowleft') {
+    } else if (
+      key === 'a' || key === 'arrowleft'
+    ) {
       direction = 'left';
-    }
-
-    // S ou seta para baixo
-    else if (key === 's' || key === 'arrowdown') {
+    } else if (
+      key === 's' || key === 'arrowdown'
+    ) {
       direction = 'down';
-    }
-
-    // D ou seta para direita
-    else if (key === 'd' || key === 'arrowright') {
+    } else if (
+      key === 'd' || key === 'arrowright'
+    ) {
       direction = 'right';
     }
 
@@ -216,62 +250,119 @@ export class tutorial
       return;
     }
 
-    // Não conta a mesma direção duas vezes.
+    // Prevent arrow keys from scrolling the page.
+    if (key.startsWith('arrow')) {
+      event.preventDefault();
+    }
+
+    // Each direction only needs to be registered once.
     if (this.hasMoved(direction)) {
       return;
     }
 
     const next = new Set(this.completedDirections());
+
     next.add(direction);
 
     this.completedDirections.set(next);
+    this.saveProgress();
 
-    // Quando reconhecer as quatro direções:
-    if (next.size === 4 && !this.movementAdvanceTimer) {
+    this.cdr.markForCheck();
 
-      // Mostra os quatro ✓ antes de avançar.
+    // Wait briefly so the player can see all four checkmarks.
+    if (
+      next.size === 4 &&
+      !this.movementAdvanceTimer
+    ) {
+
       this.movementAdvanceTimer = setTimeout(() => {
+
         this.movementAdvanceTimer = undefined;
 
         if (this.currentStep === 'movement') {
           this.nextStep();
         }
+
       }, 650);
+
     }
+
   }
 
   // ========================================
-  // EVENTOS DE COMBATE
+  // BASIC ATTACK EVENT
   // ========================================
 
   public onBasicAttack(): void {
+
     if (this.currentStep !== 'attack') {
       return;
     }
 
     this.attackPerformed = true;
+
     this.nextStep();
+
   }
 
+  // ========================================
+  // ENEMY DEFEATED EVENT
+  // ========================================
+
   public onTutorialEnemyDefeated(): void {
+
     if (this.currentStep !== 'attackEnemy') {
       return;
     }
 
     this.tutorialEnemyDefeated = true;
+
     this.nextStep();
+
   }
 
   // ========================================
-  // LOOP DO TUTORIAL
+  // BERRY COLLECTION EVENT
+  // ========================================
+
+  public onBerryGathered(): void {
+
+    if (this.currentStep !== 'gatherBerries') {
+      return;
+    }
+
+    if (this.berriesGathered >= this.BERRIES_REQUIRED) {
+      return;
+    }
+
+    this.berriesGathered++;
+    this.saveProgress();
+
+    this.cdr.markForCheck();
+
+    if (this.berriesGathered >= this.BERRIES_REQUIRED) {
+      this.nextStep();
+    }
+
+  }
+
+  // ========================================
+  // TUTORIAL GAME LOOP
   // ========================================
 
   private startTutorialLoop(): void {
+
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const update = (currentTime: number): void => {
+
       if (this.completed) {
         return;
       }
 
+      // Prevent large progress jumps after a delayed frame.
       const deltaTime = Math.min(
         0.1,
         Math.max(0, (currentTime - this.lastTime) / 1000)
@@ -282,22 +373,30 @@ export class tutorial
       this.updateTutorial(deltaTime);
 
       if (!this.completed) {
-        this.animationFrameId = requestAnimationFrame(update);
+        this.animationFrameId =
+          requestAnimationFrame(update);
       }
+
     };
 
     this.animationFrameId = requestAnimationFrame(update);
+
   }
 
+  // ========================================
+  // UPDATE TUTORIAL
+  // ========================================
+
   private updateTutorial(deltaTime: number): void {
+
     if (this.completed) {
       return;
     }
 
     switch (this.currentStep) {
+
       case 'movement':
-        // Movement é concluído pelas quatro direções.
-        // Não avança mais apenas por passar o tempo.
+        // Completed by recognizing all four directions.
         break;
 
       case 'sprint':
@@ -309,14 +408,22 @@ export class tutorial
         break;
 
       case 'attack':
+        // Waiting for Player attack event.
         break;
 
       case 'attackEnemy':
+        // Waiting for tutorial enemy defeat event.
+        break;
+
+      case 'gatherBerries':
+        // Waiting for berry collection events.
         break;
 
       case 'complete':
         break;
+
     }
+
   }
 
   // ========================================
@@ -324,11 +431,12 @@ export class tutorial
   // ========================================
 
   private updateSprint(deltaTime: number): void {
-    if (!this.getPlayerSprinting) {
+
+    if (!this.player) {
       return;
     }
 
-    if (!this.getPlayerSprinting()) {
+    if (!this.player.getIsSprinting()) {
       return;
     }
 
@@ -343,14 +451,21 @@ export class tutorial
       Math.floor(nextProgress) !==
       Math.floor(this.sprintProgress)
     ) {
+
       this.sprintProgress = nextProgress;
+
       this.cdr.markForCheck();
+
     }
 
     if (this.sprintTime >= this.SPRINT_REQUIRED) {
+
       this.sprintProgress = 100;
+
       this.nextStep();
+
     }
+
   }
 
   // ========================================
@@ -358,11 +473,12 @@ export class tutorial
   // ========================================
 
   private updateStamina(): void {
-    if (!this.getPlayerStamina) {
+
+    if (!this.player) {
       return;
     }
 
-    const stamina = this.getPlayerStamina();
+    const stamina = this.player.getStamina();
 
     const nextProgress = Math.min(
       100,
@@ -373,68 +489,108 @@ export class tutorial
       Math.floor(nextProgress) !==
       Math.floor(this.staminaProgress)
     ) {
+
       this.staminaProgress = nextProgress;
+
       this.cdr.markForCheck();
+
     }
 
     if (stamina <= 0) {
+
       this.staminaProgress = 100;
+
       this.nextStep();
+
     }
+
   }
 
   // ========================================
-  // AVANÇAR ETAPAS
+  // ADVANCE TUTORIAL
   // ========================================
 
   private nextStep(): void {
+
     switch (this.currentStep) {
 
+      // MOVEMENT → SPRINT
       case 'movement':
-        // Movement -> Sprint
+
         this.currentStep = 'sprint';
+
         this.sprintProgress = 0;
+
         this.sprintTime = 0;
+
         break;
 
+      // SPRINT → STAMINA
       case 'sprint':
-        // Sprint -> Stamina
+
         this.currentStep = 'stamina';
+
         this.staminaProgress = 0;
+
         break;
 
+      // STAMINA → ATTACK
       case 'stamina':
-        // Stamina -> Attack
+
         this.currentStep = 'attack';
+
         this.attackPerformed = false;
+
         break;
 
+      // ATTACK → ENEMY
       case 'attack':
-        // Attack -> Defeat Enemy
+
         this.currentStep = 'attackEnemy';
+
         this.tutorialEnemyDefeated = false;
+
+        // Tell the parent component to start the enemy encounter.
+        this.enemyStepStarted.emit();
+
         break;
 
+      // ENEMY → BERRIES
       case 'attackEnemy':
-        // Enemy -> Complete
-        this.currentStep = 'complete';
+
+        this.currentStep = 'gatherBerries';
+
         this.tutorialEnemyDefeated = true;
+
+        break;
+
+      // BERRIES → COMPLETE
+      case 'gatherBerries':
+
+        this.currentStep = 'complete';
+
         this.completed = true;
+
         break;
 
       case 'complete':
         break;
+
     }
 
+    this.saveProgress();
     this.cdr.markForCheck();
+
   }
 
   // ========================================
-  // PROGRESSO ATUAL
+  // CURRENT PROGRESS
   // ========================================
 
   public getProgress(): number {
+
     switch (this.currentStep) {
+
       case 'movement':
         return this.movementProgress;
 
@@ -450,9 +606,17 @@ export class tutorial
       case 'attackEnemy':
         return this.tutorialEnemyDefeated ? 100 : 0;
 
+      case 'gatherBerries':
+        return Math.min(
+          100,
+          (this.berriesGathered / this.BERRIES_REQUIRED) * 100
+        );
+
       case 'complete':
         return 100;
+
     }
+
   }
 
   public isComplete(): boolean {
@@ -460,16 +624,101 @@ export class tutorial
   }
 
   // ========================================
-  // LIMPEZA
+  // ACCOUNT-SCOPED TUTORIAL PROGRESS
+  // ========================================
+
+  private get progressKey(): string {
+    return this.accountSession.storageKey('kerrsyzygy-tutorial');
+  }
+
+  private saveProgress(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const state = {
+      currentStep: this.currentStep,
+      directions: [...this.completedDirections()],
+      sprintProgress: this.sprintProgress,
+      sprintTime: this.sprintTime,
+      staminaProgress: this.staminaProgress,
+      attackPerformed: this.attackPerformed,
+      tutorialEnemyDefeated: this.tutorialEnemyDefeated,
+      berriesGathered: this.berriesGathered,
+      completed: this.completed
+    };
+
+    try {
+      localStorage.setItem(this.progressKey, JSON.stringify(state));
+    } catch {
+      // Disabled/full storage must not block gameplay.
+    }
+  }
+
+  private restoreProgress(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    try {
+      const raw = localStorage.getItem(this.progressKey);
+      if (!raw) return;
+      const state: unknown = JSON.parse(raw);
+      if (!state || typeof state !== 'object') return;
+      const saved = state as Record<string, unknown>;
+      const steps: TutorialStep[] = [
+        'movement', 'sprint', 'stamina', 'attack',
+        'attackEnemy', 'gatherBerries', 'complete'
+      ];
+
+      if (steps.includes(saved['currentStep'] as TutorialStep)) {
+        this.currentStep = saved['currentStep'] as TutorialStep;
+      }
+      if (Array.isArray(saved['directions'])) {
+        const valid: MovementDirection[] = ['up', 'left', 'down', 'right'];
+        this.completedDirections.set(new Set(
+          saved['directions'].filter((d): d is MovementDirection => valid.includes(d))
+        ));
+      }
+      const bounded = (value: unknown, max: number): number =>
+        typeof value === 'number' && Number.isFinite(value)
+          ? Math.max(0, Math.min(max, value))
+          : 0;
+      this.sprintProgress = bounded(saved['sprintProgress'], 100);
+      this.sprintTime = bounded(saved['sprintTime'], this.SPRINT_REQUIRED);
+      this.staminaProgress = bounded(saved['staminaProgress'], 100);
+      this.attackPerformed = saved['attackPerformed'] === true;
+      this.tutorialEnemyDefeated = saved['tutorialEnemyDefeated'] === true;
+      this.berriesGathered = Math.floor(bounded(saved['berriesGathered'], this.BERRIES_REQUIRED));
+      this.completed = saved['completed'] === true || this.currentStep === 'complete';
+    } catch {
+      // Ignore invalid older data.
+    }
+  }
+
+  @HostListener('window:pagehide')
+  persistBeforeLeaving(): void {
+    this.saveProgress();
+  }
+
+  // ========================================
+  // CLEANUP
   // ========================================
 
   ngOnDestroy(): void {
-    if (this.animationFrameId) {
+    this.saveProgress();
+
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.animationFrameId
+    ) {
       cancelAnimationFrame(this.animationFrameId);
     }
 
     if (this.movementAdvanceTimer) {
+
       clearTimeout(this.movementAdvanceTimer);
+
+      this.movementAdvanceTimer = undefined;
+
     }
+
   }
+
 }

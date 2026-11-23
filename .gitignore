@@ -2,7 +2,7 @@
 
 # Compiled output
 /dist
-/front end/dist
+/frontend/dist
 /tmp
 /out-tsc
 /bazel-out
@@ -32,7 +32,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
-/front end/.angular/cache
+/frontend/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
@@ -44,3 +44,10 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Angular CLI generated caches/build products in the frontend
+/frontend/.angular/
+/frontend/dist/
+/frontend/node_modules/
+/backend/dist/
+/backend/node_modules/

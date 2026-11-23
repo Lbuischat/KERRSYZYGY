@@ -1,11 +1,17 @@
+import {
+  Component,
+  OnDestroy,
+  computed,
+  signal
+} from '@angular/core';
 
-import { Component, OnDestroy, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 
 import { PlayerService } from '../../../services/player.service';
 import { TaskService } from '../../../services/tasks/task.service';
 import { Task } from '../../tasks/task-panel/task.model';
+
 import { ProfileFlowControls } from './profile-flow-controls';
 
 import {
@@ -26,18 +32,35 @@ import {
   styleUrl: './player-info.css'
 })
 export class PlayerInfo implements OnDestroy {
+
+  // =========================================
+  // TASKS
+  // =========================================
+
   tasks: Task[] = [];
 
-  // Seleção reativa
+  // =========================================
+  // CHARACTER SELECTION
+  // =========================================
+
   private readonly selectedIndex = signal(0);
 
   readonly selectedCharacter = computed(() =>
-    this.personagens[this.selectedIndex()]
+    this.personagens[this.selectedIndex()] ??
+    this.personagens[0]
   );
 
   get personagemSelecionado(): number {
     return this.selectedIndex();
   }
+
+  get personagemAtual(): Personagem {
+    return this.selectedCharacter();
+  }
+
+  // =========================================
+  // PROFILE STATUS
+  // =========================================
 
   formIncompleto = false;
   perfilCriado = false;
@@ -46,7 +69,7 @@ export class PlayerInfo implements OnDestroy {
   private successTimer?: ReturnType<typeof setTimeout>;
 
   // =========================================
-  // 10 PERSONAGENS
+  // 10 CHARACTERS
   // =========================================
 
   readonly personagens: Personagem[] = [
@@ -130,11 +153,6 @@ export class PlayerInfo implements OnDestroy {
       armor: '#483b6d',
       cape: '#302448'
     },
-
-    // =====================================
-    // NOVOS PERSONAGENS
-    // =====================================
-
     {
       id: 'lumi',
       nome: 'Lumi',
@@ -217,35 +235,33 @@ export class PlayerInfo implements OnDestroy {
     }
   ];
 
+  // =========================================
+  // CONSTRUCTOR
+  // =========================================
+
   constructor(
     public playerService: PlayerService,
     private taskService: TaskService
   ) {
+
     this.tasks = this.taskService.getRandomTasks(3);
 
-    // Recupera o personagem salvo anteriormente
+    // Restore previously selected character.
     const savedName =
       this.playerService.profile.characterName;
 
-    const index = this.personagens.findIndex(
+    const savedIndex = this.personagens.findIndex(
       personagem => personagem.nome === savedName
     );
 
-    if (index >= 0) {
-      this.selectedIndex.set(index);
+    if (savedIndex >= 0) {
+      this.selectedIndex.set(savedIndex);
     }
+
   }
 
   // =========================================
-  // PERSONAGEM ATUAL
-  // =========================================
-
-  get personagemAtual(): Personagem {
-    return this.selectedCharacter();
-  }
-
-  // =========================================
-  // TAREFAS
+  // TASK PROGRESS
   // =========================================
 
   get completedTasks(): number {
@@ -259,24 +275,32 @@ export class PlayerInfo implements OnDestroy {
   }
 
   completeTask(task: Task): void {
-    if (task.completed) return;
+
+    if (task.completed) {
+      return;
+    }
 
     task.completed = true;
+
     this.playerService.addXp(task.reward);
+
   }
 
   // =========================================
-  // CARROSSEL REATIVO
+  // CHARACTER CAROUSEL
   // =========================================
 
   proximoPersonagem(): void {
+
     this.selecionarPersonagem(
       (this.personagemSelecionado + 1) %
       this.personagens.length
     );
+
   }
 
   personagemAnterior(): void {
+
     this.selecionarPersonagem(
       (
         this.personagemSelecionado -
@@ -284,9 +308,11 @@ export class PlayerInfo implements OnDestroy {
         this.personagens.length
       ) % this.personagens.length
     );
+
   }
 
   selecionarPersonagem(index: number): void {
+
     if (
       index < 0 ||
       index >= this.personagens.length
@@ -294,45 +320,64 @@ export class PlayerInfo implements OnDestroy {
       return;
     }
 
-    // Atualiza imagem e informações
-    // imediatamente pelo mesmo Signal
     this.selectedIndex.set(index);
+
   }
 
   // =========================================
-  // SALVAR PERFIL
+  // SAVE PROFILE
   // =========================================
 
   criarPerfil(form: NgForm): void {
+
     if (form.invalid) {
+
       this.formIncompleto = true;
       this.mostrarSucesso = false;
 
       form.control.markAllAsTouched();
+
       return;
     }
 
     this.formIncompleto = false;
-    this.perfilCriado = true;
-    this.mostrarSucesso = true;
 
+    // Save selected character.
     this.playerService.profile.characterName =
       this.personagemAtual.nome;
 
+    // Save profile data.
     this.playerService.saveProfile();
 
+    this.perfilCriado = true;
+    this.mostrarSucesso = true;
+
+    // Clear previous success timer.
     if (this.successTimer) {
       clearTimeout(this.successTimer);
     }
 
+    // Hide success message after 3 seconds.
     this.successTimer = setTimeout(() => {
+
       this.mostrarSucesso = false;
+      this.successTimer = undefined;
+
     }, 3000);
+
   }
+
+  // =========================================
+  // CLEANUP
+  // =========================================
 
   ngOnDestroy(): void {
+
     if (this.successTimer) {
       clearTimeout(this.successTimer);
+      this.successTimer = undefined;
     }
+
   }
+
 }

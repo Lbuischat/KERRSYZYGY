@@ -1,6 +1,4 @@
-
 import { isPlatformBrowser } from '@angular/common';
-import { AccountSessionService } from './account-session.service';
 
 import {
   Injectable,
@@ -9,6 +7,12 @@ import {
   inject,
   signal
 } from '@angular/core';
+
+import { AccountSessionService } from './account-session.service';
+
+// =========================================
+// INTERFACES
+// =========================================
 
 export interface PlayerProfile {
   username: string;
@@ -35,16 +39,25 @@ export interface PlayerReward {
   shopXp?: number;
 }
 
+// =========================================
+// PLAYER SERVICE
+// =========================================
+
 @Injectable({
   providedIn: 'root'
 })
 export class PlayerService {
+
   private readonly platformId = inject(PLATFORM_ID);
   private readonly accountSession = inject(AccountSessionService);
 
   private get storageKey(): string {
     return this.accountSession.storageKey('playerProfile');
   }
+
+  // =========================================
+  // DEFAULT PROFILE
+  // =========================================
 
   private readonly defaultProfile: PlayerProfile = {
     username: '',
@@ -105,7 +118,8 @@ export class PlayerService {
     () => this.getXpRequired(this.level())
   );
 
-  // Compatibilidade com telas antigas.
+  // Compatibility with older components.
+
   get xpPerLevel(): number {
     return this.xpRequired();
   }
@@ -113,7 +127,9 @@ export class PlayerService {
   readonly xpProgressPercent = computed(() => {
     const required = this.xpRequired();
 
-    if (required <= 0) return 0;
+    if (required <= 0) {
+      return 0;
+    }
 
     return Math.min(
       100,
@@ -137,14 +153,20 @@ export class PlayerService {
   }
 
   // =========================================
-  // ACCOUNT SWITCH (called after successful login)
+  // ACCOUNT SWITCH
   // =========================================
 
   reloadForCurrentAccount(): void {
-    // Do not persist the previous user's state into the new account.
-    this.p.set({ ...this.defaultProfile });
+    // Prevent the previous account's state from
+    // being saved into the newly selected account.
+
+    this.p.set({
+      ...this.defaultProfile
+    });
+
     this.rewardPulse.set(0);
     this.lastLevelUp.set(null);
+
     this.loadProfile();
   }
 
@@ -153,15 +175,13 @@ export class PlayerService {
   // =========================================
 
   addXp(amount: number): number[] {
-    const gained = Math.max(0, Math.floor(amount));
-
+    const gained = this.safeAmount(amount);
     const levelsGained: number[] = [];
 
     this.p.update(player => {
       let nextXp = player.xp + gained;
       let nextLevel = player.level;
 
-      // Não perde XP excedente.
       while (nextXp >= this.getXpRequired(nextLevel)) {
         nextXp -= this.getXpRequired(nextLevel);
         nextLevel++;
@@ -192,25 +212,12 @@ export class PlayerService {
   // =========================================
 
   applyRewards(reward: PlayerReward): number[] {
-    const gainedXp = Math.max(
-      0,
-      Math.floor(reward.xp ?? 0)
-    );
-
-    const gainedCredits = Math.max(
-      0,
-      Math.floor(reward.credits ?? 0)
-    );
-
-    const gainedShopXp = Math.max(
-      0,
-      Math.floor(reward.shopXp ?? 0)
-    );
+    const gainedXp = this.safeAmount(reward.xp);
+    const gainedCredits = this.safeAmount(reward.credits);
+    const gainedShopXp = this.safeAmount(reward.shopXp);
 
     const levelsGained: number[] = [];
 
-    // Atualiza tudo no mesmo Signal:
-    // XP, Level, Credits e Shop XP juntos.
     this.p.update(player => {
       let nextXp = player.xp + gainedXp;
       let nextLevel = player.level;
@@ -250,12 +257,6 @@ export class PlayerService {
   // COMPATIBILITY METHODS
   // =========================================
 
-  // Mantemos os métodos antigos para não quebrar
-  // chamadas de outras partes do projeto.
-  //
-  // Nesta versão, a atualização é imediata.
-  // A transição visual da barra continua no CSS.
-
   async addXpAnimated(
     amount: number,
     _delayMs = 0
@@ -288,7 +289,7 @@ export class PlayerService {
   // =========================================
 
   addCredits(amount: number): void {
-    const gained = Math.max(0, Math.floor(amount));
+    const gained = this.safeAmount(amount);
 
     this.p.update(player => ({
       ...player,
@@ -301,16 +302,18 @@ export class PlayerService {
   setCredits(value: number): void {
     this.p.update(player => ({
       ...player,
-      credits: Math.max(0, Math.floor(value))
+      credits: this.safeAmount(value)
     }));
 
     this.persist();
   }
 
   spendCredits(amount: number): boolean {
-    const cost = Math.max(0, Math.floor(amount));
+    const cost = this.safeAmount(amount);
 
-    if (this.credits() < cost) return false;
+    if (this.credits() < cost) {
+      return false;
+    }
 
     this.p.update(player => ({
       ...player,
@@ -318,6 +321,7 @@ export class PlayerService {
     }));
 
     this.persist();
+
     return true;
   }
 
@@ -326,7 +330,7 @@ export class PlayerService {
   // =========================================
 
   addShopXp(amount: number): void {
-    const gained = Math.max(0, Math.floor(amount));
+    const gained = this.safeAmount(amount);
 
     this.p.update(player => ({
       ...player,
@@ -339,16 +343,18 @@ export class PlayerService {
   setShopXp(value: number): void {
     this.p.update(player => ({
       ...player,
-      shopXp: Math.max(0, Math.floor(value))
+      shopXp: this.safeAmount(value)
     }));
 
     this.persist();
   }
 
   spendShopXp(amount: number): boolean {
-    const cost = Math.max(0, Math.floor(amount));
+    const cost = this.safeAmount(amount);
 
-    if (this.shopXp() < cost) return false;
+    if (this.shopXp() < cost) {
+      return false;
+    }
 
     this.p.update(player => ({
       ...player,
@@ -356,6 +362,7 @@ export class PlayerService {
     }));
 
     this.persist();
+
     return true;
   }
 
@@ -366,7 +373,10 @@ export class PlayerService {
   setWorldLevel(value: number): void {
     this.p.update(player => ({
       ...player,
-      worldLevel: Math.max(1, Math.floor(value))
+      worldLevel: Math.max(
+        1,
+        this.safeAmount(value)
+      )
     }));
 
     this.persist();
@@ -390,36 +400,41 @@ export class PlayerService {
   }
 
   // =========================================
-  // SAVE / LOAD
+  // SAVE PROFILE
   // =========================================
 
   saveProfile(): void {
-    // Algumas páginas antigas alteram o objeto profile.
-    // Criar uma referência nova notifica o Angular.
-    this.p.update(player => ({ ...player }));
+    // Older components directly modify properties
+    // through playerService.profile.
+    // Creating a new object reference notifies Signals.
+
+    this.p.update(player => ({
+      ...player
+    }));
 
     this.persist();
   }
 
+  // =========================================
+  // LOAD PROFILE
+  // =========================================
+
   loadProfile(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
 
     const raw = localStorage.getItem(this.storageKey);
 
-    if (!raw) return;
+    if (!raw) {
+      return;
+    }
 
     try {
       const saved = JSON.parse(raw) as Partial<PlayerProfile>;
 
-      const level = this.safeInteger(
-        saved.level,
-        0
-      );
-
-      const xp = this.safeInteger(
-        saved.xp,
-        0
-      );
+      const level = this.safeInteger(saved.level, 0);
+      const xp = this.safeInteger(saved.xp, 0);
 
       const credits = this.safeInteger(
         saved.credits,
@@ -446,14 +461,19 @@ export class PlayerService {
         worldLevel
       });
 
-      // Corrige XP antigo que ultrapassava o limite.
+      // Corrects saved XP that exceeds the current level limit.
       this.normalizeXp();
 
       this.persist();
+
     } catch {
       console.warn('Could not load player profile.');
     }
   }
+
+  // =========================================
+  // NORMALIZE XP
+  // =========================================
 
   private normalizeXp(): void {
     const player = this.p();
@@ -473,6 +493,10 @@ export class PlayerService {
     });
   }
 
+  // =========================================
+  // VALIDATION HELPERS
+  // =========================================
+
   private safeInteger(
     value: unknown,
     fallback: number
@@ -484,8 +508,22 @@ export class PlayerService {
       : fallback;
   }
 
+  private safeAmount(value: number | undefined): number {
+    if (value === undefined || !Number.isFinite(value)) {
+      return 0;
+    }
+
+    return Math.max(0, Math.floor(value));
+  }
+
+  // =========================================
+  // PERSIST
+  // =========================================
+
   private persist(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
 
     try {
       localStorage.setItem(
@@ -497,6 +535,10 @@ export class PlayerService {
     }
   }
 
+  // =========================================
+  // CLEAR PROFILE
+  // =========================================
+
   clearProfile(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.storageKey);
@@ -506,6 +548,7 @@ export class PlayerService {
       ...this.defaultProfile
     });
 
+    this.rewardPulse.set(0);
     this.lastLevelUp.set(null);
   }
 }

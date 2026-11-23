@@ -1,4 +1,3 @@
-
 @if (currentStep !== 'complete') {
 
   <div class="tutorial-window">
@@ -17,7 +16,7 @@
         <strong>Arrow Keys</strong>.
       </p>
 
-      <!-- DIREÇÕES -->
+      <!-- DIRECTION TRACKING -->
       <div
         style="
           display: grid;
@@ -38,7 +37,6 @@
               padding: 12px 8px;
               border: 1px solid;
               border-radius: 9px;
-              background: rgba(255,255,255,.035);
               transition: border-color .2s, background .2s;
             "
             [style.border-color]="
@@ -78,6 +76,7 @@
             >
 
               @for (key of direction.keys; track key) {
+
                 <kbd
                   style="
                     min-width: 25px;
@@ -93,6 +92,7 @@
                 >
                   {{ key }}
                 </kbd>
+
               }
 
               <span
@@ -115,7 +115,7 @@
 
       </div>
 
-      <!-- BARRA -->
+      <!-- MOVEMENT PROGRESS -->
       <div class="progress-container">
 
         <div
@@ -172,7 +172,11 @@
       </div>
 
       @if (sprintProgress >= 100) {
-        <div class="checkmark">✓</div>
+
+        <div class="checkmark">
+          ✓
+        </div>
+
       }
 
     }
@@ -200,7 +204,11 @@
       </div>
 
       @if (staminaProgress >= 100) {
-        <div class="checkmark">✓</div>
+
+        <div class="checkmark">
+          ✓
+        </div>
+
       }
 
     }
@@ -219,7 +227,11 @@
       </p>
 
       @if (attackPerformed) {
-        <div class="checkmark">✓</div>
+
+        <div class="checkmark">
+          ✓
+        </div>
+
       }
 
     }
@@ -238,7 +250,59 @@
       </p>
 
       @if (tutorialEnemyDefeated) {
-        <div class="checkmark">✓</div>
+
+        <div class="checkmark">
+          ✓
+        </div>
+
+      }
+
+    }
+
+    <!-- ===================================
+         GATHER BERRIES
+    =================================== -->
+
+    @if (currentStep === 'gatherBerries') {
+
+      <h2>Gather Berries</h2>
+
+      <p>
+        Collect berries from a nearby bush.
+      </p>
+
+      <p class="berry-counter">
+        {{ berriesGathered }} / {{ BERRIES_REQUIRED }} gathered
+      </p>
+
+      <!-- BERRY COLLECTION PROGRESS -->
+      <div class="berry-progress">
+
+        @for (berry of [1, 2, 3]; track berry) {
+
+          <div
+            class="berry-dot"
+            [class.collected]="berriesGathered >= berry"
+          >
+
+            @if (berriesGathered >= berry) {
+              ✓
+            } @else {
+              {{ berry }}
+            }
+
+          </div>
+
+        }
+
+      </div>
+
+      @if (berriesGathered >= BERRIES_REQUIRED) {
+
+        <div class="checkmark">
+          ✓
+        </div>
+
       }
 
     }

@@ -1,4 +1,3 @@
-
 <div
   class="relative min-h-screen w-full"
 
@@ -19,9 +18,11 @@
 
   <!-- GAME WORLD -->
   <app-game-world
+    #gameWorld
     (tutorialBoundary)="showTutorialMessage()"
     (playerAttacked)="onPlayerAttack()"
     (enemyDefeated)="onEnemyDefeated()"
+    (berryGathered)="tutorial.onBerryGathered()"
   />
 
   <!-- HUD -->
@@ -32,7 +33,9 @@
 
   <!-- TUTORIAL -->
   <app-tutorial
+    #tutorial
     [player]="gameWorld?.player"
+    (enemyStepStarted)="onTutorialEnemyStepStarted()"
   />
 
   <!-- INVENTORY -->
@@ -48,6 +51,7 @@
       class="pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center"
     >
       <div class="tutorial-message">
+
         <div class="tutorial-message-line"></div>
 
         <div class="tutorial-message-content">
@@ -63,6 +67,7 @@
         </div>
 
         <div class="tutorial-message-line"></div>
+
       </div>
     </div>
   }

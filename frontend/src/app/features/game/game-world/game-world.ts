@@ -1,4 +1,3 @@
-
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -76,6 +75,9 @@ export class GameWorld implements OnDestroy {
 
   @Output()
   enemyDefeated = new EventEmitter<void>();
+
+  @Output()
+  berryGathered = new EventEmitter<void>();
 
   // ========================================
   // JOGADOR E INIMIGOS
@@ -206,6 +208,12 @@ export class GameWorld implements OnDestroy {
   private playerWasAtBoundary = false;
   private tutorialEnemyWasDead = false;
 
+  // Tutorial guide pointing toward the training enemy.
+  private tutorialEnemyGuideActive = false;
+  private readonly GUIDE_DOT_SPACING = 45;
+  private readonly GUIDE_START_OFFSET = 30;
+  readonly guideDotSlots = Array.from({ length: 90 });
+
   constructor(
     @Inject(PLATFORM_ID)
     private readonly platformId: object,
@@ -275,6 +283,7 @@ export class GameWorld implements OnDestroy {
       this.updateMiniMap(now);
 
       this.updateCamera();
+      this.updateTutorialEnemyGuide();
 
       this.animationFrameId =
         requestAnimationFrame(frame);
@@ -296,6 +305,7 @@ export class GameWorld implements OnDestroy {
         this.player.getPosition();
     }
 
+    this.stopTutorialEnemyGuide();
     this.gameOver.set(true);
   }
 
@@ -413,6 +423,11 @@ export class GameWorld implements OnDestroy {
 
     this.tutorialEnemyWasDead = false;
     this.playerWasAtBoundary = false;
+    this.bushes.update(list =>
+      list.map(bush => ({ ...bush, harvested: false }))
+    );
+    this.tutorialEnemyGuideActive = false;
+    this.hideTutorialEnemyGuide();
 
     this.gameOver.set(false);
 
@@ -492,7 +507,7 @@ export class GameWorld implements OnDestroy {
           (enemy.y + enemy.size / 2)
       );
 
-      if (distance <= nearestDistance) {
+     if (distance <= nearestDistance) {
         nearestDistance = distance;
         nearest = enemy;
       }
@@ -529,6 +544,7 @@ export class GameWorld implements OnDestroy {
       );
 
       this.audioService.playItemPickup();
+      this.berryGathered.emit();
 
       this.bushes.update(list =>
         list.map(item =>
@@ -1015,6 +1031,7 @@ export class GameWorld implements OnDestroy {
       !this.tutorialEnemyWasDead
     ) {
       this.tutorialEnemyWasDead = true;
+      this.stopTutorialEnemyGuide();
       this.enemyDefeated.emit();
     }
   }
@@ -1109,6 +1126,90 @@ export class GameWorld implements OnDestroy {
     this.gameStateService.setEnemyPositions(
       positions
     );
+  }
+
+
+  // ========================================
+  // GUIA VISUAL DO INIMIGO DO TUTORIAL
+  // ========================================
+
+  private updateTutorialEnemyGuide(): void {
+    const guide = document.getElementById('enemy-guide');
+    if (!guide) return;
+
+    const dots = guide.querySelectorAll<HTMLElement>('.guide-dot');
+    const tutorialEnemy = this.enemies.find(enemy => enemy.training);
+
+    if (
+      !this.tutorialEnemyGuideActive ||
+      !this.player ||
+      !tutorialEnemy ||
+      tutorialEnemy.isDead
+    ) {
+      guide.style.display = 'none';
+
+      for (const dot of dots) {
+        dot.style.display = 'none';
+      }
+
+      return;
+    }
+
+    const playerPosition = this.player.getPosition();
+    const playerSize = this.player.getSize();
+
+    const playerCenterX = playerPosition.x + playerSize / 2;
+    const playerCenterY = playerPosition.y + playerSize / 2;
+
+    const enemyCenterX = tutorialEnemy.x + tutorialEnemy.size / 2;
+    const enemyCenterY = tutorialEnemy.y + tutorialEnemy.size / 2;
+
+    const dx = enemyCenterX - playerCenterX;
+    const dy = enemyCenterY - playerCenterY;
+
+    const distance = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    guide.style.left = `${playerCenterX}px`;
+    guide.style.top = `${playerCenterY}px`;
+    guide.style.width = `${distance}px`;
+    guide.style.transform = `rotate(${angle}deg)`;
+    guide.style.display = 'block';
+
+    for (let i = 0; i < dots.length; i++) {
+      const dot = dots[i];
+      const position =
+        this.GUIDE_START_OFFSET + i * this.GUIDE_DOT_SPACING;
+
+      if (position >= distance - 25) {
+        dot.style.display = 'none';
+        continue;
+      }
+
+      dot.style.display = 'block';
+      dot.style.left = `${position}px`;
+    }
+  }
+
+  private hideTutorialEnemyGuide(): void {
+    const guide = document.getElementById('enemy-guide');
+    if (!guide) return;
+
+    guide.style.display = 'none';
+
+    const dots = guide.querySelectorAll<HTMLElement>('.guide-dot');
+    for (const dot of dots) {
+      dot.style.display = 'none';
+    }
+  }
+
+  public startTutorialEnemyGuide(): void {
+    this.tutorialEnemyGuideActive = true;
+  }
+
+  public stopTutorialEnemyGuide(): void {
+    this.tutorialEnemyGuideActive = false;
+    this.hideTutorialEnemyGuide();
   }
 
   // ========================================
