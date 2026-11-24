@@ -51,3 +51,4 @@ Thumbs.db
 /frontend/node_modules/
 /backend/dist/
 /backend/node_modules/
+frontend/src/app/features/game/player-info/player-info.css.bak
