@@ -23,9 +23,7 @@ import { ActionBar } from '../combat/action-bar/action-bar';
 import { InventoryButton } from './inventory-button/inventory-button';
 import { SettingsButton } from './settings-button/settings-button';
 
-import {
-  GameStateService
-} from '../../../services/game-state/game-state.service';
+import { GameStateService } from '../../../services/game-state/game-state.service';
 
 @Component({
   selector: 'app-hud',
@@ -55,7 +53,7 @@ export class Hud implements OnInit, OnDestroy {
   }
 
   // =====================================
-  // MINIMAP
+  // DADOS DO MINIMAPA
   // =====================================
 
   worldWidth = 20 * 128;
@@ -70,12 +68,22 @@ export class Hud implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
 
+  // =====================================
+  // CONSTRUTOR
+  // =====================================
+
   constructor(
     private gameStateService: GameStateService,
     private cdr: ChangeDetectorRef
   ) {}
 
+  // =====================================
+  // INICIALIZAÇÃO
+  // =====================================
+
   ngOnInit(): void {
+
+    // Atualiza a posição do jogador no minimapa.
     this.subscription.add(
       this.gameStateService.playerPosition$.subscribe(
         position => {
@@ -85,6 +93,7 @@ export class Hud implements OnInit, OnDestroy {
       )
     );
 
+    // Atualiza a posição dos inimigos.
     this.subscription.add(
       this.gameStateService.enemyPositions$.subscribe(
         positions => {
@@ -94,6 +103,10 @@ export class Hud implements OnInit, OnDestroy {
       )
     );
   }
+
+  // =====================================
+  // LIMPEZA
+  // =====================================
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
@@ -109,9 +122,17 @@ export class Hud implements OnInit, OnDestroy {
   @Output()
   inventoryOpen = new EventEmitter<void>();
 
+  // =====================================
+  // CONFIGURAÇÕES
+  // =====================================
+
   openSettings(): void {
     this.settingsOpen.emit();
   }
+
+  // =====================================
+  // INVENTÁRIO
+  // =====================================
 
   toggleInventory(): void {
     this.inventoryOpen.emit();

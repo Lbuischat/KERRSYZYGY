@@ -1,7 +1,5 @@
-import {
-  Component,
-  signal
-} from '@angular/core';
+
+import { Component, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { Title } from '../title/title';
@@ -19,7 +17,6 @@ import { Language } from '../../services/language/language.types';
 export class GameEntry {
   showLogin = signal(false);
   isTransitioning = signal(false);
-
   showLanguages = signal(false);
 
   private readonly transitionDuration = 1200;
@@ -28,7 +25,7 @@ export class GameEntry {
     public readonly languageService: LanguageService,
     private readonly route: ActivatedRoute
   ) {
-    // Volta diretamente para o login depois de criar a conta.
+    // Retorna diretamente ao login após criar uma conta.
     if (this.route.snapshot.queryParamMap.get('login') === '1') {
       this.showLogin.set(true);
     }
@@ -40,8 +37,6 @@ export class GameEntry {
     }
 
     this.isTransitioning.set(true);
-
-    // Hide the language menu when entering login
     this.showLanguages.set(false);
 
     setTimeout(() => {
@@ -62,16 +57,12 @@ export class GameEntry {
     switch (this.languageService.language()) {
       case 'pt':
         return 'Português';
-
       case 'es':
         return 'Español';
-
       case 'fr':
         return 'Français';
-
       case 'de':
         return 'Deutsch';
-
       default:
         return 'English';
     }

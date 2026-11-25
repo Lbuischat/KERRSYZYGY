@@ -1,4 +1,3 @@
-
 <div
   #enemyRef
   class="enemy"
@@ -8,26 +7,23 @@
   [style.width.px]="size"
   [style.height.px]="size"
 >
-  <!-- RAIO DE DETECÇÃO -->
+  <!-- Raio de detecção -->
   <div
     class="enemy-view-range"
+    [class.detected]="isPlayerInView"
     [style.width.px]="viewRange * 2"
     [style.height.px]="viewRange * 2"
   ></div>
 
-  <!-- SPRITE DO SLIME -->
+  <!-- Sprite do slime -->
   <img
     class="enemy-sprite"
     [src]="spritePath"
-    [alt]="
-      elite
-        ? 'Slime alienígena elite'
-        : 'Slime alienígena'
-    "
+    [alt]="elite ? 'Slime alienígena elite' : 'Slime alienígena'"
     draggable="false"
   />
 
-  <!-- BARRA DE VIDA -->
+  <!-- Barra de vida -->
   <div class="health-container">
     <div
       class="health-bar"
@@ -35,10 +31,8 @@
     ></div>
   </div>
 
-  <!-- IDENTIFICAÇÃO DO ELITE -->
+  <!-- Identificação do slime elite -->
   @if (elite) {
-    <span class="elite-label">
-      ELITE
-    </span>
+    <span class="elite-label">ELITE</span>
   }
 </div>

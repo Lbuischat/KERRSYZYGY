@@ -4,11 +4,13 @@
 }
 
 /* =====================================
-   INIMIGO
+   ENEMY
 ===================================== */
 
 .enemy {
   position: absolute;
+  top: 0;
+  left: 0;
 
   width: 40px;
   height: 40px;
@@ -17,6 +19,7 @@
 
   background: transparent;
   border: none;
+  border-radius: 50%;
 
   transform: none;
   overflow: visible;
@@ -42,18 +45,15 @@
 
   image-rendering: pixelated;
 
-  filter: drop-shadow(
-    0 3px 2px #16182799
-  );
+  filter: drop-shadow(0 3px 2px #16182799);
 
-  animation:
-    slime-bob 1.6s steps(2, end) infinite;
+  animation: slime-bob 1.6s steps(2, end) infinite;
 
   z-index: 2;
 }
 
 /* =====================================
-   SLIME ELITE
+   ELITE SLIME
 ===================================== */
 
 .elite .enemy-sprite {
@@ -65,7 +65,7 @@
 }
 
 /* =====================================
-   RAIO DE DETECÇÃO
+   DETECTION RANGE
 ===================================== */
 
 .enemy-view-range {
@@ -89,13 +89,11 @@
   z-index: 0;
 }
 
-/* Jogador dentro do alcance */
-
 .enemy-view-range.detected {
   border-color: #ffd584bb;
 }
 
-/* Raio do elite */
+/* ELITE DETECTION RANGE */
 
 .elite .enemy-view-range {
   border-color: #ffb66b88;
@@ -106,7 +104,7 @@
 }
 
 /* =====================================
-   VIDA
+   HEALTH
 ===================================== */
 
 .health-container {
@@ -138,7 +136,7 @@
   transition: width 100ms linear;
 }
 
-/* VIDA DO ELITE */
+/* ELITE HEALTH */
 
 .elite .health-container {
   width: 62px;
@@ -150,7 +148,7 @@
 }
 
 /* =====================================
-   IDENTIFICAÇÃO
+   ELITE IDENTIFICATION
 ===================================== */
 
 .elite-label {
@@ -172,7 +170,7 @@
 }
 
 /* =====================================
-   NÚMERO DE DANO
+   DAMAGE NUMBERS
 ===================================== */
 
 .enemy-damage-label {
@@ -193,7 +191,7 @@
 }
 
 /* =====================================
-   ANIMAÇÃO
+   ANIMATIONS
 ===================================== */
 
 @keyframes slime-bob {

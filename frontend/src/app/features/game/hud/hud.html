@@ -5,9 +5,7 @@
        PLAYER INFO
   ===================================== -->
 
-  <div
-    class="pointer-events-auto absolute left-6 top-10"
-  >
+  <div class="pointer-events-auto absolute left-6 top-10">
     <app-player-info-bnt />
   </div>
 
@@ -18,23 +16,20 @@
   <div
     class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3"
   >
-
     <app-inventory-button
       (inventoryClicked)="toggleInventory()"
     />
 
     <app-shop-button />
-
   </div>
 
   <!-- =====================================
        QUEST PANEL
-       RECOLHÍVEL
   ===================================== -->
 
   <div class="hud-quest-dock">
 
-    <!-- BOTÃO DE RECOLHER / EXPANDIR -->
+    <!-- RECOLHER / EXPANDIR MISSÕES -->
     <button
       type="button"
       class="hud-quest-toggle"
@@ -47,7 +42,6 @@
           : 'Recolher missões'
       "
     >
-
       <span class="hud-quest-toggle-icon">
         {{ questsCollapsed ? '▸' : '▾' }}
       </span>
@@ -59,10 +53,9 @@
             : 'RECOLHER MISSÕES'
         }}
       </span>
-
     </button>
 
-    <!-- PAINEL EXISTENTE -->
+    <!-- PAINEL DE MISSÕES -->
     <div
       id="hud-quest-content"
       class="hud-quest-body"
@@ -100,7 +93,6 @@
 
   <!-- =====================================
        SETTINGS
-       MANTIDO FORA DAS MISSÕES
   ===================================== -->
 
   <div

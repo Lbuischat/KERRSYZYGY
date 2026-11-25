@@ -1,4 +1,3 @@
-
 import {
   AfterViewInit,
   Component,
@@ -16,70 +15,44 @@ import {
   templateUrl: './enemy.html',
   styleUrl: './enemy.css'
 })
-export class Enemy
-  implements OnInit, AfterViewInit, OnDestroy {
+export class Enemy implements OnInit, AfterViewInit, OnDestroy {
+  // Identificador de depuração, presente na main.
+  private static nextId = 1;
+  private readonly id = Enemy.nextId++;
 
   @ViewChild('enemyRef')
   enemyRef?: ElementRef<HTMLElement>;
 
-  // =====================================
-  // POSIÇÃO / TIPO
-  // =====================================
-
+  // Posição e tipo.
   @Input() x = 600;
   @Input() y = 400;
-
   @Input() elite = false;
   @Input() training = false;
 
-  readonly spritePath =
-    '/assets/sprites/enemies/alien-slime.png';
-
-  // =====================================
-  // HITBOX E VELOCIDADE
-  // =====================================
-
+  readonly spritePath = '/assets/sprites/enemies/alien-slime.png';
   readonly size = 40;
   readonly speed = 65;
 
-  // =====================================
-  // VIDA
-  // =====================================
-
   maxHealth = 100;
   health = 100;
-
   isDead = false;
   isPlayerInView = false;
 
-  // =====================================
-  // TEMPORIZADORES
-  // =====================================
-
+  // Temporizadores dos ataques.
   touchTimer = 0;
   spitTimer = 1.4;
-
-  // Golpe especial exclusivo do elite.
   burstTimer = 3.8;
-
-  // Tempo de preparação da rajada.
   burstWindup = 0;
-
   burstCharging = false;
 
-  // =====================================
-  // INICIALIZAÇÃO
-  // =====================================
-
   ngOnInit(): void {
-
-    // Slime normal: 100 HP
-    // Slime Elite: 350 HP
-    this.maxHealth = this.elite
-      ? 350
-      : 100;
-
+    this.maxHealth = this.elite ? 350 : 100;
     this.health = this.maxHealth;
+
+    console.log(
+      `🟢 CREATED ENEMY #${this.id}`,
+      this.elite ? '(ELITE)' : '(NORMAL)'
+    );
   }
 
   ngAfterViewInit(): void {
@@ -88,14 +61,10 @@ export class Enemy
   }
 
   ngOnDestroy(): void {
-    // O Angular remove os elementos
-    // deste inimigo automaticamente.
+    // O Angular remove os elementos deste inimigo automaticamente.
   }
 
-  // =====================================
-  // ESTATÍSTICAS POR TIPO
-  // =====================================
-
+  // Estatísticas por tipo de slime.
   get viewRange(): number {
     return this.elite ? 390 : 260;
   }
@@ -105,9 +74,7 @@ export class Enemy
   }
 
   get movementSpeed(): number {
-    return this.elite
-      ? 85
-      : this.speed;
+    return this.elite ? 85 : this.speed;
   }
 
   get touchDamage(): number {
@@ -126,130 +93,67 @@ export class Enemy
     return this.elite ? 1.8 : 2.8;
   }
 
-  // =====================================
-  // TEMPOS DE RECARGA DOS ATAQUES
-  // =====================================
-
   updateTimers(deltaTime: number): void {
-
-    this.touchTimer = Math.max(
-      0,
-      this.touchTimer - deltaTime
-    );
-
-    this.spitTimer = Math.max(
-      0,
-      this.spitTimer - deltaTime
-    );
-
-    this.burstTimer = Math.max(
-      0,
-      this.burstTimer - deltaTime
-    );
+    this.touchTimer = Math.max(0, this.touchTimer - deltaTime);
+    this.spitTimer = Math.max(0, this.spitTimer - deltaTime);
+    this.burstTimer = Math.max(0, this.burstTimer - deltaTime);
   }
 
-  // =====================================
-  // ATUALIZAR POSIÇÃO
-  // =====================================
-
-  updateVisualPosition(): void {
-
+  public updateVisualPosition(): void {
     const root = this.enemyRef?.nativeElement;
-
-    if (!root) {
-      return;
-    }
+    if (!root) return;
 
     root.style.left = `${this.x}px`;
     root.style.top = `${this.y}px`;
   }
 
-  // =====================================
-  // DETECTAR JOGADOR
-  // =====================================
-
-  checkPlayerInView(
+  public checkPlayerInView(
     playerX: number,
     playerY: number,
     playerSize: number
   ): boolean {
+    const playerCenterX = playerX + playerSize / 2;
+    const playerCenterY = playerY + playerSize / 2;
+    const enemyCenterX = this.x + this.size / 2;
+    const enemyCenterY = this.y + this.size / 2;
 
-    const dx =
-      playerX + playerSize / 2 -
-      (this.x + this.size / 2);
-
-    const dy =
-      playerY + playerSize / 2 -
-      (this.y + this.size / 2);
+    const dx = playerCenterX - enemyCenterX;
+    const dy = playerCenterY - enemyCenterY;
 
     this.isPlayerInView =
-      !this.isDead &&
-      Math.hypot(dx, dy) <= this.viewRange;
+      !this.isDead && Math.hypot(dx, dy) <= this.viewRange;
 
-    // Feedback no círculo de detecção.
+    // Mantém o feedback visual também quando a detecção é
+    // atualizada fora do ciclo de detecção de mudanças do Angular.
     this.enemyRef?.nativeElement
       .querySelector('.enemy-view-range')
-      ?.classList.toggle(
-        'detected',
-        this.isPlayerInView
-      );
+      ?.classList.toggle('detected', this.isPlayerInView);
 
     return this.isPlayerInView;
   }
 
-  // =====================================
-  // PORCENTAGEM DA VIDA
-  // =====================================
-
   getHealthPercentage(): number {
-
-    if (this.maxHealth <= 0) {
-      return 0;
-    }
-
-    return Math.max(
-      0,
-      100 * this.health / this.maxHealth
-    );
+    if (this.maxHealth <= 0) return 0;
+    return Math.max(0, (100 * this.health) / this.maxHealth);
   }
-
-  // =====================================
-  // ATUALIZAR BARRA DE HP
-  // =====================================
 
   private updateHealthBar(): void {
-
     const bar = this.enemyRef?.nativeElement
-      .querySelector<HTMLElement>(
-        '.health-bar'
-      );
+      .querySelector<HTMLElement>('.health-bar');
 
     if (bar) {
-      bar.style.width =
-        `${this.getHealthPercentage()}%`;
+      bar.style.width = `${this.getHealthPercentage()}%`;
     }
   }
 
-  // =====================================
-  // RECEBER DANO
-  // =====================================
-
   takeDamage(amount: number): void {
+    if (this.isDead || amount <= 0) return;
 
-    if (
-      this.isDead ||
-      amount <= 0
-    ) {
-      return;
-    }
+    this.health = Math.max(0, this.health - amount);
 
-    this.health = Math.max(
-      0,
-      this.health - amount
-    );
+    console.log(`Enemy #${this.id} HP:`, this.health);
 
     this.updateHealthBar();
-
     this.triggerHitEffect(amount);
 
     if (this.health <= 0) {
@@ -257,50 +161,25 @@ export class Enemy
     }
   }
 
-  // =====================================
-  // FEEDBACK VISUAL DE DANO
-  // =====================================
-
-  private triggerHitEffect(
-    damage: number
-  ): void {
-
+  public triggerHitEffect(damage: number): void {
     const root = this.enemyRef?.nativeElement;
+    if (!root) return;
 
-    if (!root) {
-      return;
-    }
+    const sprite = root.querySelector<HTMLElement>('.enemy-sprite');
 
-    const sprite = root.querySelector<HTMLElement>(
-      '.enemy-sprite'
-    );
-
-    // Pequeno flash ao sofrer dano.
     sprite?.animate(
       [
-        {
-          filter: 'brightness(2)',
-          transform: 'translateX(-3px)'
-        },
-        {
-          filter: 'brightness(1)',
-          transform: 'translateX(3px)'
-        },
-        {
-          filter: 'brightness(1)',
-          transform: 'translateX(0)'
-        }
+        { filter: 'brightness(2)', transform: 'translateX(-3px)' },
+        { filter: 'brightness(1)', transform: 'translateX(3px)' },
+        { filter: 'brightness(1)', transform: 'translateX(0)' }
       ],
-      {
-        duration: 180
-      }
+      { duration: 180 }
     );
 
-    // Número de dano flutuante.
+    // Estilos inline preservados da branch Marcos para garantir
+    // a aparência do elemento criado dinamicamente.
     const label = document.createElement('span');
-
     label.className = 'enemy-damage-label';
-
     label.textContent = `-${damage}`;
 
     Object.assign(label.style, {
@@ -318,61 +197,31 @@ export class Enemy
 
     const animation = label.animate(
       [
-        {
-          transform: 'translate(-50%, 0)',
-          opacity: 1
-        },
-        {
-          transform: 'translate(-50%, -28px)',
-          opacity: 0
-        }
+        { transform: 'translate(-50%, 0)', opacity: 1 },
+        { transform: 'translate(-50%, -28px)', opacity: 0 }
       ],
-      {
-        duration: 650,
-        fill: 'forwards'
-      }
+      { duration: 650, fill: 'forwards' }
     );
 
-    animation.onfinish = () => {
-      label.remove();
-    };
+    animation.onfinish = () => label.remove();
   }
 
-  // =====================================
-  // MORTE DO INIMIGO
-  // =====================================
-
   private die(): void {
-
-    if (this.isDead) {
-      return;
-    }
+    if (this.isDead) return;
 
     this.isDead = true;
     this.isPlayerInView = false;
     this.burstCharging = false;
 
     const root = this.enemyRef?.nativeElement;
-
-    if (!root) {
-      return;
-    }
+    if (!root) return;
 
     const animation = root.animate(
       [
-        {
-          opacity: 1,
-          transform: 'scale(1)'
-        },
-        {
-          opacity: 0,
-          transform: 'scale(1.25, .55)'
-        }
+        { opacity: 1, transform: 'scale(1)' },
+        { opacity: 0, transform: 'scale(1.25, .55)' }
       ],
-      {
-        duration: 300,
-        fill: 'forwards'
-      }
+      { duration: 300, fill: 'forwards' }
     );
 
     animation.onfinish = () => {
