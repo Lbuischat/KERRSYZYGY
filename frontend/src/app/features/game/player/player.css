@@ -57,6 +57,70 @@
   animation: player-idle 1.5s steps(2, end) infinite;
 }
 
+/* =====================================================
+   MINI-BARRAS SOBRE O PERSONAGEM (SEM TEXTO / NUMEROS)
+   Aparecem apenas quando as classes .is-visible sao ativadas.
+   O HUD lateral permanece visivel com os numeros.
+===================================================== */
+
+.player-overhead-vitals {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 5px);
+  transform: translateX(-50%);
+  width: 58px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  pointer-events: none;
+  z-index: 13;
+}
+
+.player-overhead-card {
+  display: none;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2px 3px;
+  background: rgba(12, 17, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.19);
+  border-radius: 4px;
+}
+
+.player-overhead-card.is-visible {
+  display: block;
+  animation: player-overhead-pop 160ms ease-out;
+}
+
+.player-overhead-health { border-left: 2px solid #3ed18b; }
+.player-overhead-stamina { border-left: 2px solid #61d7f5; }
+
+.player-overhead-track {
+  height: 5px;
+  overflow: hidden;
+  background: #283145;
+  border-radius: 3px;
+}
+
+.player-overhead-fill {
+  width: 100%;
+  height: 100%;
+  background: #3ed18b;
+  border-radius: inherit;
+  transition: width 135ms linear, background-color 200ms ease;
+}
+
+.player-overhead-stamina .player-overhead-fill { background: #61d7f5; }
+
+@keyframes player-overhead-pop {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-overhead-card.is-visible { animation: none; }
+  .player-overhead-fill { transition: none; }
+}
+
 /* ============================
    VARIAÇÕES DE PERSONAGEM
 ============================ */
@@ -79,62 +143,6 @@
 
 .accessory-chrono {
   display: var(--show-chrono, none);
-}
-
-/* ============================
-   BARRA DE VIDA
-============================ */
-
-#player-health-container {
-  position: absolute;
-  bottom: calc(100% + 11px);
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  width: 40px;
-  height: 6px;
-
-  background: #101526;
-  border: 1px solid #2b3150;
-  border-radius: 3px;
-  overflow: hidden;
-
-  z-index: 5;
-}
-
-#player-health-bar {
-  height: 100%;
-  width: 100%;
-  background: #ff506b;
-}
-
-/* ============================
-   STAMINA
-============================ */
-
-#stamina-container {
-  position: absolute;
-  bottom: calc(100% + 3px);
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  width: 40px;
-  height: 4px;
-
-  display: none;
-  background: #171d32;
-  border-radius: 2px;
-  overflow: hidden;
-
-  z-index: 5;
-}
-
-#stamina-bar {
-  width: 100%;
-  height: 100%;
-  background: #f4d16f;
 }
 
 /* ============================
@@ -164,4 +172,70 @@
   .player-sprite {
     animation: none;
   }
+}
+
+/* ====================================
+   PERIGO / ESGOTAMENTO DO PERSONAGEM
+   Nao altera hitbox, controles ou sprite SVG
+==================================== */
+
+#player-character.player-danger .player-sprite,
+#player-character.player-exhausted .player-sprite {
+  animation: player-heavy-breath 880ms steps(3, end) infinite;
+}
+
+#player-character.player-critical .player-sprite {
+  animation: player-panic 480ms steps(3, end) infinite;
+  filter: drop-shadow(0 0 3px rgba(255, 87, 100, 0.50));
+}
+
+#player-character.player-hit .player-sprite {
+  filter: brightness(1.85) drop-shadow(0 0 3px rgba(255, 70, 70, 0.85));
+}
+
+.player-sweat {
+  position: absolute;
+  top: 11px;
+  right: -2px;
+  height: 7px;
+  width: 4px;
+  opacity: 0;
+  background: #8ee8fa;
+  border: 1px solid #307eaf;
+  clip-path: polygon(50% 0%, 100% 50%, 100% 100%, 0% 100%, 0% 50%);
+  pointer-events: none;
+}
+
+#player-character.player-danger .player-sweat,
+#player-character.player-critical .player-sweat,
+#player-character.player-exhausted .player-sweat {
+  opacity: 1;
+  animation: player-sweat-drop 1s steps(4, end) infinite;
+}
+
+@keyframes player-heavy-breath {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-1px) scaleY(1.045); }
+}
+
+@keyframes player-panic {
+  0%, 100% { transform: translate(0, 0) scaleY(1); }
+  25% { transform: translate(-1px, -1px) scaleY(1.055); }
+  50% { transform: translate(1px, 0) scaleY(1); }
+  75% { transform: translate(-1px, -1px) scaleY(1.05); }
+}
+
+@keyframes player-sweat-drop {
+  0% { transform: translateY(0); opacity: 0; }
+  25% { opacity: .98; }
+  85% { opacity: .9; }
+  100% { transform: translateY(7px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #player-character.player-danger .player-sprite,
+  #player-character.player-exhausted .player-sprite,
+  #player-character.player-critical .player-sprite,
+  .player-sweat { animation: none !important; }
+  .player-sweat { opacity: 0; }
 }
