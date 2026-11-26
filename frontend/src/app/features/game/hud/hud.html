@@ -23,7 +23,7 @@
   </div>
 
   <!-- =====================================
-       CONTROLES SUPERIORES
+       BOTÕES SUPERIORES
   ===================================== -->
 
   <div
@@ -39,7 +39,7 @@
   </div>
 
   <!-- =====================================
-       STATUS E MISSÕES
+       HUD DE VIDA, STAMINA E MISSÕES
   ===================================== -->
 
   <div class="hud-quest-dock">
@@ -51,10 +51,7 @@
       aria-label="Estado do jogador"
     >
 
-      <!-- =================================
-           VIDA
-      ================================= -->
-
+      <!-- VIDA -->
       <div
         class="hud-status-card hud-hp"
         [class.hud-hp-critical]="isCritical"
@@ -91,10 +88,7 @@
 
       </div>
 
-      <!-- =================================
-           STAMINA
-      ================================= -->
-
+      <!-- STAMINA -->
       <div class="hud-status-card hud-stamina">
 
         <div class="hud-status-heading">
@@ -130,7 +124,7 @@
     </div>
 
     <!-- =================================
-         RECOLHER MISSÕES
+         BOTÃO RECOLHER MISSÕES
     ================================= -->
 
     <button
@@ -169,9 +163,7 @@
       class="hud-quest-body"
       [hidden]="questsCollapsed"
     >
-
       <app-task-panel />
-
     </div>
 
   </div>
@@ -200,10 +192,14 @@
   <div
     class="pointer-events-auto absolute bottom-6 right-6"
   >
-
     <app-action-bar />
-
   </div>
+
+  <!-- =====================================
+       HOTBAR DE 3 SLOTS
+  ===================================== -->
+
+  <app-quickbar />
 
   <!-- =====================================
        CONFIGURAÇÕES

@@ -1,212 +1,325 @@
 
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 import {
+  Injectable,
+  PLATFORM_ID,
+  effect,
+  inject,
+  signal
+} from '@angular/core';
+
+import type {
   InventoryItem
-} from '../../../app/features/game/hud/inventory/inventory-item.model';
+} from '../../features/game/hud/inventory/inventory-item.model';
 
-import {
-  BuffService
-} from '../../services/Inventory/Buff/buff.service';
+import { BuffService } from './Buff/buff.service';
+import { AccountSessionService } from '../account-session.service';
+import { PlayerService } from '../player.service';
+import { GameStateService } from '../game-state/game-state.service';
 
-// ================================================================
-// INVENTORY SERVICE
-// ================================================================
+const STARTER_ITEMS: InventoryItem[] = [
+  {
+    id: 'berry',
+    name: 'Crimson Jewel',
+    category: 'items',
+    description:
+      'A fresh berry gathered from a wild bush. Restores a small amount of health.',
+    icon: '/assets/berry.png',
+    quantity: 1,
+    usable: true,
+    maxStack: 99,
+    buff: {
+      type: 'health',
+      value: 10
+    }
+  },
+  {
+    id: 'astral-potion',
+    name: 'Astral Potion',
+    category: 'potions',
+    description:
+      'A strange potion containing condensed starlight.',
+    icon: '/gassets/items/astral-potion.png',
+    quantity: 3,
+
+    // Será habilitada quando seu efeito temporário
+    // estiver conectado à stamina do Player.
+    usable: false,
+    maxStack: 99,
+
+    buff: {
+      type: 'stamina',
+      value: 25,
+      duration: 10
+    }
+  },
+  {
+    id: 'star-fragment',
+    name: 'Star Fragment',
+    category: 'collectables',
+    description:
+      'A fragment of celestial material. It seems to retain a faint glow.',
+    icon: '/gassets/items/star-fragment.png',
+    quantity: 7,
+    usable: false,
+    maxStack: 99
+  }
+];
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
 
-  /*
-   * The player's inventory.
-   *
-   * This is the actual source of truth.
-   *
-   * The Inventory component should NEVER be the source of truth.
-   */
+  private readonly buffService = inject(BuffService);
+  private readonly playerService = inject(PlayerService);
+  private readonly account = inject(AccountSessionService);
+  private readonly gameState = inject(GameStateService);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  private items: InventoryItem[] = [
-    {
-      id: 'berry',
-      name: 'Crimson Jewel',
-      category: 'items',
-      description:
-        'A fresh berry gathered from a wild bush. Restores a small amount of health.',
-      icon: '/assets/berry.png',
-      quantity: 1,
-      usable: true,
-      maxStack: 99,
-      buff: {
-        type: 'health',
-        value: 10
-      }
-    },
+  // Notifica a hotbar quando o inventário muda.
+  readonly revision = signal(0);
 
-    // ------------------------------------------------------------
-    // EXAMPLE POTION
-    // ------------------------------------------------------------
-    {
-      id: 'astral-potion',
-      name: 'Astral Potion',
-      category: 'potions',
-      description:
-        'A strange potion containing condensed starlight.',
-      icon: '/gassets/items/astral-potion.png',
-      quantity: 3,
-      usable: true,
-      maxStack: 99,
-      buff: {
-        type: 'stamina',
-        value: 25,
-        duration: 10
-      }
-    },
+  private items: InventoryItem[] = [];
 
-    // ------------------------------------------------------------
-    // EXAMPLE COLLECTABLE
-    // ------------------------------------------------------------
-    {
-      id: 'star-fragment',
-      name: 'Star Fragment',
-      category: 'collectables',
-      description:
-        'A fragment of celestial material. It seems to retain a faint glow.',
-      icon: '/gassets/items/star-fragment.png',
-      quantity: 7,
-      usable: false,
-      maxStack: 99
-    }
-  ];
+  private latestHealth = 100;
+  private latestMaxHealth = 100;
 
-  constructor(
-    private buffService: BuffService
-  ) { }
+  constructor() {
+    this.load();
 
-  // ==============================================================
-  // GET ALL ITEMS
-  // ==============================================================
+    // Acompanhar a vida real do personagem.
+    this.gameState.playerVitals$.subscribe(vitals => {
+      this.latestHealth = vitals.health;
+      this.latestMaxHealth = vitals.maxHealth;
+    });
 
-  getItems(): InventoryItem[] {
-    return [...this.items];
-  }
-
-  // ==============================================================
-  // GET ITEM
-  // ==============================================================
-
-  getItem(itemId: string): InventoryItem | undefined {
-    return this.items.find(item => item.id === itemId);
-  }
-
-  // ==============================================================
-  // ADD ITEM
-  // ==============================================================
-
-  addItem(item: InventoryItem, amount = 1): void {
-    const existingItem = this.getItem(item.id);
-
-    // Item already exists: increase its quantity.
-    if (existingItem) {
-      existingItem.quantity += amount;
-      return;
-    }
-
-    // New item: add it to the inventory.
-    this.items.push({
-      ...item,
-      quantity: amount
+    // Recarregar inventário ao mudar de conta.
+    effect(() => {
+      this.account.accountId();
+      this.load();
     });
   }
 
-  // ==============================================================
-  // REMOVE ITEM
-  // ==============================================================
+  // ==========================================
+  // CONSULTAR ITENS
+  // ==========================================
+
+  getItems(): InventoryItem[] {
+    return this.items.map(item => ({ ...item }));
+  }
+
+  getItem(itemId: string): InventoryItem | undefined {
+    const item = this.items.find(
+      entry => entry.id === itemId
+    );
+
+    return item ? { ...item } : undefined;
+  }
+
+  // ==========================================
+  // ADICIONAR ITENS
+  // ==========================================
+
+  addItem(item: InventoryItem, amount = 1): void {
+    if (
+      !Number.isInteger(amount) ||
+      amount <= 0 ||
+      !item.id
+    ) {
+      return;
+    }
+
+    const existing = this.items.find(
+      entry => entry.id === item.id
+    );
+
+    if (existing) {
+      existing.quantity += amount;
+    } else {
+      this.items.push({
+        ...item,
+        quantity: amount
+      });
+    }
+
+    this.changed();
+  }
+
+  // ==========================================
+  // REMOVER ITENS
+  // ==========================================
 
   removeItem(itemId: string, amount = 1): boolean {
-    const item = this.getItem(itemId);
-
-    if (!item) {
+    if (
+      !Number.isInteger(amount) ||
+      amount <= 0
+    ) {
       return false;
     }
 
-    if (item.quantity < amount) {
+    const item = this.items.find(
+      entry => entry.id === itemId
+    );
+
+    if (
+      !item ||
+      item.quantity < amount
+    ) {
       return false;
     }
 
     item.quantity -= amount;
 
-    // Remove an empty stack.
-    if (item.quantity <= 0) {
+    if (item.quantity === 0) {
       this.items = this.items.filter(
-        existing => existing.id !== itemId
+        entry => entry.id !== itemId
       );
     }
+
+    this.changed();
 
     return true;
   }
 
-  // ==============================================================
-  // USE ITEM
-  // ==============================================================
+  // ==========================================
+  // USAR ITENS
+  // ==========================================
 
   useItem(itemId: string): boolean {
-    const item = this.getItem(itemId);
+    const item = this.items.find(
+      entry => entry.id === itemId
+    );
 
-    if (!item) {
-      console.warn('Cannot use item. Item not found:', itemId);
+    if (
+      !item ||
+      !item.usable ||
+      item.quantity < 1
+    ) {
       return false;
     }
 
-    if (!item.usable) {
-      console.warn('Item is not usable:', item.name);
+    // Não consumir itens sem efeitos implementados.
+    if (!item.buff && !item.effect) {
       return false;
     }
 
-    if (item.quantity <= 0) {
+    // Não desperdiçar cura com a vida cheia.
+    if (
+      item.buff?.type === 'health' &&
+      this.latestHealth >= this.latestMaxHealth
+    ) {
       return false;
     }
 
-    // Apply the item's effect.
+    // Ganho de experiência.
+    if (item.effect?.type === 'xp') {
+      this.playerService.addXp(item.effect.value);
+    }
+
+    // Cura e outros buffs.
     if (item.buff) {
       this.buffService.addBuff(item.buff);
     }
 
-    // Consume one item.
-    this.removeItem(itemId, 1);
-
-    console.log('🧪 USED ITEM:', item.name);
-    return true;
+    return this.removeItem(itemId, 1);
   }
 
-  // ==============================================================
-  // ADD BERRY (FIX: WORKS AFTER QUANTITY REACHES ZERO)
-  // ==============================================================
+  // ==========================================
+  // COLETA DAS FRUTINHAS
+  // ==========================================
 
   addBerry(amount: number): void {
-    if (!Number.isInteger(amount) || amount <= 0) {
+    if (
+      !Number.isInteger(amount) ||
+      amount <= 0
+    ) {
       return;
     }
 
-    // Use addItem so the berry is recreated if the player
-    // previously consumed their last one.
-    this.addItem(
-      {
-        id: 'berry',
-        name: 'Crimson Jewel',
-        category: 'items',
-        description:
-          'A fresh berry gathered from a wild bush. Restores a small amount of health.',
-        icon: '/assets/berry.png',
-        quantity: 0,
-        usable: true,
-        maxStack: 99,
-        buff: {
-          type: 'health',
-          value: 10
-        }
-      },
-      amount
-    );
+    // Recria a fruta caso todas tenham sido
+    // consumidas anteriormente.
+    this.addItem(STARTER_ITEMS[0], amount);
+  }
+
+  // ==========================================
+  // SALVAR ALTERAÇÕES
+  // ==========================================
+
+  private changed(): void {
+    this.revision.update(n => n + 1);
+    this.save();
+  }
+
+  private get storageKey(): string {
+    return this.account.storageKey('inventory-items-v2');
+  }
+
+  private save(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(
+        this.storageKey,
+        JSON.stringify(this.items)
+      );
+    } catch (error) {
+      console.warn(
+        'Falha ao salvar o inventário:',
+        error
+      );
+    }
+  }
+
+  // ==========================================
+  // CARREGAR ITENS SALVOS
+  // ==========================================
+
+  private load(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      this.items = STARTER_ITEMS.map(
+        item => ({ ...item })
+      );
+      return;
+    }
+
+    try {
+      const raw = localStorage.getItem(
+        this.storageKey
+      );
+
+      if (!raw) {
+        this.items = STARTER_ITEMS.map(
+          item => ({ ...item })
+        );
+      } else {
+        const parsed: unknown = JSON.parse(raw);
+
+        this.items = Array.isArray(parsed)
+          ? parsed.filter(
+              (item): item is InventoryItem =>
+                item &&
+                typeof item.id === 'string' &&
+                typeof item.name === 'string' &&
+                typeof item.category === 'string' &&
+                typeof item.quantity === 'number' &&
+                Number.isInteger(item.quantity) &&
+                item.quantity > 0 &&
+                typeof item.usable === 'boolean' &&
+                typeof item.description === 'string'
+            )
+          : STARTER_ITEMS.map(item => ({ ...item }));
+      }
+
+    } catch {
+      this.items = STARTER_ITEMS.map(
+        item => ({ ...item })
+      );
+    }
+
+    this.revision.update(n => n + 1);
   }
 }

@@ -1,0 +1,269 @@
+
+:host {
+  display: contents;
+}
+
+.quickbar-root {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  pointer-events: auto;
+  color: #f2f1ff;
+  font-family: inherit;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+}
+
+.quickbar-slots {
+  display: flex;
+  align-items: end;
+  gap: 6px;
+  justify-content: center;
+}
+
+.quickbar-slot {
+  position: relative;
+  width: 54px;
+  height: 55px;
+  padding: 5px;
+
+  border: 1px solid rgba(165, 165, 235, 0.4);
+  border-radius: 9px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(21, 24, 48, 0.96),
+    rgba(10, 15, 30, 0.95)
+  );
+
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.35);
+  color: #b2b6d0;
+  cursor: pointer;
+
+  transition:
+    border-color 150ms,
+    transform 150ms;
+}
+
+.quickbar-slot:hover,
+.quickbar-selected {
+  border-color: #d9b974;
+  transform: translateY(-2px);
+}
+
+.quickbar-slot img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 6px auto 0;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.quickbar-number {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #f4e2ac;
+}
+
+.quickbar-count {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font-size: 11px;
+  color: white;
+  text-shadow: 0 1px 2px #000;
+}
+
+.quickbar-plus {
+  font-size: 22px;
+  opacity: 0.45;
+}
+
+.quickbar-help {
+  width: 23px;
+  height: 23px;
+  border: 1px solid #626d89;
+  border-radius: 50%;
+  background: #17243a;
+  color: #d0d8f0;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.quickbar-tip,
+.quickbar-picker {
+  width: min(330px, calc(100vw - 30px));
+  box-sizing: border-box;
+  margin: 0 auto 10px;
+  padding: 12px 13px;
+
+  border: 1px solid #6474a1;
+  border-radius: 10px;
+  background: rgba(10, 16, 34, 0.97);
+  box-shadow: 0 15px 26px rgba(0, 0, 0, 0.42);
+
+  font-size: 12px;
+}
+
+.quickbar-tip {
+  position: relative;
+}
+
+.quickbar-tip strong {
+  color: #e8cf92;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+.quickbar-tip p {
+  margin: 7px 0 0;
+  line-height: 1.4;
+}
+
+.quickbar-tip-close {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+
+  background: none;
+  border: 0;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.quickbar-tip kbd {
+  padding: 1px 4px;
+  border: 1px solid #65718d;
+  border-radius: 4px;
+}
+
+.quickbar-picker {
+  max-height: 265px;
+  overflow-y: auto;
+}
+
+.quickbar-picker-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #e8cf92;
+}
+
+.quickbar-picker-heading button {
+  color: white;
+  background: none;
+  border: 0;
+  font-size: 21px;
+  cursor: pointer;
+}
+
+.quickbar-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 4px;
+
+  background: transparent;
+  color: #fff;
+  border: 0;
+  border-bottom: 1px solid #2b3651;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.quickbar-option:hover {
+  background: rgba(125, 144, 198, 0.2);
+}
+
+.quickbar-option img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.quickbar-option span {
+  min-width: 0;
+  flex: 1;
+}
+
+.quickbar-option small {
+  display: block;
+  max-width: 230px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #a2aec8;
+  font-size: 10px;
+}
+
+.quickbar-option em {
+  font-size: 10px;
+  font-style: normal;
+  color: #e8cf92;
+}
+
+.quickbar-empty {
+  color: #b2bacd;
+  line-height: 1.5;
+}
+
+.quickbar-unequip {
+  width: 100%;
+  margin-top: 9px;
+  padding: 7px;
+
+  background: #38232b;
+  border: 1px solid #994c5a;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.quickbar-feedback {
+  position: absolute;
+  bottom: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: max-content;
+  max-width: 85vw;
+  padding: 6px 10px;
+
+  background: #141d31;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #e9cf97;
+}
+
+@media (max-width: 650px) {
+  .quickbar-root {
+    bottom: 10px;
+  }
+
+  .quickbar-slot {
+    width: 44px;
+    height: 46px;
+  }
+
+  .quickbar-slot img {
+    width: 27px;
+    height: 27px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quickbar-slot {
+    transition: none;
+  }
+}

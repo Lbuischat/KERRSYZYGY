@@ -24,6 +24,7 @@ import {
 import { ActionBar } from '../combat/action-bar/action-bar';
 import { InventoryButton } from './inventory-button/inventory-button';
 import { SettingsButton } from './settings-button/settings-button';
+import { Quickbar } from './quickbar/quickbar';
 
 import {
   GameStateService
@@ -39,7 +40,8 @@ import {
     MiniMap,
     ActionBar,
     InventoryButton,
-    SettingsButton
+    SettingsButton,
+    Quickbar
   ],
   templateUrl: './hud.html',
   styleUrl: './hud.css'
@@ -56,7 +58,8 @@ export class Hud implements OnInit, OnDestroy {
     new Subscription();
 
   // =========================================
-  // VIDA E STAMINA — MESMO ESTADO DO PLAYER
+  // VIDA E STAMINA
+  // Mesmo estado das barras acima do player
   // =========================================
 
   readonly vitals = toSignal(
@@ -79,10 +82,6 @@ export class Hud implements OnInit, OnDestroy {
   get maxStamina(): number {
     return this.vitals().maxStamina;
   }
-
-  // =========================================
-  // PORCENTAGENS
-  // =========================================
 
   get healthPercent(): number {
     const data = this.vitals();
@@ -117,11 +116,10 @@ export class Hud implements OnInit, OnDestroy {
   }
 
   // =========================================
-  // CORES DA VIDA
+  // CORES DE VIDA
   // =========================================
 
   get healthColor(): string {
-
     if (this.healthPercent <= 25) {
       return '#ef4444';
     }
@@ -141,14 +139,13 @@ export class Hud implements OnInit, OnDestroy {
   }
 
   // =========================================
-  // MISSÕES
+  // PAINEL DE MISSÕES
   // =========================================
 
   questsCollapsed = false;
 
   toggleQuests(): void {
-    this.questsCollapsed =
-      !this.questsCollapsed;
+    this.questsCollapsed = !this.questsCollapsed;
   }
 
   // =========================================
@@ -174,9 +171,7 @@ export class Hud implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.gameStateService.playerPosition$
         .subscribe(position => {
-
           this.playerPosition = position;
-
           this.cdr.detectChanges();
         })
     );
@@ -184,9 +179,7 @@ export class Hud implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.gameStateService.enemyPositions$
         .subscribe(positions => {
-
           this.enemies = positions;
-
           this.cdr.detectChanges();
         })
     );
