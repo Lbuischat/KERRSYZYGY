@@ -1326,3 +1326,23 @@
     --rarity-color: #ffd27a;
     --rarity-glow: rgba(255, 184, 60, .28);
 }
+/* ==========================================
+   ROLAGEM DA LOJA
+   ========================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+
+.global-shop {
+  min-height: 100%;
+}

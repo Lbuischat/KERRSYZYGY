@@ -1,4 +1,3 @@
-
 import { isPlatformBrowser } from '@angular/common';
 import {
   Component,
@@ -8,13 +7,14 @@ import {
   OnInit,
   PLATFORM_ID
 } from '@angular/core';
-
 import { Router } from '@angular/router';
 
 import { ShopCbb } from './shop-cbb';
 import { PlayerService } from '../../../services/player.service';
 import { InventoryService } from '../../../services/Inventory/inventory.service';
 import { toInventoryItem } from './shop-inventory.adapter';
+import { LUMI_CONSUMABLES } from './consumables';
+import { LUMI_SHOP_EXPANSION } from './shop-expansion';
 
 type ShopCategory =
   | 'recommended'
@@ -26,14 +26,7 @@ type ShopCategory =
   | 'wishes';
 
 type ShopCurrency = 'credits' | 'xp';
-
-type ShopRarity =
-  | 'common'
-  | 'uncommon'
-  | 'rare'
-  | 'epic'
-  | 'legendary';
-
+type ShopRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 type MessageType = 'sucesso' | 'erro';
 
 interface ShopItem {
@@ -79,15 +72,10 @@ interface ShopSaveData {
   styleUrl: './shop.css'
 })
 export class Shop implements OnInit, OnDestroy {
-
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
-
-  private readonly playerService =
-    inject(PlayerService);
-
-  private readonly inventoryService =
-    inject(InventoryService);
+  private readonly playerService = inject(PlayerService);
+  private readonly inventoryService = inject(InventoryService);
 
   private readonly STORAGE_KEY = 'game-shop-state';
   private readonly MAX_HISTORY = 100;
@@ -112,7 +100,7 @@ export class Shop implements OnInit, OnDestroy {
   tipoMensagem: MessageType = 'sucesso';
 
   // ==========================================
-  // CARTEIRA
+  // CARTEIRA DO JOGADOR
   // ==========================================
 
   get credits(): number {
@@ -123,6 +111,7 @@ export class Shop implements OnInit, OnDestroy {
     this.playerService.setCredits(value);
   }
 
+  // XP da Loja, separado do XP do nível.
   get xp(): number {
     return this.playerService.shopXp();
   }
@@ -132,11 +121,10 @@ export class Shop implements OnInit, OnDestroy {
   }
 
   // ==========================================
-  // CATÁLOGO DA LOJA DA LUMI
+  // CATÁLOGO ORIGINAL
   // ==========================================
 
   boosts: ShopItem[] = [
-
     {
       id: 'character-exp',
       nome: 'Stellar Concentrate',
@@ -151,7 +139,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'character-exp'
     },
-
     {
       id: 'weapon-material',
       nome: 'Tungsten Alloy',
@@ -166,12 +153,11 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'weapon-enhancement'
     },
-
     {
       id: 'ability-core',
       nome: 'Resonance Charge',
       descricao:
-        'Stored energy capable of intensifying the response of abilities and powers.',
+        'Stored energy capable of intensifying the response ofabilities and powers.',
       icone: '✧',
       imagem: '/assets/items/shop/ability-core.webp',
       raridade: 'rare',
@@ -181,7 +167,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'ability'
     },
-
     {
       id: 'ascension-material',
       nome: 'Collapse Matter',
@@ -196,7 +181,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'ascension'
     },
-
     {
       id: 'character-exp-large',
       nome: 'Refined Stellar Concentrate',
@@ -211,7 +195,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'character-exp'
     },
-
     {
       id: 'character-ascension',
       nome: 'Collapse Residue',
@@ -226,7 +209,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'ascension'
     },
-
     {
       id: 'character-skill',
       nome: 'Neural Record',
@@ -241,7 +223,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'talent'
     },
-
     {
       id: 'weapon-exp',
       nome: 'Energy Cell',
@@ -256,7 +237,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'weapon-exp'
     },
-
     {
       id: 'weapon-ascension',
       nome: 'Iridium Alloy',
@@ -271,12 +251,11 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'weapon-ascension'
     },
-
     {
       id: 'weapon-core',
       nome: 'Resonance Matrix',
       descricao:
-        'An energetic structure used to refine and stabilize a weapon’s operation.',
+        'An energetic structure used to refine and stabilize aweapon’s operation.',
       icone: '✦',
       imagem: '/assets/items/shop/weapon-core.webp',
       raridade: 'legendary',
@@ -286,12 +265,11 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'refinement'
     },
-
     {
       id: 'ability-exp',
       nome: 'Energy Pulse',
       descricao:
-        'A stabilized energetic discharge used to increase the potency of abilities.',
+        'A stabilized energetic discharge used to increase thepotency of abilities.',
       icone: '✧',
       imagem: '/assets/items/shop/ability-exp.webp',
       raridade: 'uncommon',
@@ -301,7 +279,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'ability-exp'
     },
-
     {
       id: 'ability-core-rare',
       nome: 'Resonance Condensate',
@@ -316,7 +293,6 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'ability-core'
     },
-
     {
       id: 'basic-material',
       nome: 'Structural Alloy',
@@ -330,7 +306,6 @@ export class Shop implements OnInit, OnDestroy {
       categoria: 'materials',
       moeda: 'credits'
     },
-
     {
       id: 'rare-material',
       nome: 'Fusion Crystal',
@@ -344,7 +319,6 @@ export class Shop implements OnInit, OnDestroy {
       categoria: 'materials',
       moeda: 'credits'
     },
-
     {
       id: 'advanced-material',
       nome: 'Degenerate Matter',
@@ -358,7 +332,6 @@ export class Shop implements OnInit, OnDestroy {
       categoria: 'materials',
       moeda: 'credits'
     },
-
     {
       id: 'energy-food',
       nome: 'High-Density Ration',
@@ -372,7 +345,6 @@ export class Shop implements OnInit, OnDestroy {
       categoria: 'consumables',
       moeda: 'credits'
     },
-
     {
       id: 'exp-booster',
       nome: 'Metabolic Stimulant',
@@ -386,7 +358,6 @@ export class Shop implements OnInit, OnDestroy {
       categoria: 'consumables',
       moeda: 'credits'
     },
-
     {
       id: 'wish-token',
       nome: 'Stellar Resonator',
@@ -397,26 +368,26 @@ export class Shop implements OnInit, OnDestroy {
       raridade: 'uncommon',
       preco: 160,
       quantidade: 18,
-      categoria: 'wishes',
+      categoria: 'recommended',
       moeda: 'credits',
       subcategoria: 'wish'
     },
-
     {
       id: 'wish-pack',
       nome: 'Resonator Set',
       descricao:
-        'A set of resonators prepared for multiple attempts to establish contact with the phenomenon.',
+        'A set of resonators prepared for multiple attempts toestablish contact with the phenomenon.',
       icone: '✦',
       imagem: '/assets/items/shop/wish-pack.webp',
       raridade: 'epic',
       preco: 1500,
       quantidade: 2,
-      categoria: 'wishes',
+      categoria: 'recommended',
       moeda: 'credits',
       subcategoria: 'wish-pack'
-    }
-
+    },
+    ...LUMI_CONSUMABLES,
+    ...LUMI_SHOP_EXPANSION
   ];
 
   // ==========================================
@@ -447,8 +418,12 @@ export class Shop implements OnInit, OnDestroy {
 
   get itensVisiveis(): ShopItem[] {
 
-    // Wishes mostra somente os produtos
-    // marcados pelo jogador como favoritos.
+    // CORREÇÃO:
+    // WISHES mostra SOMENTE os itens que
+    // o jogador marcou com a estrela dourada.
+    //
+    // Não mostra automaticamente os produtos
+    // que possuem categoria "wishes".
     if (this.selectedCategory === 'wishes') {
       return this.boosts.filter(item =>
         this.wishlistIds.includes(item.id)
@@ -546,8 +521,7 @@ export class Shop implements OnInit, OnDestroy {
     const agora = new Date();
     const anterior = this.historico[0];
 
-    // Agrupa compras consecutivas
-    // do mesmo produto.
+    // Agrupa compras seguidas do mesmo produto.
     if (
       anterior &&
       anterior.itemId === item.id &&
@@ -604,9 +578,7 @@ export class Shop implements OnInit, OnDestroy {
 
     const saldo = this.obterSaldo(item);
 
-    // Saldo insuficiente: não efetua compra.
     if (saldo < item.preco) {
-
       if (mostrarFeedback) {
         this.mostrarMensagem(
           `Saldo insuficiente para comprar ${item.nome}.`,
@@ -617,29 +589,19 @@ export class Shop implements OnInit, OnDestroy {
       return false;
     }
 
-    // Desconta da carteira.
+    // Desconta da carteira do jogador.
     this.definirSaldo(item, saldo - item.preco);
 
-    // Atualiza o registro da loja.
+    // Atualiza o item comprado.
     item.quantidade += 1;
 
-    // ======================================
-    // INTEGRAÇÃO COM O INVENTÁRIO
-    // ======================================
+    // Entrega a compra ao inventário principal (quantidade de fato possuída).
+    this.inventoryService.addItem(toInventoryItem(item), 1);
 
-    // O produto comprado entra no inventário
-    // do jogador, mas NÃO é equipado
-    // automaticamente nos slots da hotbar.
-    this.inventoryService.addItem(
-      toInventoryItem(item),
-      1
-    );
-
-    // ======================================
-    // HISTÓRICO E SALVAMENTO
-    // ======================================
-
+    // Registra a transação.
     this.registrarCompra(item);
+
+    // Salva o estado.
     this.salvarEstado();
 
     if (mostrarFeedback) {
@@ -665,7 +627,6 @@ export class Shop implements OnInit, OnDestroy {
     }
 
     this.purchaseTimeout = setTimeout(() => {
-
       this.purchaseInterval = setInterval(() => {
 
         if (this.obterSaldo(item) < item.preco) {
@@ -680,7 +641,6 @@ export class Shop implements OnInit, OnDestroy {
         }
 
         this.comprarSilenciosamente(item);
-
       }, this.REPEAT_INTERVAL);
 
     }, this.INITIAL_REPEAT_DELAY);
@@ -699,9 +659,7 @@ export class Shop implements OnInit, OnDestroy {
     }
   }
 
-  private comprarSilenciosamente(
-    item: ShopItem
-  ): void {
+  private comprarSilenciosamente(item: ShopItem): void {
 
     if (!this.executarCompra(item, false)) {
       this.pararAcaoContinua();
@@ -709,7 +667,7 @@ export class Shop implements OnInit, OnDestroy {
   }
 
   // ==========================================
-  // SALDOS
+  // CONTROLE DOS SALDOS
   // ==========================================
 
   private obterSaldo(item: ShopItem): number {
@@ -731,7 +689,7 @@ export class Shop implements OnInit, OnDestroy {
   }
 
   // ==========================================
-  // MENSAGENS
+  // FEEDBACK DAS AÇÕES
   // ==========================================
 
   private mostrarMensagem(
@@ -743,11 +701,9 @@ export class Shop implements OnInit, OnDestroy {
     this.tipoMensagem = tipo;
 
     setTimeout(() => {
-
       if (this.mensagem === mensagem) {
         this.limparMensagem();
       }
-
     }, 2500);
   }
 
@@ -780,11 +736,12 @@ export class Shop implements OnInit, OnDestroy {
 
   voltarParaOJogo(): void {
     this.pararAcaoContinua();
+
     void this.router.navigate(['/game']);
   }
 
   // ==========================================
-  // SALVAR ESTADO
+  // SALVAR ESTADO DA LOJA
   // ==========================================
 
   private salvarEstado(): void {
@@ -809,12 +766,10 @@ export class Shop implements OnInit, OnDestroy {
     };
 
     try {
-
       localStorage.setItem(
         this.STORAGE_KEY,
         JSON.stringify(state)
       );
-
     } catch (error) {
       console.warn(
         'Não foi possível salvar a loja.',
@@ -824,7 +779,7 @@ export class Shop implements OnInit, OnDestroy {
   }
 
   // ==========================================
-  // CARREGAR ESTADO
+  // CARREGAR ESTADO DA LOJA
   // ==========================================
 
   private carregarEstado(): void {
@@ -846,13 +801,11 @@ export class Shop implements OnInit, OnDestroy {
       const state = JSON.parse(raw) as
         Partial<ShopSaveData>;
 
-      // Não carregamos credits ou xp daqui.
-      // PlayerService controla os saldos.
+      // IMPORTANTE:
+      // Não carregamos credits nem xp do estado.
+      // O PlayerService controla os dois saldos.
 
-      // ======================================
-      // WISHES
-      // ======================================
-
+      // CARREGAR WISHES
       if (Array.isArray(state.wishlistIds)) {
 
         this.wishlistIds = [
@@ -868,10 +821,7 @@ export class Shop implements OnInit, OnDestroy {
         ];
       }
 
-      // ======================================
-      // HISTÓRICO
-      // ======================================
-
+      // CARREGAR HISTÓRICO
       if (Array.isArray(state.history)) {
 
         this.historico = state.history
@@ -896,23 +846,15 @@ export class Shop implements OnInit, OnDestroy {
           .slice(0, this.MAX_HISTORY);
       }
 
-      // ======================================
-      // CATEGORIA
-      // ======================================
-
+      // CARREGAR CATEGORIA
       if (
-        this.isValidCategory(
-          state.selectedCategory
-        )
+        this.isValidCategory(state.selectedCategory)
       ) {
         this.selectedCategory =
           state.selectedCategory;
       }
 
-      // ======================================
-      // QUANTIDADES DA LOJA
-      // ======================================
-
+      // CARREGAR QUANTIDADES
       if (state.quantities) {
 
         for (const item of this.boosts) {
@@ -924,6 +866,7 @@ export class Shop implements OnInit, OnDestroy {
             typeof quantity === 'number' &&
             Number.isFinite(quantity)
           ) {
+
             item.quantidade = Math.max(
               0,
               Math.floor(quantity)

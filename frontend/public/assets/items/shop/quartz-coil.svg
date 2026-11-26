@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Quartz Coil">
+    <defs><radialGradient id="bg"><stop offset="0" stop-color="#253147"/><stop offset="1" stop-color="#111421"/></radialGradient>
+    <linearGradient id="fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BAC9D1"/><stop offset="1" stop-color="#9EA7AC"/></linearGradient></defs>
+    <rect x="3" y="3" width="90" height="90" rx="18" fill="url(#bg)" stroke="#9EA7AC" stroke-width="3"/>
+    <circle cx="48" cy="48" r="36" fill="none" stroke="#9EA7AC" stroke-opacity=".4" stroke-width="1"/>
+    <circle cx="80" cy="61" r="1.4" fill="#fff" opacity="0.38"/><circle cx="23" cy="33" r="1.0" fill="#fff" opacity="0.53"/><circle cx="18" cy="49" r="1.4" fill="#fff" opacity="0.40"/><circle cx="42" cy="83" r="0.7" fill="#fff" opacity="0.42"/><circle cx="68" cy="21" r="1.4" fill="#fff" opacity="0.24"/><circle cx="44" cy="31" r="1.4" fill="#fff" opacity="0.45"/><circle cx="81" cy="22" r="1.0" fill="#fff" opacity="0.48"/><circle cx="56" cy="68" r="1.4" fill="#fff" opacity="0.42"/><circle cx="46" cy="49" r="0.7" fill="#fff" opacity="0.22"/><circle cx="55" cy="28" r="1.0" fill="#fff" opacity="0.29"/><circle cx="79" cy="72" r="1.4" fill="#fff" opacity="0.25"/> <rect x="24" y="30" width="48" height="36" rx="6" fill="url(#fill)" stroke="#F1F5FF" stroke-width="2"/><path d="M32 38 V58 M44 38 V58 M56 38 V58 M68 38 V58" stroke="#223142" stroke-width="4"/><path d="M33 23 V30 M48 23 V30 M63 23 V30" stroke="#ECF4FF" stroke-width="4"/>
+    <circle cx="75" cy="21" r="5" fill="#BAC9D1" opacity=".9"/><path d="M21 79 L32 79" stroke="#BAC9D1" opacity=".7" stroke-width="2" />
+    </svg>
