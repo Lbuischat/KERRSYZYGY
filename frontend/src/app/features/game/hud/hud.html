@@ -1,25 +1,32 @@
-
-<div class="pointer-events-none absolute inset-0">
+<div
+  #hudRoot
+  class="pointer-events-none absolute inset-0"
+>
 
   <!-- =====================================
        EFEITO DE PERIGO
   ===================================== -->
 
   @if (isCritical) {
+
     <div
       class="hud-danger-vignette"
       aria-hidden="true"
     ></div>
+
   }
 
   <!-- =====================================
-       INFORMAÇÕES DO JOGADOR
+       INFORMAÇÕES DO PERSONAGEM
   ===================================== -->
 
   <div
     class="pointer-events-auto absolute left-6 top-10"
+    data-hud-occlusion
   >
+
     <app-player-info-bnt />
+
   </div>
 
   <!-- =====================================
@@ -30,21 +37,32 @@
     class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3"
   >
 
-    <app-inventory-button
-      (inventoryClicked)="toggleInventory()"
-    />
+    <div data-hud-occlusion>
 
-    <app-shop-button />
+      <app-inventory-button
+        (inventoryClicked)="toggleInventory()"
+      />
+
+    </div>
+
+    <div data-hud-occlusion>
+
+      <app-shop-button />
+
+    </div>
 
   </div>
 
   <!-- =====================================
-       HUD DE VIDA, STAMINA E MISSÕES
+       VIDA, STAMINA E MISSÕES
   ===================================== -->
 
   <div class="hud-quest-dock">
 
-    <!-- STATUS SEMPRE VISÍVEL -->
+    <!-- =================================
+         BARRAS SEMPRE VISÍVEIS
+    ================================= -->
+
     <div
       class="hud-status-stack"
       role="group"
@@ -52,6 +70,7 @@
     >
 
       <!-- VIDA -->
+
       <div
         class="hud-status-card hud-hp"
         [class.hud-hp-critical]="isCritical"
@@ -60,7 +79,13 @@
         <div class="hud-status-heading">
 
           <span class="hud-status-label">
-            {{ isCritical ? '♥ PERIGO' : '♥ VIDA' }}
+
+            {{
+              isCritical
+                ? '♥ PERIGO'
+                : '♥ VIDA'
+            }}
+
           </span>
 
           <span class="hud-status-value">
@@ -73,9 +98,9 @@
           class="hud-status-track"
           role="progressbar"
           aria-label="Vida do jogador"
+          aria-valuemin="0"
           [attr.aria-valuenow]="currentHealth"
           [attr.aria-valuemax]="maxHealth"
-          aria-valuemin="0"
         >
 
           <div
@@ -89,6 +114,7 @@
       </div>
 
       <!-- STAMINA -->
+
       <div class="hud-status-card hud-stamina">
 
         <div class="hud-status-heading">
@@ -107,9 +133,9 @@
           class="hud-status-track"
           role="progressbar"
           aria-label="Stamina do jogador"
+          aria-valuemin="0"
           [attr.aria-valuenow]="currentStamina"
           [attr.aria-valuemax]="maxStamina"
-          aria-valuemin="0"
         >
 
           <div
@@ -124,12 +150,13 @@
     </div>
 
     <!-- =================================
-         BOTÃO RECOLHER MISSÕES
+         RECOLHER MISSÕES
     ================================= -->
 
     <button
       type="button"
       class="hud-quest-toggle"
+      data-hud-occlusion
       (click)="toggleQuests()"
       [attr.aria-expanded]="!questsCollapsed"
       aria-controls="hud-quest-content"
@@ -145,11 +172,13 @@
       </span>
 
       <span>
+
         {{
           questsCollapsed
             ? 'ABRIR MISSÕES'
             : 'RECOLHER MISSÕES'
         }}
+
       </span>
 
     </button>
@@ -161,9 +190,12 @@
     <div
       id="hud-quest-content"
       class="hud-quest-body"
+      data-hud-occlusion
       [hidden]="questsCollapsed"
     >
+
       <app-task-panel />
+
     </div>
 
   </div>
@@ -174,6 +206,7 @@
 
   <div
     class="pointer-events-auto absolute right-6 top-35"
+    data-hud-occlusion
   >
 
     <app-mini-map
@@ -191,12 +224,15 @@
 
   <div
     class="pointer-events-auto absolute bottom-6 right-6"
+    data-hud-occlusion
   >
+
     <app-action-bar />
+
   </div>
 
   <!-- =====================================
-       HOTBAR DE 3 SLOTS
+       HOTBAR DE TRÊS SLOTS
   ===================================== -->
 
   <app-quickbar />
@@ -207,6 +243,7 @@
 
   <div
     class="hud-settings-anchor pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2"
+    data-hud-occlusion
   >
 
     <app-settings-button
