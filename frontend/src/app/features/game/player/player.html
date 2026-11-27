@@ -1,40 +1,55 @@
-<div id="player" class="absolute">
 
-  <!-- =====================================
-       HEALTH
-  ===================================== -->
+<div id="player">
 
-  <div
-    id="player-health-container"
-    class="absolute bottom-full left-1/2 mb-3 h-2 w-10 -translate-x-1/2 overflow-hidden rounded-full bg-black/50"
-  >
-    <div
-      id="player-health-bar"
-      class="h-full bg-red-500"
-      style="width: 100%"
-    ></div>
+  <!-- BARRAS TEMPORÁRIAS SOBRE O PERSONAGEM -->
+  <!-- USAM OS MESMOS DADOS DO HUD -->
+
+  <div class="player-overhead-vitals" aria-hidden="true">
+
+    @if (playerVitals(); as vitals) {
+
+      <!-- VIDA: aparece ao sofrer dano ou receber cura -->
+      <div
+        id="player-overhead-health"
+        class="player-overhead-card player-overhead-health"
+        [class.is-visible]="vitals.showHealth"
+      >
+        <div class="player-overhead-track">
+          <div
+            id="player-overhead-health-fill"
+            class="player-overhead-fill"
+            [style.width.%]="vitals.maxHealth > 0 ? (vitals.health / vitals.maxHealth) * 100 : 0"
+            [style.background-color]="
+              vitals.health <= vitals.maxHealth * 0.25
+                ? '#ef4444'
+                : vitals.health <= vitals.maxHealth * 0.55
+                  ? '#f5b841'
+                  : '#3ed18b'
+            "
+          ></div>
+        </div>
+      </div>
+
+      <!-- STAMINA: aparece ao correr ou usar habilidades -->
+      <div
+        id="player-overhead-stamina"
+        class="player-overhead-card player-overhead-stamina"
+        [class.is-visible]="vitals.showStamina"
+      >
+        <div class="player-overhead-track">
+          <div
+            id="player-overhead-stamina-fill"
+            class="player-overhead-fill"
+            [style.width.%]="vitals.maxStamina > 0 ? (vitals.stamina / vitals.maxStamina) * 100 : 0"
+          ></div>
+        </div>
+      </div>
+
+    }
+
   </div>
 
-
-  <!-- =====================================
-       STAMINA
-  ===================================== -->
-
-  <div
-    id="stamina-container"
-    class="absolute bottom-full left-1/2 mb-1 hidden h-2 w-10 -translate-x-1/2 overflow-hidden rounded-full bg-black/50"
-  >
-    <div
-      id="stamina-bar"
-      class="h-full bg-yellow-400"
-      style="width: 100%"
-    ></div>
-  </div>
-
-
-  <!-- =====================================
-       PLAYER CHARACTER
-  ===================================== -->
+  <!-- PERSONAGEM ORIGINAL -->
 
   <div id="player-character" class="pixel-character">
 
@@ -44,244 +59,383 @@
       viewBox="0 0 40 48"
       shape-rendering="crispEdges"
       role="img"
-      aria-label="Player character"
+      aria-label="Personagem do jogador"
     >
 
-      <!-- SHADOW -->
-      <rect x="8" y="45" width="24" height="2"
-            fill="#101628" opacity=".45"/>
+      <!-- SOMBRA -->
+      <rect
+        x="8" y="45" width="24" height="2"
+        fill="#101628" opacity=".45"
+      />
 
-      <!-- CAPE -->
+      <!-- CAPA -->
       <path
         d="M12 25H28L33 42H7Z"
         fill="#192035"
       />
+
       <path
         d="M12 25H28L32 41H8Z"
         fill="var(--sprite-cape, #142d40)"
       />
 
-      <!-- BOOTS -->
-      <rect x="11" y="38" width="8" height="7"
-            fill="#15192d"/>
-      <rect x="21" y="38" width="8" height="7"
-            fill="#15192d"/>
+      <!-- BOTAS -->
+      <rect
+        x="11" y="38" width="8" height="7"
+        fill="#15192d"
+      />
 
-      <rect x="10" y="43" width="10" height="2"
-            fill="var(--sprite-accent, #80d9ff)"/>
-      <rect x="20" y="43" width="10" height="2"
-            fill="var(--sprite-accent, #80d9ff)"/>
+      <rect
+        x="21" y="38" width="8" height="7"
+        fill="#15192d"
+      />
 
-      <!-- LEGS -->
-      <rect x="12" y="34" width="7" height="7"
-            fill="var(--sprite-dark, #192c43)"/>
-      <rect x="21" y="34" width="7" height="7"
-            fill="var(--sprite-dark, #192c43)"/>
+      <rect
+        x="10" y="43" width="10" height="2"
+        fill="var(--sprite-accent, #80d9ff)"
+      />
 
-      <!-- ARMS -->
-      <rect x="5" y="27" width="7" height="12"
-            fill="#192035"/>
-      <rect x="28" y="27" width="7" height="12"
-            fill="#192035"/>
+      <rect
+        x="20" y="43" width="10" height="2"
+        fill="var(--sprite-accent, #80d9ff)"
+      />
 
-      <rect x="6" y="28" width="6" height="8"
-            fill="var(--sprite-outfit, #26435e)"/>
-      <rect x="28" y="28" width="6" height="8"
-            fill="var(--sprite-outfit, #26435e)"/>
+      <!-- PERNAS -->
+      <rect
+        x="12" y="34" width="7" height="7"
+        fill="var(--sprite-dark, #192c43)"
+      />
 
-      <!-- HANDS -->
-      <rect x="6" y="36" width="6" height="4"
-            fill="var(--sprite-skin, #b87959)"/>
-      <rect x="28" y="36" width="6" height="4"
-            fill="var(--sprite-skin, #b87959)"/>
+      <rect
+        x="21" y="34" width="7" height="7"
+        fill="var(--sprite-dark, #192c43)"
+      />
 
-      <!-- TORSO -->
-      <rect x="11" y="25" width="18" height="14"
-            fill="#191e35"/>
+      <!-- BRAÇOS -->
+      <rect
+        x="5" y="27" width="7" height="12"
+        fill="#192035"
+      />
 
-      <rect x="13" y="27" width="14" height="10"
-            fill="var(--sprite-outfit, #26435e)"/>
+      <rect
+        x="28" y="27" width="7" height="12"
+        fill="#192035"
+      />
 
-      <!-- SHOULDER PADS -->
-      <rect x="10" y="27" width="5" height="4"
-            fill="var(--sprite-accent, #80d9ff)"/>
-      <rect x="25" y="27" width="5" height="4"
-            fill="var(--sprite-accent, #80d9ff)"/>
+      <rect
+        x="6" y="28" width="6" height="8"
+        fill="var(--sprite-outfit, #26435e)"
+      />
 
-      <!-- COLLAR -->
-      <rect x="15" y="26" width="10" height="3"
-            fill="var(--sprite-dark, #192c43)"/>
+      <rect
+        x="28" y="28" width="6" height="8"
+        fill="var(--sprite-outfit, #26435e)"
+      />
 
-      <rect x="16" y="26" width="8" height="1"
-            fill="var(--sprite-accent, #80d9ff)"/>
+      <!-- MÃOS -->
+      <rect
+        x="6" y="36" width="6" height="4"
+        fill="var(--sprite-skin, #b87959)"
+      />
 
-      <!-- BELT -->
-      <rect x="12" y="36" width="16" height="3"
-            fill="#171a30"/>
+      <rect
+        x="28" y="36" width="6" height="4"
+        fill="var(--sprite-skin, #b87959)"
+      />
 
-      <rect x="18" y="36" width="4" height="3"
-            fill="#f8d88d"/>
+      <!-- TRONCO -->
+      <rect
+        x="11" y="25" width="18" height="14"
+        fill="#191e35"
+      />
 
-      <!-- STAR EMBLEM -->
-      <rect x="18" y="30" width="4" height="6"
-            fill="var(--sprite-accent, #80d9ff)"/>
+      <rect
+        x="13" y="27" width="14" height="10"
+        fill="var(--sprite-outfit, #26435e)"
+      />
 
-      <rect x="16" y="32" width="8" height="2"
-            fill="var(--sprite-accent, #80d9ff)"/>
+      <!-- OMBREIRAS -->
+      <rect
+        x="10" y="27" width="5" height="4"
+        fill="var(--sprite-accent, #80d9ff)"
+      />
 
-      <rect x="19" y="32" width="2" height="2"
-            fill="#ffffff"/>
+      <rect
+        x="25" y="27" width="5" height="4"
+        fill="var(--sprite-accent, #80d9ff)"
+      />
 
-      <!-- NECK -->
-      <rect x="16" y="23" width="8" height="5"
-            fill="var(--sprite-skin, #b87959)"/>
+      <!-- GOLA -->
+      <rect
+        x="15" y="26" width="10" height="3"
+        fill="var(--sprite-dark, #192c43)"
+      />
 
-      <!-- HEAD OUTLINE -->
-      <rect x="12" y="9" width="16" height="18"
-            fill="#20243b"/>
-      <rect x="10" y="13" width="20" height="10"
-            fill="#20243b"/>
+      <rect
+        x="16" y="26" width="8" height="1"
+        fill="var(--sprite-accent, #80d9ff)"
+      />
 
-      <!-- EARS -->
-      <rect x="9" y="17" width="4" height="6"
-            fill="var(--sprite-skin, #b87959)"/>
-      <rect x="27" y="17" width="4" height="6"
-            fill="var(--sprite-skin, #b87959)"/>
+      <!-- CINTO -->
+      <rect
+        x="12" y="36" width="16" height="3"
+        fill="#171a30"
+      />
 
-      <!-- FACE -->
-      <rect x="13" y="12" width="14" height="13"
-            fill="var(--sprite-skin, #b87959)"/>
+      <rect
+        x="18" y="36" width="4" height="3"
+        fill="#f8d88d"
+      />
 
-      <rect x="15" y="25" width="10" height="2"
-            fill="var(--sprite-skin, #b87959)"/>
+      <!-- EMBLEMA ESTELAR -->
+      <rect
+        x="18" y="30" width="4" height="6"
+        fill="var(--sprite-accent, #80d9ff)"
+      />
 
-      <!-- HAIR -->
-      <rect x="12" y="7" width="16" height="8"
-            fill="var(--sprite-hair, #192237)"/>
+      <rect
+        x="16" y="32" width="8" height="2"
+        fill="var(--sprite-accent, #80d9ff)"
+      />
 
-      <rect x="14" y="5" width="12" height="4"
-            fill="var(--sprite-hair, #192237)"/>
+      <rect
+        x="19" y="32" width="2" height="2"
+        fill="#ffffff"
+      />
 
-      <rect x="10" y="11" width="5" height="7"
-            fill="var(--sprite-hair, #192237)"/>
+      <!-- PESCOÇO -->
+      <rect
+        x="16" y="23" width="8" height="5"
+        fill="var(--sprite-skin, #b87959)"
+      />
 
-      <rect x="25" y="11" width="5" height="7"
-            fill="var(--sprite-hair, #192237)"/>
+      <!-- CABEÇA: CONTORNO -->
+      <rect
+        x="12" y="9" width="16" height="18"
+        fill="#20243b"
+      />
 
-      <!-- BANGS -->
-      <rect x="15" y="13" width="5" height="2"
-            fill="var(--sprite-hair, #192237)"/>
+      <rect
+        x="10" y="13" width="20" height="10"
+        fill="#20243b"
+      />
 
-      <rect x="23" y="12" width="3" height="3"
-            fill="var(--sprite-hair, #192237)"/>
+      <!-- ORELHAS -->
+      <rect
+        x="9" y="17" width="4" height="6"
+        fill="var(--sprite-skin, #b87959)"
+      />
 
-      <!-- CARTOON EYES -->
-      <rect x="15" y="17" width="4" height="5"
-            fill="#19203b"/>
+      <rect
+        x="27" y="17" width="4" height="6"
+        fill="var(--sprite-skin, #b87959)"
+      />
 
-      <rect x="22" y="17" width="4" height="5"
-            fill="#19203b"/>
+      <!-- ROSTO -->
+      <rect
+        x="13" y="12" width="14" height="13"
+        fill="var(--sprite-skin, #b87959)"
+      />
 
-      <rect x="15" y="17" width="2" height="2"
-            fill="#ffffff"/>
+      <rect
+        x="15" y="25" width="10" height="2"
+        fill="var(--sprite-skin, #b87959)"
+      />
 
-      <rect x="22" y="17" width="2" height="2"
-            fill="#ffffff"/>
+      <!-- CABELO -->
+      <rect
+        x="12" y="7" width="16" height="8"
+        fill="var(--sprite-hair, #192237)"
+      />
 
-      <!-- BLUSH -->
-      <rect x="13" y="22" width="3" height="2"
-            fill="#f59eaa" opacity=".6"/>
+      <rect
+        x="14" y="5" width="12" height="4"
+        fill="var(--sprite-hair, #192237)"
+      />
 
-      <rect x="25" y="22" width="2" height="2"
-            fill="#f59eaa" opacity=".6"/>
+      <rect
+        x="10" y="11" width="5" height="7"
+        fill="var(--sprite-hair, #192237)"
+      />
 
-      <!-- SMILE -->
-      <rect x="18" y="24" width="4" height="1"
-            fill="#70435e"/>
+      <rect
+        x="25" y="11" width="5" height="7"
+        fill="var(--sprite-hair, #192237)"
+      />
 
+      <!-- FRANJA -->
+      <rect
+        x="15" y="13" width="5" height="2"
+        fill="var(--sprite-hair, #192237)"
+      />
 
-      <!-- =====================================
-           EXPLORER ACCESSORY
-      ===================================== -->
+      <rect
+        x="23" y="12" width="3" height="3"
+        fill="var(--sprite-hair, #192237)"
+      />
 
+      <!-- OLHOS -->
+      <rect
+        x="15" y="17" width="4" height="5"
+        fill="#19203b"
+      />
+
+      <rect
+        x="22" y="17" width="4" height="5"
+        fill="#19203b"
+      />
+
+      <rect
+        x="15" y="17" width="2" height="2"
+        fill="#ffffff"
+      />
+
+      <rect
+        x="22" y="17" width="2" height="2"
+        fill="#ffffff"
+      />
+
+      <!-- BOCHECHAS -->
+      <rect
+        x="13" y="22" width="3" height="2"
+        fill="#f59eaa" opacity=".6"
+      />
+
+      <rect
+        x="25" y="22" width="2" height="2"
+        fill="#f59eaa" opacity=".6"
+      />
+
+      <!-- SORRISO -->
+      <rect
+        x="18" y="24" width="4" height="1"
+        fill="#70435e"
+      />
+
+      <!-- ACESSÓRIO EXPLORADOR -->
       <g class="accessory-explorer">
-        <rect x="12" y="13" width="16" height="3"
-              fill="#243247"/>
-        <rect x="13" y="13" width="5" height="3"
-              fill="#8beaff"/>
-        <rect x="22" y="13" width="5" height="3"
-              fill="#8beaff"/>
-        <rect x="14" y="13" width="2" height="1"
-              fill="#ffffff"/>
+        <rect
+          x="12" y="13" width="16" height="3"
+          fill="#243247"
+        />
+
+        <rect
+          x="13" y="13" width="5" height="3"
+          fill="#8beaff"
+        />
+
+        <rect
+          x="22" y="13" width="5" height="3"
+          fill="#8beaff"
+        />
+
+        <rect
+          x="14" y="13" width="2" height="1"
+          fill="#ffffff"
+        />
       </g>
 
-
-      <!-- =====================================
-           ORACLE ACCESSORY
-      ===================================== -->
-
+      <!-- ACESSÓRIO ORÁCULO -->
       <g class="accessory-oracle">
-        <rect x="11" y="8" width="18" height="5"
-              fill="var(--sprite-cape, #29234f)"/>
-        <rect x="10" y="12" width="3" height="7"
-              fill="var(--sprite-cape, #29234f)"/>
-        <rect x="27" y="12" width="3" height="7"
-              fill="var(--sprite-cape, #29234f)"/>
-        <rect x="19" y="8" width="2" height="4"
-              fill="#e9ddff"/>
-        <rect x="18" y="9" width="4" height="2"
-              fill="#bda6ff"/>
+        <rect
+          x="11" y="8" width="18" height="5"
+          fill="var(--sprite-cape, #29234f)"
+        />
+
+        <rect
+          x="10" y="12" width="3" height="7"
+          fill="var(--sprite-cape, #29234f)"
+        />
+
+        <rect
+          x="27" y="12" width="3" height="7"
+          fill="var(--sprite-cape, #29234f)"
+        />
+
+        <rect
+          x="19" y="8" width="2" height="4"
+          fill="#e9ddff"
+        />
+
+        <rect
+          x="18" y="9" width="4" height="2"
+          fill="#bda6ff"
+        />
       </g>
 
-
-      <!-- =====================================
-           GUARDIAN ACCESSORY
-      ===================================== -->
-
+      <!-- ACESSÓRIO GUARDIÃO -->
       <g class="accessory-guardian">
-        <rect x="12" y="8" width="16" height="5"
-              fill="#d09b4a"/>
-        <rect x="15" y="5" width="10" height="4"
-              fill="#f8d184"/>
-        <rect x="19" y="3" width="2" height="4"
-              fill="#fff1b7"/>
-        <rect x="18" y="9" width="4" height="3"
-              fill="#fff7da"/>
+        <rect
+          x="12" y="8" width="16" height="5"
+          fill="#d09b4a"
+        />
+
+        <rect
+          x="15" y="5" width="10" height="4"
+          fill="#f8d184"
+        />
+
+        <rect
+          x="19" y="3" width="2" height="4"
+          fill="#fff1b7"
+        />
+
+        <rect
+          x="18" y="9" width="4" height="3"
+          fill="#fff7da"
+        />
       </g>
 
-
-      <!-- =====================================
-           HUNTER ACCESSORY
-      ===================================== -->
-
+      <!-- ACESSÓRIO CAÇADOR -->
       <g class="accessory-hunter">
-        <rect x="11" y="15" width="18" height="3"
-              fill="#16434b"/>
-        <rect x="13" y="17" width="14" height="3"
-              fill="#16243d"/>
-        <rect x="14" y="17" width="5" height="2"
-              fill="#71e1c6"/>
-        <rect x="21" y="17" width="5" height="2"
-              fill="#71e1c6"/>
+        <rect
+          x="11" y="15" width="18" height="3"
+          fill="#16434b"
+        />
+
+        <rect
+          x="13" y="17" width="14" height="3"
+          fill="#16243d"
+        />
+
+        <rect
+          x="14" y="17" width="5" height="2"
+          fill="#71e1c6"
+        />
+
+        <rect
+          x="21" y="17" width="5" height="2"
+          fill="#71e1c6"
+        />
       </g>
 
-
-      <!-- =====================================
-           CHRONO ACCESSORY
-      ===================================== -->
-
+      <!-- ACESSÓRIO TEMPORAL -->
       <g class="accessory-chrono">
-        <rect x="13" y="7" width="14" height="3"
-              fill="#f3a3d5"/>
-        <rect x="11" y="5" width="3" height="5"
-              fill="#c58bf3"/>
-        <rect x="26" y="5" width="3" height="5"
-              fill="#c58bf3"/>
-        <rect x="19" y="4" width="2" height="6"
-              fill="#fff1fe"/>
+        <rect
+          x="13" y="7" width="14" height="3"
+          fill="#f3a3d5"
+        />
+
+        <rect
+          x="11" y="5" width="3" height="5"
+          fill="#c58bf3"
+        />
+
+        <rect
+          x="26" y="5" width="3" height="5"
+          fill="#c58bf3"
+        />
+
+        <rect
+          x="19" y="4" width="2" height="6"
+          fill="#fff1fe"
+        />
       </g>
 
     </svg>
+
+    <!-- SUOR QUANDO FERIDO OU EXAUSTO -->
+    <span class="player-sweat" aria-hidden="true"></span>
 
   </div>
 

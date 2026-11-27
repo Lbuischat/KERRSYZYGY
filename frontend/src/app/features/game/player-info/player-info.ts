@@ -155,7 +155,7 @@ export class PlayerInfo implements OnDestroy {
     },
     {
       id: 'lumi',
-      nome: 'Lumi',
+      nome: 'Shop',
       classe: 'ANDROIDE DAS ESTRELAS',
       frase: 'Até uma máquina pode aprender a sonhar.',
       descricao:

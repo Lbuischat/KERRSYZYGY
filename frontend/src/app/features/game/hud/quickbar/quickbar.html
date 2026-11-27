@@ -1,0 +1,181 @@
+
+<div
+  class="quickbar-root"
+  aria-label="Atalhos de itens do jogador"
+>
+
+  <!-- TUTORIAL -->
+  @if (quickbar.tutorialVisible()) {
+    <section
+      class="quickbar-tip"
+      aria-label="Tutorial da hotbar"
+    >
+      <button
+        type="button"
+        class="quickbar-tip-close"
+        (click)="quickbar.dismissTutorial()"
+        aria-label="Fechar tutorial"
+      >
+        ×
+      </button>
+
+      <strong>ATALHOS DE ITENS</strong>
+
+      <p>
+        Clique em um dos três slots vazios e
+        escolha um consumível do seu inventário.
+      </p>
+
+      <p>
+        Durante o jogo, aperte
+        <kbd>1</kbd>, <kbd>2</kbd> ou <kbd>3</kbd>
+        na <b>fileira superior</b> do teclado
+        para usar o item.
+      </p>
+
+      <p>
+        O teclado numérico não ativa os itens.
+      </p>
+    </section>
+  }
+
+  <!-- SELETOR DE ITENS -->
+  @if (selecting() !== null) {
+    <div
+      class="quickbar-picker"
+      role="dialog"
+      aria-label="Escolher item para a hotbar"
+    >
+
+      <div class="quickbar-picker-heading">
+        <strong>
+          Equipar no slot {{ selecting()! + 1 }}
+        </strong>
+
+        <button
+          type="button"
+          (click)="selecting.set(null)"
+          aria-label="Fechar seleção"
+        >
+          ×
+        </button>
+      </div>
+
+      @for (item of availableItems; track item.id) {
+        <button
+          type="button"
+          class="quickbar-option"
+          (click)="equip(item.id)"
+          [title]="item.description"
+        >
+
+          @if (item.icon) {
+            <img
+              [src]="item.icon"
+              alt=""
+            />
+          }
+
+          <span>
+            <b>{{ item.name }}</b>
+            <small>{{ item.description }}</small>
+          </span>
+
+          <em>×{{ item.quantity }}</em>
+
+        </button>
+      } @empty {
+
+        <p class="quickbar-empty">
+          Você ainda não tem consumíveis disponíveis.
+          Colha frutas ou adquira itens na loja.
+        </p>
+
+      }
+
+      @if (
+        selecting() !== null &&
+        quickbar.slots()[selecting()!] !== null
+      ) {
+        <button
+          type="button"
+          class="quickbar-unequip"
+          (click)="unequip(selecting()!)"
+        >
+          Remover deste slot
+        </button>
+      }
+
+    </div>
+  }
+
+  <!-- OS TRÊS SLOTS -->
+  <div class="quickbar-slots">
+
+    @for (slot of quickbar.slots(); track $index) {
+
+      <button
+        type="button"
+        class="quickbar-slot"
+        [class.quickbar-selected]="selecting() === $index"
+        [attr.aria-label]="'Configurar slot ' + ($index + 1)"
+        (click)="chooseSlot(
+          $index === 0 ? 0 : $index === 1 ? 1 : 2
+        )"
+      >
+
+        <span class="quickbar-number">
+          {{ $index + 1 }}
+        </span>
+
+        @if (
+          getItem(
+            $index === 0 ? 0 : $index === 1 ? 1 : 2
+          );
+          as item
+        ) {
+
+          @if (item.icon) {
+            <img
+              [src]="item.icon"
+              [alt]="item.name"
+            />
+          }
+
+          <span class="quickbar-count">
+            ×{{ item.quantity }}
+          </span>
+
+        } @else {
+
+          <!-- Aparece enquanto o slot estiver vazio -->
+          <span class="quickbar-plus">+</span>
+
+        }
+
+      </button>
+
+    }
+
+    <button
+      type="button"
+      class="quickbar-help"
+      (click)="quickbar.showTutorial()"
+      aria-label="Como usar a hotbar"
+    >
+      ?
+    </button>
+
+  </div>
+
+  <!-- MENSAGEM DE FEEDBACK -->
+  @if (feedback()) {
+    <p
+      class="quickbar-feedback"
+      role="status"
+    >
+      {{ feedback() }}
+    </p>
+  }
+
+</div>

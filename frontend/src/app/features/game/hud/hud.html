@@ -1,57 +1,132 @@
-<div class="pointer-events-none absolute inset-0">
 
-  <div class="pointer-events-auto absolute bottom-20 left-15">
-    <p>{{ testProperty }}</p>
-    <button type="button" (click)="testMethod()">Test</button>
-  </div>
+<div
+  #hudRoot
+  class="pointer-events-none absolute inset-0"
+>
 
-  <!-- =====================================
-       PLAYER INFO
-  ===================================== -->
+  <!-- EFEITO DE PERIGO -->
+  @if (isCritical) {
+    <div
+      class="hud-danger-vignette"
+      aria-hidden="true"
+    ></div>
+  }
 
-  <div class="pointer-events-auto absolute left-6 top-10">
+  <!-- INFORMAÇÕES DO JOGADOR -->
+  <div
+    class="pointer-events-auto absolute left-6 top-10"
+    data-hud-occlusion
+  >
     <app-player-info-bnt />
   </div>
 
+  <!-- BOTÕES SUPERIORES -->
+  <div
+    class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3"
+  >
+    <div data-hud-occlusion>
+      <app-inventory-button
+        (inventoryClicked)="toggleInventory()"
+      />
+    </div>
 
-  <!-- =====================================
-       TOP-RIGHT CONTROLS
-  ===================================== -->
-
-  <div class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3">
-
-    <!-- Inventory -->
-    <app-inventory-button
-      (inventoryClicked)="toggleInventory()"
-    />
-
-    <!-- Shop -->
-    <app-shop-button />
-
+    <div data-hud-occlusion>
+      <app-shop-button />
+    </div>
   </div>
 
-
-  <!-- =====================================
-       QUEST PANEL
-       COLLAPSIBLE
-  ===================================== -->
-
+  <!-- VIDA, STAMINA E MISSÕES -->
   <div class="hud-quest-dock">
 
-    <!-- Collapse / Expand button -->
+    <!-- VIDA E STAMINA -->
+    <div
+      class="hud-status-stack"
+      role="group"
+      aria-label="Estado do jogador"
+    >
+
+      <!-- VIDA -->
+      <div
+        class="hud-status-card hud-hp"
+        data-hud-occlusion
+        [class.hud-hp-critical]="isCritical"
+      >
+        <div class="hud-status-heading">
+
+          <span class="hud-status-label">
+            {{ isCritical ? '♥ PERIGO' : '♥ VIDA' }}
+          </span>
+
+          <span class="hud-status-value">
+            {{ currentHealth }} / {{ maxHealth }}
+          </span>
+
+        </div>
+
+        <div
+          class="hud-status-track"
+          role="progressbar"
+          aria-label="Vida do jogador"
+          aria-valuemin="0"
+          [attr.aria-valuenow]="currentHealth"
+          [attr.aria-valuemax]="maxHealth"
+        >
+          <div
+            class="hud-status-fill"
+            [style.width.%]="healthPercent"
+            [style.background-color]="healthColor"
+          ></div>
+        </div>
+      </div>
+
+      <!-- STAMINA -->
+      <div
+        class="hud-status-card hud-stamina"
+        data-hud-occlusion
+      >
+        <div class="hud-status-heading">
+
+          <span class="hud-status-label">
+            ✦ STAMINA
+          </span>
+
+          <span class="hud-status-value">
+            {{ currentStamina }} / {{ maxStamina }}
+          </span>
+
+        </div>
+
+        <div
+          class="hud-status-track"
+          role="progressbar"
+          aria-label="Stamina do jogador"
+          aria-valuemin="0"
+          [attr.aria-valuenow]="currentStamina"
+          [attr.aria-valuemax]="maxStamina"
+        >
+          <div
+            class="hud-status-fill hud-stamina-fill"
+            [style.width.%]="staminaPercent"
+          ></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTÃO RECOLHER MISSÕES -->
     <button
       type="button"
       class="hud-quest-toggle"
+      data-hud-occlusion
       (click)="toggleQuests()"
       [attr.aria-expanded]="!questsCollapsed"
       aria-controls="hud-quest-content"
       [attr.aria-label]="
         questsCollapsed
-          ? 'Expand quests'
-          : 'Collapse quests'
+          ? 'Expandir missões'
+          : 'Recolher missões'
       "
     >
-
       <span class="hud-quest-toggle-icon">
         {{ questsCollapsed ? '▸' : '▾' }}
       </span>
@@ -59,17 +134,17 @@
       <span>
         {{
           questsCollapsed
-            ? 'OPEN QUESTS'
-            : 'CLOSE QUESTS'
+            ? 'ABRIR MISSÕES'
+            : 'RECOLHER MISSÕES'
         }}
       </span>
-
     </button>
 
-    <!-- Existing task panel -->
+    <!-- PAINEL DE MISSÕES -->
     <div
       id="hud-quest-content"
       class="hud-quest-body"
+      data-hud-occlusion
       [hidden]="questsCollapsed"
     >
       <app-task-panel />
@@ -77,12 +152,11 @@
 
   </div>
 
-
-  <!-- =====================================
-       MINI-MAP
-  ===================================== -->
-
-  <div class="pointer-events-auto absolute right-6 top-35">
+  <!-- MINIMAPA -->
+  <div
+    class="pointer-events-auto absolute right-6 top-35"
+    data-hud-occlusion
+  >
     <app-mini-map
       [worldWidth]="worldWidth"
       [worldHeight]="worldHeight"
@@ -91,21 +165,22 @@
     />
   </div>
 
-
-  <!-- =====================================
-       ACTION BAR
-  ===================================== -->
-
-  <div class="pointer-events-auto absolute bottom-6 right-6">
+  <!-- BARRA DE COMBATE -->
+  <div
+    class="pointer-events-auto absolute bottom-6 right-6"
+    data-hud-occlusion
+  >
     <app-action-bar />
   </div>
 
+  <!-- HOTBAR -->
+  <app-quickbar />
 
-  <!-- =====================================
-       SETTINGS
-  ===================================== -->
-
-  <div class="pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2">
+  <!-- CONFIGURAÇÕES -->
+  <div
+    class="hud-settings-anchor pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2"
+    data-hud-occlusion
+  >
     <app-settings-button
       (settingsClicked)="openSettings()"
     />

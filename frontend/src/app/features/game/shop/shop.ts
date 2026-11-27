@@ -1,4 +1,3 @@
-
 import { isPlatformBrowser } from '@angular/common';
 import {
   Component,
@@ -12,6 +11,10 @@ import { Router } from '@angular/router';
 
 import { ShopCbb } from './shop-cbb';
 import { PlayerService } from '../../../services/player.service';
+import { InventoryService } from '../../../services/Inventory/inventory.service';
+import { toInventoryItem } from './shop-inventory.adapter';
+import { SHOP_CONSUMABLES } from './consumables';
+import { SHOP_EXPANSION } from './shop-expansion';
 
 type ShopCategory =
   | 'recommended'
@@ -23,6 +26,7 @@ type ShopCategory =
   | 'wishes';
 
 type ShopCurrency = 'credits' | 'xp';
+type ShopRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 type MessageType = 'sucesso' | 'erro';
 
 interface ShopItem {
@@ -30,6 +34,8 @@ interface ShopItem {
   nome: string;
   descricao: string;
   icone: string;
+  imagem: string;
+  raridade: ShopRarity;
   preco: number;
   quantidade: number;
   categoria: ShopCategory;
@@ -69,6 +75,7 @@ export class Shop implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly playerService = inject(PlayerService);
+  private readonly inventoryService = inject(InventoryService);
 
   private readonly STORAGE_KEY = 'game-shop-state';
   private readonly MAX_HISTORY = 100;
@@ -124,6 +131,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Condensed energetic matter used to accelerate a character’s development.',
       icone: '✦',
+      imagem: '/assets/items/shop/character-exp.webp',
+      raridade: 'uncommon',
       preco: 500,
       quantidade: 24,
       categoria: 'recommended',
@@ -136,6 +145,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'High-strength metallic alloy used in equipment enhancement.',
       icone: '◇',
+      imagem: '/assets/items/shop/weapon-material.webp',
+      raridade: 'common',
       preco: 350,
       quantidade: 31,
       categoria: 'recommended',
@@ -146,8 +157,10 @@ export class Shop implements OnInit, OnDestroy {
       id: 'ability-core',
       nome: 'Resonance Charge',
       descricao:
-        'Stored energy capable of intensifying the response of abilities and powers.',
+        'Stored energy capable of intensifying the response ofabilities and powers.',
       icone: '✧',
+      imagem: '/assets/items/shop/ability-core.webp',
+      raridade: 'rare',
       preco: 1200,
       quantidade: 8,
       categoria: 'recommended',
@@ -160,6 +173,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Matter altered by extreme gravitational conditions, used to surpass developmental limits.',
       icone: '◆',
+      imagem: '/assets/items/shop/ascension-material.webp',
+      raridade: 'epic',
       preco: 800,
       quantidade: 12,
       categoria: 'recommended',
@@ -172,6 +187,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'A highly concentrated form of stellar energy capable of considerably accelerating development.',
       icone: '✦',
+      imagem: '/assets/items/shop/character-exp-large.webp',
+      raridade: 'rare',
       preco: 1200,
       quantidade: 6,
       categoria: 'characters',
@@ -184,6 +201,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Matter remaining from stellar collapse processes, used during advanced stages of development.',
       icone: '◇',
+      imagem: '/assets/items/shop/character-ascension.webp',
+      raridade: 'epic',
       preco: 1800,
       quantidade: 4,
       categoria: 'characters',
@@ -196,6 +215,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Condensed data containing combat patterns used to enhance abilities.',
       icone: '✧',
+      imagem: '/assets/items/shop/character-skill.webp',
+      raridade: 'uncommon',
       preco: 950,
       quantidade: 14,
       categoria: 'characters',
@@ -208,6 +229,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'An energy unit used to increase a weapon’s capacity.',
       icone: '⌁',
+      imagem: '/assets/items/shop/weapon-exp.webp',
+      raridade: 'common',
       preco: 300,
       quantidade: 42,
       categoria: 'weapons',
@@ -220,6 +243,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Extremely durable metallic alloy used in the fabrication and ascension of advanced weaponry.',
       icone: '◆',
+      imagem: '/assets/items/shop/weapon-ascension.webp',
+      raridade: 'epic',
       preco: 1500,
       quantidade: 7,
       categoria: 'weapons',
@@ -230,8 +255,10 @@ export class Shop implements OnInit, OnDestroy {
       id: 'weapon-core',
       nome: 'Resonance Matrix',
       descricao:
-        'An energetic structure used to refine and stabilize a weapon’s operation.',
+        'An energetic structure used to refine and stabilize aweapon’s operation.',
       icone: '✦',
+      imagem: '/assets/items/shop/weapon-core.webp',
+      raridade: 'legendary',
       preco: 2200,
       quantidade: 3,
       categoria: 'weapons',
@@ -242,8 +269,10 @@ export class Shop implements OnInit, OnDestroy {
       id: 'ability-exp',
       nome: 'Energy Pulse',
       descricao:
-        'A stabilized energetic discharge used to increase the potency of abilities.',
+        'A stabilized energetic discharge used to increase thepotency of abilities.',
       icone: '✧',
+      imagem: '/assets/items/shop/ability-exp.webp',
+      raridade: 'uncommon',
       preco: 700,
       quantidade: 18,
       categoria: 'abilities',
@@ -256,6 +285,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Highly concentrated energy capable of producing significant alterations in the manifestation of an ability.',
       icone: '✦',
+      imagem: '/assets/items/shop/ability-core-rare.webp',
+      raridade: 'legendary',
       preco: 2400,
       quantidade: 2,
       categoria: 'abilities',
@@ -268,6 +299,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Versatile material used in the fabrication and maintenance of various types of equipment.',
       icone: '◆',
+      imagem: '/assets/items/shop/basic-material.webp',
+      raridade: 'common',
       preco: 250,
       quantidade: 56,
       categoria: 'materials',
@@ -279,6 +312,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Material formed under extreme conditions of temperature and pressure, used in advanced manufacturing processes.',
       icone: '◇',
+      imagem: '/assets/items/shop/rare-material.webp',
+      raridade: 'rare',
       preco: 900,
       quantidade: 11,
       categoria: 'materials',
@@ -290,6 +325,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Extremely rare material originating under conditions of anomalous density and energy.',
       icone: '✦',
+      imagem: '/assets/items/shop/advanced-material.webp',
+      raridade: 'legendary',
       preco: 3000,
       quantidade: 2,
       categoria: 'materials',
@@ -301,6 +338,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'Compact food developed to provide energy during extended periods of exploration.',
       icone: '○',
+      imagem: '/assets/items/shop/energy-food.webp',
+      raridade: 'common',
       preco: 180,
       quantidade: 8,
       categoria: 'consumables',
@@ -312,6 +351,8 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'A compound that temporarily accelerates metabolic processes and improves the assimilation of experience.',
       icone: '✦',
+      imagem: '/assets/items/shop/exp-booster.webp',
+      raridade: 'rare',
       preco: 850,
       quantidade: 4,
       categoria: 'consumables',
@@ -323,9 +364,11 @@ export class Shop implements OnInit, OnDestroy {
       descricao:
         'A device capable of establishing temporary resonance with the stellar phenomenon.',
       icone: '✦',
+      imagem: '/assets/items/shop/wish-token.webp',
+      raridade: 'uncommon',
       preco: 160,
       quantidade: 18,
-      categoria: 'wishes',
+      categoria: 'recommended',
       moeda: 'credits',
       subcategoria: 'wish'
     },
@@ -333,14 +376,18 @@ export class Shop implements OnInit, OnDestroy {
       id: 'wish-pack',
       nome: 'Resonator Set',
       descricao:
-        'A set of resonators prepared for multiple attempts to establish contact with the phenomenon.',
+        'A set of resonators prepared for multiple attempts toestablish contact with the phenomenon.',
       icone: '✦',
+      imagem: '/assets/items/shop/wish-pack.webp',
+      raridade: 'epic',
       preco: 1500,
       quantidade: 2,
-      categoria: 'wishes',
+      categoria: 'recommended',
       moeda: 'credits',
       subcategoria: 'wish-pack'
-    }
+    },
+    ...SHOP_CONSUMABLES,
+    ...SHOP_EXPANSION
   ];
 
   // ==========================================
@@ -348,6 +395,13 @@ export class Shop implements OnInit, OnDestroy {
   // ==========================================
 
   ngOnInit(): void {
+    // SHOP_SHOP_VISUAL_V1 — ícones e efeitos reais visíveis na loja.
+    for (const product of this.boosts) {
+      const converted = toInventoryItem(product);
+      product.imagem = converted.icon ?? product.imagem;
+      product.descricao = converted.description;
+    }
+
     this.carregarEstado();
   }
 
@@ -547,6 +601,9 @@ export class Shop implements OnInit, OnDestroy {
 
     // Atualiza o item comprado.
     item.quantidade += 1;
+
+    // Entrega a compra ao inventário principal (quantidade de fato possuída).
+    this.inventoryService.addItem(toInventoryItem(item), 1);
 
     // Registra a transação.
     this.registrarCompra(item);

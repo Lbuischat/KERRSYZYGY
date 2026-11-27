@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Luminary Core">
+    <defs><radialGradient id="bg"><stop offset="0" stop-color="#253147"/><stop offset="1" stop-color="#111421"/></radialGradient>
+    <linearGradient id="fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#69B9EC"/><stop offset="1" stop-color="#396FA9"/></linearGradient></defs>
+    <rect x="3" y="3" width="90" height="90" rx="18" fill="url(#bg)" stroke="#396FA9" stroke-width="3"/>
+    <circle cx="48" cy="48" r="36" fill="none" stroke="#396FA9" stroke-opacity=".4" stroke-width="1"/>
+    <circle cx="25" cy="59" r="1.4" fill="#fff" opacity="0.46"/><circle cx="60" cy="83" r="0.7" fill="#fff" opacity="0.28"/><circle cx="35" cy="35" r="1.0" fill="#fff" opacity="0.27"/><circle cx="24" cy="18" r="0.7" fill="#fff" opacity="0.30"/><circle cx="58" cy="59" r="1.4" fill="#fff" opacity="0.44"/><circle cx="61" cy="30" r="1.4" fill="#fff" opacity="0.29"/><circle cx="70" cy="73" r="1.0" fill="#fff" opacity="0.44"/><circle cx="42" cy="29" r="1.4" fill="#fff" opacity="0.32"/><circle cx="23" cy="36" r="1.4" fill="#fff" opacity="0.28"/><circle cx="13" cy="30" r="1.0" fill="#fff" opacity="0.52"/><circle cx="15" cy="35" r="1.0" fill="#fff" opacity="0.51"/> <path d="M48 17 L70 37 L63 69 L48 82 L33 69 L26 37 Z" fill="url(#fill)" stroke="#F0F3FF" stroke-width="2"/><polygon points="48.00,35.00 51.53,46.15 63.22,46.06 53.71,52.85 57.40,63.94 48.00,57.00 38.60,63.94 42.29,52.85 32.78,46.06 44.47,46.15" fill="#f7f3ff"/>
+    <circle cx="75" cy="21" r="5" fill="#69B9EC" opacity=".9"/><path d="M21 79 L32 79" stroke="#69B9EC" opacity=".7" stroke-width="2" />
+    </svg>

@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Item">
+<rect x="5" y="5" width="86" height="86" rx="17" fill="#161b2c" stroke="#5e6387" stroke-width="2"/><path d="M48 16l24 15v34L48 80 24 65V31z" fill="#303956" stroke="#9ca6d4" stroke-width="3"/><path d="M24 31l24 15 24-15M48 46v34" stroke="#b9c4f1" stroke-width="2" fill="none"/><circle cx="48" cy="46" r="8" fill="#e7d8a0" opacity=".8"/>
+</svg>

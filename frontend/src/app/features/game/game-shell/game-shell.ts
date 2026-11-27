@@ -1,3 +1,4 @@
+
 import {
   Component,
   HostListener,
@@ -214,7 +215,7 @@ export class GameShell implements OnDestroy {
 
   constructor() {
 
-    // Close temporary UI when focus mode begins.
+    // Fecha interfaces temporárias ao iniciar o Focus Mode.
     effect(() => {
       if (this.focusService.session()) {
         this.inventoryOpen = false;
@@ -365,7 +366,6 @@ export class GameShell implements OnDestroy {
   }
 
   onTutorialEnemyStepStarted(): void {
-
     this.gameWorld?.startTutorialEnemyGuide();
   }
 
@@ -380,7 +380,7 @@ export class GameShell implements OnDestroy {
 
     if (this.focusService.active) {
 
-      // Allow page refresh.
+      // Permite atualizar a página.
       if (
         event.key === 'F5' ||
         (event.ctrlKey && key === 'r')

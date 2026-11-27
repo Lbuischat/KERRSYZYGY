@@ -531,9 +531,24 @@
 
                 </button>
 
-                <!-- SÍMBOLO DO PRODUTO -->
-                <div class="item-symbol">
-                  {{ boost.icone }}
+                <!-- RARIDADE: somente o rótulo visual, sem alterar o card -->
+                <span
+                  class="item-rarity"
+                  [attr.data-rarity]="boost.raridade"
+                  [attr.aria-label]="'Rarity: ' + boost.raridade"
+                >
+                  {{ boost.raridade.toUpperCase() }}
+                </span>
+
+                <!-- IMAGEM DO PRODUTO: mantém o mesmo espaço do símbolo -->
+                <div class="item-symbol item-symbol-image">
+                  <img
+                    class="item-image"
+                    [src]="boost.imagem"
+                    [alt]="boost.nome"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
 
                 <!-- QUANTIDADE -->

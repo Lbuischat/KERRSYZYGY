@@ -15,6 +15,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 
 import { Player } from '../player/player';
+import { AccountSessionService } from '../../../services/account-session.service';
 
 // ========================================
 // TYPES
@@ -55,6 +56,8 @@ export class tutorial implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
 
   private readonly cdr = inject(ChangeDetectorRef);
+
+  private readonly accountSession = inject(AccountSessionService);
 
   // ========================================
   // PLAYER INPUT
@@ -179,6 +182,17 @@ export class tutorial implements OnInit, OnDestroy {
       return;
     }
 
+    this.restoreProgress();
+
+    // If the player returned during the training-enemy step, show the guide again.
+    if (this.currentStep === 'attackEnemy') {
+      requestAnimationFrame(() => this.enemyStepStarted.emit());
+    }
+
+    if (this.completed) {
+      return;
+    }
+
     this.lastTime = performance.now();
 
     this.startTutorialLoop();
@@ -251,6 +265,7 @@ export class tutorial implements OnInit, OnDestroy {
     next.add(direction);
 
     this.completedDirections.set(next);
+    this.saveProgress();
 
     this.cdr.markForCheck();
 
@@ -321,6 +336,7 @@ export class tutorial implements OnInit, OnDestroy {
     }
 
     this.berriesGathered++;
+    this.saveProgress();
 
     this.cdr.markForCheck();
 
@@ -562,6 +578,7 @@ export class tutorial implements OnInit, OnDestroy {
 
     }
 
+    this.saveProgress();
     this.cdr.markForCheck();
 
   }
@@ -607,10 +624,85 @@ export class tutorial implements OnInit, OnDestroy {
   }
 
   // ========================================
+  // ACCOUNT-SCOPED TUTORIAL PROGRESS
+  // ========================================
+
+  private get progressKey(): string {
+    return this.accountSession.storageKey('kerrsyzygy-tutorial');
+  }
+
+  private saveProgress(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const state = {
+      currentStep: this.currentStep,
+      directions: [...this.completedDirections()],
+      sprintProgress: this.sprintProgress,
+      sprintTime: this.sprintTime,
+      staminaProgress: this.staminaProgress,
+      attackPerformed: this.attackPerformed,
+      tutorialEnemyDefeated: this.tutorialEnemyDefeated,
+      berriesGathered: this.berriesGathered,
+      completed: this.completed
+    };
+
+    try {
+      localStorage.setItem(this.progressKey, JSON.stringify(state));
+    } catch {
+      // Disabled/full storage must not block gameplay.
+    }
+  }
+
+  private restoreProgress(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    try {
+      const raw = localStorage.getItem(this.progressKey);
+      if (!raw) return;
+      const state: unknown = JSON.parse(raw);
+      if (!state || typeof state !== 'object') return;
+      const saved = state as Record<string, unknown>;
+      const steps: TutorialStep[] = [
+        'movement', 'sprint', 'stamina', 'attack',
+        'attackEnemy', 'gatherBerries', 'complete'
+      ];
+
+      if (steps.includes(saved['currentStep'] as TutorialStep)) {
+        this.currentStep = saved['currentStep'] as TutorialStep;
+      }
+      if (Array.isArray(saved['directions'])) {
+        const valid: MovementDirection[] = ['up', 'left', 'down', 'right'];
+        this.completedDirections.set(new Set(
+          saved['directions'].filter((d): d is MovementDirection => valid.includes(d))
+        ));
+      }
+      const bounded = (value: unknown, max: number): number =>
+        typeof value === 'number' && Number.isFinite(value)
+          ? Math.max(0, Math.min(max, value))
+          : 0;
+      this.sprintProgress = bounded(saved['sprintProgress'], 100);
+      this.sprintTime = bounded(saved['sprintTime'], this.SPRINT_REQUIRED);
+      this.staminaProgress = bounded(saved['staminaProgress'], 100);
+      this.attackPerformed = saved['attackPerformed'] === true;
+      this.tutorialEnemyDefeated = saved['tutorialEnemyDefeated'] === true;
+      this.berriesGathered = Math.floor(bounded(saved['berriesGathered'], this.BERRIES_REQUIRED));
+      this.completed = saved['completed'] === true || this.currentStep === 'complete';
+    } catch {
+      // Ignore invalid older data.
+    }
+  }
+
+  @HostListener('window:pagehide')
+  persistBeforeLeaving(): void {
+    this.saveProgress();
+  }
+
+  // ========================================
   // CLEANUP
   // ========================================
 
   ngOnDestroy(): void {
+    this.saveProgress();
 
     if (
       isPlatformBrowser(this.platformId) &&

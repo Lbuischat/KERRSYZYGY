@@ -1,31 +1,44 @@
+import { ItemEffectsRuntimeService, type ItemEffectsPlayerBridge } from '../../../services/Inventory/item-effects-runtime.service';
+import { inject } from '@angular/core';
+
 import {
   Component,
   Inject,
   PLATFORM_ID,
   Output,
   EventEmitter,
-  OnDestroy
+  OnDestroy,
+  type Signal
 } from '@angular/core';
 
 import { isPlatformBrowser } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Subscription } from 'rxjs';
 
 import { AudioService } from '../../../services/audio/audio.service';
+import {
+  GameStateService,
+  type PlayerVitals
+} from '../../../services/game-state/game-state.service';
+import { PlayerService } from '../../../services/player.service';
 import { BuffService } from '../../../services/Inventory/Buff/buff.service';
 
 @Component({
   selector: 'app-player',
-  imports: [],
+  standalone: true,
   templateUrl: './player.html',
-  styleUrl: './player.css',
+  styleUrl: './player.css'
 })
 export class Player implements OnDestroy {
+  private readonly itemEffectsRuntime = inject(ItemEffectsRuntimeService); // SHOP_PLAYER_RUNTIME_V1
 
-  // ================================================================
-  // EVENTS
-  // ================================================================
 
-  @Output() tutorialBoundary = new EventEmitter<void>();
+  // O HUD e as barras sobre o personagem
+  // usam exatamente os mesmos dados.
+  public readonly playerVitals: Signal<PlayerVitals>;
+
+  @Output()
+  tutorialBoundary = new EventEmitter<void>();
 
   @Output()
   shoot = new EventEmitter<{
@@ -39,9 +52,9 @@ export class Player implements OnDestroy {
   @Output()
   interact = new EventEmitter<void>();
 
-  // ================================================================
-  // MAP / PLAYER CONSTANTS
-  // ================================================================
+  // ==========================================
+  // MAPA
+  // ==========================================
 
   private readonly MAP_WIDTH = 2560;
   private readonly MAP_HEIGHT = 2560;
@@ -59,12 +72,12 @@ export class Player implements OnDestroy {
     '14,6', '15,6', '16,6',
     '16,7', '17,7', '18,7',
     '16,8', '17,8', '18,8', '19,8',
-    '17,9', '18,9', '19,9',
+    '17,9', '18,9', '19,9'
   ]);
 
-  // ================================================================
-  // POSITION
-  // ================================================================
+  // ==========================================
+  // POSIÇÃO
+  // ==========================================
 
   private playerX = 1255;
   private playerY = 1255;
@@ -72,7 +85,7 @@ export class Player implements OnDestroy {
   public getPosition(): { x: number; y: number } {
     return {
       x: this.playerX,
-      y: this.playerY,
+      y: this.playerY
     };
   }
 
@@ -88,7 +101,6 @@ export class Player implements OnDestroy {
   private isRiverTile(x: number, y: number): boolean {
     const column = Math.floor(x / this.TILE_SIZE) + 1;
     const row = Math.floor(y / this.TILE_SIZE);
-
     return this.riverTiles.has(`${column},${row}`);
   }
 
@@ -100,13 +112,11 @@ export class Player implements OnDestroy {
 
     for (const tile of this.riverTiles) {
       const [columnString, rowString] = tile.split(',');
-
       const column = Number(columnString);
       const row = Number(rowString);
 
       const tileX = (column - 1) * this.TILE_SIZE;
       const tileY = row * this.TILE_SIZE;
-
       const tileRight = tileX + this.TILE_SIZE;
       const tileBottom = tileY + this.TILE_SIZE;
 
@@ -122,7 +132,6 @@ export class Player implements OnDestroy {
 
       const dx = playerCenterX - closestX;
       const dy = playerCenterY - closestY;
-
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < closestDistance) {
@@ -152,26 +161,12 @@ export class Player implements OnDestroy {
     );
   }
 
-  // ================================================================
-  // SPEED
-  // ================================================================
+  // ==========================================
+  // MOVIMENTAÇÃO
+  // ==========================================
 
   private speed = 4;
   private sprintMultiplier = 1.5;
-
-  // ================================================================
-  // STAMINA
-  // ================================================================
-
-  private maxStamina = 100;
-  private stamina = 100;
-
-  private staminaDrain = 20;
-  private staminaRegen = 15;
-
-  // ================================================================
-  // TUTORIAL STATE
-  // ================================================================
 
   private moving = false;
   private sprinting = false;
@@ -184,48 +179,77 @@ export class Player implements OnDestroy {
     return this.sprinting;
   }
 
+  // ==========================================
+  // STAMINA
+  // ==========================================
+
+  private maxStamina = 100;
+  private stamina = 100;
+
+  private staminaDrain = 20;
+  private staminaRegen = 15;
+
   public getStamina(): number {
     return this.stamina;
   }
 
   public getStaminaPercentage(): number {
-    return (this.stamina / this.maxStamina) * 100;
+    return this.maxStamina > 0
+      ? (this.stamina / this.maxStamina) * 100
+      : 0;
   }
 
-  // ================================================================
-  // DASH
-  // ================================================================
+  // ==========================================
+  // DASH E ESQUIVA
+  // ==========================================
 
   private isDashing = false;
-
   private dashSpeed = 14;
   private dashStaminaCost = 30;
+  private readonly dodgeStaminaCost = 15;
+
+  private activeDashButton:
+    'skill2-btn' | 'skill3-btn' = 'skill3-btn';
 
   private readonly DASH_DISTANCE = this.TILE_SIZE * 2.5;
-
   private dashRemaining = 0;
 
   private lastMoveHorizontal = 1;
   private lastMoveVertical = 0;
 
-  // ================================================================
-  // HEALTH
-  // ================================================================
+  // ==========================================
+  // VIDA
+  // ==========================================
 
   private maxHealth = 100;
   private health = 100;
 
   public takeDamage(amount: number): void {
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0 ||
+      this.health <= 0
+    ) {
+      return;
+    }
+
+    // Esquiva F mantém a invulnerabilidade existente.
+    if (
+      this.isDashing &&
+      this.activeDashButton === 'skill2-btn'
+    ) {
+      return;
+    }
+
     console.log('⚠️ PLAYER TAKE DAMAGE CALLED', amount);
 
-    this.health -= amount;
-
-    if (this.health < 0) {
-      this.health = 0;
-    }
+    this.health = Math.max(0, this.health - amount);
 
     console.log('Player HP:', this.health);
 
+    // Mostra a barra acima da cabeça por 5 segundos.
+    this.healthHudUntil = Date.now() + 5000;
+    this.publishVitals(true);
     this.showDamageEffect();
 
     if (this.health === 0) {
@@ -234,99 +258,158 @@ export class Player implements OnDestroy {
   }
 
   public heal(amount: number): void {
-    this.health += amount;
-
-    if (this.health > this.maxHealth) {
-      this.health = this.maxHealth;
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return;
     }
 
-    console.log('💚 PLAYER HEALED:', amount, '| HP:', this.health);
+    const before = this.health;
+
+    this.health = Math.min(
+      this.maxHealth,
+      this.health + amount
+    );
+
+    console.log(
+      '💚 PLAYER HEALED:',
+      amount,
+      '| HP:',
+      this.health
+    );
+
+    if (this.health > before) {
+      this.healthHudUntil = Date.now() + 3200;
+      this.publishVitals(true);
+    }
 
     this.updatePlayerPosition();
   }
 
   public getHealthPercentage(): number {
-    return (this.health / this.maxHealth) * 100;
+    return this.maxHealth > 0
+      ? (this.health / this.maxHealth) * 100
+      : 0;
   }
 
-  // ================================================================
-  // MOVEMENT
-  // ================================================================
+  // ==========================================
+  // TECLADO / COMBATE
+  // ==========================================
 
   private keys = new Set<string>();
-
   private animationFrameId = 0;
   private qHeld = false;
   private wasAtBoundary = false;
 
-  // ================================================================
-  // COMBAT
-  // ================================================================
-
   private holdTimer?: ReturnType<typeof setTimeout>;
   private isHoldingAttack = false;
 
-  // ================================================================
-  // BUFFS
-  // ================================================================
+  // ==========================================
+  // BUFFS E INDICADORES
+  // ==========================================
 
   private buffSubscription?: Subscription;
 
-  // ================================================================
-  // CONSTRUCTOR
-  // ================================================================
+  private healthHudUntil = 0;
+  private staminaHudUntil = 0;
+  private lastVitalsPublish = 0;
+  private lastLevelTier = -1;
+
+  // ==========================================
+  // CONSTRUTOR
+  // ==========================================
 
   constructor(
     @Inject(PLATFORM_ID)
     private platformId: object,
     private buffService: BuffService,
     private audioService: AudioService,
+    private gameStateService: GameStateService,
+    private playerService: PlayerService
   ) {
+    // Signal substitui o AsyncPipe.
+    // Resolve a dependência de imports no template.
+    this.playerVitals = toSignal(
+      this.gameStateService.playerVitals$,
+      { requireSync: true }
+    );
+
     console.log('🟢 PLAYER COMPONENT CREATED');
 
+    this.updateLevelStats();
+
     this.buffSubscription =
-      this.buffService.instantBuffApplied$.subscribe((buff) => {
-        if (buff.type === 'health') {
-          this.heal(buff.value);
+      this.buffService.instantBuffApplied$.subscribe(
+        buff => {
+          if (buff.type === 'health') {
+            this.heal(buff.value);
+          }
         }
-      });
+      );
 
     if (isPlatformBrowser(this.platformId)) {
-      window.addEventListener('keydown', this.handleKeyDown);
-      window.addEventListener('keyup', this.handleKeyUp);
-      window.addEventListener('contextmenu', this.preventContextMenu);
+      window.addEventListener(
+        'keydown',
+        this.handleKeyDown
+      );
 
+      window.addEventListener(
+        'keyup',
+        this.handleKeyUp
+      );
+
+      window.addEventListener(
+        'contextmenu',
+        this.preventContextMenu
+      );
+
+      this.publishVitals(true);
       this.startGameLoop();
     }
   }
 
-  // ================================================================
-  // CONTROLS
-  // ================================================================
-
   private setupControls(): void {
-    window.addEventListener('keydown', this.handleKeyDown);
-    window.addEventListener('keyup', this.handleKeyUp);
-    window.addEventListener('contextmenu', this.preventContextMenu);
+    window.addEventListener(
+      'keydown',
+      this.handleKeyDown
+    );
+
+    window.addEventListener(
+      'keyup',
+      this.handleKeyUp
+    );
+
+    window.addEventListener(
+      'contextmenu',
+      this.preventContextMenu
+    );
   }
 
-  private preventContextMenu = (event: MouseEvent): void => {
+  private preventContextMenu = (
+    event: MouseEvent
+  ): void => {
     event.preventDefault();
   };
 
-  // ================================================================
-  // KEYBOARD
-  // ================================================================
+  // ==========================================
+  // CONTROLES DO TECLADO
+  // ==========================================
 
-  private handleKeyDown = (event: KeyboardEvent): void => {
+  private handleKeyDown = (
+    event: KeyboardEvent
+  ): void => {
     const key = event.key.toLowerCase();
 
+    // F — Esquiva
     if (key === 'f') {
       event.preventDefault();
-      this.useSkill2();
+
+      if (!event.repeat) {
+        this.useSkill2();
+      }
+
       return;
     }
 
+    // Q — Dash
     if (key === 'q') {
       event.preventDefault();
 
@@ -338,12 +421,19 @@ export class Player implements OnDestroy {
       return;
     }
 
+    // E — Interação com arbustos
     if (key === 'e') {
       event.preventDefault();
+
+      if (event.repeat) {
+        return;
+      }
+
       this.interact.emit();
       return;
     }
 
+    // Movimentação
     if (
       key === 'w' ||
       key === 'a' ||
@@ -360,7 +450,9 @@ export class Player implements OnDestroy {
     }
   };
 
-  private handleKeyUp = (event: KeyboardEvent): void => {
+  private handleKeyUp = (
+    event: KeyboardEvent
+  ): void => {
     const key = event.key.toLowerCase();
 
     this.keys.delete(key);
@@ -370,16 +462,15 @@ export class Player implements OnDestroy {
     }
   };
 
-  // ================================================================
-  // MOUSE / ATTACK
-  // ================================================================
+  // ==========================================
+  // MOUSE / ATAQUES
+  // ==========================================
 
-  handleMouseDown = (event: MouseEvent): void => {
+  handleMouseDown = (
+    event: MouseEvent
+  ): void => {
     if (event.button === 0) {
-      event.preventDefault();
-
       this.isHoldingAttack = true;
-
       this.setButtonActive('attack-btn');
       this.changePlayerColor('yellow');
 
@@ -401,14 +492,16 @@ export class Player implements OnDestroy {
 
       this.shoot.emit({
         mouseX: event.clientX,
-        mouseY: event.clientY,
+        mouseY: event.clientY
       });
 
       return;
     }
   };
 
-  handleMouseUp = (event: MouseEvent): void => {
+  handleMouseUp = (
+    event: MouseEvent
+  ): void => {
     if (event.button !== 0) {
       return;
     }
@@ -420,41 +513,49 @@ export class Player implements OnDestroy {
 
     if (this.holdTimer) {
       clearTimeout(this.holdTimer);
-      this.holdTimer = undefined;
     }
 
     this.changePlayerColor('red');
   };
 
-  // ================================================================
-  // SKILL 1
-  // ================================================================
+  // ==========================================
+  // HABILIDADE 1
+  // ==========================================
 
   private useSkill1(): void {
     this.setButtonActive('skill1-btn');
     this.changePlayerColor('turquoise');
   }
 
-  // ================================================================
-  // SKILL 2
-  // ================================================================
+  // ==========================================
+  // HABILIDADE 2 — F
+  // ==========================================
 
   private useSkill2(): void {
-    this.setButtonActive('skill2-btn');
+    if (
+      this.isDashing ||
+      this.stamina < this.dodgeStaminaCost
+    ) {
+      return;
+    }
+
+    this.stamina -= this.dodgeStaminaCost;
+
+    this.staminaHudUntil = Date.now() + 1800;
+    this.publishVitals(true);
+
+    this.isDashing = true;
+    this.dashRemaining = this.TILE_SIZE * 0.8;
+    this.activeDashButton = 'skill2-btn';
+
+    this.setButtonActive(this.activeDashButton);
     this.changePlayerColor('purple');
-
-    setTimeout(() => {
-      this.setButtonInactive('skill2-btn');
-
-      if (!this.isHoldingAttack && !this.isDashing) {
-        this.changePlayerColor('red');
-      }
-    }, 500);
+    this.audioService.playSfx('player.dash');
   }
 
-  // ================================================================
-  // SKILL 3
-  // ================================================================
+  // ==========================================
+  // HABILIDADE 3 — Q
+  // ==========================================
 
   private useSkill3(): void {
     if (this.isDashing) {
@@ -466,19 +567,23 @@ export class Player implements OnDestroy {
     }
 
     this.stamina -= this.dashStaminaCost;
-    this.isDashing = true;
 
+    this.staminaHudUntil = Date.now() + 1800;
+    this.publishVitals(true);
+
+    this.isDashing = true;
     this.audioService.playSfx('player.dash');
 
     this.dashRemaining = this.DASH_DISTANCE;
+    this.activeDashButton = 'skill3-btn';
 
     this.setButtonActive('skill3-btn');
     this.changePlayerColor('white');
   }
 
-  // ================================================================
-  // GAME LOOP
-  // ================================================================
+  // ==========================================
+  // LOOP PRINCIPAL DO JOGO
+  // ==========================================
 
   private startGameLoop(): void {
     let lastTime = performance.now();
@@ -487,50 +592,69 @@ export class Player implements OnDestroy {
       const deltaTime = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      // BUFFS
+      // Atualização dos buffs e níveis.
       this.buffService.update(deltaTime);
+      this.itemEffectsRuntime.tickPlayer(this as unknown as ItemEffectsPlayerBridge, deltaTime);
+      this.updateLevelStats();
 
-      // MOVEMENT INPUT
       let horizontal = 0;
       let vertical = 0;
 
-      if (this.keys.has('w') || this.keys.has('arrowup')) {
+      if (
+        this.keys.has('w') ||
+        this.keys.has('arrowup')
+      ) {
         vertical -= 1;
       }
 
-      if (this.keys.has('s') || this.keys.has('arrowdown')) {
+      if (
+        this.keys.has('s') ||
+        this.keys.has('arrowdown')
+      ) {
         vertical += 1;
       }
 
-      if (this.keys.has('a') || this.keys.has('arrowleft')) {
+      if (
+        this.keys.has('a') ||
+        this.keys.has('arrowleft')
+      ) {
         horizontal -= 1;
       }
 
-      if (this.keys.has('d') || this.keys.has('arrowright')) {
+      if (
+        this.keys.has('d') ||
+        this.keys.has('arrowright')
+      ) {
         horizontal += 1;
       }
 
-      // NORMALIZE DIAGONAL MOVEMENT
+      // Normaliza o movimento diagonal.
       if (horizontal !== 0 && vertical !== 0) {
         horizontal *= 0.7071;
         vertical *= 0.7071;
       }
 
-      // ACTUAL MOVEMENT STATE
-      this.moving = horizontal !== 0 || vertical !== 0;
+      this.moving =
+        horizontal !== 0 || vertical !== 0;
 
       if (this.moving) {
         this.lastMoveHorizontal = horizontal;
         this.lastMoveVertical = vertical;
       }
 
-      // ACTUAL SPRINT STATE
-      const wantsToSprint = this.keys.has('shift') && this.moving;
+      const wantsToSprint =
+        this.keys.has('shift') && this.moving;
 
-      this.sprinting = wantsToSprint && this.stamina > 0;
+      this.sprinting =
+        wantsToSprint && this.stamina > 0;
 
-      // STAMINA
+      // ======================================
+      // GASTO / REGENERAÇÃO DA STAMINA
+      // ======================================
+
       if (this.sprinting) {
+        this.staminaHudUntil = Date.now() + 1600;
+
         this.stamina -= this.staminaDrain * deltaTime;
 
         if (this.stamina <= 0) {
@@ -545,32 +669,30 @@ export class Player implements OnDestroy {
         }
       }
 
-      // SPEED
-      const currentSpeed = this.sprinting
+      const currentSpeed = (this.sprinting
         ? this.speed * this.sprintMultiplier
-        : this.speed;
+        : this.speed) * this.itemEffectsRuntime.speedMultiplier();
 
-      // MOVEMENT / DASH
+      // ======================================
+      // DASH
+      // ======================================
+
       if (this.isDashing) {
         const dashStep = Math.min(
           this.dashSpeed,
           this.dashRemaining
         );
 
-        const nextX = this.playerX +
+        const nextX =
+          this.playerX +
           this.lastMoveHorizontal * dashStep;
 
-        const nextY = this.playerY +
+        const nextY =
+          this.playerY +
           this.lastMoveVertical * dashStep;
 
-        // Check collision separately on each axis.
-        if (this.canMoveTo(nextX, this.playerY)) {
-          this.playerX = nextX;
-        }
-
-        if (this.canMoveTo(this.playerX, nextY)) {
-          this.playerY = nextY;
-        }
+        this.playerX = nextX;
+        this.playerY = nextY;
 
         this.dashRemaining -= dashStep;
 
@@ -578,15 +700,24 @@ export class Player implements OnDestroy {
           this.dashRemaining = 0;
           this.isDashing = false;
 
-          this.setButtonInactive('skill3-btn');
+          this.setButtonInactive(
+            this.activeDashButton
+          );
 
           if (!this.isHoldingAttack) {
             this.changePlayerColor('red');
           }
         }
       } else {
-        const nextX = this.playerX + horizontal * currentSpeed;
-        const nextY = this.playerY + vertical * currentSpeed;
+        // ====================================
+        // MOVIMENTAÇÃO NORMAL + COLISÃO
+        // ====================================
+
+        const nextX =
+          this.playerX + horizontal * currentSpeed;
+
+        const nextY =
+          this.playerY + vertical * currentSpeed;
 
         if (this.canMoveTo(nextX, this.playerY)) {
           this.playerX = nextX;
@@ -597,7 +728,10 @@ export class Player implements OnDestroy {
         }
       }
 
-      // MAP BOUNDARIES
+      // ======================================
+      // LIMITES DO MAPA
+      // ======================================
+
       let hitMapBoundary = false;
 
       if (this.playerX < 0) {
@@ -620,7 +754,6 @@ export class Player implements OnDestroy {
         hitMapBoundary = true;
       }
 
-      // BOUNDARY EVENT
       if (hitMapBoundary && !this.wasAtBoundary) {
         console.log('PLAYER REACHED MAP BOUNDARY');
         this.tutorialBoundary.emit();
@@ -628,30 +761,39 @@ export class Player implements OnDestroy {
 
       this.wasAtBoundary = hitMapBoundary;
 
-      // RIVER AUDIO
+      // Som ambiente do rio.
       const riverDistance = this.getDistanceToRiver();
       this.audioService.updateRiverVolume(riverDistance);
 
-      // UPDATE PLAYER
+      // Atualiza o personagem e as barras.
       this.updatePlayerPosition();
 
-      // NEXT FRAME
-      this.animationFrameId = requestAnimationFrame(update);
+      this.animationFrameId =
+        requestAnimationFrame(update);
     };
 
-    this.animationFrameId = requestAnimationFrame(update);
+    this.animationFrameId =
+      requestAnimationFrame(update);
   }
 
-  // ================================================================
-  // DAMAGE EFFECT
-  // ================================================================
+  // ==========================================
+  // EFEITO DE DANO
+  // ==========================================
 
   private showDamageEffect(): void {
-    const player = document.getElementById('player-character');
+    const player = document.getElementById(
+      'player-character'
+    );
 
     if (!player) {
       return;
     }
+
+    player.classList.add('player-hit');
+
+    setTimeout(() => {
+      player.classList.remove('player-hit');
+    }, 200);
 
     player.style.backgroundColor = 'white';
 
@@ -665,73 +807,184 @@ export class Player implements OnDestroy {
         { transform: 'translate(-4px, 0px)' },
         { transform: 'translate(4px, 0px)' },
         { transform: 'translate(-3px, 0px)' },
-        { transform: 'translate(0px, 0px)' },
+        { transform: 'translate(0px, 0px)' }
       ],
       {
         duration: 100,
-        easing: 'linear',
-      },
+        easing: 'linear'
+      }
     );
   }
 
-  // ================================================================
-  // DEATH
-  // ================================================================
+  // ==========================================
+  // MORTE
+  // ==========================================
 
   private die(): void {
     console.log('PLAYER DIED');
   }
 
-  // ================================================================
-  // UPDATE PLAYER POSITION / HUD
-  // ================================================================
+  // ==========================================
+  // ATRIBUTOS A CADA 7 NÍVEIS
+  // ==========================================
+
+  private updateLevelStats(): void {
+    const level = Math.max(
+      0,
+      this.playerService.level()
+    );
+
+    const tier = Math.floor(level / 7);
+
+    if (tier === this.lastLevelTier) {
+      return;
+    }
+
+    const previousHealthMax = this.maxHealth;
+    const previousStaminaMax = this.maxStamina;
+
+    this.maxHealth = 100 + tier * 10;
+    this.maxStamina = 100 + tier * 5;
+
+    if (this.lastLevelTier < 0) {
+      this.health = this.maxHealth;
+      this.stamina = this.maxStamina;
+    } else {
+      this.health = Math.max(
+        0,
+        Math.min(
+          this.maxHealth,
+          this.health +
+            (this.maxHealth - previousHealthMax)
+        )
+      );
+
+      this.stamina = Math.max(
+        0,
+        Math.min(
+          this.maxStamina,
+          this.stamina +
+            (this.maxStamina - previousStaminaMax)
+        )
+      );
+
+      if (tier > this.lastLevelTier) {
+        this.healthHudUntil = Date.now() + 4500;
+        this.staminaHudUntil = Date.now() + 4500;
+      }
+    }
+
+    this.lastLevelTier = tier;
+    this.publishVitals(true);
+  }
+
+  // ==========================================
+  // SINCRONIZAÇÃO DE VIDA E STAMINA
+  // ==========================================
+
+  private publishVitals(force = false): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const now = Date.now();
+
+    // Limita atualizações para evitar sobrecarregar o HUD.
+    if (
+      !force &&
+      now - this.lastVitalsPublish < 125
+    ) {
+      return;
+    }
+
+    this.lastVitalsPublish = now;
+
+    const healthRatio = this.maxHealth > 0
+      ? this.health / this.maxHealth
+      : 0;
+
+    const staminaRatio = this.maxStamina > 0
+      ? this.stamina / this.maxStamina
+      : 0;
+
+    // ======================================
+    // EFEITOS DE PERIGO NO PERSONAGEM
+    // ======================================
+
+    const sprite = document.getElementById(
+      'player-character'
+    );
+
+    if (sprite) {
+      sprite.classList.toggle(
+        'player-danger',
+        this.health > 0 && healthRatio <= 0.4
+      );
+
+      sprite.classList.toggle(
+        'player-critical',
+        this.health > 0 && healthRatio <= 0.25
+      );
+
+      sprite.classList.toggle(
+        'player-exhausted',
+        this.moving && staminaRatio <= 0.22
+      );
+    }
+
+    // O HUD sempre mostra as duas barras.
+    // Essas flags controlam apenas as barras
+    // temporárias acima da cabeça.
+
+    const showOverheadHealth =
+      now < this.healthHudUntil;
+
+    const showOverheadStamina =
+      this.sprinting ||
+      this.isDashing ||
+      now < this.staminaHudUntil;
+
+    this.gameStateService.setPlayerVitals({
+      health: this.health,
+      maxHealth: this.maxHealth,
+      stamina: this.stamina,
+      maxStamina: this.maxStamina,
+      showHealth: showOverheadHealth,
+      showStamina: showOverheadStamina
+    });
+  }
+
+  // ==========================================
+  // POSIÇÃO DO PLAYER
+  // ==========================================
 
   private updatePlayerPosition(): void {
     const player = document.getElementById('player');
 
-    const staminaContainer = document.getElementById('stamina-container');
-    const staminaBar = document.getElementById('stamina-bar');
-    const healthBar = document.getElementById('player-health-bar');
-
     if (player) {
-      player.style.transform = `translate(
-        ${this.playerX}px,
-        ${this.playerY}px
-      )`;
+      player.style.transform =
+        `translate(${this.playerX}px, ${this.playerY}px)`;
     }
 
-    if (staminaContainer) {
-      const shiftHeld = this.keys.has('shift');
-
-      staminaContainer.style.display = shiftHeld ? 'block' : 'none';
-    }
-
-    if (staminaBar) {
-      staminaBar.style.width = `${this.getStaminaPercentage()}%`;
-    }
-
-    if (healthBar) {
-      healthBar.style.width = `${this.getHealthPercentage()}%`;
-    }
+    this.publishVitals();
   }
 
-  // ================================================================
-  // PLAYER COLOR
-  // ================================================================
+  // ==========================================
+  // CORES DO PERSONAGEM
+  // ==========================================
 
   private changePlayerColor(color: string): void {
-    const playerCharacter = document.getElementById('player-character');
+    const playerCharacter =
+      document.getElementById('player-character');
 
-    if (!playerCharacter) {
-      return;
+    if (playerCharacter) {
+      playerCharacter.style.backgroundColor = color;
     }
-
-    playerCharacter.style.backgroundColor = color;
   }
 
-  // ================================================================
-  // BUTTON STATE
-  // ================================================================
+  // ==========================================
+  // ESTADO DOS BOTÕES
+  // ==========================================
 
   private setButtonActive(buttonId: string): void {
     const button = document.getElementById(buttonId);
@@ -749,9 +1002,9 @@ export class Player implements OnDestroy {
     }
   }
 
-  // ================================================================
-  // CLEANUP
-  // ================================================================
+  // ==========================================
+  // LIMPEZA
+  // ==========================================
 
   ngOnDestroy(): void {
     this.buffSubscription?.unsubscribe();
@@ -764,13 +1017,23 @@ export class Player implements OnDestroy {
       cancelAnimationFrame(this.animationFrameId);
     }
 
-    window.removeEventListener('keydown', this.handleKeyDown);
-    window.removeEventListener('keyup', this.handleKeyUp);
-    window.removeEventListener('contextmenu', this.preventContextMenu);
+    window.removeEventListener(
+      'keydown',
+      this.handleKeyDown
+    );
+
+    window.removeEventListener(
+      'keyup',
+      this.handleKeyUp
+    );
+
+    window.removeEventListener(
+      'contextmenu',
+      this.preventContextMenu
+    );
 
     if (this.holdTimer) {
       clearTimeout(this.holdTimer);
-      this.holdTimer = undefined;
     }
   }
 }

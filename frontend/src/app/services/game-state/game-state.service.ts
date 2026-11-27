@@ -6,6 +6,15 @@ export interface GamePosition {
   y: number;
 }
 
+export interface PlayerVitals {
+  health: number;
+  maxHealth: number;
+  stamina: number;
+  maxStamina: number;
+  showHealth: boolean;
+  showStamina: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -26,6 +35,23 @@ export class GameStateService {
   enemyPositions$ =
     this.enemyPositionsSubject.asObservable();
 
+
+  private readonly playerVitalsSubject =
+    new BehaviorSubject<PlayerVitals>({
+      health: 100,
+      maxHealth: 100,
+      stamina: 100,
+      maxStamina: 100,
+      showHealth: false,
+      showStamina: false
+    });
+
+  readonly playerVitals$ =
+    this.playerVitalsSubject.asObservable();
+
+  setPlayerVitals(vitals: PlayerVitals): void {
+    this.playerVitalsSubject.next({ ...vitals });
+  }
 
   setPlayerPosition(position: GamePosition): void {
     this.playerPositionSubject.next(position);

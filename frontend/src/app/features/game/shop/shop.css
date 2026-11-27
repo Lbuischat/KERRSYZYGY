@@ -1244,3 +1244,105 @@
         height: 135px;
     }
 }
+
+/* ================================================================
+   ÍCONES E RARIDADE DOS ITENS — EXTENSÃO VISUAL ISOLADA
+   Não altera o layout, background, categorias ou botões originais.
+   ================================================================= */
+
+.item-symbol-image {
+    width: clamp(90px, 8.3vw, 112px);
+    height: clamp(90px, 8.3vw, 112px);
+}
+
+.item-symbol-image .item-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .28));
+}
+
+.item-rarity {
+    --rarity-color: #d3d8e0;
+    --rarity-glow: rgba(211, 216, 224, .12);
+
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+
+    border: 1px solid color-mix(in srgb, var(--rarity-color) 50%, transparent);
+    border-radius: 3px;
+    background: rgba(7, 10, 17, .78);
+    box-shadow: inset 0 0 14px var(--rarity-glow);
+
+    color: var(--rarity-color);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    font-size: clamp(10px, .78vw, 12px);
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: .1em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px var(--rarity-glow);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.item-rarity::before {
+    content: '◆';
+    font-size: 8px;
+    font-style: normal;
+}
+
+.item-rarity[data-rarity="common"] {
+    --rarity-color: #cbd2db;
+    --rarity-glow: rgba(203, 210, 219, .13);
+}
+
+.item-rarity[data-rarity="uncommon"] {
+    --rarity-color: #79dfac;
+    --rarity-glow: rgba(73, 213, 141, .20);
+}
+
+.item-rarity[data-rarity="rare"] {
+    --rarity-color: #70bcff;
+    --rarity-glow: rgba(64, 155, 255, .22);
+}
+
+.item-rarity[data-rarity="epic"] {
+    --rarity-color: #d49bff;
+    --rarity-glow: rgba(184, 102, 255, .25);
+}
+
+.item-rarity[data-rarity="legendary"] {
+    --rarity-color: #ffd27a;
+    --rarity-glow: rgba(255, 184, 60, .28);
+}
+/* ==========================================
+   ROLAGEM DA LOJA
+   ========================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+
+.global-shop {
+  min-height: 100%;
+}

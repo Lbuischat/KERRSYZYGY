@@ -1,7 +1,23 @@
+
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+
+import {
+  Component,
+  OnDestroy,
+  effect,
+  inject,
+  signal
+} from '@angular/core';
+
 import { Router } from '@angular/router';
-import { PlayerService } from '../../../../services/player.service';
+
+import {
+  PlayerService
+} from '../../../../services/player.service';
+
+import {
+  FocusSessionService
+} from '../../../../services/tasks/focus-session';
 
 interface WorldPoint {
   x: number;
@@ -11,23 +27,116 @@ interface WorldPoint {
 
 @Component({
   selector: 'app-player-info-bnt',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './player-info-bnt.html',
   styleUrl: './player-info-bnt.css'
 })
-export class PlayerInfoBnt {
+export class PlayerInfoBnt implements OnDestroy {
 
-  constructor(
-    public playerService: PlayerService,
-    private router: Router
-  ) {}
+  private readonly router = inject(Router);
 
-  openProfile(): void {
-    this.router.navigate(['/playerinfo']);
+  private readonly focusService =
+    inject(FocusSessionService);
+
+  readonly playerService = inject(PlayerService);
+
+  // =========================================
+  // VISUAL STATE
+  // =========================================
+
+  readonly rewarding = signal(false);
+
+  readonly levelUpVisible = signal(false);
+
+  readonly levelUpValue = signal(0);
+
+  private rewardTimer?: ReturnType<typeof setTimeout>;
+
+  private levelTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+
+    // =========================================
+    // REWARD FEEDBACK
+    // =========================================
+
+    effect(() => {
+      const pulse = this.playerService.rewardPulse();
+
+      if (pulse <= 0) {
+        return;
+      }
+
+      this.rewarding.set(true);
+
+      if (this.rewardTimer) {
+        clearTimeout(this.rewardTimer);
+      }
+
+      this.rewardTimer = setTimeout(() => {
+        this.rewarding.set(false);
+      }, 900);
+    });
+
+    // =========================================
+    // LEVEL UP FEEDBACK
+    // =========================================
+
+    effect(() => {
+      const level = this.playerService.lastLevelUp();
+
+      if (level === null) {
+        return;
+      }
+
+      this.levelUpValue.set(level);
+      this.levelUpVisible.set(true);
+
+      if (this.levelTimer) {
+        clearTimeout(this.levelTimer);
+      }
+
+      this.levelTimer = setTimeout(() => {
+        this.levelUpVisible.set(false);
+        this.playerService.clearLevelUp();
+      }, 2000);
+    });
+
   }
 
+  // =========================================
+  // CLEANUP
+  // =========================================
+
+  ngOnDestroy(): void {
+    if (this.rewardTimer) {
+      clearTimeout(this.rewardTimer);
+    }
+
+    if (this.levelTimer) {
+      clearTimeout(this.levelTimer);
+    }
+  }
+
+  // =========================================
+  // PROFILE
+  // =========================================
+
+  openProfile(): void {
+    if (this.focusService.active) {
+      return;
+    }
+
+    void this.router.navigate(['/playerinfo']);
+  }
+
+  // =========================================
+  // WORLD LEVEL
+  // =========================================
+
   get worldLevel(): number {
-    return this.playerService.profile.worldLevel || 1;
+    return this.playerService.worldLevelSignal() || 1;
   }
 
   get worldTier(): number {
@@ -39,7 +148,6 @@ export class PlayerInfoBnt {
   }
 
   get worldPoints(): WorldPoint[] {
-
     const count = this.worldProgress;
 
     if (count === 0) {
@@ -48,22 +156,14 @@ export class PlayerInfoBnt {
 
     const points: WorldPoint[] = [];
 
-    /*
-     * Everything is centered around 50,50.
-     */
     const centerX = 50;
     const centerY = 50;
 
-    /*
-     * Keep the points outside the central star.
-     */
     const radius = this.worldTier === 0 ? 35 : 39;
 
     for (let i = 0; i < count; i++) {
-
       const angle =
-        (-90 + (360 / count) * i) *
-        Math.PI / 180;
+        (-90 + (360 / count) * i) * Math.PI / 180;
 
       points.push({
         x: centerX + Math.cos(angle) * radius,

@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router';
 
 import { GameShell } from './features/game/game-shell/game-shell';
@@ -16,100 +17,60 @@ import {
 
 export const routes: Routes = [
 
-  // =========================================
   // ENTRY
-  // =========================================
-
   {
     path: '',
     component: GameEntry,
-    canActivate: [
-      focusGuard
-    ]
+    canActivate: [focusGuard]
   },
 
-  // =========================================
   // CREATE ACCOUNT
-  // =========================================
-
   {
     path: 'create-account',
     component: CreateAccount,
-    canActivate: [
-      focusGuard
-    ]
+    canActivate: [focusGuard]
   },
 
-  // =========================================
-  // START / ONBOARDING
-  // =========================================
-
+  // START
   {
     path: 'start',
     component: Start,
-    canActivate: [
-      focusGuard
-    ]
+    canActivate: [focusGuard]
   },
 
-  // =========================================
   // GAME
-  // =========================================
-
   {
     path: 'game',
     component: GameShell,
-    canDeactivate: [
-      focusExitGuard
-    ]
+    canDeactivate: [focusExitGuard]
   },
 
-  // =========================================
   // SETTINGS
-  // =========================================
-
   {
     path: 'settings',
     component: Settings,
-    canActivate: [
-      focusGuard
-    ]
+    canActivate: [focusGuard]
   },
 
-  // =========================================
   // PLAYER INFO
-  // =========================================
-
   {
     path: 'playerinfo',
     component: PlayerInfo,
-    canActivate: [
-      focusGuard
-    ]
+    canActivate: [focusGuard]
   },
 
-  // =========================================
   // SHOP
-  // =========================================
-
   {
     path: 'shop',
     component: Shop,
-    canActivate: [
-      focusGuard
-    ]
+    canActivate: [focusGuard]
   },
 
-  // =========================================
   // NEW QUEST
-  // =========================================
-
   {
     path: 'new-quest',
     component: NewQuest,
-    canActivate: [
-      focusGuard
-    ]
+    canActivate: [focusGuard]
   }
 
 ];

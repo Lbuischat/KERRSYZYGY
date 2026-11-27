@@ -1,3 +1,5 @@
+import { ItemEffectsRuntimeService } from '../../../services/Inventory/item-effects-runtime.service';
+import { inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -14,6 +16,11 @@ import {
 } from '@angular/core';
 
 import { Bush } from '../bush/bush';
+import { VillageRuntime, WORLD_CHUNKS } from '../village/village-runtime';
+import { GUILD_ROOM } from '../village/guild-runtime';
+import { FountainRuntime } from '../village/fountain-runtime';
+import { PlayerService } from '../../../services/player.service';
+import { AccountSessionService } from '../../../services/account-session.service';
 import { Enemy } from '../enemy/enemy';
 import { Player } from '../player/player';
 
@@ -62,6 +69,8 @@ interface EnemyShot {
   styleUrl: './game-world.css'
 })
 export class GameWorld implements OnDestroy {
+  private readonly itemEffectsRuntime = inject(ItemEffectsRuntimeService); // SHOP_WORLD_DAMAGE_V1
+
 
   // ========================================
   // EVENTOS DO TUTORIAL
@@ -89,6 +98,18 @@ export class GameWorld implements OnDestroy {
   @ViewChildren(Enemy)
   enemyComponents!: QueryList<Enemy>;
 
+  private readonly village = new VillageRuntime();
+  private readonly fountainPlayer = inject(PlayerService);
+  private readonly fountainAccount = inject(AccountSessionService);
+  private readonly fountain = new FountainRuntime({
+    key: () => this.fountainAccount.storageKey('aster-fountain-daily-v1'),
+    balance: () => this.fountainPlayer.shopXp(),
+    spend: amount => this.fountainPlayer.spendShopXp(amount),
+    refund: amount => this.fountainPlayer.addShopXp(amount),
+    grant: item => this.inventoryService.addItem(item, 1)
+  });
+  readonly chunks = WORLD_CHUNKS;
+
   private readonly MAP_SIZE = 2560;
   private readonly TILE = 128;
 
@@ -102,15 +123,15 @@ export class GameWorld implements OnDestroy {
   readonly enemySpawns: EnemySpawn[] = [
     {
       id: 'tutorial',
-      x: 650,
-      y: 850,
+      x: 1500,
+      y: 1680,
       elite: false,
       training: true
     },
     {
       id: 'slime-2',
-      x: 350,
-      y: 1770,
+      x: 1490,
+      y: 2220,
       elite: false,
       training: false
     },
@@ -123,15 +144,15 @@ export class GameWorld implements OnDestroy {
     },
     {
       id: 'slime-4',
-      x: 1760,
-      y: 2250,
+      x: 1870,
+      y: 2300,
       elite: false,
       training: false
     },
     {
       id: 'elite',
-      x: 2170,
-      y: 400,
+      x: 2240,
+      y: 2140,
       elite: true,
       training: false
     }
@@ -261,15 +282,17 @@ export class GameWorld implements OnDestroy {
       }
 
       if (!this.gameOver()) {
-        this.projectileService.update(dt);
-
-        this.checkTutorialBoundary();
-        this.updateEnemies(dt);
-        this.checkPlayerProjectileCollisions();
-        this.updateEnemyShots(dt);
-        this.checkTutorialEnemyDefeated();
-
-        this.renderPlayerProjectiles();
+        this.updateVillage(dt);
+        // Cena interna independente: não atualiza slimes, tiros ou tutorial de combate.
+        if (!this.village.guild.active) {
+          this.projectileService.update(dt);
+          this.checkTutorialBoundary();
+          this.updateEnemies(dt);
+          this.checkPlayerProjectileCollisions();
+          this.updateEnemyShots(dt);
+          this.checkTutorialEnemyDefeated();
+          this.renderPlayerProjectiles();
+        }
       } else if (this.player && this.deathPosition) {
         // O Player usa um loop próprio.
         // Mantemos a posição de morte durante o overlay.
@@ -283,7 +306,7 @@ export class GameWorld implements OnDestroy {
       this.updateMiniMap(now);
 
       this.updateCamera();
-      this.updateTutorialEnemyGuide();
+      if (!this.village.guild.active) this.updateTutorialEnemyGuide();
 
       this.animationFrameId =
         requestAnimationFrame(frame);
@@ -306,6 +329,10 @@ export class GameWorld implements OnDestroy {
     }
 
     this.stopTutorialEnemyGuide();
+    this.fountain.close();
+    this.village.closeDialogue();
+    this.village.guild.closeDialogue();
+    this.village.hideWelcome();
     this.gameOver.set(true);
   }
 
@@ -328,6 +355,8 @@ export class GameWorld implements OnDestroy {
     );
 
     this.deathPosition = null;
+    this.fountain.close();
+    this.village.reset();
 
     const healthBar =
       document.getElementById('player-health-bar');
@@ -469,7 +498,7 @@ export class GameWorld implements OnDestroy {
     mouseX: number;
     mouseY: number;
   }): void {
-    if (!this.player || this.gameOver()) return;
+    if (!this.player || this.gameOver() || this.village.guild.active || this.fountain.active) return;
 
     const p = this.player.getPosition();
 
@@ -487,7 +516,7 @@ export class GameWorld implements OnDestroy {
   // ========================================
 
   playerAttack(): void {
-    if (!this.player || this.gameOver()) return;
+    if (!this.player || this.gameOver() || this.village.guild.active || this.fountain.active) return;
 
     this.playerAttacked.emit();
 
@@ -513,7 +542,7 @@ export class GameWorld implements OnDestroy {
       }
     }
 
-    nearest?.takeDamage(10);
+    nearest?.takeDamage(this.itemEffectsRuntime.damage(10));
   }
 
   // ========================================
@@ -525,6 +554,27 @@ export class GameWorld implements OnDestroy {
 
     const p = this.player.getPosition();
     const size = this.player.getSize();
+
+    const px=p.x+size/2, py=p.y+size/2;
+    if (this.village.guild.active) {
+      if (this.village.guild.nearExit(px,py)) {
+        const outside=this.village.leaveGuild();
+        if(outside) this.player.setPosition(outside.x,outside.y);
+        this.updateCamera();
+      } else this.village.guild.interact(px,py);
+      return;
+    }
+    if (this.fountain.interact(px,py)) { this.village.closeDialogue(); return; }
+    if (this.village.guild.nearDoor(px,py)) {
+      const camera=document.getElementById('camera');
+      if(camera) {
+        const inside=this.village.enterGuild(camera,p,size);
+        this.player.setPosition(inside.x,inside.y);
+        this.updateCamera();
+        return;
+      }
+    }
+    if (this.village.interact(px,py)) return;
 
     for (const bush of this.bushes()) {
       if (bush.harvested) continue;
@@ -561,6 +611,25 @@ export class GameWorld implements OnDestroy {
   // ========================================
   // IA DOS CINCO SLIMES
   // ========================================
+
+  private updateVillage(dt: number): void {
+    if (!this.player) return;
+    const layer = document.getElementById('village-layer');
+    if (!layer) return;
+    this.village.mount(layer);
+    const p = this.player.getPosition();
+    const size = this.player.getSize();
+    const corrected = this.village.resolvePlayer(p.x, p.y, size);
+    if (corrected.x !== p.x || corrected.y !== p.y) {
+      this.player.setPosition(corrected.x, corrected.y);
+    }
+    this.village.update(dt, corrected.x + size / 2, corrected.y + size / 2);
+    const world = document.getElementById('game-world');
+    if (world) {
+      this.fountain.mount(world, layer);
+      this.fountain.update(dt, corrected.x + size / 2, corrected.y + size / 2, !this.village.guild.active);
+    }
+  }
 
   private updateEnemies(dt: number): void {
     if (!this.player || this.gameOver()) return;
@@ -614,11 +683,10 @@ export class GameWorld implements OnDestroy {
         const nextY =
           enemy.y + (dy / distance) * movement;
 
-        enemy.x = enemy.elite
-          ? Math.max(1940, nextX)
-          : nextX;
-
-        enemy.y = nextY;
+        // Mantém os slimes no quadrante inferior direito.
+        const combat = WORLD_CHUNKS.combat;
+        enemy.x = Math.max(enemy.elite ? 1940 : combat.x, Math.min(combat.x + combat.size - enemy.size, nextX));
+        enemy.y = Math.max(combat.y, Math.min(combat.y + combat.size - enemy.size, nextY));
 
         enemy.updateVisualPosition();
       }
@@ -1006,7 +1074,7 @@ export class GameWorld implements OnDestroy {
           continue;
         }
 
-        enemy.takeDamage(shot.damage);
+        enemy.takeDamage(this.itemEffectsRuntime.damage(shot.damage));
 
         this.projectileService.removeProjectile(
           shot.id
@@ -1107,7 +1175,7 @@ export class GameWorld implements OnDestroy {
     this.lastMapSync = now;
 
     if (this.player) {
-      const p = this.player.getPosition();
+      const p = this.village.guild.returnPosition ?? this.player.getPosition();
 
       this.gameStateService.setPlayerPosition({
         x: p.x + this.player.getSize() / 2,
@@ -1228,6 +1296,15 @@ export class GameWorld implements OnDestroy {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
+    if (this.village.guild.active) {
+      const axis = (view:number, origin:number, length:number, center:number):number =>
+        view >= length ? (view-length)/2-origin : Math.max(view-origin-length,Math.min(-origin,view/2-center));
+      this.cameraX=axis(screenWidth,GUILD_ROOM.x,GUILD_ROOM.w,p.x+size/2);
+      this.cameraY=axis(screenHeight,GUILD_ROOM.y,GUILD_ROOM.h,p.y+size/2);
+      camera.style.transform=`translate(${this.cameraX}px,${this.cameraY}px)`;
+      return;
+    }
+
     const camX = Math.max(
       Math.min(
         screenWidth - this.MAP_SIZE,
@@ -1290,6 +1367,8 @@ export class GameWorld implements OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed = true;
+    this.fountain.destroy();
+    this.village.destroy();
 
     if (!isPlatformBrowser(this.platformId)) {
       return;
