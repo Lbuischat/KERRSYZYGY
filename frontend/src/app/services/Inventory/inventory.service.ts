@@ -1,43 +1,40 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import type { Observable } from 'rxjs';
 import type { InventoryItem } from '../../features/game/hud/inventory/inventory-item.model';
-import { BuffService } from './Buff/buff.service';
+import { refreshKnownItemEffects } from '../../features/game/shop/shop-inventory.adapter';
 import { AccountSessionService } from '../account-session.service';
 import { PlayerService } from '../player.service';
 import { GameStateService } from '../game-state/game-state.service';
-import { refreshKnownItemEffects } from '../../features/game/shop/shop-inventory.adapter';
+import { BuffService } from './Buff/buff.service';
+import { UpgradeService } from './upgrade.service';
+import { ItemEffectsRuntimeService } from './item-effects-runtime.service';
 
-const STARTER_ITEMS: InventoryItem[] = [
-  {
-    id: 'berry', name: 'Crimson Jewel', category: 'collectables',
-    description: 'A fresh berry gathered from a wild bush. Restores a small amount of health.',
+const INITIAL: InventoryItem[] = [
+  // O desenho original da berry não é substituído.
+  { id: 'berry', name: 'Crimson Jewel', category: 'collectables',
+    description: 'Fruta coletada no mapa: recupera 10 HP.',
     icon: '/assets/berry.png', quantity: 1, usable: true, maxStack: 99,
-    buff: { type: 'health', value: 10 }
-  },
-  {
-    id: 'astral-potion', name: 'Astral Potion', category: 'potions',
-    description: 'A strange potion containing condensed starlight.',
+    buff: { type: 'health', value: 10 } },
+  { id: 'astral-potion', name: 'Astral Potion', category: 'potions',
+    description: 'Restaura 25 de stamina.',
     icon: '/assets/items/inventory/astral-potion.svg', quantity: 3,
-    // O efeito de stamina temporário só será habilitado após integrar
-    // a regeneração ao Player; não consumir sem efeito funcional.
-    usable: false, maxStack: 99,
-    buff: { type: 'stamina', value: 25, duration: 10 }
-  },
-  {
-    id: 'star-fragment', name: 'Star Fragment', category: 'collectables',
-    description: 'A fragment of celestial material. It seems to retain a faint glow.',
+    usable: true, maxStack: 99, buff: { type: 'stamina', value: 25 } },
+  { id: 'star-fragment', name: 'Star Fragment', category: 'collectables',
+    description: 'Concede 5 XP.',
     icon: '/assets/items/inventory/star-fragment.svg', quantity: 7,
-    usable: false, maxStack: 99
-  }
+    usable: true, maxStack: 99, effect: { type: 'xp', value: 5 } }
 ];
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
-  private readonly buffService = inject(BuffService);
-  private readonly playerService = inject(PlayerService);
-  private readonly account = inject(AccountSessionService);
-  private readonly gameState = inject(GameStateService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly account = inject(AccountSessionService);
+  private readonly playerService = inject(PlayerService);
+  private readonly buffService = inject(BuffService);
+  private readonly gameState = inject(GameStateService);
+  private readonly upgrades = inject(UpgradeService);
+  private readonly runtime = inject(ItemEffectsRuntimeService);
 
   readonly revision = signal(0);
   private items: InventoryItem[] = [];
@@ -47,12 +44,17 @@ export class InventoryService {
   private latestMaxStamina = 100;
 
   constructor() {
-    this.load();
-    this.gameState.playerVitals$.subscribe(vitals => {
-      this.latestHealth = vitals.health;
-      this.latestMaxHealth = vitals.maxHealth;
-      this.latestStamina = vitals.stamina;
-      this.latestMaxStamina = vitals.maxStamina;
+    // Compatível também com a versão antiga do GameStateService.
+    const state = this.gameState as unknown as {
+      playerVitals$?: Observable<{
+        health: number; maxHealth: number; stamina: number; maxStamina: number;
+      }>;
+    };
+    state.playerVitals$?.subscribe(v => {
+      this.latestHealth = v.health;
+      this.latestMaxHealth = v.maxHealth;
+      this.latestStamina = v.stamina;
+      this.latestMaxStamina = v.maxStamina;
     });
     effect(() => {
       this.account.accountId();
@@ -60,68 +62,70 @@ export class InventoryService {
     });
   }
 
-  getItems(): InventoryItem[] {
-    return this.items.map(item => ({ ...item }));
-  }
+  getItems(): InventoryItem[] { return this.items.map(item => ({ ...item })); }
 
-  getItem(itemId: string): InventoryItem | undefined {
-    const item = this.items.find(entry => entry.id === itemId);
+  getItem(id: string): InventoryItem | undefined {
+    const item = this.items.find(entry => entry.id === id);
     return item ? { ...item } : undefined;
   }
 
   addItem(item: InventoryItem, amount = 1): void {
-    if (!Number.isInteger(amount) || amount <= 0 || !item.id) return;
-    const normalized = refreshKnownItemEffects(item);
-    const existing = this.items.find(entry => entry.id === item.id);
+    if (!item.id || !Number.isInteger(amount) || amount < 1) return;
+    const normalized = refreshKnownItemEffects({ ...item });
+    const existing = this.items.find(entry => entry.id === normalized.id);
     if (existing) {
-      existing.quantity += amount;
+      Object.assign(existing, normalized, { quantity: existing.quantity + amount });
     } else {
       this.items.push({ ...normalized, quantity: amount });
     }
     this.changed();
   }
 
-  removeItem(itemId: string, amount = 1): boolean {
-    if (!Number.isInteger(amount) || amount <= 0) return false;
-    const item = this.items.find(entry => entry.id === itemId);
-    if (!item || item.quantity < amount) return false;
-    item.quantity -= amount;
-    if (item.quantity === 0) this.items = this.items.filter(entry => entry.id !== itemId);
+  removeItem(id: string, amount = 1): boolean {
+    if (!Number.isInteger(amount) || amount < 1) return false;
+    const entry = this.items.find(item => item.id === id);
+    if (!entry || entry.quantity < amount) return false;
+    entry.quantity -= amount;
+    if (entry.quantity === 0) this.items = this.items.filter(item => item.id !== id);
     this.changed();
     return true;
   }
 
-  useItem(itemId: string): boolean {
-    const item = this.items.find(entry => entry.id === itemId);
-    if (!item || !item.usable || item.quantity < 1) return false;
-    if (!item.buff && !item.effect) return false;
+  useItem(id: string): boolean {
+    const item = this.items.find(entry => entry.id === id);
+    if (!item || item.quantity < 1 || !item.usable) return false;
+    const effect = item.effect;
+    const buff = item.buff;
+    if (!effect && !buff) return false;
 
-    const healthMissing = this.latestHealth < this.latestMaxHealth;
-    const staminaMissing = this.latestStamina < this.latestMaxStamina;
+    const p = this.runtime.playerVitals;
+    const missingHp = p ? p.health < p.maxHealth : this.latestHealth < this.latestMaxHealth;
+    const missingStamina = p ? p.stamina < p.maxStamina : this.latestStamina < this.latestMaxStamina;
 
-    // Nao desperdiçar recuperadores quando o atributo ja esta cheio.
-    if (item.buff?.duration === undefined) {
-      if (item.buff?.type === 'health' && !healthMissing) return false;
-      if (item.buff?.type === 'stamina' && !staminaMissing) return false;
+    // Não desperdiçar consumíveis sem necessidade.
+    if (buff?.type === 'health' && buff.duration === undefined && !missingHp) return false;
+    if (buff?.type === 'stamina' && buff.duration === undefined && !missingStamina) return false;
+    if (effect?.type === 'dualRestore' && !missingHp && !missingStamina) return false;
+
+    if (effect?.type === 'upgrade') {
+      // Só gastar a unidade se a melhoria realmente couber no limite.
+      if (!this.upgrades.apply(effect.stats)) return false;
+    } else if (effect?.type === 'xp') {
+      this.playerService.addXp(effect.value);
+    } else if (effect?.type === 'shopXp') {
+      this.playerService.addShopXp(effect.value);
+    } else if (effect?.type === 'dualRestore') {
+      if (missingHp) this.buffService.addBuff({ type: 'health', value: effect.health });
+      if (missingStamina) this.buffService.addBuff({ type: 'stamina', value: effect.stamina });
     }
-    if (item.effect?.type === 'dualRestore' && !healthMissing && !staminaMissing) {
-      return false;
-    }
 
-    if (item.effect?.type === 'xp') {
-      this.playerService.addXp(item.effect.value);
-    } else if (item.effect?.type === 'dualRestore') {
-      if (healthMissing) this.buffService.addBuff({ type: 'health', value: item.effect.health });
-      if (staminaMissing) this.buffService.addBuff({ type: 'stamina', value: item.effect.stamina });
-    }
-
-    if (item.buff) this.buffService.addBuff(item.buff);
-    return this.removeItem(itemId, 1);
+    if (buff) this.buffService.addBuff(buff);
+    return this.removeItem(id, 1);
   }
 
   addBerry(amount: number): void {
-    if (!Number.isInteger(amount) || amount <= 0) return;
-    this.addItem(STARTER_ITEMS[0], amount);
+    if (!Number.isInteger(amount) || amount < 1) return;
+    this.addItem(INITIAL[0], amount);
   }
 
   private changed(): void {
@@ -129,64 +133,50 @@ export class InventoryService {
     this.save();
   }
 
-  private get storageKey(): string {
+  private get key(): string {
+    // Mantém a chave já usada pela hotbar e inventário existente.
     return this.account.storageKey('inventory-items-v2');
+  }
+
+  private load(): void {
+    let loaded = INITIAL.map(item => refreshKnownItemEffects({ ...item }));
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const raw = localStorage.getItem(this.key);
+        if (raw) {
+          const json: unknown = JSON.parse(raw);
+          if (Array.isArray(json)) {
+            loaded = json
+              .filter((x): x is InventoryItem => !!x && typeof x.id === 'string' &&
+                typeof x.quantity === 'number' && Number.isInteger(x.quantity) &&
+                x.quantity > 0 && typeof x.name === 'string' &&
+                typeof x.description === 'string' && typeof x.category === 'string')
+              .map(x => {
+                const updated = refreshKnownItemEffects({ ...x });
+                if (updated.id === 'berry') {
+                  return { ...updated, category: 'collectables' as const, icon: '/assets/berry.png' };
+                }
+                if (updated.id === 'astral-potion') {
+                  updated.icon = '/assets/items/inventory/astral-potion.svg';
+                }
+                if (updated.id === 'star-fragment') {
+                  updated.icon = '/assets/items/inventory/star-fragment.svg';
+                }
+                return updated;
+              });
+          }
+        }
+      } catch (e) {
+        console.warn('Inventário antigo não pôde ser lido:', e);
+      }
+    }
+    this.items = loaded;
+    this.revision.update(n => n + 1);
   }
 
   private save(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.items));
-    } catch (error) {
-      console.warn('Falha ao salvar o inventário:', error);
-    }
-  }
-
-  private load(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      this.items = STARTER_ITEMS.map(item => ({ ...item }));
-      return;
-    }
-    try {
-      const raw = localStorage.getItem(this.storageKey);
-      if (!raw) {
-        this.items = STARTER_ITEMS.map(item => ({ ...item }));
-      } else {
-        const parsed: unknown = JSON.parse(raw);
-        this.items = Array.isArray(parsed)
-          ? parsed.filter((item): item is InventoryItem =>
-              item && typeof item.id === 'string' &&
-              typeof item.name === 'string' &&
-              typeof item.category === 'string' &&
-              typeof item.quantity === 'number' &&
-              Number.isInteger(item.quantity) && item.quantity > 0 &&
-              typeof item.usable === 'boolean' &&
-              typeof item.description === 'string'
-            ).map(item => refreshKnownItemEffects(item))
-          : STARTER_ITEMS.map(item => ({ ...item }));
-      }
-    } catch {
-      this.items = STARTER_ITEMS.map(item => ({ ...item }));
-    }
-    // FIX_INVENTORY_ICONS_V1: corrigir itens salvos sem zerar inventario.
-    let precisaSalvar = false;
-    this.items = this.items.map(item => {
-      if (item.id === 'berry') {
-        if (item.category !== 'collectables' || item.icon !== '/assets/berry.png') precisaSalvar = true;
-        return { ...item, category: 'collectables', icon: '/assets/berry.png' };
-      }
-      if (item.id === 'astral-potion') {
-        if (item.icon !== '/assets/items/inventory/astral-potion.svg') precisaSalvar = true;
-        return { ...item, icon: '/assets/items/inventory/astral-potion.svg' };
-      }
-      if (item.id === 'star-fragment') {
-        if (item.icon !== '/assets/items/inventory/star-fragment.svg') precisaSalvar = true;
-        return { ...item, icon: '/assets/items/inventory/star-fragment.svg' };
-      }
-      return item;
-    });
-    if (precisaSalvar) this.save();
-    
-    this.revision.update(n => n + 1);
+    try { localStorage.setItem(this.key, JSON.stringify(this.items)); }
+    catch (e) { console.warn('Falha ao salvar inventário:', e); }
   }
 }

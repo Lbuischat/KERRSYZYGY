@@ -119,11 +119,7 @@ export class Inventory {
       )[] = [];
 
 
-    for (
-      let i = 0;
-      i < 30;
-      i++
-    ) {
+    for (let i = 0; i < Math.max(30, items.length); i++) /* SHOP_INVENTORY_ALL_SLOTS_V1 */ {
 
       slots.push(
         items[i] ?? null

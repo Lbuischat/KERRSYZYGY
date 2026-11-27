@@ -13,8 +13,8 @@ import { ShopCbb } from './shop-cbb';
 import { PlayerService } from '../../../services/player.service';
 import { InventoryService } from '../../../services/Inventory/inventory.service';
 import { toInventoryItem } from './shop-inventory.adapter';
-import { LUMI_CONSUMABLES } from './consumables';
-import { LUMI_SHOP_EXPANSION } from './shop-expansion';
+import { SHOP_CONSUMABLES } from './consumables';
+import { SHOP_EXPANSION } from './shop-expansion';
 
 type ShopCategory =
   | 'recommended'
@@ -386,8 +386,8 @@ export class Shop implements OnInit, OnDestroy {
       moeda: 'credits',
       subcategoria: 'wish-pack'
     },
-    ...LUMI_CONSUMABLES,
-    ...LUMI_SHOP_EXPANSION
+    ...SHOP_CONSUMABLES,
+    ...SHOP_EXPANSION
   ];
 
   // ==========================================
@@ -395,6 +395,13 @@ export class Shop implements OnInit, OnDestroy {
   // ==========================================
 
   ngOnInit(): void {
+    // SHOP_SHOP_VISUAL_V1 — ícones e efeitos reais visíveis na loja.
+    for (const product of this.boosts) {
+      const converted = toInventoryItem(product);
+      product.imagem = converted.icon ?? product.imagem;
+      product.descricao = converted.description;
+    }
+
     this.carregarEstado();
   }
 

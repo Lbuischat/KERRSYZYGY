@@ -1,6 +1,6 @@
 // KERRSYZYGY — 8 novos consumíveis. Os outros 2 já existem na loja.
 // Cada entrada usa os mesmos campos de ShopItem, sem redesenhar o catálogo.
-export type LumiConsumable = {
+export type ShopConsumable = {
   id: string;
   nome: string;
   descricao: string;
@@ -14,7 +14,7 @@ export type LumiConsumable = {
   subcategoria: string;
 };
 
-export const LUMI_CONSUMABLES: LumiConsumable[] = [
+export const SHOP_CONSUMABLES: ShopConsumable[] = [
   {
     id: 'field-berry-mix', nome: 'Field Berry Mix',
     descricao: 'A blend of healing berries. Restores 15 HP immediately.',

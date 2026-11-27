@@ -1,4 +1,4 @@
-// KERRSYZYGY — expansao do catalogo Lumi: +33 itens (sem duplicar os existentes).
+// KERRSYZYGY — expansao do catalogo Shop: +33 itens (sem duplicar os existentes).
 // Os 19 produtos originais + 8 consumiveis anteriores + 33 novos = 60.
 // Os dois antigos produtos da categoria 'wishes' vao para Recommended;
 // a aba Wishes continua sendo apenas favoritos, nao uma vitrine extra.
@@ -21,7 +21,7 @@ export interface ShopExpansionProduct {
   subcategoria: string;
 }
 
-export const LUMI_SHOP_EXPANSION: ShopExpansionProduct[] = [
+export const SHOP_EXPANSION: ShopExpansionProduct[] = [
   {
     id: 'crimson-salve', nome: 'Crimson Salve',
     descricao: 'Pomada de primeiros socorros. Recupera 20 HP imediatamente.',
@@ -258,7 +258,7 @@ export const LUMI_SHOP_EXPANSION: ShopExpansionProduct[] = [
 // Somente efeitos que existem de verdade no InventoryService/BuffService.
 // Materiais de forja, ascensao e desbloqueios futuros ficam guardados no
 // inventario (usable=false), em vez de serem gastos sem causar efeito.
-export const LUMI_EXTRA_EFFECTS: Record<string, Pick<InventoryItem, 'usable' | 'buff' | 'effect'>> = {
+export const SHOP_EXTRA_EFFECTS: Record<string, Pick<InventoryItem, 'usable' | 'buff' | 'effect'>> = {
   'crimson-salve': { usable: true, buff: { type: 'health', value: 20, } },
   'trail-ration': { usable: true, buff: { type: 'stamina', value: 30, } },
   'comet-injector': { usable: true, buff: { type: 'damage', value: 0.18, duration: 18 } },

@@ -1,3 +1,5 @@
+import { ItemEffectsRuntimeService, type ItemEffectsPlayerBridge } from '../../../services/Inventory/item-effects-runtime.service';
+import { inject } from '@angular/core';
 
 import {
   Component,
@@ -28,6 +30,8 @@ import { BuffService } from '../../../services/Inventory/Buff/buff.service';
   styleUrl: './player.css'
 })
 export class Player implements OnDestroy {
+  private readonly itemEffectsRuntime = inject(ItemEffectsRuntimeService); // SHOP_PLAYER_RUNTIME_V1
+
 
   // O HUD e as barras sobre o personagem
   // usam exatamente os mesmos dados.
@@ -590,6 +594,7 @@ export class Player implements OnDestroy {
 
       // Atualização dos buffs e níveis.
       this.buffService.update(deltaTime);
+      this.itemEffectsRuntime.tickPlayer(this as unknown as ItemEffectsPlayerBridge, deltaTime);
       this.updateLevelStats();
 
       let horizontal = 0;
@@ -664,9 +669,9 @@ export class Player implements OnDestroy {
         }
       }
 
-      const currentSpeed = this.sprinting
+      const currentSpeed = (this.sprinting
         ? this.speed * this.sprintMultiplier
-        : this.speed;
+        : this.speed) * this.itemEffectsRuntime.speedMultiplier();
 
       // ======================================
       // DASH

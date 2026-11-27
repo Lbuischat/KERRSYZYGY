@@ -1,3 +1,5 @@
+import { ItemEffectsRuntimeService } from '../../../services/Inventory/item-effects-runtime.service';
+import { inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -62,6 +64,8 @@ interface EnemyShot {
   styleUrl: './game-world.css'
 })
 export class GameWorld implements OnDestroy {
+  private readonly itemEffectsRuntime = inject(ItemEffectsRuntimeService); // SHOP_WORLD_DAMAGE_V1
+
 
   // ========================================
   // EVENTOS DO TUTORIAL
@@ -513,7 +517,7 @@ export class GameWorld implements OnDestroy {
       }
     }
 
-    nearest?.takeDamage(10);
+    nearest?.takeDamage(this.itemEffectsRuntime.damage(10));
   }
 
   // ========================================
@@ -1006,7 +1010,7 @@ export class GameWorld implements OnDestroy {
           continue;
         }
 
-        enemy.takeDamage(shot.damage);
+        enemy.takeDamage(this.itemEffectsRuntime.damage(shot.damage));
 
         this.projectileService.removeProjectile(
           shot.id

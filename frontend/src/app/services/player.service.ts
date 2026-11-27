@@ -1,3 +1,5 @@
+import { UpgradeService } from './Inventory/upgrade.service';
+import { BuffService } from './Inventory/Buff/buff.service';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -47,6 +49,9 @@ export interface PlayerReward {
   providedIn: 'root'
 })
 export class PlayerService {
+  private readonly itemUpgrades = inject(UpgradeService); // SHOP_XP_MULTIPLIER_V1
+  private readonly itemBuffs = inject(BuffService);
+
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly accountSession = inject(AccountSessionService);
@@ -175,7 +180,7 @@ export class PlayerService {
   // =========================================
 
   addXp(amount: number): number[] {
-    const gained = this.safeAmount(amount);
+    const gained = Math.ceil((this.safeAmount(amount)) * (1 + this.itemUpgrades.get('xpGain') + Math.min(0.5, Math.max(0, this.itemBuffs.getTotalBuffValue('xpGain')))));
     const levelsGained: number[] = [];
 
     this.p.update(player => {
@@ -212,7 +217,7 @@ export class PlayerService {
   // =========================================
 
   applyRewards(reward: PlayerReward): number[] {
-    const gainedXp = this.safeAmount(reward.xp);
+    const gainedXp = Math.ceil((this.safeAmount(reward.xp)) * (1 + this.itemUpgrades.get('xpGain') + Math.min(0.5, Math.max(0, this.itemBuffs.getTotalBuffValue('xpGain')))));
     const gainedCredits = this.safeAmount(reward.credits);
     const gainedShopXp = this.safeAmount(reward.shopXp);
 
