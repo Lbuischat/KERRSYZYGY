@@ -1,68 +1,44 @@
+
 <div
   #hudRoot
   class="pointer-events-none absolute inset-0"
 >
 
-  <!-- =====================================
-       EFEITO DE PERIGO
-  ===================================== -->
-
+  <!-- EFEITO DE PERIGO -->
   @if (isCritical) {
-
     <div
       class="hud-danger-vignette"
       aria-hidden="true"
     ></div>
-
   }
 
-  <!-- =====================================
-       INFORMAÇÕES DO PERSONAGEM
-  ===================================== -->
-
+  <!-- INFORMAÇÕES DO JOGADOR -->
   <div
     class="pointer-events-auto absolute left-6 top-10"
     data-hud-occlusion
   >
-
     <app-player-info-bnt />
-
   </div>
 
-  <!-- =====================================
-       BOTÕES SUPERIORES
-  ===================================== -->
-
+  <!-- BOTÕES SUPERIORES -->
   <div
     class="pointer-events-auto absolute right-6 top-10 flex items-center gap-3"
   >
-
     <div data-hud-occlusion>
-
       <app-inventory-button
         (inventoryClicked)="toggleInventory()"
       />
-
     </div>
 
     <div data-hud-occlusion>
-
       <app-shop-button />
-
     </div>
-
   </div>
 
-  <!-- =====================================
-       VIDA, STAMINA E MISSÕES
-  ===================================== -->
-
+  <!-- VIDA, STAMINA E MISSÕES -->
   <div class="hud-quest-dock">
 
-    <!-- =================================
-         BARRAS SEMPRE VISÍVEIS
-    ================================= -->
-
+    <!-- VIDA E STAMINA -->
     <div
       class="hud-status-stack"
       role="group"
@@ -70,26 +46,19 @@
     >
 
       <!-- VIDA -->
-
       <div
         class="hud-status-card hud-hp"
+        data-hud-occlusion
         [class.hud-hp-critical]="isCritical"
       >
-
         <div class="hud-status-heading">
 
           <span class="hud-status-label">
-
-            {{
-              isCritical
-                ? '♥ PERIGO'
-                : '♥ VIDA'
-            }}
-
+            {{ isCritical ? '♥ PERIGO' : '♥ VIDA' }}
           </span>
 
           <span class="hud-status-value">
-            {{ currentHealth }}/{{ maxHealth }}
+            {{ currentHealth }} / {{ maxHealth }}
           </span>
 
         </div>
@@ -102,21 +71,19 @@
           [attr.aria-valuenow]="currentHealth"
           [attr.aria-valuemax]="maxHealth"
         >
-
           <div
             class="hud-status-fill"
             [style.width.%]="healthPercent"
             [style.background-color]="healthColor"
           ></div>
-
         </div>
-
       </div>
 
       <!-- STAMINA -->
-
-      <div class="hud-status-card hud-stamina">
-
+      <div
+        class="hud-status-card hud-stamina"
+        data-hud-occlusion
+      >
         <div class="hud-status-heading">
 
           <span class="hud-status-label">
@@ -124,7 +91,7 @@
           </span>
 
           <span class="hud-status-value">
-            {{ currentStamina }}/{{ maxStamina }}
+            {{ currentStamina }} / {{ maxStamina }}
           </span>
 
         </div>
@@ -137,22 +104,16 @@
           [attr.aria-valuenow]="currentStamina"
           [attr.aria-valuemax]="maxStamina"
         >
-
           <div
             class="hud-status-fill hud-stamina-fill"
             [style.width.%]="staminaPercent"
           ></div>
-
         </div>
-
       </div>
 
     </div>
 
-    <!-- =================================
-         RECOLHER MISSÕES
-    ================================= -->
-
+    <!-- BOTÃO RECOLHER MISSÕES -->
     <button
       type="button"
       class="hud-quest-toggle"
@@ -166,90 +127,63 @@
           : 'Recolher missões'
       "
     >
-
       <span class="hud-quest-toggle-icon">
         {{ questsCollapsed ? '▸' : '▾' }}
       </span>
 
       <span>
-
         {{
           questsCollapsed
             ? 'ABRIR MISSÕES'
             : 'RECOLHER MISSÕES'
         }}
-
       </span>
-
     </button>
 
-    <!-- =================================
-         PAINEL DE MISSÕES
-    ================================= -->
-
+    <!-- PAINEL DE MISSÕES -->
     <div
       id="hud-quest-content"
       class="hud-quest-body"
       data-hud-occlusion
       [hidden]="questsCollapsed"
     >
-
       <app-task-panel />
-
     </div>
 
   </div>
 
-  <!-- =====================================
-       MINIMAPA
-  ===================================== -->
-
+  <!-- MINIMAPA -->
   <div
     class="pointer-events-auto absolute right-6 top-35"
     data-hud-occlusion
   >
-
     <app-mini-map
       [worldWidth]="worldWidth"
       [worldHeight]="worldHeight"
       [playerPosition]="playerPosition"
       [enemies]="enemies"
     />
-
   </div>
 
-  <!-- =====================================
-       BARRA DE COMBATE
-  ===================================== -->
-
+  <!-- BARRA DE COMBATE -->
   <div
     class="pointer-events-auto absolute bottom-6 right-6"
     data-hud-occlusion
   >
-
     <app-action-bar />
-
   </div>
 
-  <!-- =====================================
-       HOTBAR DE TRÊS SLOTS
-  ===================================== -->
-
+  <!-- HOTBAR -->
   <app-quickbar />
 
-  <!-- =====================================
-       CONFIGURAÇÕES
-  ===================================== -->
-
+  <!-- CONFIGURAÇÕES -->
   <div
     class="hud-settings-anchor pointer-events-auto absolute bottom-6 left-15 -translate-x-1/2"
     data-hud-occlusion
   >
-
     <app-settings-button
       (settingsClicked)="openSettings()"
     />
-
   </div>
 
 </div>

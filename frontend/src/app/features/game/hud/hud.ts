@@ -1,3 +1,4 @@
+
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -27,15 +28,8 @@ import {
 } from './mini-map/mini-map';
 
 import { ActionBar } from '../combat/action-bar/action-bar';
-
-import {
-  InventoryButton
-} from './inventory-button/inventory-button';
-
-import {
-  SettingsButton
-} from './settings-button/settings-button';
-
+import { InventoryButton } from './inventory-button/inventory-button';
+import { SettingsButton } from './settings-button/settings-button';
 import { Quickbar } from './quickbar/quickbar';
 
 import {
@@ -43,16 +37,15 @@ import {
   type PlayerVitals
 } from '../../../services/game-state/game-state.service';
 
-interface OriginalPanelStyle {
+interface PanelStyle {
   opacity: string;
-  pointerEvents: string;
   transition: string;
+  pointerEvents: string;
 }
 
 @Component({
   selector: 'app-hud',
   standalone: true,
-
   imports: [
     PlayerInfoBnt,
     ShopButton,
@@ -63,54 +56,41 @@ interface OriginalPanelStyle {
     SettingsButton,
     Quickbar
   ],
-
   templateUrl: './hud.html',
   styleUrl: './hud.css'
 })
-export class Hud implements OnInit, AfterViewInit, OnDestroy {
+export class Hud implements
+  OnInit,
+  AfterViewInit,
+  OnDestroy {
 
   // ==========================================
   // SERVIÇOS
   // ==========================================
 
-  private readonly gameStateService =
-    inject(GameStateService);
+  private readonly gameState = inject(GameStateService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly zone = inject(NgZone);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  private readonly cdr =
-    inject(ChangeDetectorRef);
-
-  private readonly zone =
-    inject(NgZone);
-
-  private readonly platformId =
-    inject(PLATFORM_ID);
-
-  private readonly subscriptions =
-    new Subscription();
-
-  // ==========================================
-  // REFERÊNCIA DO HUD
-  // ==========================================
+  private readonly subscriptions = new Subscription();
 
   @ViewChild('hudRoot')
   private hudRoot?: ElementRef<HTMLElement>;
 
   // ==========================================
-  // TRANSPARÊNCIA DINÂMICA
+  // TRANSPARÊNCIA DO HUD
   // ==========================================
 
   private animationId: number | null = null;
-
   private lastCheck = 0;
 
   private readonly CHECK_INTERVAL = 80;
-
   private readonly OVERLAP_MARGIN = 12;
-
-  private readonly FADED_OPACITY = '0.12';
+  private readonly FADED_OPACITY = '0.15';
 
   private readonly originalStyles =
-    new Map<HTMLElement, OriginalPanelStyle>();
+    new Map<HTMLElement, PanelStyle>();
 
   // ==========================================
   // VIDA E STAMINA
@@ -142,21 +122,20 @@ export class Hud implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get healthPercent(): number {
-    return this.calculatePercentage(
+    return this.percentage(
       this.vitals.health,
       this.vitals.maxHealth
     );
   }
 
   get staminaPercent(): number {
-    return this.calculatePercentage(
+    return this.percentage(
       this.vitals.stamina,
       this.vitals.maxStamina
     );
   }
 
   get healthColor(): string {
-
     if (this.healthPercent <= 25) {
       return '#ef4444';
     }
@@ -169,18 +148,16 @@ export class Hud implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get isCritical(): boolean {
-
     return (
       this.vitals.health > 0 &&
       this.healthPercent <= 25
     );
   }
 
-  private calculatePercentage(
+  private percentage(
     value: number,
     maximum: number
   ): number {
-
     if (maximum <= 0) {
       return 0;
     }
@@ -192,7 +169,7 @@ export class Hud implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ==========================================
-  // PAINEL DE MISSÕES
+  // MISSÕES
   // ==========================================
 
   questsCollapsed = false;
@@ -206,7 +183,6 @@ export class Hud implements OnInit, AfterViewInit, OnDestroy {
   // ==========================================
 
   worldWidth = 20 * 128;
-
   worldHeight = 20 * 128;
 
   playerPosition: MiniMapEntity = {
@@ -235,87 +211,65 @@ export class Hud implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ==========================================
-  // INICIALIZAÇÃO
+  // INICIALIZAR SERVIÇOS
   // ==========================================
 
   ngOnInit(): void {
 
-    // VIDA E STAMINA SINCRONIZADAS
-
     this.subscriptions.add(
-      this.gameStateService.playerVitals$
-        .subscribe(vitals => {
-
-          this.vitals = vitals;
-
-          this.cdr.detectChanges();
-        })
+      this.gameState.playerVitals$.subscribe(vitals => {
+        this.vitals = vitals;
+        this.cdr.detectChanges();
+      })
     );
 
-    // POSIÇÃO DO PERSONAGEM
-
     this.subscriptions.add(
-      this.gameStateService.playerPosition$
-        .subscribe(position => {
-
-          this.playerPosition = position;
-
-          this.cdr.detectChanges();
-        })
+      this.gameState.playerPosition$.subscribe(position => {
+        this.playerPosition = position;
+        this.cdr.detectChanges();
+      })
     );
 
-    // POSIÇÕES DOS INIMIGOS
-
     this.subscriptions.add(
-      this.gameStateService.enemyPositions$
-        .subscribe(positions => {
-
-          this.enemies = positions;
-
-          this.cdr.detectChanges();
-        })
+      this.gameState.enemyPositions$.subscribe(positions => {
+        this.enemies = positions;
+        this.cdr.detectChanges();
+      })
     );
   }
 
   // ==========================================
-  // INICIAR TRANSPARÊNCIA AUTOMÁTICA
+  // INICIAR DETECÇÃO DE SOBREPOSIÇÃO
   // ==========================================
 
   ngAfterViewInit(): void {
-
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
     this.zone.runOutsideAngular(() => {
-
       const tick = (time: number): void => {
 
         if (
           time - this.lastCheck >=
           this.CHECK_INTERVAL
         ) {
-
           this.lastCheck = time;
-
-          this.updateHudTransparency();
+          this.updateTransparency();
         }
 
-        this.animationId =
-          requestAnimationFrame(tick);
+        this.animationId = requestAnimationFrame(tick);
       };
 
-      this.animationId =
-        requestAnimationFrame(tick);
+      this.animationId = requestAnimationFrame(tick);
     });
   }
 
   // ==========================================
-  // DETECTAR O PERSONAGEM
+  // ATUALIZAR TRANSPARÊNCIA
   // ==========================================
 
-  private updateHudTransparency(): void {
-
+  private updateTransparency(): void {
     const root = this.hudRoot?.nativeElement;
 
     if (!root) {
@@ -324,202 +278,117 @@ export class Hud implements OnInit, AfterViewInit, OnDestroy {
 
     const doc = root.ownerDocument;
 
-    // Personagem do jogo.
-    // Usa a posição real na tela,
-    // considerando a movimentação da câmera.
+    // Usa o sprite real do personagem.
+    // getBoundingClientRect considera a câmera.
+    const player = doc.querySelector<HTMLElement>(
+      '#player-character'
+    );
 
-    const player =
-      doc.querySelector<HTMLElement>(
-        '#player-character'
-      );
+    const playerRect = player?.getBoundingClientRect();
 
-    const playerRect =
-      player?.getBoundingClientRect();
-
-    // Seleciona somente os elementos que
-    // podem ficar transparentes.
-    //
-    // Vida e stamina NÃO entram na lista.
-
-    const panels =
-      root.querySelectorAll<HTMLElement>(
-        '[data-hud-occlusion], .quickbar-root'
-      );
+    // Inclui todos os painéis identificados,
+    // vida, stamina e a hotbar existente.
+    const panels = root.querySelectorAll<HTMLElement>(
+      '[data-hud-occlusion], .quickbar-root'
+    );
 
     const activePanels = new Set<HTMLElement>();
 
-    panels.forEach(panel => {
-
+    for (const panel of panels) {
       activePanels.add(panel);
 
-      // Guarda o estilo original uma vez.
-
       if (!this.originalStyles.has(panel)) {
-
-        this.originalStyles.set(panel, {
+        const original: PanelStyle = {
           opacity: panel.style.opacity,
-          pointerEvents: panel.style.pointerEvents,
-          transition: panel.style.transition
-        });
+          transition: panel.style.transition,
+          pointerEvents: panel.style.pointerEvents
+        };
 
-        const reducedMotion =
-          window.matchMedia(
-            '(prefers-reduced-motion: reduce)'
-          ).matches;
+        this.originalStyles.set(panel, original);
+
+        const reducedMotion = window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches;
 
         if (!reducedMotion) {
-
-          const previousTransition =
-            panel.style.transition;
-
-          panel.style.transition =
-            previousTransition
-              ? `${previousTransition}, opacity 180ms ease`
-              : 'opacity 180ms ease';
+          panel.style.transition = original.transition
+            ? `${original.transition}, opacity 180ms ease`
+            : 'opacity 180ms ease';
         }
       }
 
-      const original =
-        this.originalStyles.get(panel);
-
-      if (!original) {
-        return;
-      }
-
-      // Se o personagem não estiver
-      // disponível, restaura o painel.
+      const original = this.originalStyles.get(panel)!;
 
       if (
         !playerRect ||
         playerRect.width <= 0 ||
         playerRect.height <= 0
       ) {
-
         this.restorePanel(panel, original);
-
-        return;
+        continue;
       }
 
-      const panelRect =
-        panel.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
 
       if (
         panelRect.width <= 0 ||
         panelRect.height <= 0
       ) {
-
         this.restorePanel(panel, original);
-
-        return;
+        continue;
       }
 
-      // ======================================
-      // VERIFICAR SOBREPOSIÇÃO
-      // ======================================
+      const margin = this.OVERLAP_MARGIN;
 
-      const margin =
-        this.OVERLAP_MARGIN;
-
-      const overlapping = (
-        playerRect.right + margin >
-          panelRect.left &&
-
-        playerRect.left - margin <
-          panelRect.right &&
-
-        playerRect.bottom + margin >
-          panelRect.top &&
-
-        playerRect.top - margin <
-          panelRect.bottom
-      );
-
-      // ======================================
-      // APLICAR TRANSPARÊNCIA
-      // ======================================
+      const overlapping =
+        playerRect.right + margin > panelRect.left &&
+        playerRect.left - margin < panelRect.right &&
+        playerRect.bottom + margin > panelRect.top &&
+        playerRect.top - margin < panelRect.bottom;
 
       if (overlapping) {
-
-        panel.style.opacity =
-          this.FADED_OPACITY;
-
-        // Evita que o painel invisível
-        // bloqueie o clique no jogo.
-
-        panel.style.pointerEvents = 'none';
-
+        panel.style.opacity = this.FADED_OPACITY;
       } else {
-
         this.restorePanel(panel, original);
       }
-    });
+    }
 
-    // ========================================
-    // LIMPAR PAINÉIS REMOVIDOS DO DOM
-    // ========================================
-
-    for (
-      const [panel, original]
-      of this.originalStyles
-    ) {
-
+    // Restaura painéis removidos ou desmontados.
+    for (const [panel, original] of this.originalStyles) {
       if (!activePanels.has(panel)) {
-
         this.restorePanel(panel, original);
-
-        panel.style.transition =
-          original.transition;
-
+        panel.style.transition = original.transition;
         this.originalStyles.delete(panel);
       }
     }
   }
 
-  // ==========================================
-  // RESTAURAR PAINEL
-  // ==========================================
-
   private restorePanel(
     panel: HTMLElement,
-    original: OriginalPanelStyle
+    original: PanelStyle
   ): void {
-
-    panel.style.opacity =
-      original.opacity;
-
-    panel.style.pointerEvents =
-      original.pointerEvents;
+    panel.style.opacity = original.opacity;
+    panel.style.pointerEvents = original.pointerEvents;
   }
 
   // ==========================================
-  // DESTRUIR COMPONENTE
+  // LIMPEZA
   // ==========================================
 
   ngOnDestroy(): void {
-
     this.subscriptions.unsubscribe();
 
     if (
       isPlatformBrowser(this.platformId) &&
       this.animationId !== null
     ) {
-
       cancelAnimationFrame(this.animationId);
-
       this.animationId = null;
     }
 
-    // Restaurar tudo ao sair do jogo.
-
-    for (
-      const [panel, original]
-      of this.originalStyles
-    ) {
-
+    for (const [panel, original] of this.originalStyles) {
       this.restorePanel(panel, original);
-
-      panel.style.transition =
-        original.transition;
+      panel.style.transition = original.transition;
     }
 
     this.originalStyles.clear();
